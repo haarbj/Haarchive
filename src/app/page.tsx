@@ -13,7 +13,7 @@ export default function Home() {
           For runners who want to understand the sport at the deepest level.
         </h1>
         <p className="max-w-3xl text-xl leading-9 text-zinc-600 dark:text-zinc-300">
-          The Haarchive is a long-term resource dedicated to the science,
+          The Haarchive is a long-term resource dedicated to the physiology,
           psychology, philosophy, and practice of distance running—helping
           athletes learn not only how to train, but how to think about training.
         </p>

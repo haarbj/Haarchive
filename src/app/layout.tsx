@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | The Haarchive",
   },
   description:
-    "A long-term educational resource on distance running at the intersection of science, psychology, philosophy, and practice.",
+    "A long-term educational resource on distance running at the intersection of physiology, psychology, philosophy, and practice.",
 };
 
 export default function RootLayout({
