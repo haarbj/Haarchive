@@ -15,7 +15,7 @@ export function SiteHeader() {
   };
 
   const scheduleClose = () => {
-    closeTimer.current = setTimeout(() => setOpen(false), 200);
+    closeTimer.current = setTimeout(() => setOpen(false), 100);
   };
 
   return (
