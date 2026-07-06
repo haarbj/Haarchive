@@ -16,7 +16,7 @@ export function SiteHeader() {
           href="/"
           onClick={() => setOpen(false)}
         >
-          WetBulb Running
+          The Haarchive
         </Link>
 
         <nav aria-label="Primary" className="hidden gap-5 text-sm md:flex">

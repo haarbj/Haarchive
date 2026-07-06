@@ -7,8 +7,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "WetBulb Running",
-    template: "%s | WetBulb Running",
+    default: "The Haarchive",
+    template: "%s | The Haarchive",
   },
   description:
     "A long-term educational resource on distance running at the intersection of science, psychology, philosophy, and practice.",
