@@ -19,58 +19,51 @@ export function SiteHeader() {
           The Haarchive
         </Link>
 
-        <nav aria-label="Primary" className="hidden gap-5 text-sm md:flex">
-          {sections.map((section) => (
-            <Link
-              key={section.slug}
-              className="text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-              href={`/${section.slug}`}
-            >
-              {section.title}
-            </Link>
-          ))}
-        </nav>
-
         <button
           type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
+          aria-controls="sections-menu"
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5 md:hidden dark:hover:bg-white/10"
+          className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm transition hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10"
         >
-          <span className="relative block h-4 w-5">
-            <span
-              className={`absolute left-0 top-0 h-0.5 w-5 bg-current transition ${open ? "translate-y-[7px] rotate-45" : ""}`}
+          Sections
+          <svg
+            className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M5 7.5L10 12.5L15 7.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            <span
-              className={`absolute left-0 top-[7px] h-0.5 w-5 bg-current transition ${open ? "opacity-0" : ""}`}
-            />
-            <span
-              className={`absolute left-0 top-[14px] h-0.5 w-5 bg-current transition ${open ? "-translate-y-[7px] -rotate-45" : ""}`}
-            />
-          </span>
+          </svg>
         </button>
       </div>
 
-      <nav
-        aria-label="Mobile"
-        className={`overflow-hidden transition-[max-height] duration-300 md:hidden ${
-          open ? "max-h-[70vh]" : "max-h-0"
+      <div
+        id="sections-menu"
+        className={`overflow-hidden border-t border-black/5 transition-[max-height] duration-300 dark:border-white/10 ${
+          open ? "max-h-[80vh]" : "max-h-0 border-t-0"
         }`}
       >
-        <div className="max-h-[70vh] overflow-y-auto px-6 pb-4">
-          {sections.map((section) => (
-            <Link
-              key={section.slug}
-              href={`/${section.slug}`}
-              onClick={() => setOpen(false)}
-              className="block border-b border-black/5 py-3 text-sm text-zinc-600 transition hover:text-zinc-950 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white"
-            >
-              {section.title}
-            </Link>
-          ))}
+        <div className="mx-auto max-h-[80vh] w-full max-w-6xl overflow-y-auto px-6 py-6">
+          <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-4">
+            {sections.map((section) => (
+              <Link
+                key={section.slug}
+                href={`/${section.slug}`}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-3 text-sm text-zinc-600 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                {section.title}
+              </Link>
+            ))}
+          </div>
         </div>
-      </nav>
+      </div>
     </header>
   );
 }
