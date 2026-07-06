@@ -13,9 +13,9 @@ export default function Home() {
           For runners who want to understand the sport at the deepest level.
         </h1>
         <p className="max-w-3xl text-xl leading-9 text-zinc-600 dark:text-zinc-300">
-          WetBulb is a long-term resource dedicated to the science, psychology, philosophy, and
-          practice of distance running—helping athletes learn not only how to train, but how to
-          think about training.
+          The Haarchive is a long-term resource dedicated to the science,
+          psychology, philosophy, and practice of distance running—helping
+          athletes learn not only how to train, but how to think about training.
         </p>
         <div className="flex flex-wrap gap-4">
           <Link
@@ -39,8 +39,12 @@ export default function Home() {
             key={section.slug}
             className="group rounded-2xl border border-black/8 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
           >
-            <h2 className="font-heading text-2xl tracking-tight">{section.title}</h2>
-            <p className="mt-3 text-zinc-600 dark:text-zinc-300">{section.mission}</p>
+            <h2 className="font-heading text-2xl tracking-tight">
+              {section.title}
+            </h2>
+            <p className="mt-3 text-zinc-600 dark:text-zinc-300">
+              {section.mission}
+            </p>
             <Link
               href={`/${section.slug}`}
               className="mt-5 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white"
