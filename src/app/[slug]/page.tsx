@@ -65,9 +65,6 @@ export default async function SectionPage({ params }: SectionPageProps) {
         <Link href="/" className={backLinkClass}>
           <span aria-hidden="true">←</span> Back to home
         </Link>
-        <p className="mb-3 text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-          Category
-        </p>
         <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
           {category.title}
         </h1>
@@ -107,9 +104,6 @@ export default async function SectionPage({ params }: SectionPageProps) {
       <Link href={`/${parentCategory.slug}`} className={backLinkClass}>
         <span aria-hidden="true">←</span> Back to {parentCategory.title}
       </Link>
-      <p className="mb-3 text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-        Section
-      </p>
       <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
         {currentSection.title}
       </h1>
