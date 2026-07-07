@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 
 type ZoneName = "green" | "yellow" | "red" | "black";
 
@@ -131,25 +132,25 @@ function runnerGuidance(
     }
     if (wbgtC < 15) {
       return {
-        title: "Optimal for quality sessions",
-        sub: "Good day for intervals or tempo. Heat won't be a limiter.",
+        title: "Optimal for hard efforts",
+        sub: "Good day for intervals or tempo — heat won't be a limiter.",
       };
     }
     return {
       title: "Low risk",
-      sub: "Drink 4–8 oz every 15–20 min. Quality sessions can go as planned.",
+      sub: "Hydrate well before and after — carry water mid-run only if that's already part of your routine. Intervals and tempo can go as planned.",
     };
   }
   if (zoneName === "yellow") {
     return {
       title: "Moderate risk",
-      sub: "Fine for easy mileage; ease off target paces on a quality session and add recovery.",
+      sub: "Easy mileage is fine. Ease off pace targets on intervals or tempo work and add recovery.",
     };
   }
   if (zoneName === "red") {
     return {
       title: "High risk",
-      sub: "Shift quality sessions to a treadmill or cooler part of the day, or run easy by effort only.",
+      sub: "Move intervals or tempo work to a treadmill or a cooler part of the day, or run easy by effort only.",
     };
   }
   return {
@@ -211,12 +212,38 @@ function gaugeFillHeight(wbgtC: number): number {
   return pct * GAUGE_HEIGHT;
 }
 
+// Catmull-Rom to cubic-Bezier conversion, so the outlook line reads as a
+// smooth curve (like Apple Weather's hourly graph) instead of straight
+// segments between hourly points.
+function buildSmoothPath(points: { x: number; y: number }[]): string {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
+
+  let path = `M${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i === 0 ? i : i - 1];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2 < points.length ? i + 2 : i + 1];
+
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+    path += ` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+  return path;
+}
+
 export function HeatTracker() {
   const [cityInput, setCityInput] = useState("");
   const [message, setMessage] = useState("Trying your device location…");
   const [series, setSeries] = useState<WbgtPoint[] | null>(null);
   const [meta, setMeta] = useState<LocationMeta | null>(null);
   const [clock, setClock] = useState("");
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const chartSvgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     const updateClock = () => {
@@ -315,16 +342,38 @@ export function HeatTracker() {
     PAD_TOP + PLOT_HEIGHT - ((value - minValue) / (maxValue - minValue)) * PLOT_HEIGHT;
 
   const linePath = series
-    ?.map(
-      (point, index) =>
-        `${index === 0 ? "M" : "L"}${xForIndex(index).toFixed(1)},${yForValue(point.wbgtC).toFixed(1)}`,
-    )
-    .join(" ");
+    ? buildSmoothPath(
+        series.map((point, index) => ({
+          x: xForIndex(index),
+          y: yForValue(point.wbgtC),
+        })),
+      )
+    : undefined;
 
   const areaPath =
     series && linePath
       ? `${linePath} L${xForIndex(series.length - 1).toFixed(1)},${CHART_HEIGHT - PAD_BOTTOM} L${xForIndex(0).toFixed(1)},${CHART_HEIGHT - PAD_BOTTOM} Z`
       : undefined;
+
+  const hoverPoint =
+    series && hoverIndex !== null ? series[hoverIndex] : null;
+
+  const handleChartPointer = (event: ReactPointerEvent<SVGSVGElement>) => {
+    if (!series || !chartSvgRef.current) return;
+    const rect = chartSvgRef.current.getBoundingClientRect();
+    const fraction = (event.clientX - rect.left) / rect.width;
+    const viewBoxX = fraction * CHART_WIDTH;
+    const rawIndex =
+      ((viewBoxX - PAD_LEFT) / PLOT_WIDTH) * (series.length - 1);
+    const index = Math.max(0, Math.min(series.length - 1, Math.round(rawIndex)));
+    setHoverIndex(index);
+  };
+
+  const clearChartHover = () => setHoverIndex(null);
+
+  const hoverLeftPct = hoverPoint
+    ? Math.max(4, Math.min(96, (xForIndex(hoverIndex ?? 0) / CHART_WIDTH) * 100))
+    : null;
 
   return (
     <div className="mt-10 space-y-10">
@@ -446,11 +495,15 @@ export function HeatTracker() {
         <p className="mb-3 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
           48-hour WBGT outlook — plan your sessions
         </p>
-        <div className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
+        <div className="relative rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
           {series && linePath && areaPath ? (
             <svg
+              ref={chartSvgRef}
               viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
-              className="h-auto w-full"
+              className="h-auto w-full touch-none"
+              onPointerMove={handleChartPointer}
+              onPointerDown={handleChartPointer}
+              onPointerLeave={clearChartHover}
             >
               {ZONES.map((zoneBand, index) => {
                 const prevMax = index === 0 ? minValue : ZONES[index - 1].maxC;
@@ -569,11 +622,51 @@ export function HeatTracker() {
                   />
                 );
               })}
+
+              {hoverPoint && hoverIndex !== null && (
+                <>
+                  <line
+                    x1={xForIndex(hoverIndex)}
+                    y1={PAD_TOP}
+                    x2={xForIndex(hoverIndex)}
+                    y2={CHART_HEIGHT - PAD_BOTTOM}
+                    strokeWidth="1"
+                    className="stroke-zinc-900/30 dark:stroke-white/30"
+                  />
+                  <circle
+                    cx={xForIndex(hoverIndex)}
+                    cy={yForValue(hoverPoint.wbgtC)}
+                    r="5"
+                    strokeWidth="2"
+                    className={`${zoneFor(hoverPoint.wbgtC).fillClass} stroke-white dark:stroke-zinc-900`}
+                  />
+                </>
+              )}
             </svg>
           ) : (
             <p className="py-12 text-center text-sm text-zinc-600 dark:text-zinc-300">
               Waiting on a forecast to plot…
             </p>
+          )}
+
+          {hoverPoint && hoverLeftPct !== null && (
+            <div
+              className="pointer-events-none absolute top-2 -translate-x-1/2 rounded-lg border border-black/10 bg-white px-3 py-2 shadow-md dark:border-white/10 dark:bg-zinc-900"
+              style={{ left: `${hoverLeftPct}%` }}
+            >
+              <p className="font-mono text-[11px] whitespace-nowrap text-zinc-600 dark:text-zinc-300">
+                {hoverPoint.time.toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </p>
+              <p
+                className={`font-heading text-sm font-semibold whitespace-nowrap ${zoneFor(hoverPoint.wbgtC).textClass}`}
+              >
+                {cToF(hoverPoint.wbgtC).toFixed(1)}°F ·{" "}
+                {zoneFor(hoverPoint.wbgtC).flagLabel}
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -587,12 +680,12 @@ export function HeatTracker() {
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[1].swatchClass}`} />
           Yellow flag — {cToF(ZONES[0].maxC).toFixed(0)}–
-          {cToF(ZONES[1].maxC).toFixed(0)}°F: ease off quality sessions
+          {cToF(ZONES[1].maxC).toFixed(0)}°F: ease off intervals and tempo
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[2].swatchClass}`} />
           Red flag — {cToF(ZONES[1].maxC).toFixed(0)}–
-          {cToF(ZONES[2].maxC).toFixed(0)}°F: move quality sessions indoors
+          {cToF(ZONES[2].maxC).toFixed(0)}°F: move intervals and tempo indoors
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[3].swatchClass}`} />
@@ -672,10 +765,11 @@ export function HeatTracker() {
           The flag categories and training notes follow the American College
           of Sports Medicine&rsquo;s WBGT guidelines: green flag is a green
           light for whatever&rsquo;s on the schedule, yellow flag calls for
-          easing off quality sessions (intervals, tempo, track work) while
-          easy mileage stays fine, red flag means shifting quality sessions
-          to a treadmill or a cooler window of the day, and black flag is the
-          point where outdoor training itself carries real heat-illness risk.
+          easing off intervals, tempo, and other structured hard efforts
+          while easy mileage stays fine, red flag means shifting those hard
+          efforts to a treadmill or a cooler window of the day, and black
+          flag is the point where outdoor training itself carries real
+          heat-illness risk.
           The 48-hour outlook is there to help pick which window — this
           afternoon, tomorrow morning — is the better time for a track
           session or long run.
