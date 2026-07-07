@@ -53,12 +53,18 @@ export default async function SectionPage({ params }: SectionPageProps) {
     notFound();
   }
 
+  const backLinkClass =
+    "mb-6 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-zinc-500 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white";
+
   // Category landing page
   if (category) {
     const members = sectionsInCategory(category.slug);
 
     return (
       <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
+        <Link href="/" className={backLinkClass}>
+          <span aria-hidden="true">←</span> Back to home
+        </Link>
         <p className="mb-3 text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
           Category
         </p>
@@ -94,9 +100,13 @@ export default async function SectionPage({ params }: SectionPageProps) {
 
   // Individual section page
   const currentSection = section!;
+  const parentCategory = categoryMap.get(currentSection.category)!;
 
   return (
     <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
+      <Link href={`/${parentCategory.slug}`} className={backLinkClass}>
+        <span aria-hidden="true">←</span> Back to {parentCategory.title}
+      </Link>
       <p className="mb-3 text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
         Section
       </p>
