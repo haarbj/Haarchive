@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { sections } from "@/lib/sections";
+import { categories } from "@/lib/sections";
 
 export default function Home() {
   return (
@@ -34,19 +34,19 @@ export default function Home() {
       </section>
 
       <section className="mx-auto grid w-full max-w-6xl gap-6 px-6 py-8 md:grid-cols-2 xl:grid-cols-3">
-        {sections.map((section) => (
+        {categories.map((category) => (
           <article
-            key={section.slug}
+            key={category.slug}
             className="group rounded-2xl border border-black/8 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
           >
             <h2 className="font-heading text-2xl tracking-tight">
-              {section.title}
+              {category.title}
             </h2>
             <p className="mt-3 text-zinc-600 dark:text-zinc-300">
-              {section.mission}
+              {category.mission}
             </p>
             <Link
-              href={`/${section.slug}`}
+              href={`/${category.slug}`}
               className="mt-5 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white"
             >
               View section →
