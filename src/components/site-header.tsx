@@ -2,10 +2,12 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { categories, sectionsInCategory } from "@/lib/sections";
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -40,6 +42,9 @@ export function SiteHeader() {
           {categories.map((category) => {
             const isOpen = openCategory === category.slug;
             const members = sectionsInCategory(category.slug);
+            const isActive =
+              pathname === `/${category.slug}` ||
+              members.some((member) => pathname === `/${member.slug}`);
 
             return (
               <div
@@ -48,10 +53,17 @@ export function SiteHeader() {
                 onMouseEnter={() => openDropdown(category.slug)}
                 onMouseLeave={scheduleClose}
               >
-                <div className="flex items-center gap-1 rounded-full text-sm text-zinc-600 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white">
+                <div
+                  className={`flex items-center gap-1 rounded-full text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
+                    isActive
+                      ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                      : "text-zinc-600 dark:text-zinc-300"
+                  }`}
+                >
                   <Link
                     href={`/${category.slug}`}
                     onClick={closeAll}
+                    aria-current={isActive ? "page" : undefined}
                     className="py-2 pl-3"
                   >
                     {category.title}
@@ -91,16 +103,25 @@ export function SiteHeader() {
                   }`}
                 >
                   <div className="flex w-56 flex-col gap-1 rounded-xl border border-black/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-zinc-900">
-                    {members.map((section) => (
-                      <Link
-                        key={section.slug}
-                        href={`/${section.slug}`}
-                        onClick={closeAll}
-                        className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                      >
-                        {section.title}
-                      </Link>
-                    ))}
+                    {members.map((section) => {
+                      const isSectionActive = pathname === `/${section.slug}`;
+
+                      return (
+                        <Link
+                          key={section.slug}
+                          href={`/${section.slug}`}
+                          onClick={closeAll}
+                          aria-current={isSectionActive ? "page" : undefined}
+                          className={`rounded-lg px-3 py-2 text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
+                            isSectionActive
+                              ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                              : "text-zinc-600 dark:text-zinc-300"
+                          }`}
+                        >
+                          {section.title}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -140,6 +161,9 @@ export function SiteHeader() {
           {categories.map((category) => {
             const isOpen = openCategory === category.slug;
             const members = sectionsInCategory(category.slug);
+            const isActive =
+              pathname === `/${category.slug}` ||
+              members.some((member) => pathname === `/${member.slug}`);
 
             return (
               <div
@@ -150,7 +174,12 @@ export function SiteHeader() {
                   <Link
                     href={`/${category.slug}`}
                     onClick={closeAll}
-                    className="text-sm font-medium text-zinc-900 dark:text-white"
+                    aria-current={isActive ? "page" : undefined}
+                    className={`text-sm font-medium ${
+                      isActive
+                        ? "text-zinc-950 underline dark:text-white"
+                        : "text-zinc-900 dark:text-white"
+                    }`}
                   >
                     {category.title}
                   </Link>
@@ -187,16 +216,25 @@ export function SiteHeader() {
                   }`}
                 >
                   <div className="flex flex-col gap-1 pb-3 pl-3">
-                    {members.map((section) => (
-                      <Link
-                        key={section.slug}
-                        href={`/${section.slug}`}
-                        onClick={closeAll}
-                        className="rounded-lg px-3 py-2 text-sm text-zinc-600 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                      >
-                        {section.title}
-                      </Link>
-                    ))}
+                    {members.map((section) => {
+                      const isSectionActive = pathname === `/${section.slug}`;
+
+                      return (
+                        <Link
+                          key={section.slug}
+                          href={`/${section.slug}`}
+                          onClick={closeAll}
+                          aria-current={isSectionActive ? "page" : undefined}
+                          className={`rounded-lg px-3 py-2 text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
+                            isSectionActive
+                              ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                              : "text-zinc-600 dark:text-zinc-300"
+                          }`}
+                        >
+                          {section.title}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
