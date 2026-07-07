@@ -34,6 +34,12 @@ export const categories: Category[] = [
     title: "Writing & Resources",
     mission: "Long-form essays and curated references for continued learning.",
   },
+  {
+    slug: "tools",
+    title: "Tools",
+    mission:
+      "Interactive calculators for training, pacing, and race-day conditions.",
+  },
 ];
 
 export type Section = {
@@ -180,6 +186,14 @@ export const sections: Section[] = [
       "Reach out for coaching questions, collaborations, speaking, and long-term development support.",
     topics: ["Coaching inquiries", "Collaborations", "Speaking"],
     category: "writing-and-resources",
+  },
+  {
+    slug: "heat-tracker",
+    title: "Heat Tracker",
+    mission:
+      "Live WBGT readings and a 48-hour outlook to help you plan safe training around heat.",
+    topics: ["WBGT estimate", "48-hour outlook", "ACSM flag guidance"],
+    category: "tools",
   },
 ];
 

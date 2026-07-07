@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -11,6 +12,14 @@ import {
   type Category,
   type Section,
 } from "@/lib/sections";
+import { HeatTracker } from "@/components/heat-tracker";
+
+// Sections with a dedicated interactive component render that instead of
+// the generic "Planned Topics" list. Add future tools (e.g. a pace
+// calculator at slug "pace-calculator") as another entry here.
+const sectionTools: Record<string, ComponentType> = {
+  "heat-tracker": HeatTracker,
+};
 
 type SectionPageProps = {
   params: Promise<{ slug: string }>;
@@ -98,6 +107,7 @@ export default async function SectionPage({ params }: SectionPageProps) {
   // Individual section page
   const currentSection = section!;
   const parentCategory = categoryMap.get(currentSection.category)!;
+  const ToolComponent = sectionTools[currentSection.slug];
 
   return (
     <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
@@ -111,14 +121,18 @@ export default async function SectionPage({ params }: SectionPageProps) {
         {currentSection.mission}
       </p>
 
-      <div className="mt-10 rounded-2xl border border-black/10 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-zinc-900">
-        <h2 className="text-lg font-semibold">Planned Topics</h2>
-        <ul className="mt-4 space-y-2 text-zinc-600 dark:text-zinc-300">
-          {currentSection.topics.map((topic: string) => (
-            <li key={topic}>• {topic}</li>
-          ))}
-        </ul>
-      </div>
+      {ToolComponent ? (
+        <ToolComponent />
+      ) : (
+        <div className="mt-10 rounded-2xl border border-black/10 bg-white p-8 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+          <h2 className="text-lg font-semibold">Planned Topics</h2>
+          <ul className="mt-4 space-y-2 text-zinc-600 dark:text-zinc-300">
+            {currentSection.topics.map((topic: string) => (
+              <li key={topic}>• {topic}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
