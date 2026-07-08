@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
 const siteDescription =
-  "A long-term educational resource on distance running at the intersection of physiology, psychology, philosophy, and practice.";
+  "Haarchive is a running education platform exploring distance running training, exercise physiology, coaching philosophies, sports psychology, and data-driven performance.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://brodyhaar.com"),

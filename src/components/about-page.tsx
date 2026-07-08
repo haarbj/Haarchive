@@ -114,6 +114,56 @@ export function AboutPage() {
         See what&rsquo;s here <span aria-hidden="true">↓</span>
       </a>
 
+      {/* Tools & Accounts */}
+      <section className="mt-16 border-t border-black/5 pt-14 dark:border-white/10">
+        <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+          Tools &amp; accounts
+        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+          Free calculators. An optional account, if you want more.
+        </h2>
+        <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+          <p>
+            Every calculator on this site — the{" "}
+            <Link
+              href="/pace-calculator"
+              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Pace &amp; Heart Rate Calculator
+            </Link>
+            , the{" "}
+            <Link
+              href="/heat-tracker"
+              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Heat Tracker
+            </Link>{" "}
+            — works fully without an account. Nothing you enter is sent
+            anywhere; it stays in your browser.
+          </p>
+          <p>
+            Creating a free account, with an email and password or by
+            signing in with Google, unlocks a dashboard: track a goal race,
+            log recent results, and keep calculator results saved across
+            visits instead of losing them when you close the tab. You can
+            also connect a Strava account to link your training data.
+          </p>
+          <p>
+            When you sign in with Google, we only ever request your name,
+            email address, and profile photo — enough to create your
+            account, nothing more. See exactly what&rsquo;s collected and
+            why in the{" "}
+            <Link
+              href="/privacy-policy"
+              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
       {/* Why This Exists */}
       <section className="mt-16 border-t border-black/5 pt-14 dark:border-white/10">
         <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
