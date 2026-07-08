@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRetrievalQuery, buildSystemPrompt } from "@/lib/ai/prompts";
+import { buildAdaptationSystemPrompt, buildRetrievalQuery, buildSystemPrompt } from "@/lib/ai/prompts";
 import type { CoachingContext } from "@/lib/ai/context";
 import type { RetrievedExcerpt } from "@/lib/ai/retrieval";
 
@@ -29,6 +29,36 @@ describe("buildRetrievalQuery", () => {
       buildRetrievalQuery("easy", phase),
     );
     expect(new Set(queries).size).toBe(queries.length);
+  });
+
+  it("folds in the athlete's own message when given", () => {
+    const query = buildRetrievalQuery("tempo", "build", "I missed yesterday's run");
+    expect(query).toContain("I missed yesterday's run");
+  });
+});
+
+describe("buildAdaptationSystemPrompt", () => {
+  it("includes the shared guardrails and names all three tools", () => {
+    const prompt = buildAdaptationSystemPrompt(EMPTY_CONTEXT, []);
+    expect(prompt).toMatch(/never state a race-time prediction as a certainty/i);
+    expect(prompt).toMatch(/never diagnose an injury/i);
+    expect(prompt).toContain("compressWorkout");
+    expect(prompt).toContain("substituteForSurface");
+    expect(prompt).toContain("insertRecoveryDay");
+  });
+
+  it("instructs the model not to invent numbers itself", () => {
+    const prompt = buildAdaptationSystemPrompt(EMPTY_CONTEXT, []);
+    expect(prompt).toMatch(/never invent a new workout or new numbers yourself/i);
+  });
+
+  it("still includes the same athlete/workout data block as the explain prompt", () => {
+    const context: CoachingContext = {
+      ...EMPTY_CONTEXT,
+      goal: { raceName: "Chicago Marathon", distanceM: 42195, goalTimeS: 12600, goalDate: "2026-10-25" },
+    };
+    const prompt = buildAdaptationSystemPrompt(context, []);
+    expect(prompt).toContain("Chicago Marathon");
   });
 });
 

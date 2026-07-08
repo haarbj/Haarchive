@@ -6,6 +6,7 @@ import { completeWorkout } from "@/app/(app)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/dashboard/form-constants";
 import { workoutPrescriptionSchema, type WorkoutType } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
+import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { ExplainWorkoutButton } from "./explain-workout-button";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 
@@ -15,6 +16,8 @@ type WorkoutCardProps = {
     scheduled_date: string;
     workout_type: WorkoutType;
     prescription: unknown;
+    adapted_at: string | null;
+    adaptation_reason: string | null;
   };
   completed: boolean;
 };
@@ -101,6 +104,15 @@ export function WorkoutCard({ workout, completed }: WorkoutCardProps) {
       )}
 
       <ExplainWorkoutButton workoutId={workout.id} />
+
+      {parsed.success && (
+        <AdaptWorkoutPanel
+          workoutId={workout.id}
+          currentPrescription={parsed.data}
+          adaptedAt={workout.adapted_at}
+          adaptationReason={workout.adaptation_reason}
+        />
+      )}
     </div>
   );
 }

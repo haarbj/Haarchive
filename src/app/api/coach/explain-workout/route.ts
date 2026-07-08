@@ -52,7 +52,15 @@ export async function POST(request: Request) {
     });
   }
 
-  const result = streamText({ model: google(MODEL_ID), system, prompt: EXPLAIN_WORKOUT_PROMPT });
+  const result = streamText({
+    model: google(MODEL_ID),
+    system,
+    prompt: EXPLAIN_WORKOUT_PROMPT,
+    // Without this, a mid-stream provider error (e.g. a rate limit) is
+    // swallowed silently by toTextStreamResponse() rather than surfaced --
+    // this at least gets it logged server-side instead of vanishing.
+    onError: ({ error }) => console.error("explain-workout stream error:", error),
+  });
 
   // Persisting the assistant's final text is the client's job (see
   // logExplanation in actions.ts), called once it finishes reading this

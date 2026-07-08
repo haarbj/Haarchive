@@ -25,20 +25,23 @@ const PHASE_KEYWORDS: Record<MesocyclePhase, string> = {
   recovery: "cutback recovery week absorbing training",
 };
 
-export function buildRetrievalQuery(workoutType: WorkoutType, phase: MesocyclePhase | null): string {
+export function buildRetrievalQuery(
+  workoutType: WorkoutType,
+  phase: MesocyclePhase | null,
+  athleteMessage?: string,
+): string {
   const parts = [WORKOUT_TYPE_KEYWORDS[workoutType]];
   if (phase) parts.push(PHASE_KEYWORDS[phase]);
+  if (athleteMessage) parts.push(athleteMessage);
   return parts.join(" ");
 }
 
-const GUARDRAILS = `You are explaining a single prescribed training session for an athlete using The
-Haarchive, a running-coaching platform. Your only job right now is to explain, in plain
-language, why today's workout looks the way it does -- not to invent a workout, change one,
-or answer unrelated questions.
-
-Ground rules, follow all of them:
+// Shared by both prompts below -- every answer must stay inside these
+// rules regardless of which specific job (explaining vs. adapting) it's
+// doing.
+const SHARED_GUARDRAILS = `Ground rules, follow all of them:
 - Every number you mention (distance, pace, date) must come from the structured data given
-  to you below. Never estimate or invent a number of your own.
+  to you below, or from a tool's result. Never estimate or invent a number of your own.
 - Never state a race-time prediction as a certainty -- always frame it as an estimate if you
   mention one at all.
 - Never diagnose an injury or give medical advice. If soreness, pain, or an injury comes up,
@@ -48,6 +51,13 @@ Ground rules, follow all of them:
 - Only attribute a claim to this site's own content if it's actually present in the reference
   excerpts below -- don't invent a source.
 - Keep it short: 2-4 sentences, plain language, minimal jargon.`;
+
+const GUARDRAILS = `You are explaining a single prescribed training session for an athlete using The
+Haarchive, a running-coaching platform. Your only job right now is to explain, in plain
+language, why today's workout looks the way it does -- not to invent a workout, change one,
+or answer unrelated questions.
+
+${SHARED_GUARDRAILS}`;
 
 function serializeContext(context: CoachingContext): string {
   const lines: string[] = [];
@@ -91,10 +101,8 @@ function serializeExcerpts(excerpts: RetrievedExcerpt[]): string {
     .join("\n");
 }
 
-export function buildSystemPrompt(context: CoachingContext, excerpts: RetrievedExcerpt[]): string {
+function buildDataBlock(context: CoachingContext, excerpts: RetrievedExcerpt[]): string {
   return [
-    GUARDRAILS,
-    "",
     "Athlete and workout data:",
     serializeContext(context),
     "",
@@ -103,4 +111,23 @@ export function buildSystemPrompt(context: CoachingContext, excerpts: RetrievedE
   ].join("\n");
 }
 
+export function buildSystemPrompt(context: CoachingContext, excerpts: RetrievedExcerpt[]): string {
+  return [GUARDRAILS, "", buildDataBlock(context, excerpts)].join("\n");
+}
+
 export const EXPLAIN_WORKOUT_PROMPT = "Explain why today's workout is what it is.";
+
+const ADAPTATION_INSTRUCTIONS = `An athlete using The Haarchive, a running-coaching platform, has told you something
+about today that might call for adjusting today's prescribed workout. You have three tools
+that can propose a specific, deterministic change -- compressWorkout (not enough time),
+substituteForSurface (no track access), and insertRecoveryDay (missed a day, feeling
+run-down, or anything else that calls for backing off). Recognize the athlete's intent and
+call the matching tool if one applies -- never invent a new workout or new numbers yourself,
+that's exactly what the tools are for. If nothing the athlete said actually calls for a
+change, just say so in plain language and don't call a tool at all.
+
+${SHARED_GUARDRAILS}`;
+
+export function buildAdaptationSystemPrompt(context: CoachingContext, excerpts: RetrievedExcerpt[]): string {
+  return [ADAPTATION_INSTRUCTIONS, "", buildDataBlock(context, excerpts)].join("\n");
+}

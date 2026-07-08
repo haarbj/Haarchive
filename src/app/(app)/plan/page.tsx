@@ -23,6 +23,8 @@ type WorkoutRow = {
   scheduled_date: string;
   workout_type: WorkoutType;
   prescription: unknown;
+  adapted_at: string | null;
+  adaptation_reason: string | null;
 };
 
 export default async function PlanPage() {
@@ -70,7 +72,7 @@ export default async function PlanPage() {
 
   const { data: workouts } = await supabase
     .from("workouts")
-    .select("id, scheduled_date, workout_type, prescription")
+    .select("id, scheduled_date, workout_type, prescription, adapted_at, adaptation_reason")
     .eq("mesocycle_id", currentMesocycle?.id ?? mesocycles?.at(-1)?.id ?? "")
     .gte("scheduled_date", weekStart)
     .lte("scheduled_date", weekEnd)

@@ -43,3 +43,20 @@ export function formatDate(dateStr: string): string {
     day: "numeric",
   });
 }
+
+// "2 hours ago"-style relative time for a full timestamp (as opposed to
+// formatDate's plain "yyyy-mm-dd" handling above), used for things logged
+// with a precise moment rather than just a calendar date.
+export function formatRelativeTime(isoTimestamp: string): string {
+  const then = new Date(isoTimestamp).getTime();
+  const diffSeconds = Math.round((Date.now() - then) / 1000);
+
+  if (diffSeconds < 60) return "just now";
+  const diffMinutes = Math.round(diffSeconds / 60);
+  if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  const diffDays = Math.round(diffHours / 24);
+  if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  return formatDate(isoTimestamp.slice(0, 10));
+}

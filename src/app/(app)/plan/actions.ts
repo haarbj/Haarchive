@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-import { generateTrainingPlan } from "@/lib/coaching-engine";
+import { generateTrainingPlan, type WorkoutPrescription } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { parseTimeToSeconds } from "@/lib/format";
 import { completeWorkoutSchema, generatePlanSchema } from "@/lib/validation/plan";
@@ -207,6 +207,80 @@ export async function completeWorkout(
   if (error) {
     return { error: error.message };
   }
+
+  revalidatePath("/plan");
+  return {};
+}
+
+export type ApplyAdaptationState = { error?: string };
+
+// Called once the athlete confirms a proposed change from the adapt-workout
+// flow -- nothing from that flow ever touches the database on its own,
+// per the "always confirm first" decision for this feature.
+export async function applyAdaptation(
+  workoutId: string,
+  before: WorkoutPrescription,
+  after: WorkoutPrescription,
+  reason: string,
+): Promise<ApplyAdaptationState> {
+  if (!workoutId) return { error: "Missing workout" };
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired -- sign in again." };
+
+  // original_prescription is set once and preserved across repeated
+  // adaptations, so Undo always restores the true original, not whatever
+  // the prior adaptation's "before" happened to be.
+  const { data: existing } = await supabase
+    .from("workouts")
+    .select("original_prescription")
+    .eq("id", workoutId)
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("workouts")
+    .update({
+      prescription: after,
+      original_prescription: existing?.original_prescription ?? before,
+      adapted_at: new Date().toISOString(),
+      adaptation_reason: reason,
+    })
+    .eq("id", workoutId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/plan");
+  return {};
+}
+
+export async function undoAdaptation(workoutId: string): Promise<ApplyAdaptationState> {
+  if (!workoutId) return { error: "Missing workout" };
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired -- sign in again." };
+
+  const { data: workout } = await supabase
+    .from("workouts")
+    .select("original_prescription")
+    .eq("id", workoutId)
+    .maybeSingle();
+  if (!workout?.original_prescription) {
+    return { error: "Nothing to undo." };
+  }
+
+  const { error } = await supabase
+    .from("workouts")
+    .update({
+      prescription: workout.original_prescription,
+      original_prescription: null,
+      adapted_at: null,
+      adaptation_reason: null,
+    })
+    .eq("id", workoutId);
+  if (error) return { error: error.message };
 
   revalidatePath("/plan");
   return {};
