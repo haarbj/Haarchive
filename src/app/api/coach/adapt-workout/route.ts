@@ -1,8 +1,8 @@
 import { APICallError, generateText, stepCountIs, tool } from "ai";
-import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
 import { assembleCoachingContext } from "@/lib/ai/context";
+import { coachModel } from "@/lib/ai/model";
 import { buildAdaptationSystemPrompt, buildRetrievalQuery } from "@/lib/ai/prompts";
 import { retrieveRelevantContent } from "@/lib/ai/retrieval";
 import { sections } from "@/lib/sections";
@@ -17,13 +17,15 @@ import {
   type WorkoutType,
 } from "@/lib/coaching-engine";
 
-const MODEL_ID = "gemini-2.5-flash";
-
 export type ProposedChange = {
   workoutType: WorkoutType;
   before: WorkoutPrescription;
   after: WorkoutPrescription;
 };
+
+function describeChange(change: ProposedChange): string {
+  return `Here's what I'd change: ${describePrescription(change.after)}`;
+}
 
 export async function POST(request: Request) {
   const { workoutId, message } = await request.json().catch(() => ({ workoutId: null, message: null }));
@@ -71,7 +73,12 @@ export async function POST(request: Request) {
     }),
     substituteForSurface: tool({
       description: "Get guidance for running today's workout without track access -- doesn't change the workout itself.",
-      inputSchema: z.object({}),
+      // A no-argument tool schema confuses smaller models about whether/how
+      // to call it -- a trivial required field, unused in execute, matches
+      // the other two tools' shape and got this called reliably in testing.
+      inputSchema: z.object({
+        reason: z.string().describe("Why the athlete doesn't have track access today"),
+      }),
       execute: async () => {
         const result = substituteForSurface(currentPrescription);
         if (!result.ok) return { available: false, reason: result.reason };
@@ -113,7 +120,7 @@ export async function POST(request: Request) {
   let result;
   try {
     result = await generateText({
-      model: google(MODEL_ID),
+      model: coachModel,
       system,
       prompt: message,
       tools,
@@ -136,18 +143,30 @@ export async function POST(request: Request) {
     );
   }
 
-  if (conversation && result.text) {
+  // A smaller model doesn't always wrap a tool call in a closing reply
+  // despite being told to -- rather than show the athlete a blank
+  // response, fall back to a plain description of whatever the tool
+  // actually produced. The tool's own output (not the model's prose) is
+  // already the source of truth here, so this fallback is never less
+  // accurate than the model's own narration would have been.
+  const explanation =
+    result.text ||
+    (proposedChange
+      ? describeChange(proposedChange)
+      : "I didn't find a specific change to make here -- try describing what's going on in a bit more detail.");
+
+  if (conversation && explanation) {
     await supabase.from("ai_messages").insert({
       conversation_id: conversation.id,
       user_id: userId,
       role: "assistant",
-      content: result.text,
+      content: explanation,
     });
   }
 
   return Response.json({
     conversationId: conversation?.id ?? null,
-    explanation: result.text,
+    explanation,
     proposedChange,
   });
 }

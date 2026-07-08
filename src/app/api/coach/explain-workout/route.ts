@@ -1,13 +1,11 @@
 import { streamText } from "ai";
-import { google } from "@ai-sdk/google";
 
 import { assembleCoachingContext } from "@/lib/ai/context";
+import { coachModel } from "@/lib/ai/model";
 import { buildRetrievalQuery, buildSystemPrompt, EXPLAIN_WORKOUT_PROMPT } from "@/lib/ai/prompts";
 import { retrieveRelevantContent } from "@/lib/ai/retrieval";
 import { sections } from "@/lib/sections";
 import { createClient } from "@/lib/db/server";
-
-const MODEL_ID = "gemini-2.5-flash";
 
 export async function POST(request: Request) {
   const { workoutId } = await request.json().catch(() => ({ workoutId: null }));
@@ -53,7 +51,7 @@ export async function POST(request: Request) {
   }
 
   const result = streamText({
-    model: google(MODEL_ID),
+    model: coachModel,
     system,
     prompt: EXPLAIN_WORKOUT_PROMPT,
     // Without this, a mid-stream provider error (e.g. a rate limit) is

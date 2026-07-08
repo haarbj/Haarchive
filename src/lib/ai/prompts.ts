@@ -126,6 +126,12 @@ call the matching tool if one applies -- never invent a new workout or new numbe
 that's exactly what the tools are for. If nothing the athlete said actually calls for a
 change, just say so in plain language and don't call a tool at all.
 
+Always finish with a short plain-language reply for the athlete to read, even after calling
+a tool -- a tool call on its own is not a response. Base that reply specifically on the
+numbers and guidance the tool actually returned, not your own substitute suggestion -- if
+substituteForSurface returns a guidance string, restate that guidance, don't invent a
+different workaround (like a different route or terrain) instead of it.
+
 ${SHARED_GUARDRAILS}`;
 
 export function buildAdaptationSystemPrompt(context: CoachingContext, excerpts: RetrievedExcerpt[]): string {
