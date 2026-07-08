@@ -370,12 +370,12 @@ export const sections: Section[] = [
       { type: "heading", text: "Comparing the Major Systems" },
       {
         type: "paragraph",
-        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, Phil Maffetone, Matt Fitzgerald, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
+        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, Phil Maffetone, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
       },
-      { type: "heading", text: "Matt Fitzgerald: 80/20 Running" },
+      { type: "heading", text: "Polarized Training (80/20): The One I Lean On Most" },
       {
         type: "paragraph",
-        text: "Of everything on this page, 80/20 Running is the one I lean on most. Fitzgerald's core claim, drawn from the same research lineage as Seiler's polarized-training work, is disarmingly simple: across a huge range of endurance athletes, roughly 80% of total training time sits at low intensity and 20% at moderate-to-high, and drifting far from that ratio in either direction tends to cost fitness rather than add it. It isn't prescriptive about pace to the degree Daniels is, and it isn't purely feel-based the way Lydiard is — it sits in between, with a real ratio to check yourself against but enough flexibility to apply it by RPE, heart rate, or pace depending on the workout (see the Five Training Zones in the Workout Library). What actually sold me wasn't the ratio itself so much as the mechanism underneath it — the IL-6 and brain-fatigue research covered in the Research Library gives a real reason why \"mostly easy, genuinely hard when it counts\" works, rather than it just being a rule that happens to hold up statistically.",
+        text: "Of everything on this page, this is the one I lean on most — and it's worth being precise about where it actually comes from. The research is Stephen Seiler's, not any single coach's: across a huge range of endurance athletes, roughly 80% of total training time sits at low intensity and 20% at moderate-to-high, and drifting far from that ratio in either direction tends to cost fitness rather than add it. I first ran into the idea through Matt Fitzgerald's book 80/20 Running, which popularized Seiler's research for a general audience — Fitzgerald didn't originate the concept, he wrote the book that taught it to me. It isn't prescriptive about pace to the degree Daniels is, and it isn't purely feel-based the way Lydiard is — it sits in between, with a real ratio to check yourself against but enough flexibility to apply it by RPE, heart rate, or pace depending on the workout (see the Five Training Zones in the Workout Library). What actually sold me wasn't the ratio itself so much as the mechanism underneath it — the IL-6 and brain-fatigue research covered in the Research Library gives a real reason why \"mostly easy, genuinely hard when it counts\" works, rather than it just being a rule that happens to hold up statistically.",
       },
       { type: "heading", text: "Jack Daniels: Precision Through Pace Zones" },
       {
@@ -757,12 +757,12 @@ export const sections: Section[] = [
       { type: "heading", text: "Running as Medicine, Dosed Correctly" },
       {
         type: "paragraph",
-        text: "The same consistency logic that builds fitness applies to running's effect on mood. The goal on any given day isn't to extract maximum benefit from a single hard session — it's to finish wanting to come back tomorrow.",
+        text: "In the late 1970s, University of Wisconsin psychiatry researchers John Greist and Marjorie Klein, running therapist Roger Eischens, and Madison physician John Faris — all runners themselves who'd separately noticed their own low moods lift on a run — studied running as a treatment for depression. The same consistency logic that builds fitness turned out to apply to mood: the goal on any given day wasn't to extract maximum benefit from one hard session, it was to finish wanting to come back tomorrow.",
       },
       {
         type: "quote",
         text: "If there is any secret to the success our patients have had in treating their depression with running, it is that they have tried to run each day in such a way that they would want to run again the next day.",
-        attribution: "a doctor quoted in Lydiard's Running to the Top",
+        attribution: "Greist and Klein, University of Wisconsin, cited in Lydiard's Running to the Top",
       },
       { type: "heading", text: "The Wheel" },
       {

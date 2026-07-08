@@ -39,8 +39,8 @@ const timeline: {
 
 const influences: { name: string; note: string }[] = [
   {
-    name: "Matt Fitzgerald (80/20 Running)",
-    note: "The one I lean on most — roughly 80% of training time easy, 20% genuinely hard, almost nothing in between.",
+    name: "Stephen Seiler's Polarized Training",
+    note: "The one I lean on most — roughly 80% of training time easy, 20% genuinely hard, almost nothing in between. I learned it from Matt Fitzgerald's book 80/20 Running.",
   },
   {
     name: "Arthur Lydiard",
@@ -207,9 +207,11 @@ export function AboutPage() {
           aerobic base versus race-specific work, or how precisely intensity
           should be measured. Studying where they diverge teaches you more
           than adopting any one of them wholesale. If you pushed me to pick
-          the one closest to what I actually believe, though, it&rsquo;s
-          Matt Fitzgerald&rsquo;s 80/20 Running — not because the others are
-          wrong, but because that ratio is the version of &ldquo;mostly easy,
+          the one closest to what I actually believe, though, it&rsquo;s the
+          80/20 principle — Stephen Seiler&rsquo;s research on polarized
+          training, which I first ran into through Matt Fitzgerald&rsquo;s
+          book of the same name — not because the others are wrong, but
+          because that ratio is the version of &ldquo;mostly easy,
           occasionally hard&rdquo; that&rsquo;s held up best for me in
           practice.
         </p>
