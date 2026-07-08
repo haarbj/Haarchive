@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { signOut } from "@/app/(app)/auth-actions";
+import { GoalCard } from "@/app/(app)/dashboard/goal-card";
 import { OnboardingForm } from "@/app/(app)/dashboard/onboarding-form";
 import { StravaConnection } from "@/app/(app)/dashboard/strava-connection";
-import { formatClock } from "@/lib/format";
+import { formatClock, formatDate, formatDistance } from "@/lib/format";
 import { createClient } from "@/lib/db/server";
 
 export const metadata: Metadata = {
@@ -41,22 +41,6 @@ type SavedCalculation = {
   label: string | null;
   created_at: string;
 };
-
-function formatDistance(meters: number): string {
-  if (meters >= 42195) return "Marathon";
-  if (meters >= 21097 && meters < 21200) return "Half Marathon";
-  if (meters % 1609 === 0 || meters === 1609) return `${Math.round(meters / 1609)} Mile`;
-  if (meters % 1000 === 0) return `${meters / 1000}K`;
-  return `${meters}m`;
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 type DashboardPageProps = {
   searchParams: Promise<{ strava_connected?: string; strava_error?: string }>;
@@ -127,21 +111,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <div className="mt-10 space-y-8">
         {!primaryGoal && <OnboardingForm />}
 
-        {primaryGoal && (
-          <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
-            <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
-              Current goal
-            </p>
-            <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
-              {primaryGoal.race_name}
-            </p>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              {formatDistance(primaryGoal.distance_m)}
-              {primaryGoal.goal_time_s && ` · Goal: ${formatClock(primaryGoal.goal_time_s)}`}
-              {primaryGoal.goal_date && ` · ${formatDate(primaryGoal.goal_date)}`}
-            </p>
-          </div>
-        )}
+        {primaryGoal && <GoalCard goal={primaryGoal} />}
 
         {raceResults && raceResults.length > 0 && (
           <div>
@@ -192,15 +162,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         <StravaConnection connected={stravaConnected} />
       </div>
-
-      <form action={signOut} className="mt-10">
-        <button
-          type="submit"
-          className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
-        >
-          Sign out
-        </button>
-      </form>
     </section>
   );
 }

@@ -3,33 +3,20 @@
 import { useActionState, useId, useState } from "react";
 
 import { saveOnboarding } from "./actions";
-
-const GOAL_DISTANCES = [
-  { label: "1 Mile", meters: 1609 },
-  { label: "5K", meters: 5000 },
-  { label: "8K", meters: 8000 },
-  { label: "10K", meters: 10000 },
-  { label: "Half Marathon", meters: 21097 },
-  { label: "Marathon", meters: 42195 },
-];
-
-const COURSE_TYPES = [
-  { label: "Road", value: "road" },
-  { label: "Track", value: "track" },
-  { label: "Cross Country", value: "xc" },
-  { label: "Trail", value: "trail" },
-];
-
-const fieldClass =
-  "w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white";
-const labelClass =
-  "mb-1 block text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
+import {
+  COURSE_TYPES,
+  GOAL_DISTANCES,
+  dateFieldClass,
+  fieldClass,
+  labelClass,
+} from "./form-constants";
 
 export function OnboardingForm() {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(saveOnboarding, {});
   const [includeResult, setIncludeResult] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
 
   if (dismissed) return null;
 
@@ -109,7 +96,8 @@ export function OnboardingForm() {
               id={`${baseId}-goal-date`}
               name="goalDate"
               type="date"
-              className={fieldClass}
+              min={today}
+              className={dateFieldClass}
             />
           </div>
         </div>
@@ -145,7 +133,8 @@ export function OnboardingForm() {
                 id={`${baseId}-result-race-date`}
                 name="resultRaceDate"
                 type="date"
-                className={fieldClass}
+                max={today}
+                className={dateFieldClass}
               />
             </div>
             <div>

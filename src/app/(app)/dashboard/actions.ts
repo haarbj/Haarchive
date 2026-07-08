@@ -85,3 +85,56 @@ export async function saveOnboarding(
   revalidatePath("/dashboard");
   return {};
 }
+
+export type UpdateGoalState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function updateGoal(
+  _prevState: UpdateGoalState,
+  formData: FormData,
+): Promise<UpdateGoalState> {
+  const goalId = formData.get("goalId");
+  if (typeof goalId !== "string" || !goalId) {
+    return { error: "Missing goal" };
+  }
+
+  const parsed = goalSchema.safeParse({
+    raceName: formData.get("goalRaceName"),
+    distanceM: formData.get("goalDistanceM"),
+    goalTimeInput: formData.get("goalTimeInput") || undefined,
+    goalDate: formData.get("goalDate") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Check your goal details" };
+  }
+
+  const goalTimeS = parsed.data.goalTimeInput
+    ? parseTimeToSeconds(parsed.data.goalTimeInput)
+    : null;
+  if (parsed.data.goalTimeInput && goalTimeS === null) {
+    return { error: "Enter your goal time as mm:ss or h:mm:ss" };
+  }
+
+  const supabase = await createClient();
+  // No need to check the caller's identity separately here -- the
+  // goals_update_own RLS policy already restricts this update to rows the
+  // caller owns, regardless of which goalId was submitted.
+  const { error } = await supabase
+    .from("goals")
+    .update({
+      race_name: parsed.data.raceName,
+      distance_m: parsed.data.distanceM,
+      goal_time_s: goalTimeS,
+      goal_date: parsed.data.goalDate || null,
+    })
+    .eq("id", goalId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}

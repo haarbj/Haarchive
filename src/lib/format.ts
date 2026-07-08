@@ -27,3 +27,19 @@ export function formatClock(totalSeconds: number): string {
   const ss = String(s).padStart(2, "0");
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
 }
+
+export function formatDistance(meters: number): string {
+  if (meters >= 42195) return "Marathon";
+  if (meters >= 21097 && meters < 21200) return "Half Marathon";
+  if (meters % 1609 === 0 || meters === 1609) return `${Math.round(meters / 1609)} Mile`;
+  if (meters % 1000 === 0) return `${meters / 1000}K`;
+  return `${meters}m`;
+}
+
+export function formatDate(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
