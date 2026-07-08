@@ -10,6 +10,26 @@ import { completeWorkoutSchema, generatePlanSchema } from "@/lib/validation/plan
 
 const MILES_TO_METERS = 1609.34;
 
+// Called by ExplainWorkoutButton once it finishes reading the streamed
+// explanation from /api/coach/explain-workout -- persisting the assistant's
+// final text is the client's job specifically so it happens as a normal,
+// fully-awaited write, not a server-side "after the response" hook.
+export async function logExplanation(conversationId: string, content: string): Promise<void> {
+  if (!conversationId || !content) return;
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return;
+
+  await supabase.from("ai_messages").insert({
+    conversation_id: conversationId,
+    user_id: userId,
+    role: "assistant",
+    content,
+  });
+}
+
 export type GeneratePlanState = { error?: string };
 
 export async function generatePlan(

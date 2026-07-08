@@ -6,6 +6,7 @@ import { completeWorkout } from "@/app/(app)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/dashboard/form-constants";
 import { workoutPrescriptionSchema, type WorkoutType } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
+import { ExplainWorkoutButton } from "./explain-workout-button";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 
 type WorkoutCardProps = {
@@ -98,6 +99,8 @@ export function WorkoutCard({ workout, completed }: WorkoutCardProps) {
           {state.error}
         </p>
       )}
+
+      <ExplainWorkoutButton workoutId={workout.id} />
     </div>
   );
 }
