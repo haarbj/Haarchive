@@ -24,10 +24,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.font-heading {
-  font-family: "Iowan Old Style", "Times New Roman", Georgia, serif;
-}
-
 @keyframes fade-in {
   from {
     opacity: 0;

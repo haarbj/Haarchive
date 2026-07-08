@@ -452,14 +452,14 @@ export function HeatTracker() {
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
             {meta?.label ?? "Waiting for a location…"}
           </p>
-          <p className="font-heading text-6xl font-semibold tracking-tight text-zinc-900 sm:text-7xl dark:text-white">
+          <p className="text-6xl font-semibold tracking-tight text-zinc-900 sm:text-7xl dark:text-white">
             {current ? cToF(current.wbgtC).toFixed(1) : "—"}
             <span className="ml-1 text-2xl font-normal text-zinc-600 dark:text-zinc-300">
               °F
             </span>
           </p>
           <p
-            className={`font-heading mt-3 text-xl font-semibold ${
+            className={`mt-3 text-xl font-semibold ${
               zone ? zone.textClass : "text-zinc-900 dark:text-white"
             }`}
           >
@@ -778,7 +778,7 @@ export function HeatTracker() {
                   className={`h-2 w-2 shrink-0 rounded-full ${zoneFor(hoverPoint.wbgtC).swatchClass}`}
                 />
                 <p
-                  className={`font-heading text-sm font-semibold sm:whitespace-nowrap ${zoneFor(hoverPoint.wbgtC).textClass}`}
+                  className={`text-sm font-semibold sm:whitespace-nowrap ${zoneFor(hoverPoint.wbgtC).textClass}`}
                 >
                   {cToF(hoverPoint.wbgtC).toFixed(1)}°F WBGT
                 </p>
@@ -831,7 +831,7 @@ export function HeatTracker() {
             <p className="text-[10.5px] tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
               Air temp
             </p>
-            <p className="font-heading mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+            <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
               {current ? `${cToF(current.tempC).toFixed(1)}°F` : "—"}
             </p>
           </div>
@@ -839,7 +839,7 @@ export function HeatTracker() {
             <p className="text-[10.5px] tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
               Relative humidity
             </p>
-            <p className="font-heading mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+            <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
               {current ? `${current.rh}%` : "—"}
             </p>
           </div>
@@ -848,7 +848,7 @@ export function HeatTracker() {
               WBGT estimate
             </p>
             <p
-              className={`font-heading mt-1 text-2xl font-semibold ${
+              className={`mt-1 text-2xl font-semibold ${
                 zone ? zone.textClass : "text-zinc-900 dark:text-white"
               }`}
             >
@@ -867,7 +867,7 @@ export function HeatTracker() {
       </div>
 
       <div className="max-w-[64ch] space-y-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-        <h2 className="font-heading text-lg font-semibold text-zinc-900 dark:text-white">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
           What this is showing
         </h2>
         <p>
@@ -890,7 +890,7 @@ export function HeatTracker() {
           WBGT may run a bit higher than shown here.<sup>2</sup>
         </p>
 
-        <h2 className="font-heading text-lg font-semibold text-zinc-900 dark:text-white">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
           How to use it
         </h2>
         <p>

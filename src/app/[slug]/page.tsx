@@ -13,6 +13,7 @@ import {
   type Section,
 } from "@/lib/sections";
 import { HeatTracker } from "@/components/heat-tracker";
+import { PullQuote } from "@/components/pull-quote";
 
 // Sections with a dedicated interactive component render that instead of
 // the generic "Planned Topics" list. Add future tools (e.g. a pace
@@ -88,7 +89,7 @@ export default async function SectionPage({ params }: SectionPageProps) {
               href={`/${member.slug}`}
               className="group rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
             >
-              <h2 className="font-heading text-xl tracking-tight">
+              <h2 className="text-xl font-semibold tracking-tight">
                 {member.title}
               </h2>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
@@ -124,13 +125,13 @@ export default async function SectionPage({ params }: SectionPageProps) {
       {ToolComponent ? (
         <ToolComponent />
       ) : currentSection.content ? (
-        <div className="mt-10 max-w-[70ch] space-y-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
+        <div className="mt-10 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
           {currentSection.content.map((block, index) => {
             if (block.type === "heading") {
               return (
                 <h2
                   key={index}
-                  className="font-heading pt-4 text-2xl font-semibold text-zinc-900 first:pt-0 dark:text-white"
+                  className="pt-6 text-2xl font-semibold tracking-tight text-zinc-900 first:pt-0 dark:text-white"
                 >
                   {block.text}
                 </h2>
@@ -138,11 +139,20 @@ export default async function SectionPage({ params }: SectionPageProps) {
             }
             if (block.type === "list") {
               return (
-                <ul key={index} className="space-y-2">
+                <ul key={index} className="space-y-3">
                   {block.items.map((item) => (
                     <li key={item}>• {item}</li>
                   ))}
                 </ul>
+              );
+            }
+            if (block.type === "quote") {
+              return (
+                <PullQuote
+                  key={index}
+                  text={block.text}
+                  attribution={block.attribution}
+                />
               );
             }
             return <p key={index}>{block.text}</p>;
