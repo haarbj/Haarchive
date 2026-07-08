@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from "react";
 
 type ZoneName = "green" | "yellow" | "red" | "black";
 
@@ -84,6 +84,7 @@ const PLOT_WIDTH = CHART_WIDTH - PAD_LEFT - PAD_RIGHT;
 const PLOT_HEIGHT = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
 
 type GeocodeResult = {
+  id: number;
   latitude: number;
   longitude: number;
   name: string;
@@ -174,20 +175,68 @@ function runnerGuidance(
   };
 }
 
-async function geocodeCity(query: string): Promise<LocationMeta> {
+// Open-Meteo's admin1 field holds the full state name (e.g. "Arizona"), so a
+// typed abbreviation needs mapping before it can be compared against it.
+const US_STATE_ABBREVIATIONS: Record<string, string> = {
+  al: "alabama", ak: "alaska", az: "arizona", ar: "arkansas", ca: "california",
+  co: "colorado", ct: "connecticut", de: "delaware", fl: "florida", ga: "georgia",
+  hi: "hawaii", id: "idaho", il: "illinois", in: "indiana", ia: "iowa",
+  ks: "kansas", ky: "kentucky", la: "louisiana", me: "maine", md: "maryland",
+  ma: "massachusetts", mi: "michigan", mn: "minnesota", ms: "mississippi", mo: "missouri",
+  mt: "montana", ne: "nebraska", nv: "nevada", nh: "new hampshire", nj: "new jersey",
+  nm: "new mexico", ny: "new york", nc: "north carolina", nd: "north dakota", oh: "ohio",
+  ok: "oklahoma", or: "oregon", pa: "pennsylvania", ri: "rhode island", sc: "south carolina",
+  sd: "south dakota", tn: "tennessee", tx: "texas", ut: "utah", vt: "vermont",
+  va: "virginia", wa: "washington", wv: "west virginia", wi: "wisconsin", wy: "wyoming",
+  dc: "district of columbia",
+};
+
+function normalizeRegion(text: string): string {
+  const lower = text.trim().toLowerCase();
+  return US_STATE_ABBREVIATIONS[lower] ?? lower;
+}
+
+function geocodeLabel(result: GeocodeResult): string {
+  return [result.name, result.admin1, result.country].filter(Boolean).join(", ");
+}
+
+async function fetchGeocodeCandidates(
+  cityName: string,
+  count: number,
+): Promise<GeocodeResult[]> {
   const res = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1`,
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=${count}`,
   );
   if (!res.ok) throw new Error("Location lookup failed.");
   const data: GeocodeResponse = await res.json();
-  const result = data.results?.[0];
-  if (!result) throw new Error("No matching location found.");
+  return data.results ?? [];
+}
+
+async function geocodeCity(query: string): Promise<LocationMeta> {
+  // The geocoding API matches a place's literal name field, so "Phoenix, AZ"
+  // finds nothing -- only "Phoenix" does. Split off an optional state/country
+  // qualifier and use it to pick the right candidate among several matches
+  // instead, rather than sending the whole string as the name to search for.
+  const [namePart, regionPart] = query.split(",");
+  const cityName = namePart.trim();
+  const region = regionPart ? normalizeRegion(regionPart) : null;
+
+  const results = await fetchGeocodeCandidates(cityName, 10);
+  if (results.length === 0) throw new Error("No matching location found.");
+
+  const result =
+    (region &&
+      results.find(
+        (candidate) =>
+          candidate.admin1?.toLowerCase() === region ||
+          candidate.country?.toLowerCase() === region,
+      )) ||
+    results[0];
+
   return {
     lat: result.latitude,
     lon: result.longitude,
-    label: [result.name, result.admin1, result.country]
-      .filter(Boolean)
-      .join(", "),
+    label: geocodeLabel(result),
   };
 }
 
@@ -258,8 +307,17 @@ export function HeatTracker() {
   const [meta, setMeta] = useState<LocationMeta | null>(null);
   const [clock, setClock] = useState("");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const chartSvgRef = useRef<SVGSVGElement>(null);
+  const searchBoxRef = useRef<HTMLDivElement>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionRequestId = useRef(0);
+  const skipNextSuggestionFetch = useRef(false);
   const gradientBaseId = useId();
+  const listboxId = `heat-tracker-suggestions-${gradientBaseId}`;
   const lineGradientId = `wbgt-line-${gradientBaseId}`;
   const areaFadeId = `wbgt-area-fade-${gradientBaseId}`;
   const areaMaskId = `wbgt-area-mask-${gradientBaseId}`;
@@ -330,6 +388,86 @@ export function HeatTracker() {
     // Only ever run this once, on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Debounced as-you-type suggestions. Skipped once right after a selection
+  // programmatically fills the input, so picking a suggestion doesn't
+  // immediately reopen a dropdown for the text it just wrote.
+  useEffect(() => {
+    if (skipNextSuggestionFetch.current) {
+      skipNextSuggestionFetch.current = false;
+      return;
+    }
+
+    const [namePart] = cityInput.split(",");
+    const cityName = namePart.trim();
+
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    // Too-short input is cleared synchronously in the input's own onChange
+    // handler below, not here -- this effect only ever sets state inside
+    // its async fetch callback.
+    if (cityName.length < 2) return;
+
+    debounceTimer.current = setTimeout(() => {
+      const requestId = ++suggestionRequestId.current;
+      setSuggestionsLoading(true);
+      fetchGeocodeCandidates(cityName, 6)
+        .then((results) => {
+          if (requestId !== suggestionRequestId.current) return; // superseded by a newer keystroke
+          setSuggestions(results);
+          setShowSuggestions(true);
+          setSuggestionsLoading(false);
+          setHighlightedIndex(-1);
+        })
+        .catch(() => {
+          if (requestId !== suggestionRequestId.current) return;
+          setSuggestions([]);
+          setShowSuggestions(false);
+          setSuggestionsLoading(false);
+        });
+    }, 300);
+
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, [cityInput]);
+
+  useEffect(() => {
+    if (!showSuggestions) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showSuggestions]);
+
+  const selectSuggestion = (result: GeocodeResult) => {
+    const label = geocodeLabel(result);
+    skipNextSuggestionFetch.current = true;
+    setCityInput(label);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+    void loadLocation(result.latitude, result.longitude, label);
+  };
+
+  const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setHighlightedIndex((i) => Math.min(i + 1, suggestions.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setHighlightedIndex((i) => Math.max(i - 1, 0));
+    } else if (event.key === "Enter" && highlightedIndex >= 0) {
+      event.preventDefault();
+      selectSuggestion(suggestions[highlightedIndex]);
+    } else if (event.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  };
 
   const handleSearch = async () => {
     const query = cityInput.trim();
@@ -420,14 +558,69 @@ export function HeatTracker() {
           }}
           className="flex flex-wrap gap-2"
         >
-          <input
-            type="text"
-            value={cityInput}
-            onChange={(event) => setCityInput(event.target.value)}
-            placeholder="Enter a city, e.g. Phoenix, AZ"
-            autoComplete="off"
-            className="min-w-[180px] flex-1 rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white"
-          />
+          <div ref={searchBoxRef} className="relative min-w-[180px] flex-1">
+            <input
+              type="text"
+              value={cityInput}
+              onChange={(event) => {
+                const value = event.target.value;
+                setCityInput(value);
+                const [namePart] = value.split(",");
+                if (namePart.trim().length < 2) {
+                  setSuggestions([]);
+                  setShowSuggestions(false);
+                }
+              }}
+              onKeyDown={handleInputKeyDown}
+              onFocus={() => setShowSuggestions(suggestions.length > 0)}
+              placeholder="Enter a city, e.g. Phoenix, AZ"
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={showSuggestions}
+              aria-autocomplete="list"
+              aria-controls={listboxId}
+              aria-activedescendant={
+                highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined
+              }
+              className="w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white"
+            />
+            {(suggestionsLoading || showSuggestions) && (
+              <div
+                id={listboxId}
+                role="listbox"
+                className="absolute left-0 top-full z-10 mt-1 w-full overflow-hidden rounded-lg border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900"
+              >
+                {suggestionsLoading ? (
+                  <p className="px-4 py-2.5 text-sm text-zinc-500 dark:text-zinc-400">
+                    Searching…
+                  </p>
+                ) : suggestions.length > 0 ? (
+                  suggestions.map((result, index) => (
+                    <button
+                      key={result.id}
+                      id={`${listboxId}-option-${index}`}
+                      role="option"
+                      aria-selected={index === highlightedIndex}
+                      type="button"
+                      onClick={() => selectSuggestion(result)}
+                      onMouseEnter={() => setHighlightedIndex(index)}
+                      className={`block w-full px-4 py-2 text-left text-sm ${
+                        index === highlightedIndex
+                          ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                          : "text-zinc-700 dark:text-zinc-200"
+                      }`}
+                    >
+                      {geocodeLabel(result)}
+                    </button>
+                  ))
+                ) : (
+                  <p className="px-4 py-2.5 text-sm text-zinc-500 dark:text-zinc-400">
+                    No matches found
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
           <button
             type="submit"
             className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
