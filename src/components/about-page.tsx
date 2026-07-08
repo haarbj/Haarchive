@@ -29,7 +29,7 @@ const timeline: {
   },
   {
     label: "Marathon training, on my own terms",
-    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. An injury three weeks out, from skipping enough of it, left me broken down by the second half — nothing to do with how I paced the race itself. Lydiard trusted the same kind of strength: hills and bodyweight work, not a barbell. Endurance without it is a plan with a hole in it, and that's shaped how I train and coach ever since.",
+    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. An injury three weeks out, from skipping enough of it, left me broken down by the second half — nothing to do with how I paced the race itself. Lydiard trusted the same principle, building it through hills, bodyweight circuits, and a structured barbell program alongside the running — his real objection was to running while holding hand weights, not to lifting itself. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
   },
   {
     label: "Coaching, and this archive",
@@ -38,6 +38,10 @@ const timeline: {
 ];
 
 const influences: { name: string; note: string }[] = [
+  {
+    name: "Matt Fitzgerald (80/20 Running)",
+    note: "The one I lean on most — roughly 80% of training time easy, 20% genuinely hard, almost nothing in between.",
+  },
   {
     name: "Arthur Lydiard",
     note: "Base before anything else — speed is common, endurance is rare.",
@@ -202,7 +206,12 @@ export function AboutPage() {
           disagree with each other — on how much of training should be
           aerobic base versus race-specific work, or how precisely intensity
           should be measured. Studying where they diverge teaches you more
-          than adopting any one of them wholesale.
+          than adopting any one of them wholesale. If you pushed me to pick
+          the one closest to what I actually believe, though, it&rsquo;s
+          Matt Fitzgerald&rsquo;s 80/20 Running — not because the others are
+          wrong, but because that ratio is the version of &ldquo;mostly easy,
+          occasionally hard&rdquo; that&rsquo;s held up best for me in
+          practice.
         </p>
 
         <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">

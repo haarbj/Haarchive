@@ -95,6 +95,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Lydiard treated running form as a skill to be taught, not something everyone arrives with. Even his most gifted athletes worked on technique — running tall, relaxed arms, a quick leg turnover — before layering on volume. He wanted shoes that interfered with the foot as little as possible: flexible enough to function \"like a second layer of skin,\" with no built-up heel, because an elevated heel creates instability a flat sole doesn't. He was skeptical of orthotics (\"the orthotics are for the shoes, not the feet\") and dead set against running with hand weights, since anything that adds tension undercuts the relaxation that makes a stride efficient. None of this is really about barefoot running as a trend — minimalist footwear and hard-surface training predate that label by decades. It's a belief that the foot should be left to do its job, and that good form has to be practiced deliberately, not assumed.",
       },
+      { type: "heading", text: "Form Cues Lydiard Actually Used" },
+      {
+        type: "paragraph",
+        text: "Beyond the general principle, Lydiard's cues were concrete. \"Try to make yourself six inches taller when you're running\" was his shorthand for the tall, upright posture he wanted, since a lot of runners never fully straighten the driving leg and lose power on every stride as a result. He'd check footfall by having athletes run across sand or a dewy lawn — a straight, efficient stride leaves footprints that form almost a single line, not a wide, wandering one. And his combination drill for both leg speed and posture at once was three cues layered together while running fast: high knees, hard ankle drive, and running tall — practiced separately first, then combined.",
+      },
     ],
   },
   {
@@ -179,6 +184,11 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "The capillary network reaching into working muscle spans an estimated 60,000 miles in an adult body — the fine-scale delivery system that gets oxygen-rich blood and glucose to muscle cells and clears the waste products back out. Easy aerobic running is what builds it out: steady, low-intensity volume is the primary stimulus for new capillary growth into the muscles that actually need it, which is a large part of why \"just go slow and build the base\" isn't a cop-out — it's targeting a specific adaptation that hard running doesn't reach nearly as efficiently.",
+      },
+      { type: "heading", text: "What the Capillary Difference Actually Looks Like" },
+      {
+        type: "paragraph",
+        text: "One comparative study Lydiard cites puts a real number on the capillary-building payoff: Swedish runners averaged four to five capillaries per muscle cell in their quadriceps, while Kenyan runners averaged seven to eight — nearly double the delivery network in the exact muscles doing the work. The Kenyan runners also carried a higher concentration of the enzymes that break down fat, including citrate synthase, the enzyme that supplies muscle with energy aerobically. Genetics plays some role in a gap like that, but both adaptations — capillary density and fat-oxidizing enzyme concentration — are exactly the ones built by sustained aerobic volume, not inherited outright (Lydiard, Running to the Top).",
       },
       { type: "heading", text: "What a Trained Heart Does Differently" },
       {
@@ -332,6 +342,16 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Lydiard structured training as a pyramid: three to six months of aerobic conditioning at the base, then four-week blocks of hill strength, interval training, and speed and skills work, finishing with a three-to-four-week taper into the goal race. The wider the base, the higher the peak it can support.",
       },
+      { type: "heading", text: "Best Prepared, Not Best Talented" },
+      {
+        type: "paragraph",
+        text: "Lydiard's own summary of why his system worked across so many events and eras: it is not the best athletes who succeed in important competitions, but the best prepared. Many of the medal winners at the 1992 Olympics, in his assessment, weren't the most talented athletes in their fields — they were simply the ones whose preparation held together. Champions, in his view, are developed, not born, even though some start with more natural ability than others (Lydiard, Running to the Top).",
+      },
+      { type: "heading", text: "Why Poorer Coaches Get Early Results, Then Stall" },
+      {
+        type: "paragraph",
+        text: "Lydiard's read on why so many promising young runners flame out: poorer coaches can produce fast early results by loading on anaerobic work before an athlete's aerobic base is ready for it, but that early success comes at the cost of the athlete's long-term ceiling. The best coaches take longer to produce results precisely because they're building the base first. In Lydiard's blunter framing, anaerobic training is what destroys young runners — and he pointed specifically at the American high school and college system, where a runner who shows early talent typically gets put straight onto the track and loaded with anaerobic work, instead of being allowed to build an aerobic foundation first (Lydiard, Running to the Top).",
+      },
       { type: "heading", text: "Identical Workouts, Different Outcomes" },
       {
         type: "paragraph",
@@ -350,7 +370,12 @@ export const sections: Section[] = [
       { type: "heading", text: "Comparing the Major Systems" },
       {
         type: "paragraph",
-        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, Phil Maffetone, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
+        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, Phil Maffetone, Matt Fitzgerald, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
+      },
+      { type: "heading", text: "Matt Fitzgerald: 80/20 Running" },
+      {
+        type: "paragraph",
+        text: "Of everything on this page, 80/20 Running is the one I lean on most. Fitzgerald's core claim, drawn from the same research lineage as Seiler's polarized-training work, is disarmingly simple: across a huge range of endurance athletes, roughly 80% of total training time sits at low intensity and 20% at moderate-to-high, and drifting far from that ratio in either direction tends to cost fitness rather than add it. It isn't prescriptive about pace to the degree Daniels is, and it isn't purely feel-based the way Lydiard is — it sits in between, with a real ratio to check yourself against but enough flexibility to apply it by RPE, heart rate, or pace depending on the workout (see the Five Training Zones in the Workout Library). What actually sold me wasn't the ratio itself so much as the mechanism underneath it — the IL-6 and brain-fatigue research covered in the Research Library gives a real reason why \"mostly easy, genuinely hard when it counts\" works, rather than it just being a rule that happens to hold up statistically.",
       },
       { type: "heading", text: "Jack Daniels: Precision Through Pace Zones" },
       {
@@ -373,7 +398,7 @@ export const sections: Section[] = [
       { type: "heading", text: "Phil Maffetone: The MAF Method" },
       {
         type: "paragraph",
-        text: "Maffetone runs the strictest aerobic-only system on this list: build the base almost exclusively below a hard heart-rate ceiling — his rule-of-thumb formula is 180 minus age, adjusted a few beats for training history and health — for months before adding any faster work at all. Matt Fitzgerald's 80/20 Running popularized a related, looser idea from the same research lineage as Seiler's polarized-training work (see Research Library): roughly 80% of volume easy, 20% genuinely hard, almost nothing in between. Critics of MAF point out that a flat age-based formula ignores real differences in individual aerobic fitness the way lactate testing or VDOT don't — but the underlying instinct, that most runners run their easy days too hard, is the same one driving Lydiard's pyramid and Norwegian threshold work alike.",
+        text: "Maffetone runs the strictest aerobic-only system on this list: build the base almost exclusively below a hard heart-rate ceiling — his rule-of-thumb formula is 180 minus age, adjusted a few beats for training history and health — for months before adding any faster work at all. Critics point out that a flat age-based formula ignores real differences in individual aerobic fitness the way lactate testing or VDOT don't — but the underlying instinct, that most runners run their easy days too hard, is the same one driving Lydiard's pyramid, Norwegian threshold work, and 80/20 Running alike.",
       },
       { type: "heading", text: "Steve Magness: Testing the Folklore" },
       {
@@ -403,13 +428,14 @@ export const sections: Section[] = [
           "Norwegian threshold week — up to four days with two sub-threshold sessions each, intensity controlled by lactate testing rather than pace or feel.",
           "Maffetone MAF week — every run held under a hard heart-rate ceiling (180 minus age, adjusted), often for months at a stretch, with no speed work until an aerobic time trial at that heart rate stops improving.",
           "Elite Kenyan week — daily mileage varies widely rather than staying constant (10, 15, 12, 18, 10, 15, then a 24-mile long run), aerobic-effort-dominant, built around one very long day rather than a fixed weekly template.",
+          "80/20 week — not a fixed shape at all, just a ratio checked against whatever week you're already running: tally low-intensity time against total time and see how close it lands to 80%.",
         ],
       },
       { type: "heading", text: "Where They Agree" },
       {
         type: "list",
         items: [
-          "Aerobic volume is the foundation, even in the systems that don't advertise it that way — Canova's marathon-specific blocks and Norwegian threshold work both sit on top of large aerobic mileage, not instead of it.",
+          "Aerobic volume is the foundation, even in the systems that don't advertise it that way — Canova's marathon-specific blocks and Norwegian threshold work both sit on top of large aerobic mileage, not instead of it. 80/20 Running is just the most literal statement of the same rule, spelled out as a ratio.",
           "Recovery is trainable and has to be managed deliberately, not treated as time off from the real work.",
           "Progression has to move toward race specificity — general fitness eventually has to convert into the exact demand of the goal race.",
         ],
@@ -462,12 +488,18 @@ export const sections: Section[] = [
           "Start conservatively and warm into the effort. Going out too fast early costs far more than it can ever gain back.",
           "On hot days, drink water and electrolytes throughout the race, not just at the start — and keep your body wet. Sponging is one of the simplest defenses against overheating.",
           "Don't surge mid-race. Every surge spends energy you don't get back.",
+          "Never sprint the finish, even if you feel great in the closing miles — the ideal way to finish a race is still feeling like you could run some more.",
         ],
       },
       { type: "heading", text: "Honey Over Carb-Loading, and Skip the Salt Tablets" },
       {
         type: "paragraph",
         text: "Lydiard's own marathon fueling advice predates modern carb-loading protocols by decades, and it's simpler: keep eating your normal balanced meals in the days before the race, add up to 8 ounces of honey on top of that over the final two days for easy-to-digest calories, and finish eating about three hours before the gun. He was just as direct about what to skip — salt tablets, which he considered unnecessary and potentially harmful, in favor of diluted electrolyte drink and plain water taken steadily through the race rather than a concentrated dose swallowed all at once.",
+      },
+      { type: "heading", text: "How Often You Can Actually Race a Marathon" },
+      {
+        type: "paragraph",
+        text: "A hard-raced marathon costs more recovery than most runners budget for. Lydiard's own guidance: no more than one full marathon every couple of months if you're racing it honestly rather than jogging it, and after a hard half or full marathon, two full weeks of easy jogging only — nothing fast — before any quality work resumes. The two-day carb top-up before a race has a ceiling too: up to about 200 grams (roughly half a pound) of glucose or fructose in the two days beforehand is sufficient, and more than that doesn't buy additional benefit (Lydiard, Running to the Top).",
       },
     ],
   },
@@ -483,6 +515,11 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Matt Fitzgerald's 80/20 Running system defines five intensity zones off a single anchor point: lactate threshold heart rate, found via a 30-minute time trial (average heart rate over the last 10 minutes) or a simpler talk test (the fastest pace at which conversation stays comfortable). Zones 1–2 are low intensity (RPE 1–4), Zone 3 is moderate (RPE 5–6), and Zones 4–5 are high (RPE 7–10) — with the rule that pace should never be the primary gauge in Zones 1–2, heart rate and pace should both govern Zone 3, and pace takes over as primary once effort climbs into Zones 4–5, since heart rate lags a sudden change in effort by a minute or more. A foundation run — Fitzgerald's term for what most coaches just call an easy run — is simply a Zone 1–2 effort bookended by a Zone 1 warm-up and cool-down; nearly everything else on this page is built by layering moderate or high-intensity segments onto that same base.",
+      },
+      { type: "heading", text: "What a Warm-Up Is Actually For" },
+      {
+        type: "paragraph",
+        text: "A warm-up has exactly two jobs: raise pulse rate and blood circulation, and warm the muscles enough to reduce their viscosity so they function properly. Both are satisfied by about five minutes of jogging or running in place at a genuinely easy aerobic effort, while staying warm throughout — a track suit over the running gear if conditions call for it. It doesn't need to be more complicated than that, but skipping it isn't free: going out too fast before the aerobic mechanism has actually taken over is exactly how a race or session gets away from a runner early (Lydiard, Running to the Top).",
       },
       { type: "heading", text: "Dialing In a Tempo Run" },
       {
@@ -655,10 +692,25 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Writing real answers to each turns vague nerves into something specific enough to act on.",
       },
+      { type: "heading", text: "Demand Sincerity, Explain the Why" },
+      {
+        type: "paragraph",
+        text: "Lydiard's policy was blunt: a coach's time is the most valuable thing they can give an athlete, and it's wasted on someone who isn't sincere about training or honest with their coach. But sincerity runs both directions — an athlete sent out to do something demanding without being told why is unlikely to put real effort into it. Explaining the physiological and mechanical reason behind a session, not just assigning it, is what turns compliance into genuine investment (Lydiard, Running to the Top).",
+      },
+      { type: "heading", text: "Leave Them Alone Before It Starts" },
+      {
+        type: "paragraph",
+        text: "Many coaches deliver a team talk moments before competition starts, when athletes are already keyed up and mentally out on the course or field. Lydiard's read: that's the wrong moment entirely — minds are already gone, and there's nothing left for a pep talk to land on. Tactics get discussed two nights before, not two minutes before; once the race is close, the best thing a coach can do is leave the athlete alone with what they already know.",
+      },
       { type: "heading", text: "Keep a Log, Not a Comparison Tool" },
       {
         type: "paragraph",
         text: "The strongest predictor of long-term success isn't raw talent — it's having a coach, a team, and a training log. Write the week's goals at the top of each page, note anything that isn't going well plus your own best guess at a solution, and write down what went right and why. Apps that let you compare your splits against everyone else's turn your own training into someone else's competition. Keep the comparison out of it.",
+      },
+      { type: "heading", text: "Every Failure Is Data, Not a Verdict" },
+      {
+        type: "paragraph",
+        text: "A bad race or a missed workout deserves the same treatment as a lab result: analyze it objectively, figure out why it went the way it did, and use the answer to avoid repeating it — not hurl your shoes across the locker room and berate yourself over it. Every error is a learning experience only if it's actually treated as one, rather than just an occasion for self-punishment (Lydiard, Running to the Top).",
       },
       { type: "heading", text: "Tolerance for Suffering Is a Trainable Skill" },
       {
@@ -702,6 +754,16 @@ export const sections: Section[] = [
           "Visualize daily: write, read, visualize.",
         ],
       },
+      { type: "heading", text: "Running as Medicine, Dosed Correctly" },
+      {
+        type: "paragraph",
+        text: "The same consistency logic that builds fitness applies to running's effect on mood. The goal on any given day isn't to extract maximum benefit from a single hard session — it's to finish wanting to come back tomorrow.",
+      },
+      {
+        type: "quote",
+        text: "If there is any secret to the success our patients have had in treating their depression with running, it is that they have tried to run each day in such a way that they would want to run again the next day.",
+        attribution: "a doctor quoted in Lydiard's Running to the Top",
+      },
       { type: "heading", text: "The Wheel" },
       {
         type: "paragraph",
@@ -732,10 +794,25 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A simple daily target: water need in ounces equals body weight in pounds divided by two. Sip through the day — aim for at least one sip every 20 minutes — rather than trying to catch up all at once.",
       },
+      { type: "heading", text: "Salt Tablets, Potassium, and Heatstroke" },
+      {
+        type: "paragraph",
+        text: "Lydiard's skepticism of salt tablets had a specific physiological reason behind it: in one review, roughly half of athletes hospitalized for heatstroke after intense exercise turned out to be potassium-depleted, and many of them had been taking salt tablets — which force potassium out of the body as sodium is added. Athletes who don't sweat heavily don't need extra potassium in the first place; those who do and still take salt tablets need to double their potassium intake just to break even, which is a real argument for skipping the tablets and taking salt in through food and a diluted electrolyte drink instead (Lydiard, Running to the Top).",
+      },
       { type: "heading", text: "Cross-Training That Actually Carries Over" },
       {
         type: "paragraph",
         text: "Not all cross-training transfers evenly to running. Research comparing supplemental training modes found cycling produced a real, measurable improvement in running performance, while swimming did not — the likely reason is that swimming removes both gravity and the alternating-leg-drive pattern running depends on, while cycling keeps the alternating-leg mechanics intact even though it removes the impact. The practical rule when picking a nonimpact option during an injury or a heavy-volume block — cycling, the elliptical, pool running — is to favor whatever keeps that alternating-leg action closest to running's own movement pattern (Fitzgerald, 80/20 Running).",
+      },
+      { type: "heading", text: "Strength Training Actually Needs a Schedule" },
+      {
+        type: "paragraph",
+        text: "How often a strength stimulus repeats matters as much as the stimulus itself. Training the same muscle group every second day produces roughly 80% of the maximum attainable strength gain; twice a week drops that to about 60%; once a week to about 40%; and a stimulus spaced 14 days apart produces no measurable strength gain at all. The muscle reinforces the point locally, too — after one real training stimulus, it's essentially unresponsive to a second stimulus later the same day, the same recovery logic that governs hard running sessions applied to the weight room (Lydiard, Running to the Top).",
+      },
+      { type: "heading", text: "Jog Through Soreness, Don't Wait It Out" },
+      {
+        type: "paragraph",
+        text: "The instinct to rest completely until sore muscles feel normal again is usually the wrong call. A slow, easy jog the day after a hard effort pushes blood through the muscle and helps clear the waste products causing the soreness — the heart doing, in effect, a gentle massage a resting runner can't get any other way. Stopping until the soreness fully resolves just means starting from scratch and working through the same soreness again once training resumes (Lydiard, Running to the Top).",
       },
       { type: "heading", text: "Relative Energy Deficiency in Sport (RED-S)" },
       {
