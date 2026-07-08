@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { GoalCard } from "@/app/(app)/dashboard/goal-card";
@@ -57,36 +58,40 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     redirect("/login");
   }
 
-  const [{ data: goals }, { data: raceResults }, { data: savedCalculations }, { data: stravaAccount }] =
-    await Promise.all([
-      supabase
-        .from("goals")
-        .select("id, race_name, distance_m, goal_time_s, goal_date")
-        .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .returns<Goal[]>(),
-      supabase
-        .from("race_results")
-        .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
-        .order("race_date", { ascending: false })
-        .limit(5)
-        .returns<RaceResult[]>(),
-      supabase
-        .from("saved_calculations")
-        .select("id, calculator_type, label, created_at")
-        .order("created_at", { ascending: false })
-        .limit(5)
-        .returns<SavedCalculation[]>(),
-      supabase
-        .from("connected_accounts")
-        .select("id")
-        .eq("provider", "strava")
-        .maybeSingle(),
-    ]);
+  const [
+    { data: goals },
+    { data: raceResults },
+    { data: savedCalculations },
+    { data: stravaAccount },
+    { data: trainingPlan },
+  ] = await Promise.all([
+    supabase
+      .from("goals")
+      .select("id, race_name, distance_m, goal_time_s, goal_date")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .returns<Goal[]>(),
+    supabase
+      .from("race_results")
+      .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
+      .order("race_date", { ascending: false })
+      .limit(5)
+      .returns<RaceResult[]>(),
+    supabase
+      .from("saved_calculations")
+      .select("id, calculator_type, label, created_at")
+      .order("created_at", { ascending: false })
+      .limit(5)
+      .returns<SavedCalculation[]>(),
+    supabase.from("connected_accounts").select("id").eq("provider", "strava").maybeSingle(),
+    supabase.from("training_plans").select("id").in("status", ["draft", "active"]).maybeSingle(),
+  ]);
 
   const primaryGoal = goals?.[0] ?? null;
   const stravaConnected = !!stravaAccount;
+  const hasTrainingPlan = !!trainingPlan;
+  const goalReadyForPlan = !!(primaryGoal?.goal_time_s && primaryGoal?.goal_date);
 
   return (
     <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
@@ -112,6 +117,40 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {!primaryGoal && <OnboardingForm />}
 
         {primaryGoal && <GoalCard goal={primaryGoal} />}
+
+        {primaryGoal && hasTrainingPlan && (
+          <Link
+            href="/plan"
+            className="block rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
+          >
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">
+              View your training plan →
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              This week&rsquo;s workouts and your current phase.
+            </p>
+          </Link>
+        )}
+
+        {primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
+          <Link
+            href="/plan/new"
+            className="block rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
+          >
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">
+              Generate your training plan →
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Two questions, and the deterministic coaching engine builds the rest.
+            </p>
+          </Link>
+        )}
+
+        {primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
+          <p className="text-sm text-zinc-600 dark:text-zinc-300">
+            Add a goal time and date above to unlock your training plan.
+          </p>
+        )}
 
         {raceResults && raceResults.length > 0 && (
           <div>
@@ -154,8 +193,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </div>
           ) : (
             <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-              Nothing saved yet — saving a result from the Pace Calculator is
-              coming next.
+              Nothing saved yet — save a result from the Pace Calculator to see
+              it here.
             </p>
           )}
         </div>

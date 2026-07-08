@@ -95,6 +95,9 @@ function AccountMenu({
           <Link href="/dashboard" onClick={closeAndNavigate} className={menuItemClass}>
             Dashboard
           </Link>
+          <Link href="/plan" onClick={closeAndNavigate} className={menuItemClass}>
+            Training Plan
+          </Link>
           <Link href="/settings" onClick={closeAndNavigate} className={menuItemClass}>
             Settings
           </Link>
