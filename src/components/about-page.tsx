@@ -20,7 +20,7 @@ const timeline: {
   {
     label: "Vanderbilt, SEC cross country",
     note: "Studying applied math, computer science, German, and engineering management while training at a Division I level. It didn't go how I expected: a rigid, anaerobic-heavy program left me plateaued and anxious instead of improving, and by sophomore year I walked away from the team entirely.",
-    linkHref: "/articles#the-onus-to-quit",
+    linkHref: "/the-onus-to-quit",
     linkText: "Read the full story in Articles",
   },
   {
@@ -29,7 +29,7 @@ const timeline: {
   },
   {
     label: "Marathon training, on my own terms",
-    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. An injury three weeks out, from skipping enough of it, left me broken down by the second half — nothing to do with how I paced the race itself. Lydiard trusted the same principle, building it through hills, bodyweight circuits, and a structured barbell program alongside the running — his real objection was to running while holding hand weights, not to lifting itself. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
+    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. I'd skipped enough of it in the lead-up that an injury three weeks out left me broken down by the second half of the race — nothing to do with how I paced it. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
   },
   {
     label: "Coaching, and this archive",
@@ -85,7 +85,7 @@ export function AboutPage() {
       </p>
 
       <Link
-        href="/articles"
+        href="/why-running-is-valuable-for-everyone"
         className="group mt-10 flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:flex-row sm:items-center sm:justify-between dark:border-white/10 dark:bg-zinc-900"
       >
         <div>
@@ -234,10 +234,9 @@ export function AboutPage() {
         </ol>
 
         <p className="mt-10 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-          It&rsquo;s the record of a realization that crept up slowly: I was
+          This is the record of a realization that crept up slowly: I was
           more interested in why a workout worked than in how fast I could
-          run it. This site is what happened after that realization took
-          over.
+          run it.
         </p>
       </section>
 

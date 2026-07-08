@@ -142,6 +142,30 @@ export default async function SectionPage({ params }: SectionPageProps) {
 
       {ToolComponent ? (
         <ToolComponent />
+      ) : currentSection.articleSlugs ? (
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          {currentSection.articleSlugs.map((articleSlug) => {
+            const article = sectionMap.get(articleSlug);
+            if (!article) return null;
+            return (
+              <Link
+                key={article.slug}
+                href={`/${article.slug}`}
+                className="group rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
+              >
+                <h2 className="text-xl font-semibold tracking-tight">
+                  {article.title}
+                </h2>
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                  {article.mission}
+                </p>
+                <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white">
+                  Read the essay →
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       ) : currentSection.content ? (
         <div className="mt-10 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
           {currentSection.content.map((block, index) => {
@@ -174,7 +198,23 @@ export default async function SectionPage({ params }: SectionPageProps) {
                 />
               );
             }
-            return <p key={index}>{block.text}</p>;
+            return (
+              <p key={index}>
+                {block.text}
+                {block.linkHref && block.linkText ? (
+                  <>
+                    {" "}
+                    <Link
+                      href={block.linkHref}
+                      className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+                    >
+                      {block.linkText}
+                    </Link>
+                    .
+                  </>
+                ) : null}
+              </p>
+            );
           })}
         </div>
       ) : (

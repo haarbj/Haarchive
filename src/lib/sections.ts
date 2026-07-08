@@ -44,7 +44,7 @@ export const categories: Category[] = [
 
 export type ContentBlock =
   | { type: "heading"; text: string }
-  | { type: "paragraph"; text: string }
+  | { type: "paragraph"; text: string; linkHref?: string; linkText?: string }
   | { type: "list"; items: string[] }
   | { type: "quote"; text: string; attribution?: string };
 
@@ -55,6 +55,14 @@ export type Section = {
   topics: string[];
   category: string;
   content?: ContentBlock[];
+  // Slugs of other sections to show as an index of clickable cards instead
+  // of this section's own content -- e.g. "articles" listing individual
+  // essays, each of which is a real section in its own right.
+  articleSlugs?: string[];
+  // Set on a section that's only reachable via another section's
+  // articleSlugs index (like an individual essay) so it doesn't also show
+  // up as its own card on the parent category's landing page.
+  hiddenFromCategory?: boolean;
 };
 
 export const sections: Section[] = [
@@ -994,8 +1002,17 @@ export const sections: Section[] = [
       "Educational writing that connects physiology, psychology, and philosophy to practical training.",
     topics: ["Deep dives", "Practical lessons", "Applied theory"],
     category: "writing-and-resources",
+    articleSlugs: ["why-running-is-valuable-for-everyone", "the-onus-to-quit"],
+  },
+  {
+    slug: "why-running-is-valuable-for-everyone",
+    title: "Why Running Is Valuable for Everyone",
+    mission:
+      "Running is one of the few pursuits that scales perfectly across ambition -- the physiology of why it works for anyone who starts.",
+    topics: ["Aerobic metabolism", "Universal accessibility", "Mind and body"],
+    category: "writing-and-resources",
+    hiddenFromCategory: true,
     content: [
-      { type: "heading", text: "Why Running Is Valuable for Everyone" },
       {
         type: "paragraph",
         text: "Let's consider a simple question: who is running for? Is it for the potential Olympic champion chasing marginal gains and podium finishes, or is it for the man or woman, the girl or boy, who simply wants to feel a little more alive and experience the quiet satisfaction that comes from physical and mental well-being? The answer is both. Running is one of the few pursuits that scales perfectly across ambition. It meets you where you are and grows with you, offering the same fundamental benefits whether you are chasing excellence or simply seeking clarity.",
@@ -1036,7 +1053,17 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Running is valuable not because it is difficult, but because it is effective. It develops the systems that matter most, creating a foundation that supports both health and performance. It does not require elite talent or specialized conditions, only consistency and an understanding of how to train in a way that aligns with the body's natural processes. That is what makes it universal. Not everyone will become fast, but everyone can become better.",
       },
-      { type: "heading", text: "The Onus to Quit" },
+    ],
+  },
+  {
+    slug: "the-onus-to-quit",
+    title: "The Onus to Quit",
+    mission:
+      "On walking away from a Division I program, and why quitting the team didn't mean quitting the sport.",
+    topics: ["Burnout", "Walking away", "Reclaiming the sport"],
+    category: "writing-and-resources",
+    hiddenFromCategory: true,
+    content: [
       {
         type: "quote",
         text: "Sometimes quitting is the right answer.",
@@ -1129,6 +1156,29 @@ export const sections: Section[] = [
       "Reach out for coaching questions, collaborations, speaking, and long-term development support.",
     topics: ["Coaching inquiries", "Collaborations", "Speaking"],
     category: "writing-and-resources",
+    content: [
+      {
+        type: "paragraph",
+        text: "I coach the Vanderbilt Run Club through full and half marathon training, and I've coached Run22 members one-on-one since I first built that community during COVID lockdowns. If you're looking for structured coaching, a second opinion on a plan you're already following, or just want to talk through where your training has stalled, I'd like to hear from you.",
+      },
+      { type: "heading", text: "What to Reach Out About" },
+      {
+        type: "list",
+        items: [
+          "Coaching inquiries — one-on-one coaching, a race buildup, or a review of a plan you're already running.",
+          "Collaborations — guest writing, research discussions, or joint projects with other coaches and physiologists.",
+          "Speaking — talks or workshops on training philosophy, aerobic development, or coaching methodology.",
+          "Long-term development — ongoing support for a runner or team, beyond a single race.",
+        ],
+      },
+      { type: "heading", text: "Get in Touch" },
+      {
+        type: "paragraph",
+        text: "The fastest way to reach me is email, at",
+        linkHref: "mailto:hello@brodyhaar.com",
+        linkText: "hello@brodyhaar.com",
+      },
+    ],
   },
   {
     slug: "heat-tracker",
@@ -1157,5 +1207,7 @@ export const categoryMap = new Map(
 );
 
 export function sectionsInCategory(categorySlug: string): Section[] {
-  return sections.filter((section) => section.category === categorySlug);
+  return sections.filter(
+    (section) => section.category === categorySlug && !section.hiddenFromCategory,
+  );
 }
