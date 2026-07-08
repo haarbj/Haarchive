@@ -160,6 +160,19 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The FASTER study tested elite ultra-endurance runners split between habitual high-carbohydrate and long-term fat-adapted (\"keto-adapted\") diets, all similarly trained. Under identical treadmill protocol, the fat-adapted group hit a peak fat oxidation rate of 1.54 g/min — more than double the 0.67 g/min recorded in the high-carbohydrate group. Training status alone didn't explain the gap; the metabolic state built by chronic diet did (Volek, Phinney, et al., \"Metabolic characteristics of keto-adapted ultra-endurance runners,\" Metabolism, 2016).",
       },
+      { type: "heading", text: "What Actually Limits Endurance: Two Competing Models" },
+      {
+        type: "paragraph",
+        text: "For decades, the dominant explanation for why runners slow down was some version of the central governor model: a subconscious system in the brain that regulates muscle recruitment so output never exceeds what the body can safely handle, protecting against catastrophic failure before it happens. A newer, competing framework — the psychobiological model, developed by exercise physiologist Samuele Marcora — argues there's no real evidence a subconscious governor like that exists. Instead, pacing and quitting decisions are made consciously, driven almost entirely by perception of effort: how hard, heavy, and strenuous the exercise feels. In this model, exhaustion in a real race rarely means a runner hit a hard physical wall like total glycogen depletion — it means they hit the maximum level of perceived effort they were willing to tolerate, a psychological ceiling more than a strictly physiological one (Fitzgerald, How Bad Do You Want It?).",
+      },
+      {
+        type: "paragraph",
+        text: "One consequence either model has to explain: no matter how hard an all-out effort feels, some physical reserve capacity remains at the finish line of any race or time trial longer than about 30 seconds. The body doesn't typically run itself completely empty, because perceived effort tolerance gets reached first, and a runner who knows a race will last longer than 30 seconds instinctively holds back just enough that the ceiling isn't hit until the finish line and not before — the actual mechanics behind pacing, which is a psychological skill as much as a physical calculation.",
+      },
+      {
+        type: "paragraph",
+        text: "The clearest evidence for the psychobiological model comes from interventions with no plausible physiological effect at all. Caffeine, music, and transcranial electrical stimulation don't conserve glycogen, neutralize lactic acid, or expand physical capacity in any measurable way — yet all three reliably improve endurance performance, because they act on the brain rather than the muscles, making the same physical effort feel easier. The same logic runs in reverse: tiring out the brain with a demanding mental task before an endurance test raises perceived effort and produces an earlier bonk in the exact same physical protocol, and prolonged low-intensity exercise fatigues the brain more than short high-intensity efforts do — the same brain-fatigue mechanism behind the IL-6 and long-run findings in the Research Library, arrived at from a completely different research angle. A method called Brain Endurance Training tries to exploit this directly, pairing physical training with mentally demanding tasks to build resistance to mental fatigue specifically. The short version: physical fitness sets where the wall is. Mental fitness determines how close to it you're actually willing to get (Fitzgerald, How Bad Do You Want It?).",
+      },
     ],
   },
   {
@@ -692,6 +705,21 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Writing real answers to each turns vague nerves into something specific enough to act on.",
       },
+      { type: "heading", text: "How Bad Do You Want It?" },
+      {
+        type: "paragraph",
+        text: "The only real proof of wanting it more is suffering more. Champion endurance athletes rarely credit raw physical capacity for their wins — they tend to point instead to being able to give more of what they already had. After Samuel Wanjiru won the 2008 Beijing Olympic marathon in brutal heat and humidity, his coach's verdict wasn't about training: \"Sammy proved his heart today.\" In sports, heart is just a metaphor for mental fitness.",
+      },
+      {
+        type: "quote",
+        text: "In every race, something within each athlete poses a simple question: How bad do you want it? To realize your potential as an athlete, you must respond with some version of this answer: more. And then you have to prove it.",
+        attribution: "Matt Fitzgerald, How Bad Do You Want It?",
+      },
+      { type: "heading", text: "Brace Yourself" },
+      {
+        type: "paragraph",
+        text: "Consciously expecting your next race to be your hardest yet is a more mature and effective way to prepare than hoping it goes easy. Before his first marathon, Mo Farah told a reporter, \"This will be the hardest race of my life\" — that wasn't pessimism, it was bracing himself. Acceptance built this way doesn't reduce the actual pain of a hard effort, but it does reduce how unpleasant that pain feels and how much perceived effort it generates, which is why runners who expect the difficulty in advance consistently tolerate more of it than runners hoping to be surprised by an easy day. Some athletes push the technique further and deliberately expect the worst going in — a harsher expectation creates a more favorable contrast against whatever actually happens, so reality rarely disappoints as much as it might have. The specific self-talk that makes this work is almost absurdly simple: reminding yourself, before a familiar hard effort, that it's going to hurt, but no worse than it did last time (Fitzgerald, How Bad Do You Want It?).",
+      },
       { type: "heading", text: "Demand Sincerity, Explain the Why" },
       {
         type: "paragraph",
@@ -712,6 +740,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A bad race or a missed workout deserves the same treatment as a lab result: analyze it objectively, figure out why it went the way it did, and use the answer to avoid repeating it — not hurl your shoes across the locker room and berate yourself over it. Every error is a learning experience only if it's actually treated as one, rather than just an occasion for self-punishment (Lydiard, Running to the Top).",
       },
+      { type: "heading", text: "The Workaround Effect" },
+      {
+        type: "paragraph",
+        text: "Adventure athlete Willie Stewart lost an arm in an accident and kept competing anyway, relying — mostly by instinct — on a coping skill Fitzgerald calls adaptability: the belief that an old skill is still worth practicing even under a completely new physical constraint. That belief is what unlocks something the brain does automatically once it's given the chance. When an injury makes the old way of moving impossible, the same neuroplasticity that lets someone who loses their sight sharpen their other senses kicks in for an athlete returning from injury: unable to produce the old movement pattern, the brain explores alternatives and settles on whichever one actually works — what Fitzgerald calls the workaround effect. The pattern runs wider than injury, too: underdeveloped coping skills cause a struggle, the struggle provokes an adaptive response, and that response eventually produces a more effective coping skill than the athlete had before the setback (Fitzgerald, How Bad Do You Want It?).",
+      },
       { type: "heading", text: "Tolerance for Suffering Is a Trainable Skill" },
       {
         type: "paragraph",
@@ -721,6 +754,25 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Write the goal itself as a \"cloud\" — something not entirely in your control, like a time or a place. Then write the steps as things that ARE in your control. A goal only really takes hold when it's roughly 10% written down, 45% felt — the emotions attached to reaching it — and 45% visualized. Share it with people who will lift you up, not weigh it down.",
+      },
+      { type: "heading", text: "Time-Based Goals Cut Both Ways" },
+      {
+        type: "paragraph",
+        text: "A specific time goal is a double-edged tool. The same target that sharpens effort when it's perceived as something to chase toward becomes a ceiling that quietly limits effort once it's perceived as a hard limit instead — runners given a \"difficult but realistic\" goal improve more than runners given either an easy one or a genuinely unrealistic one. It shows up in marathon finish times too: runners who end up close to a round number (a 3:00, a 3:30) tend to slow down less in the final miles than runners without that kind of target pulling them in — evidence that a well-chosen number changes how effort gets interpreted, not that the number does the work by itself. The best goals thread a needle: specific enough to actually pull an athlete past a previous limit, but loose enough that hitting it doesn't quietly cap performance below what was actually possible that day (Fitzgerald, How Bad Do You Want It?).",
+      },
+      { type: "heading", text: "Letting Go of the Outcome" },
+      {
+        type: "paragraph",
+        text: "Choking is what happens when pressure makes an athlete self-conscious — attention shifts inward, toward body movements and anxious thoughts, and that shift alone raises perceived effort and undermines performance, independent of anything happening physically. Its opposite is flow: complete immersion in the task, where self-consciousness disappears, perceived effort drops, and performance often peaks. Well-trained athletes have an easier time finding flow specifically because they're less physically self-conscious to begin with — mastery itself is protective against choking.",
+      },
+      {
+        type: "paragraph",
+        text: "Triathlete Siri Lindley spent years choking under exactly this kind of pressure before her coach, Brett Sutton, told her flatly: \"Starting today, you're retired. The way you look at this sport and the pressure you put on yourself are just all wrong... let's just see how fit, how fast, and how strong you can be — and have fun doing it.\" Caring a little less about the outcome, counterintuitively, produced better outcomes. Self-belief that holds up whether an athlete wins or loses lets her put the goal out of her mind and race in the moment instead of racing against the fear of falling short of it (Fitzgerald, How Bad Do You Want It?).",
+      },
+      { type: "heading", text: "Focus Outward, Not Inward" },
+      {
+        type: "paragraph",
+        text: "Where attention goes changes how hard an effort feels. College students shooting basketball free throws did better when told to focus on the back of the rim than when told to focus on their own wrist snap — a purely external cue beat an internal, technique-focused one. Psychological pressure does the same thing to a runner's attention that it did to those free throws: it pulls focus inward, toward body sensations and anxious thoughts, which is exactly the shift that makes effort feel harder. It's part of why treadmill running feels so much tougher than the same effort outdoors — a blank, unchanging screen offers nothing external to focus on, so attention collapses inward by default. One practical training-cycle implication: it can make sense to let technical, self-conscious focus — fixing form, working on weaknesses — happen earlier in a buildup, so it's fully absorbed and automatic by the time race day calls for pure external focus instead (Fitzgerald, How Bad Do You Want It?).",
       },
       { type: "heading", text: "Mantras and Affirmations" },
       {
@@ -793,6 +845,11 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A simple daily target: water need in ounces equals body weight in pounds divided by two. Sip through the day — aim for at least one sip every 20 minutes — rather than trying to catch up all at once.",
+      },
+      { type: "heading", text: "Thirst Slows You Down Before Dehydration Does" },
+      {
+        type: "paragraph",
+        text: "Except in extreme cases, mild dehydration itself — the actual biological state — doesn't directly cause a runner to slow down mid-race. The psychological experience of feeling thirsty does. That's not a reason to ignore fluid intake, but it does mean the discomfort of thirst can cost real pace on its own, independent of whether the body is actually in physiological trouble yet (Fitzgerald, How Bad Do You Want It?).",
       },
       { type: "heading", text: "Salt Tablets, Potassium, and Heatstroke" },
       {
