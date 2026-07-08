@@ -1,0 +1,206 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+import { signOut } from "@/app/(app)/auth-actions";
+import { OnboardingForm } from "@/app/(app)/dashboard/onboarding-form";
+import { StravaConnection } from "@/app/(app)/dashboard/strava-connection";
+import { formatClock } from "@/lib/format";
+import { createClient } from "@/lib/db/server";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
+
+const STRAVA_ERROR_MESSAGES: Record<string, string> = {
+  denied: "Strava connection was cancelled.",
+  invalid_state: "That Strava connection attempt couldn't be verified — please try again.",
+  token_exchange_failed: "Strava didn't accept that connection — please try again.",
+  save_failed: "Connected to Strava, but saving it failed — please try again.",
+};
+
+type Goal = {
+  id: string;
+  race_name: string;
+  distance_m: number;
+  goal_time_s: number | null;
+  goal_date: string | null;
+};
+
+type RaceResult = {
+  id: string;
+  race_name: string;
+  race_date: string;
+  distance_m: number;
+  finish_time_s: number;
+  course_type: string;
+};
+
+type SavedCalculation = {
+  id: string;
+  calculator_type: string;
+  label: string | null;
+  created_at: string;
+};
+
+function formatDistance(meters: number): string {
+  if (meters >= 42195) return "Marathon";
+  if (meters >= 21097 && meters < 21200) return "Half Marathon";
+  if (meters % 1609 === 0 || meters === 1609) return `${Math.round(meters / 1609)} Mile`;
+  if (meters % 1000 === 0) return `${meters / 1000}K`;
+  return `${meters}m`;
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+type DashboardPageProps = {
+  searchParams: Promise<{ strava_connected?: string; strava_error?: string }>;
+};
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const { strava_connected: stravaConnectedParam, strava_error: stravaErrorParam } =
+    await searchParams;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error || !data?.claims) {
+    redirect("/login");
+  }
+
+  const [{ data: goals }, { data: raceResults }, { data: savedCalculations }, { data: stravaAccount }] =
+    await Promise.all([
+      supabase
+        .from("goals")
+        .select("id, race_name, distance_m, goal_time_s, goal_date")
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .returns<Goal[]>(),
+      supabase
+        .from("race_results")
+        .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
+        .order("race_date", { ascending: false })
+        .limit(5)
+        .returns<RaceResult[]>(),
+      supabase
+        .from("saved_calculations")
+        .select("id, calculator_type, label, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5)
+        .returns<SavedCalculation[]>(),
+      supabase
+        .from("connected_accounts")
+        .select("id")
+        .eq("provider", "strava")
+        .maybeSingle(),
+    ]);
+
+  const primaryGoal = goals?.[0] ?? null;
+  const stravaConnected = !!stravaAccount;
+
+  return (
+    <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
+      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+        Dashboard
+      </h1>
+      <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+        You&rsquo;re signed in.
+      </p>
+
+      {stravaConnectedParam && (
+        <p className="mt-4 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+          Strava connected.
+        </p>
+      )}
+      {stravaErrorParam && (
+        <p className="mt-4 text-sm font-medium text-red-700 dark:text-red-400">
+          {STRAVA_ERROR_MESSAGES[stravaErrorParam] ?? "Something went wrong connecting Strava."}
+        </p>
+      )}
+
+      <div className="mt-10 space-y-8">
+        {!primaryGoal && <OnboardingForm />}
+
+        {primaryGoal && (
+          <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+            <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+              Current goal
+            </p>
+            <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+              {primaryGoal.race_name}
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              {formatDistance(primaryGoal.distance_m)}
+              {primaryGoal.goal_time_s && ` · Goal: ${formatClock(primaryGoal.goal_time_s)}`}
+              {primaryGoal.goal_date && ` · ${formatDate(primaryGoal.goal_date)}`}
+            </p>
+          </div>
+        )}
+
+        {raceResults && raceResults.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+              Recent race results
+            </p>
+            <div className="mt-3 space-y-2">
+              {raceResults.map((result) => (
+                <div
+                  key={result.id}
+                  className="flex items-center justify-between rounded-xl border border-black/10 bg-white px-4 py-3 text-sm dark:border-white/10 dark:bg-zinc-900"
+                >
+                  <span className="font-medium text-zinc-900 dark:text-white">
+                    {result.race_name}
+                  </span>
+                  <span className="text-zinc-600 dark:text-zinc-300">
+                    {formatDistance(result.distance_m)} in{" "}
+                    {formatClock(result.finish_time_s)} · {formatDate(result.race_date)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div>
+          <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+            Saved calculations
+          </p>
+          {savedCalculations && savedCalculations.length > 0 ? (
+            <div className="mt-3 space-y-2">
+              {savedCalculations.map((calc) => (
+                <div
+                  key={calc.id}
+                  className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm text-zinc-700 dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-200"
+                >
+                  {calc.label ?? calc.calculator_type}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+              Nothing saved yet — saving a result from the Pace Calculator is
+              coming next.
+            </p>
+          )}
+        </div>
+
+        <StravaConnection connected={stravaConnected} />
+      </div>
+
+      <form action={signOut} className="mt-10">
+        <button
+          type="submit"
+          className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
+        >
+          Sign out
+        </button>
+      </form>
+    </section>
+  );
+}

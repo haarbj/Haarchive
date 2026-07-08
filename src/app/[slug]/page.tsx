@@ -13,13 +13,14 @@ import {
   type Section,
 } from "@/lib/sections";
 import { HeatTracker } from "@/components/heat-tracker";
+import { PaceCalculator } from "@/components/pace-calculator";
 import { PullQuote } from "@/components/pull-quote";
 
 // Sections with a dedicated interactive component render that instead of
-// the generic "Planned Topics" list. Add future tools (e.g. a pace
-// calculator at slug "pace-calculator") as another entry here.
+// the generic "Planned Topics" list. Add future tools as another entry here.
 const sectionTools: Record<string, ComponentType> = {
   "heat-tracker": HeatTracker,
+  "pace-calculator": PaceCalculator,
 };
 
 function headingId(text: string): string {

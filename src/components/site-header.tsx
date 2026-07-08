@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { categories, sectionsInCategory } from "@/lib/sections";
+import { AuthStatus } from "@/components/auth-status";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -37,97 +38,100 @@ export function SiteHeader() {
           The Haarchive
         </Link>
 
-        {/* Desktop nav: each category is its own hoverable item */}
-        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
-          {categories.map((category) => {
-            const isOpen = openCategory === category.slug;
-            const members = sectionsInCategory(category.slug);
-            const isActive =
-              pathname === `/${category.slug}` ||
-              members.some((member) => pathname === `/${member.slug}`);
+        <div className="hidden items-center gap-4 md:flex">
+          {/* Desktop nav: each category is its own hoverable item */}
+          <nav aria-label="Primary" className="flex items-center gap-1">
+            {categories.map((category) => {
+              const isOpen = openCategory === category.slug;
+              const members = sectionsInCategory(category.slug);
+              const isActive =
+                pathname === `/${category.slug}` ||
+                members.some((member) => pathname === `/${member.slug}`);
 
-            return (
-              <div
-                key={category.slug}
-                className="relative"
-                onMouseEnter={() => openDropdown(category.slug)}
-                onMouseLeave={scheduleClose}
-              >
+              return (
                 <div
-                  className={`flex items-center gap-1 rounded-full text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
-                    isActive
-                      ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
-                      : "text-zinc-600 dark:text-zinc-300"
-                  }`}
+                  key={category.slug}
+                  className="relative"
+                  onMouseEnter={() => openDropdown(category.slug)}
+                  onMouseLeave={scheduleClose}
                 >
-                  <Link
-                    href={`/${category.slug}`}
-                    onClick={closeAll}
-                    aria-current={isActive ? "page" : undefined}
-                    className="py-2 pl-3"
+                  <div
+                    className={`flex items-center gap-1 rounded-full text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
+                      isActive
+                        ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                        : "text-zinc-600 dark:text-zinc-300"
+                    }`}
                   >
-                    {category.title}
-                  </Link>
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    aria-label={`Toggle ${category.title} submenu`}
-                    onClick={() =>
-                      setOpenCategory((current) =>
-                        current === category.slug ? null : category.slug,
-                      )
-                    }
-                    className="py-2 pr-3"
-                  >
-                    <svg
-                      className={`h-3.5 w-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
-                      viewBox="0 0 20 20"
-                      fill="none"
+                    <Link
+                      href={`/${category.slug}`}
+                      onClick={closeAll}
+                      aria-current={isActive ? "page" : undefined}
+                      className="py-2 pl-3"
                     >
-                      <path
-                        d="M5 7.5L10 12.5L15 7.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                      {category.title}
+                    </Link>
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-label={`Toggle ${category.title} submenu`}
+                      onClick={() =>
+                        setOpenCategory((current) =>
+                          current === category.slug ? null : category.slug,
+                        )
+                      }
+                      className="py-2 pr-3"
+                    >
+                      <svg
+                        className={`h-3.5 w-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M5 7.5L10 12.5L15 7.5"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
 
-                <div
-                  className={`absolute left-0 top-full overflow-hidden pt-2 transition-[max-height,opacity] duration-200 ${
-                    isOpen
-                      ? "max-h-96 opacity-100"
-                      : "pointer-events-none max-h-0 opacity-0"
-                  }`}
-                >
-                  <div className="flex w-56 flex-col gap-1 rounded-xl border border-black/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-zinc-900">
-                    {members.map((section) => {
-                      const isSectionActive = pathname === `/${section.slug}`;
+                  <div
+                    className={`absolute left-0 top-full overflow-hidden pt-2 transition-[max-height,opacity] duration-200 ${
+                      isOpen
+                        ? "max-h-96 opacity-100"
+                        : "pointer-events-none max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="flex w-56 flex-col gap-1 rounded-xl border border-black/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-zinc-900">
+                      {members.map((section) => {
+                        const isSectionActive = pathname === `/${section.slug}`;
 
-                      return (
-                        <Link
-                          key={section.slug}
-                          href={`/${section.slug}`}
-                          onClick={closeAll}
-                          aria-current={isSectionActive ? "page" : undefined}
-                          className={`rounded-lg px-3 py-2 text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
-                            isSectionActive
-                              ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
-                              : "text-zinc-600 dark:text-zinc-300"
-                          }`}
-                        >
-                          {section.title}
-                        </Link>
-                      );
-                    })}
+                        return (
+                          <Link
+                            key={section.slug}
+                            href={`/${section.slug}`}
+                            onClick={closeAll}
+                            aria-current={isSectionActive ? "page" : undefined}
+                            className={`rounded-lg px-3 py-2 text-sm transition hover:bg-black/5 hover:text-zinc-950 dark:hover:bg-white/10 dark:hover:text-white ${
+                              isSectionActive
+                                ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                                : "text-zinc-600 dark:text-zinc-300"
+                            }`}
+                          >
+                            {section.title}
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </nav>
+              );
+            })}
+          </nav>
+          <AuthStatus />
+        </div>
 
         {/* Mobile hamburger */}
         <button
@@ -240,6 +244,13 @@ export function SiteHeader() {
               </div>
             );
           })}
+
+          <div className="mt-4 border-t border-black/5 pt-4 dark:border-white/10">
+            <AuthStatus
+              onNavigate={closeAll}
+              className="inline-flex rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+            />
+          </div>
         </div>
       </div>
     </header>
