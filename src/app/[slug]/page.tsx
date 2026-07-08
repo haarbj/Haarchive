@@ -58,6 +58,16 @@ export async function generateMetadata({
   return {
     title: entry.title,
     description: entry.mission,
+    openGraph: {
+      title: entry.title,
+      description: entry.mission,
+      images: ["/opengraph-image.png"],
+    },
+    twitter: {
+      title: entry.title,
+      description: entry.mission,
+      images: ["/opengraph-image.png"],
+    },
   };
 }
 

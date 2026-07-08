@@ -226,6 +226,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The \"polarized\" model isn't training spread evenly across every effort level — it's concentrated at two distinct poles, roughly 65% and 90% of VO₂max, with comparatively little time spent in between. That middle ground sits right around the lactate threshold, and Seiler's research flags it as a kind of gravitational trap: threshold-paced running feels productive and sustainable enough that it's easy to drift there by default, even though it accumulates fatigue faster than low-intensity work while building fitness no faster than genuinely hard intervals (Seiler, \"Training Intensity Distribution for Endurance Performance,\" Vienna 2017).",
       },
+      { type: "heading", text: "Polarized Isn't the Only Split With Evidence Behind It" },
+      {
+        type: "paragraph",
+        text: "Polarized training gets most of the attention, but it isn't the only intensity distribution with real research behind it. In at least one study, the best results actually came from runners who did roughly equal amounts of moderate- and high-intensity training rather than sticking to a strict 80/20 split, and there's separate evidence that athletes preparing for longer events get more out of moderate-intensity work specifically than they do out of high-intensity work. The honest read: polarized and 80/20 distributions are strong defaults, not settled science (Fitzgerald, 80/20 Running).",
+      },
       { type: "heading", text: "One Skier's Actual Training Log" },
       {
         type: "paragraph",
@@ -240,6 +245,30 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A series of studies out of Seiler's lab compared interval sessions matched for perceived \"maximal session effort\" but built from different work-bout lengths — four sets of 16, 8, or 4 minutes. All three felt like giving everything, but they weren't physiologically equal: the 4-minute intervals produced nearly triple the blood lactate of the 16-minute version (12.7 vs. 4.7 mmol/L) and pushed 61% of sessions to a peak RPE of 19–20, compared to just 8% for the longer intervals. Counterintuitively, the longer, lower-intensity intervals produced equal or greater fitness gains — more accumulated work at 90% of max heart rate beat less accumulated work nearer to max. The practical read: work-bout duration and total accumulated interval time are the real levers on intensity, and going slightly longer and slightly easier on intervals often buys more fitness for less damage (Seiler & Sylta, International Journal of Sports Physiology and Performance, 2017).",
+      },
+      {
+        type: "heading",
+        text: "Why Long, Slow Runs Fatigue You in a Way Sprints Don't",
+      },
+      {
+        type: "paragraph",
+        text: "Prolonged low-intensity running releases large amounts of interleukin-6 (IL-6), a cell-signaling compound triggered primarily by glycogen depletion in the working muscles rather than by speed — which is why IL-6 release tracks with duration more than pace. Well-trained runners produce measurably less of it, and the leading theory is that repeated exposure to IL-6 during long runs is itself the trigger for the adaptations that make future long runs feel easier. It's a distinct mechanism from the capillary and mitochondrial growth already covered in The Aerobic Base — a second, separate reason duration matters on its own (Fitzgerald, 80/20 Running).",
+      },
+      {
+        type: "heading",
+        text: "The Brain Fatigues Too, and It's Trainable Separately From the Body",
+      },
+      {
+        type: "paragraph",
+        text: "Physical aerobic capacity isn't the only thing that limits endurance — a separate, largely independent system matters just as much: the brain's tolerance for the discomfort of sustained effort. Prolonged low-intensity exercise fatigues the insular and temporal lobes (which register the physical sensation of discomfort) and the anterior cingulate cortex (which manages the internal tug-of-war between pushing on and quitting) far more than short, hard efforts do — part of why an easy two-hour run can be more mentally taxing than a hard 20-minute interval session, despite being less physically demanding. The finding gets stranger: sustained mental focus on any sufficiently demanding cognitive task, with no physical exercise at all, measurably builds the same fatigue resistance (Fitzgerald, 80/20 Running).",
+      },
+      {
+        type: "heading",
+        text: "Don't Fix Your Form — Run More and Let It Fix Itself",
+      },
+      {
+        type: "paragraph",
+        text: "A recurring finding across running-form research: deliberately imposed changes to a runner's natural stride almost always make performance worse, not better. The stride behaves like a self-optimizing system — the brain continuously searches for the movement pattern that produces a given speed with the least muscular effort, and that search runs automatically as training volume accumulates. The practical implication is blunt: the most reliable way to develop a more efficient stride is to run enough that the body has the mileage to optimize against, not to consciously rebuild mechanics (Fitzgerald, 80/20 Running). That's in real tension with Lydiard's insistence on deliberately coached technique (see Training Philosophy) — a genuine unresolved disagreement, not an oversight on either page.",
       },
     ],
   },
@@ -373,6 +402,7 @@ export const sections: Section[] = [
           "Canova marathon-specific week (late buildup) — two \"special block\" sessions at or near marathon pace, aerobic mileage filling the rest of the week, minimal easy junk volume.",
           "Norwegian threshold week — up to four days with two sub-threshold sessions each, intensity controlled by lactate testing rather than pace or feel.",
           "Maffetone MAF week — every run held under a hard heart-rate ceiling (180 minus age, adjusted), often for months at a stretch, with no speed work until an aerobic time trial at that heart rate stops improving.",
+          "Elite Kenyan week — daily mileage varies widely rather than staying constant (10, 15, 12, 18, 10, 15, then a 24-mile long run), aerobic-effort-dominant, built around one very long day rather than a fixed weekly template.",
         ],
       },
       { type: "heading", text: "Where They Agree" },
@@ -413,6 +443,11 @@ export const sections: Section[] = [
     topics: ["Workouts", "Fueling", "Race strategy"],
     category: "coaching-and-training",
     content: [
+      { type: "heading", text: "How Long a Buildup Should Actually Be" },
+      {
+        type: "paragraph",
+        text: "The body can't keep absorbing increasing training load indefinitely — most runners hit a wall around 24 weeks of steadily building volume, after which further increases stop producing fitness gains and start just producing fatigue. That ceiling is why serious marathon buildups run in cycles rather than one long uninterrupted ramp: build for up to about 24 weeks, then take a recovery block of at least a couple of weeks before the next cycle. Counterintuitively, the runner comes back from that break able to train harder and reach a higher peak than if the buildup had never stopped, despite losing some fitness during the break itself (Fitzgerald, 80/20 Running).",
+      },
       { type: "heading", text: "Racing the Last 25%" },
       {
         type: "paragraph",
@@ -444,6 +479,11 @@ export const sections: Section[] = [
     topics: ["Aerobic sessions", "Threshold sessions", "Specificity"],
     category: "coaching-and-training",
     content: [
+      { type: "heading", text: "Five Training Zones, Anchored to One Number" },
+      {
+        type: "paragraph",
+        text: "Matt Fitzgerald's 80/20 Running system defines five intensity zones off a single anchor point: lactate threshold heart rate, found via a 30-minute time trial (average heart rate over the last 10 minutes) or a simpler talk test (the fastest pace at which conversation stays comfortable). Zones 1–2 are low intensity (RPE 1–4), Zone 3 is moderate (RPE 5–6), and Zones 4–5 are high (RPE 7–10) — with the rule that pace should never be the primary gauge in Zones 1–2, heart rate and pace should both govern Zone 3, and pace takes over as primary once effort climbs into Zones 4–5, since heart rate lags a sudden change in effort by a minute or more. A foundation run — Fitzgerald's term for what most coaches just call an easy run — is simply a Zone 1–2 effort bookended by a Zone 1 warm-up and cool-down; nearly everything else on this page is built by layering moderate or high-intensity segments onto that same base.",
+      },
       { type: "heading", text: "Dialing In a Tempo Run" },
       {
         type: "paragraph",
@@ -561,6 +601,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A simple formula for an approximate training range: (220 minus your age, minus your resting heart rate) times 70%, plus your resting heart rate again — add 3 if you're a woman. Give yourself about five beats on either side of that number as your range. Treat it as a rough guideline, not gospel — how an effort feels should always override what a number on a screen says.",
       },
+      { type: "heading", text: "A More Precise Way to Find Your Zones: The Talk Test" },
+      {
+        type: "paragraph",
+        text: "The heart-rate formula above is a reasonable starting estimate, but it's still a population average. A more individualized alternative: start jogging slowly, and every minute, speed up slightly and try to talk — recite something memorized, or just count out loud. The fastest pace at which you can still speak in full, comfortable sentences, with breathing back to normal within about three breaths of stopping, marks your lactate threshold. Everything below that pace is low intensity; conversation getting noticeably harder to hold is where moderate and high intensity begin. It costs nothing, needs no equipment, and adjusts automatically as fitness changes — which a fixed formula can't do (Fitzgerald, 80/20 Running).",
+      },
       { type: "heading", text: "Pleasantly Tired: The Only Metric a Beginner Needs" },
       {
         type: "paragraph",
@@ -614,6 +659,11 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "The strongest predictor of long-term success isn't raw talent — it's having a coach, a team, and a training log. Write the week's goals at the top of each page, note anything that isn't going well plus your own best guess at a solution, and write down what went right and why. Apps that let you compare your splits against everyone else's turn your own training into someone else's competition. Keep the comparison out of it.",
+      },
+      { type: "heading", text: "Tolerance for Suffering Is a Trainable Skill" },
+      {
+        type: "paragraph",
+        text: "Mental toughness isn't just a personality trait — it's a specific, trainable capacity that responds to the same stimulus-then-adaptation logic as the aerobic system: exposure to discomfort now builds a higher tolerance for it later. Skilled, experienced athletes in virtually every sport show measurably less brain activity while performing than novices do, a \"quieter brain\" that shows up in running as the relaxed, effortless-looking stride of a well-trained runner deep into a hard effort. The training implication: long, low-intensity runs that stay uncomfortable for a sustained period build this tolerance more effectively than short, hard efforts do, even though the short efforts hurt more in the moment (Fitzgerald, 80/20 Running).",
       },
       { type: "heading", text: "Goal Setting" },
       {
@@ -681,6 +731,11 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A simple daily target: water need in ounces equals body weight in pounds divided by two. Sip through the day — aim for at least one sip every 20 minutes — rather than trying to catch up all at once.",
+      },
+      { type: "heading", text: "Cross-Training That Actually Carries Over" },
+      {
+        type: "paragraph",
+        text: "Not all cross-training transfers evenly to running. Research comparing supplemental training modes found cycling produced a real, measurable improvement in running performance, while swimming did not — the likely reason is that swimming removes both gravity and the alternating-leg-drive pattern running depends on, while cycling keeps the alternating-leg mechanics intact even though it removes the impact. The practical rule when picking a nonimpact option during an injury or a heavy-volume block — cycling, the elliptical, pool running — is to favor whatever keeps that alternating-leg action closest to running's own movement pattern (Fitzgerald, 80/20 Running).",
       },
       { type: "heading", text: "Relative Energy Deficiency in Sport (RED-S)" },
       {
