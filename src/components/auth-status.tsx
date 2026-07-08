@@ -98,8 +98,13 @@ function AccountMenu({
           <Link href="/settings" onClick={closeAndNavigate} className={menuItemClass}>
             Settings
           </Link>
+          {/* No onClick here: setting state to close the menu on the same
+              click that submits this form removes the button from the DOM
+              before the browser's default submit action fires, silently
+              cancelling it. The redirect inside signOut takes care of
+              closing this menu once the auth status flips. */}
           <form action={signOut}>
-            <button type="submit" onClick={closeAndNavigate} className={menuItemClass}>
+            <button type="submit" className={menuItemClass}>
               Sign out
             </button>
           </form>
