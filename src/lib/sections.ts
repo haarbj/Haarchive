@@ -321,7 +321,7 @@ export const sections: Section[] = [
       { type: "heading", text: "Comparing the Major Systems" },
       {
         type: "paragraph",
-        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
+        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, Phil Maffetone, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
       },
       { type: "heading", text: "Jack Daniels: Precision Through Pace Zones" },
       {
@@ -341,6 +341,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Vigil coached at altitude in Alamosa, Colorado, and built his system on a similar aerobic-first premise to Lydiard's, layered with an unusually heavy emphasis on running mechanics and psychology — he treated economical form and mental composure as trainable skills, not fixed traits. His best-known result, Deena Kastor's American record and Olympic bronze in the marathon, came from exactly that combination: high-altitude aerobic volume paired with deliberate technical and mental work most programs treat as secondary.",
       },
+      { type: "heading", text: "Phil Maffetone: The MAF Method" },
+      {
+        type: "paragraph",
+        text: "Maffetone runs the strictest aerobic-only system on this list: build the base almost exclusively below a hard heart-rate ceiling — his rule-of-thumb formula is 180 minus age, adjusted a few beats for training history and health — for months before adding any faster work at all. Matt Fitzgerald's 80/20 Running popularized a related, looser idea from the same research lineage as Seiler's polarized-training work (see Research Library): roughly 80% of volume easy, 20% genuinely hard, almost nothing in between. Critics of MAF point out that a flat age-based formula ignores real differences in individual aerobic fitness the way lactate testing or VDOT don't — but the underlying instinct, that most runners run their easy days too hard, is the same one driving Lydiard's pyramid and Norwegian threshold work alike.",
+      },
       { type: "heading", text: "Steve Magness: Testing the Folklore" },
       {
         type: "paragraph",
@@ -357,7 +362,7 @@ export const sections: Section[] = [
       { type: "heading", text: "What Each System Is Actually Training For" },
       {
         type: "paragraph",
-        text: "Strip away the branding and each system is chasing a specific adaptation. Lydiard's base phase and Vigil's altitude volume are both after capillary density and mitochondrial growth — see The Aerobic Base for the mechanism. Norwegian threshold work targets lactate clearance and buffering capacity directly, at the exact intensity where that system is normally the limiter. Canova's marathon-specific blocks target glycogen-sparing efficiency at goal race pace specifically, rather than fitness in general. Daniels' interval and repetition paces target VO2max and running economy respectively. None of it is mysterious once you ask what's actually being trained instead of what the workout is called.",
+        text: "Strip away the branding and each system is chasing a specific adaptation. Lydiard's base phase, Vigil's altitude volume, and Maffetone's heart-rate-capped base phase are all after the same capillary density and mitochondrial growth — see The Aerobic Base for the mechanism — just enforced by feel, altitude, or a strict intensity ceiling respectively. Norwegian threshold work targets lactate clearance and buffering capacity directly, at the exact intensity where that system is normally the limiter. Canova's marathon-specific blocks target glycogen-sparing efficiency at goal race pace specifically, rather than fitness in general. Daniels' interval and repetition paces target VO2max and running economy respectively. None of it is mysterious once you ask what's actually being trained instead of what the workout is called.",
       },
       { type: "heading", text: "A Week, Compared" },
       {
@@ -367,6 +372,7 @@ export const sections: Section[] = [
           "Daniels formula week — one quality day each for a long run at Marathon pace, a Threshold session, and an Interval or Repetition session, each dosed in minutes or meters calculated from current VDOT.",
           "Canova marathon-specific week (late buildup) — two \"special block\" sessions at or near marathon pace, aerobic mileage filling the rest of the week, minimal easy junk volume.",
           "Norwegian threshold week — up to four days with two sub-threshold sessions each, intensity controlled by lactate testing rather than pace or feel.",
+          "Maffetone MAF week — every run held under a hard heart-rate ceiling (180 minus age, adjusted), often for months at a stretch, with no speed work until an aerobic time trial at that heart rate stops improving.",
         ],
       },
       { type: "heading", text: "Where They Agree" },
@@ -383,7 +389,7 @@ export const sections: Section[] = [
         type: "list",
         items: [
           "How much quality work should sit near threshold. Norwegian training spends heavily there; Seiler's polarized-training research (see Research Library) argues that's exactly the zone to minimize.",
-          "How prescriptive training should be. Daniels calculates paces to the second; Lydiard and Magness lean on feel and context over a fixed number.",
+          "How prescriptive training should be. Daniels calculates paces to the second and Maffetone locks a heart-rate ceiling to a formula; Lydiard and Magness lean on feel and context over a fixed number.",
           "How much technical and mental coaching matters. Vigil and Lydiard treat form and psychology as core training; Daniels' formula is largely agnostic to either.",
         ],
       },

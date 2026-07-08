@@ -22,6 +22,13 @@ const sectionTools: Record<string, ComponentType> = {
   "heat-tracker": HeatTracker,
 };
 
+function headingId(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 type SectionPageProps = {
   params: Promise<{ slug: string }>;
 };
@@ -131,7 +138,8 @@ export default async function SectionPage({ params }: SectionPageProps) {
               return (
                 <h2
                   key={index}
-                  className="pt-6 text-2xl font-semibold tracking-tight text-zinc-900 first:pt-0 dark:text-white"
+                  id={headingId(block.text)}
+                  className="scroll-mt-24 pt-6 text-2xl font-semibold tracking-tight text-zinc-900 first:pt-0 dark:text-white"
                 >
                   {block.text}
                 </h2>

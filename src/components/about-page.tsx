@@ -3,30 +3,37 @@ import Link from "next/link";
 import { categories } from "@/lib/sections";
 import { PullQuote } from "@/components/pull-quote";
 
-const timeline: { label: string; note: string }[] = [
+const timeline: {
+  label: string;
+  note: string;
+  linkHref?: string;
+  linkText?: string;
+}[] = [
   {
     label: "Brophy College Prep, Arizona",
-    note: "Four years of high school racing that taught me discipline before it taught me anything about physiology.",
+    note: "Four years of racing under Mike Scannell — the coach who took Grant Fisher from a sub-4 mile to Olympic medals in the 5,000m and 10,000m. I started as one of the slower runners on the team freshman year; the turning point was the summer after, spent training through Flagstaff's altitude, and I came back sophomore year a different runner. By senior year that had grown into roughly 70 miles a week of altitude training each summer, a state championship junior year — Brophy's first in 17 years — and a First-Team state medal senior year. What actually stuck, though, was the physiology and psychology I picked up from Scannell and camps like Project Gold and Anasazi, before I had the language for either.",
+  },
+  {
+    label: "Run22",
+    note: "During COVID lockdowns junior year, with nowhere left to train together in person, I built an online community for runners in my graduating class on Strava. Run22 grew to nearly 400 members across 26 states, trading training questions and encouragement — and it was the first time I noticed I liked the coaching and community side of the sport as much as the racing itself.",
   },
   {
     label: "Vanderbilt, SEC cross country",
-    note: "Studying applied math, computer science, German, and engineering management while training at a Division I level — and learning, the hard way, that more anaerobic work isn't the same as better training.",
+    note: "Studying applied math, computer science, German, and engineering management while training at a Division I level. It didn't go how I expected: a rigid, anaerobic-heavy program left me plateaued and anxious instead of improving, and by sophomore year I walked away from the team entirely.",
+    linkHref: "/articles#the-onus-to-quit",
+    linkText: "Read the full story in Articles",
   },
   {
     label: "Stepping off the plan",
-    note: "Partway through college, I walked away from a training structure built around hard mileage days and short recovery, and went looking for a system that made more physiological sense.",
-  },
-  {
-    label: "Flagstaff, altitude",
-    note: "Training at 7,000 feet forced me to think seriously about oxygen delivery — not as an abstraction, but as the thing actually limiting how hard I could run.",
+    note: "Walking away from the team meant reading instead of just following a plan — Matt Fitzgerald's 80/20 Running, Phil Maffetone's MAF Method — and testing what I found, which is where the aerobic-first approach the rest of this site is built on actually started.",
   },
   {
     label: "Marathon training, on my own terms",
-    note: "Building a buildup around aerobic volume instead of interval volume, and watching it hold up better than anything the rigid plan had produced.",
+    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. An injury three weeks out, from skipping enough of it, left me broken down by the second half — nothing to do with how I paced the race itself. Lydiard trusted the same kind of strength: hills and bodyweight work, not a barbell. Endurance without it is a plan with a hole in it, and that's shaped how I train and coach ever since.",
   },
   {
     label: "Coaching, and this archive",
-    note: "Years of reading Lydiard, Daniels, Canova, and physiology papers side by side, trying to find where they agreed — and writing it down so I wouldn't have to re-derive it every time.",
+    note: "I started by coaching a handful of Run22 members directly, and now coach the Vanderbilt Run Club through full and half marathon training. Alongside that, years of reading Lydiard, Daniels, Canova, and physiology papers side by side, trying to find where they agreed — and writing all of it down so I wouldn't have to re-derive it every time.",
   },
 ];
 
@@ -37,7 +44,7 @@ const influences: { name: string; note: string }[] = [
   },
   {
     name: "Jack Daniels",
-    note: "Precision: pace zones anchored to measured physiology, not feel alone.",
+    note: "Precision: pace zones anchored to measured physiology rather than feel.",
   },
   {
     name: "Renato Canova",
@@ -64,14 +71,13 @@ export function AboutPage() {
         Distance Running Knowledge Hub
       </p>
       <h1 className="mt-3 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
-        Understanding endurance, one question at a time.
+        For runners who want to understand the sport at the deepest level.
       </h1>
       <p className="mt-6 max-w-[66ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
-        The Haarchive is a working notebook — physiology, coaching history,
-        psychology, and firsthand experience, organized into a long-term
-        archive instead of a feed. It isn&rsquo;t a portfolio of results.
-        It&rsquo;s an ongoing attempt to explain why training works, not
-        just what to do.
+        The Haarchive is a long-term resource dedicated to the physiology,
+        psychology, philosophy, and practice of distance running — helping
+        athletes learn not only how to train, but how to think about
+        training.
       </p>
 
       <Link
@@ -120,17 +126,16 @@ export function AboutPage() {
             paper on substrate utilization that assumes you already have a
             physiology degree. Almost nothing sits between them — a place
             that explains why the banana works, in language built for someone
-            who wants to train intelligently, not publish.
+            who wants to train intelligently.
           </p>
           <p>
             That gap is what this site is trying to close. Every section
             here is built the same way: start with the mechanism — why
             oxygen delivery, muscle fiber type, or hormonal response works
             the way it does — and only then get to the workout it produces.
-            The goal isn&rsquo;t to hand you a plan. It&rsquo;s to get you to
-            the point where you could write your own, because you understand
-            the system well enough to reason about it instead of just
-            following it.
+            The goal is to get you to the point where you could write your
+            own plan, because you understand the system well enough to
+            reason about it instead of just following it.
           </p>
         </div>
       </section>
@@ -144,8 +149,8 @@ export function AboutPage() {
           From racing to reverse-engineering why racing works
         </h2>
         <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-          This isn&rsquo;t a highlight reel of results. It&rsquo;s the record
-          of a slow shift in what I was actually curious about.
+          This is the record of a slow shift in what I was actually curious
+          about.
         </p>
 
         <ol className="mt-10 space-y-8 border-l border-black/10 pl-6 dark:border-white/10">
@@ -157,16 +162,28 @@ export function AboutPage() {
               </h3>
               <p className="mt-1 max-w-[62ch] text-zinc-600 dark:text-zinc-300">
                 {stop.note}
+                {stop.linkHref ? (
+                  <>
+                    {" "}
+                    <Link
+                      href={stop.linkHref}
+                      className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+                    >
+                      {stop.linkText}
+                    </Link>
+                    .
+                  </>
+                ) : null}
               </p>
             </li>
           ))}
         </ol>
 
         <p className="mt-10 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-          None of that is really a running résumé. It&rsquo;s the record of a
-          realization that crept up slowly: I was more interested in why a
-          workout worked than in how fast I could run it. This site is what
-          happened after I stopped being able to un-notice that.
+          It&rsquo;s the record of a realization that crept up slowly: I was
+          more interested in why a workout worked than in how fast I could
+          run it. This site is what happened after that realization took
+          over.
         </p>
       </section>
 
@@ -179,13 +196,13 @@ export function AboutPage() {
           Comparing systems instead of picking one
         </h2>
         <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-          I don&rsquo;t coach from a single playbook, and I&rsquo;m
-          suspicious of anyone who does. The coaches and researchers below
-          all built real, medal-winning methods, and they don&rsquo;t agree
-          with each other — on how much of training should be aerobic base
-          versus race-specific work, or how precisely intensity should be
-          measured. Studying where they diverge teaches you more than
-          adopting any one of them wholesale.
+          I compare coaching systems instead of committing to one, and
+          I&rsquo;m suspicious of anyone who does. The coaches and
+          researchers below all built real, medal-winning methods, yet they
+          disagree with each other — on how much of training should be
+          aerobic base versus race-specific work, or how precisely intensity
+          should be measured. Studying where they diverge teaches you more
+          than adopting any one of them wholesale.
         </p>
 
         <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
@@ -202,11 +219,10 @@ export function AboutPage() {
         </div>
 
         <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-          None of them is right about everything. That&rsquo;s the point —
-          the interesting question was never &ldquo;which coach is
-          correct,&rdquo; it&rsquo;s &ldquo;what adaptation is this session
-          actually trying to create,&rdquo; and every system above answers
-          that a little differently. The full comparison lives in the{" "}
+          The interesting question is always &ldquo;what adaptation is this
+          session actually trying to create,&rdquo; and every system above
+          answers that a little differently. The full comparison lives in
+          the{" "}
           <Link
             href="/coaching-library"
             className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
@@ -270,7 +286,7 @@ export function AboutPage() {
           What you&rsquo;ll find here
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-          A growing knowledge base, not a blog
+          A growing knowledge base
         </h2>
         <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
           The site is organized into six standing categories, each one a
@@ -316,17 +332,17 @@ export function AboutPage() {
           Looking ahead
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-          This isn&rsquo;t a finished answer
+          Still being written
         </h2>
         <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
           <p>
-            I don&rsquo;t expect to ever call this site done. Ten years from
-            now I&rsquo;d like it to hold a few hundred connected pages on
-            training, physiology, psychology, and coaching history —
-            refined the same way any long-running research project gets
-            refined, by being wrong sometimes and updating the record. If
-            you&rsquo;re reading this early, you&rsquo;re reading a smaller
-            version of what this is trying to become.
+            Ten years from now I&rsquo;d like this site to hold a few hundred
+            connected pages on training, physiology, psychology, and
+            coaching history — refined the same way any long-running
+            research project gets refined, by being wrong sometimes and
+            updating the record. If you&rsquo;re reading this early,
+            you&rsquo;re reading a smaller version of what this is trying to
+            become.
           </p>
           <p className="font-medium text-zinc-900 italic dark:text-white">
             The archive grows the same way the aerobic system does — slowly,
