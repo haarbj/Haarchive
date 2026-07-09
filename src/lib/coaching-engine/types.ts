@@ -35,6 +35,16 @@ export const workoutPrescriptionSchema = z.discriminatedUnion("kind", [
         paceRangeSecPerKm: z.tuple([z.number(), z.number()]),
       })
       .optional(),
+    // "A shakeout is not another workout" (both source guidelines, verbatim)
+    // -- deliberately modeled as an optional suggestion attached to the long
+    // run, not a second schedulable/completable workout row, for athletes
+    // running 6 days/week. See prescriptions.ts for when this is set.
+    suggestedShakeout: z
+      .object({
+        distanceM: z.number().positive(),
+        paceRangeSecPerKm: z.tuple([z.number(), z.number()]),
+      })
+      .optional(),
   }),
   z.object({
     kind: z.literal("tempo"),

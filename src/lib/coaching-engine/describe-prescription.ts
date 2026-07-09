@@ -23,11 +23,14 @@ export function describePrescription(prescription: WorkoutPrescription): string 
     case "recovery":
       return `${miles(prescription.distanceM)} · ${paceRange(prescription.paceRangeSecPerKm)}`;
     case "long": {
-      if (!prescription.marathonPaceSegment) {
-        return `${miles(prescription.distanceM)} long · ${paceRange(prescription.paceRangeSecPerKm)}`;
-      }
-      const easyM = prescription.distanceM - prescription.marathonPaceSegment.distanceM;
-      return `${miles(prescription.distanceM)} long: ${miles(easyM)} easy + ${miles(prescription.marathonPaceSegment.distanceM)} @ marathon pace (${paceRange(prescription.marathonPaceSegment.paceRangeSecPerKm)})`;
+      const base = !prescription.marathonPaceSegment
+        ? `${miles(prescription.distanceM)} long · ${paceRange(prescription.paceRangeSecPerKm)}`
+        : (() => {
+            const easyM = prescription.distanceM - prescription.marathonPaceSegment.distanceM;
+            return `${miles(prescription.distanceM)} long: ${miles(easyM)} easy + ${miles(prescription.marathonPaceSegment.distanceM)} @ marathon pace (${paceRange(prescription.marathonPaceSegment.paceRangeSecPerKm)})`;
+          })();
+      if (!prescription.suggestedShakeout) return base;
+      return `${base} + optional ${miles(prescription.suggestedShakeout.distanceM)} shakeout later`;
     }
     case "tempo":
       return `${miles(prescription.warmupM)} warmup + ${miles(prescription.tempoM)} tempo @ ${paceRange(prescription.paceRangeSecPerKm)} + ${miles(prescription.cooldownM)} cooldown`;

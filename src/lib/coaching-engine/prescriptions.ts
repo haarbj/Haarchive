@@ -32,8 +32,37 @@ const MIN_DISTANCE_FOR_MP_SEGMENT_M = 12875; // ~8 miles
 const BUILD_MP_FRACTION = 0.2;
 const PEAK_MP_FRACTION = 0.3;
 
+// Shakeouts ("advanced athletes who double may begin doing shakeouts after
+// a long run" -- XC guidelines; "they may add shakeout doubles after long-
+// run days" -- Vandy Run Club guidelines): both documents converge on the
+// same trigger (6 days/week) and tie it to the long run specifically, so
+// one simple rule serves both training voices rather than two mechanics.
+// Both documents describe the *duration* growing across the season (15-30
+// min); a flat per-phase tier stands in for that week-by-week ramp -- exact
+// week-counting would need to track "weeks since shakeouts started" across
+// a phase sequence that can repeat (base/build cutback back to base later
+// in a long plan), which is real complexity for a minor realism gain.
+const SHAKEOUT_TRIGGER_DAYS_PER_WEEK = 6;
+const SHAKEOUT_MINUTES_BY_PHASE: Partial<Record<MesocyclePhase, number>> = {
+  base: 15,
+  build: 20,
+  peak: 25,
+};
+
 function round100(meters: number): number {
   return Math.round(meters / 100) * 100;
+}
+
+function suggestedShakeoutFor(
+  phase: MesocyclePhase,
+  daysPerWeekSignal: number,
+  paceZones: PaceZones,
+): { distanceM: number; paceRangeSecPerKm: [number, number] } | undefined {
+  const minutes = SHAKEOUT_MINUTES_BY_PHASE[phase];
+  if (!minutes || daysPerWeekSignal < SHAKEOUT_TRIGGER_DAYS_PER_WEEK) return undefined;
+  const easyPaceSecPerKm = (paceZones.easy[0] + paceZones.easy[1]) / 2;
+  const distanceM = round100(((minutes * 60) / easyPaceSecPerKm) * 1000);
+  return { distanceM, paceRangeSecPerKm: paceZones.easy };
 }
 
 function buildTempoPrescription(distanceM: number, paceZones: PaceZones): WorkoutPrescription {
@@ -105,6 +134,7 @@ export function buildWeekPrescriptions(
       case "long": {
         const longDistanceM = round100(weekTotalMeters * scaledLongShare);
         const mpFraction = phase === "peak" ? PEAK_MP_FRACTION : phase === "build" ? BUILD_MP_FRACTION : 0;
+        const suggestedShakeout = suggestedShakeoutFor(phase, slots.length, paceZones);
         if (mpFraction > 0 && distanceBucket(goalDistanceM) === "long" && longDistanceM >= MIN_DISTANCE_FOR_MP_SEGMENT_M) {
           return {
             kind: "long",
@@ -114,12 +144,14 @@ export function buildWeekPrescriptions(
               distanceM: round100(longDistanceM * mpFraction),
               paceRangeSecPerKm: paceZones.steady,
             },
+            suggestedShakeout,
           };
         }
         return {
           kind: "long",
           distanceM: longDistanceM,
           paceRangeSecPerKm: paceZones.steady,
+          suggestedShakeout,
         };
       }
       case "tempo":

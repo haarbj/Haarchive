@@ -125,4 +125,46 @@ describe("buildWeekPrescriptions", () => {
       expect(long.marathonPaceSegment).toBeUndefined();
     });
   });
+
+  describe("suggested shakeouts (6 days/week, either training voice)", () => {
+    const sixDaySlots: WorkoutType[] = ["long", "tempo", "easy", "easy", "easy", "easy"];
+    const fiveDaySlots: WorkoutType[] = ["long", "tempo", "easy", "easy", "easy"];
+
+    it("suggests a shakeout in base/build/peak phase at 6 days/week", () => {
+      for (const phase of ["base", "build", "peak"] as const) {
+        const [long] = buildWeekPrescriptions(sixDaySlots, WEEK_TOTAL_M, paceZones, phase, MARATHON_M);
+        if (long.kind !== "long") throw new Error("expected a long prescription");
+        expect(long.suggestedShakeout).toBeDefined();
+        expect(long.suggestedShakeout!.paceRangeSecPerKm).toEqual(paceZones.easy);
+      }
+    });
+
+    it("does not suggest a shakeout below 6 days/week", () => {
+      const [long] = buildWeekPrescriptions(fiveDaySlots, WEEK_TOTAL_M, paceZones, "build", MARATHON_M);
+      if (long.kind !== "long") throw new Error("expected a long prescription");
+      expect(long.suggestedShakeout).toBeUndefined();
+    });
+
+    it("does not suggest a shakeout in taper or recovery phase", () => {
+      for (const phase of ["taper", "recovery"] as const) {
+        const [long] = buildWeekPrescriptions(sixDaySlots, WEEK_TOTAL_M, paceZones, phase, MARATHON_M);
+        if (long.kind !== "long") throw new Error("expected a long prescription");
+        expect(long.suggestedShakeout).toBeUndefined();
+      }
+    });
+
+    it("grows the suggested shakeout's duration (via distance) from base to peak", () => {
+      const [baseLong] = buildWeekPrescriptions(sixDaySlots, WEEK_TOTAL_M, paceZones, "base", MARATHON_M);
+      const [peakLong] = buildWeekPrescriptions(sixDaySlots, WEEK_TOTAL_M, paceZones, "peak", MARATHON_M);
+      if (baseLong.kind !== "long" || peakLong.kind !== "long") throw new Error("expected long prescriptions");
+      expect(peakLong.suggestedShakeout!.distanceM).toBeGreaterThan(baseLong.suggestedShakeout!.distanceM);
+    });
+
+    it("suggests a shakeout for XC-voice (short-bucket) goals too, same trigger", () => {
+      const fiveKPaceZones = derivePaceZones(5000, 20 * 60);
+      const [long] = buildWeekPrescriptions(sixDaySlots, WEEK_TOTAL_M, fiveKPaceZones, "build", 5000);
+      if (long.kind !== "long") throw new Error("expected a long prescription");
+      expect(long.suggestedShakeout).toBeDefined();
+    });
+  });
 });

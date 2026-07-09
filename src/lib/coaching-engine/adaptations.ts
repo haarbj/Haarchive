@@ -88,10 +88,11 @@ export function compressWorkout(prescription: WorkoutPrescription, availableMinu
       if (newDistance >= prescription.distanceM) {
         return { ok: false, reason: "You already have enough time for this workout as scheduled." };
       }
-      // A marathon-pace finish only makes sense at the original distance --
-      // compressing for time simplifies back to a plain easy-paced long run
-      // rather than trying to preserve a shorter race-pace segment inside it.
-      if (prescription.kind === "long" && prescription.marathonPaceSegment) {
+      // A marathon-pace finish and an optional shakeout only make sense at
+      // the original distance/schedule -- compressing for time simplifies
+      // back to a plain easy-paced long run rather than trying to preserve
+      // either one.
+      if (prescription.kind === "long" && (prescription.marathonPaceSegment || prescription.suggestedShakeout)) {
         return {
           ok: true,
           prescription: { kind: "long", distanceM: newDistance, paceRangeSecPerKm: prescription.paceRangeSecPerKm },
@@ -232,10 +233,13 @@ export function adjustForHeat(
     };
   }
 
-  // A marathon-pace finish is race-effort intensity -- in red-flag heat it
-  // gets dropped the same way a tempo/vo2 session does above, not just
-  // slowed down, since "run easy by effort only" applies to it too.
-  if (zone === "red" && prescription.kind === "long" && prescription.marathonPaceSegment) {
+  // A marathon-pace finish is race-effort intensity, and a shakeout is
+  // optional extra volume -- in red-flag heat both get dropped the same way
+  // a tempo/vo2 session converts to easy effort above, rather than just
+  // slowed down: "run easy by effort only" applies to the whole day, not
+  // just the core workout, and there's no reason to add optional volume on
+  // top of it.
+  if (zone === "red" && prescription.kind === "long" && (prescription.marathonPaceSegment || prescription.suggestedShakeout)) {
     return {
       ok: true,
       prescription: { kind: "long", distanceM: prescription.distanceM, paceRangeSecPerKm: paceZones.easy },
@@ -243,16 +247,24 @@ export function adjustForHeat(
   }
 
   const slowdown = zone === "yellow" ? YELLOW_SLOWDOWN : RED_EASY_SLOWDOWN;
-  if (prescription.kind === "long" && prescription.marathonPaceSegment) {
+  if (prescription.kind === "long" && (prescription.marathonPaceSegment || prescription.suggestedShakeout)) {
     return {
       ok: true,
       prescription: {
         ...prescription,
         paceRangeSecPerKm: scalePace(prescription.paceRangeSecPerKm, slowdown),
-        marathonPaceSegment: {
-          ...prescription.marathonPaceSegment,
-          paceRangeSecPerKm: scalePace(prescription.marathonPaceSegment.paceRangeSecPerKm, slowdown),
-        },
+        marathonPaceSegment: prescription.marathonPaceSegment
+          ? {
+              ...prescription.marathonPaceSegment,
+              paceRangeSecPerKm: scalePace(prescription.marathonPaceSegment.paceRangeSecPerKm, slowdown),
+            }
+          : undefined,
+        suggestedShakeout: prescription.suggestedShakeout
+          ? {
+              ...prescription.suggestedShakeout,
+              paceRangeSecPerKm: scalePace(prescription.suggestedShakeout.paceRangeSecPerKm, slowdown),
+            }
+          : undefined,
       },
     };
   }

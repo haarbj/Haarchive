@@ -21,6 +21,12 @@ const LONG_RUN_WITH_MP: WorkoutPrescription = {
   paceRangeSecPerKm: paceZones.easy,
   marathonPaceSegment: { distanceM: 9656, paceRangeSecPerKm: paceZones.steady },
 };
+const LONG_RUN_WITH_SHAKEOUT: WorkoutPrescription = {
+  kind: "long",
+  distanceM: 19312,
+  paceRangeSecPerKm: paceZones.steady,
+  suggestedShakeout: { distanceM: 3200, paceRangeSecPerKm: paceZones.easy },
+};
 const TEMPO: WorkoutPrescription = {
   kind: "tempo",
   warmupM: 1600,
@@ -91,6 +97,12 @@ describe("compressWorkout", () => {
     if (!result.ok || result.prescription.kind !== "long") throw new Error("expected a long prescription");
     expect(result.prescription.marathonPaceSegment).toBeUndefined();
     expect(result.prescription.distanceM).toBeLessThan(LONG_RUN_WITH_MP.distanceM);
+  });
+
+  it("drops the suggested shakeout when compressing a long run for time", () => {
+    const result = compressWorkout(LONG_RUN_WITH_SHAKEOUT, 60);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected a long prescription");
+    expect(result.prescription.suggestedShakeout).toBeUndefined();
   });
 });
 
@@ -234,5 +246,20 @@ describe("adjustForHeat", () => {
     expect(result.prescription.marathonPaceSegment).toBeUndefined();
     expect(result.prescription.distanceM).toBe(LONG_RUN_WITH_MP.distanceM);
     expect(result.prescription.paceRangeSecPerKm).toEqual(paceZones.easy);
+  });
+
+  it("scales the suggested shakeout's pace along with the long run's own pace in yellow conditions", () => {
+    const result = adjustForHeat(LONG_RUN_WITH_SHAKEOUT, YELLOW_WBGT, paceZones);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected an adjusted long prescription");
+    expect(result.prescription.suggestedShakeout).toBeDefined();
+    expect(result.prescription.suggestedShakeout!.paceRangeSecPerKm[0]).toBeGreaterThan(
+      LONG_RUN_WITH_SHAKEOUT.suggestedShakeout!.paceRangeSecPerKm[0],
+    );
+  });
+
+  it("drops the suggested shakeout entirely in red-flag conditions", () => {
+    const result = adjustForHeat(LONG_RUN_WITH_SHAKEOUT, RED_WBGT, paceZones);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected an adjusted long prescription");
+    expect(result.prescription.suggestedShakeout).toBeUndefined();
   });
 });

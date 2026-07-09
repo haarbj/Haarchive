@@ -27,6 +27,29 @@ describe("describePrescription", () => {
     expect(text).toContain("14.0 mi easy");
   });
 
+  it("mentions an optional suggested shakeout when present, on a plain long run", () => {
+    const rx: WorkoutPrescription = {
+      kind: "long",
+      distanceM: 19312,
+      paceRangeSecPerKm: [300, 330],
+      suggestedShakeout: { distanceM: 3200, paceRangeSecPerKm: [300, 330] },
+    };
+    expect(describePrescription(rx)).toContain("optional 2.0 mi shakeout");
+  });
+
+  it("mentions both a marathon-pace segment and a suggested shakeout when both are present", () => {
+    const rx: WorkoutPrescription = {
+      kind: "long",
+      distanceM: 32187,
+      paceRangeSecPerKm: [310, 330],
+      marathonPaceSegment: { distanceM: 9656, paceRangeSecPerKm: [270, 280] },
+      suggestedShakeout: { distanceM: 3200, paceRangeSecPerKm: [310, 330] },
+    };
+    const text = describePrescription(rx);
+    expect(text).toContain("marathon pace");
+    expect(text).toContain("optional 2.0 mi shakeout");
+  });
+
   it("formats a tempo run with warmup/tempo/cooldown segments", () => {
     const rx: WorkoutPrescription = { kind: "tempo", warmupM: 1600, tempoM: 4800, cooldownM: 1600, paceRangeSecPerKm: [240, 250] };
     const text = describePrescription(rx);
