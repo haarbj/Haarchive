@@ -15,6 +15,12 @@ const GOAL_TIME_S = 3 * 3600 + 30 * 60;
 const paceZones = derivePaceZones(MARATHON_M, GOAL_TIME_S);
 
 const LONG_RUN: WorkoutPrescription = { kind: "long", distanceM: 19312, paceRangeSecPerKm: paceZones.steady };
+const LONG_RUN_WITH_MP: WorkoutPrescription = {
+  kind: "long",
+  distanceM: 32187,
+  paceRangeSecPerKm: paceZones.easy,
+  marathonPaceSegment: { distanceM: 9656, paceRangeSecPerKm: paceZones.steady },
+};
 const TEMPO: WorkoutPrescription = {
   kind: "tempo",
   warmupM: 1600,
@@ -78,6 +84,13 @@ describe("compressWorkout", () => {
       const result = compressWorkout(rx, 5);
       expect(result.ok).toBe(true);
     }
+  });
+
+  it("drops the marathon-pace segment when compressing a segmented long run, rather than trying to preserve it", () => {
+    const result = compressWorkout(LONG_RUN_WITH_MP, 60);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected a long prescription");
+    expect(result.prescription.marathonPaceSegment).toBeUndefined();
+    expect(result.prescription.distanceM).toBeLessThan(LONG_RUN_WITH_MP.distanceM);
   });
 });
 
@@ -203,5 +216,23 @@ describe("adjustForHeat", () => {
       throw new Error("expected both to succeed with long prescriptions");
     }
     expect(red.prescription.paceRangeSecPerKm[0]).toBeGreaterThan(yellow.prescription.paceRangeSecPerKm[0]);
+  });
+
+  it("slows down both the easy portion and the marathon-pace segment in yellow conditions", () => {
+    const result = adjustForHeat(LONG_RUN_WITH_MP, YELLOW_WBGT, paceZones);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected an adjusted long prescription");
+    expect(result.prescription.marathonPaceSegment).toBeDefined();
+    expect(result.prescription.paceRangeSecPerKm[0]).toBeGreaterThan(LONG_RUN_WITH_MP.paceRangeSecPerKm[0]);
+    expect(result.prescription.marathonPaceSegment!.paceRangeSecPerKm[0]).toBeGreaterThan(
+      LONG_RUN_WITH_MP.marathonPaceSegment!.paceRangeSecPerKm[0],
+    );
+  });
+
+  it("drops the marathon-pace segment entirely in red-flag conditions, same as tempo/vo2", () => {
+    const result = adjustForHeat(LONG_RUN_WITH_MP, RED_WBGT, paceZones);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected an adjusted long prescription");
+    expect(result.prescription.marathonPaceSegment).toBeUndefined();
+    expect(result.prescription.distanceM).toBe(LONG_RUN_WITH_MP.distanceM);
+    expect(result.prescription.paceRangeSecPerKm).toEqual(paceZones.easy);
   });
 });

@@ -24,6 +24,17 @@ export const workoutPrescriptionSchema = z.discriminatedUnion("kind", [
     kind: z.literal("long"),
     distanceM: z.number().positive(),
     paceRangeSecPerKm: z.tuple([z.number(), z.number()]),
+    // Marathon-specific specificity: "22 miles with the final 10 at marathon
+    // pace" (Vandy Run Club guidelines). Only ever present for long-bucket
+    // goals in build/peak phase -- see prescriptions.ts. distanceM above
+    // stays the *total* run distance either way; this describes how much of
+    // it is run at marathon (steady) pace rather than easy pace.
+    marathonPaceSegment: z
+      .object({
+        distanceM: z.number().positive(),
+        paceRangeSecPerKm: z.tuple([z.number(), z.number()]),
+      })
+      .optional(),
   }),
   z.object({
     kind: z.literal("tempo"),

@@ -88,6 +88,15 @@ export function compressWorkout(prescription: WorkoutPrescription, availableMinu
       if (newDistance >= prescription.distanceM) {
         return { ok: false, reason: "You already have enough time for this workout as scheduled." };
       }
+      // A marathon-pace finish only makes sense at the original distance --
+      // compressing for time simplifies back to a plain easy-paced long run
+      // rather than trying to preserve a shorter race-pace segment inside it.
+      if (prescription.kind === "long" && prescription.marathonPaceSegment) {
+        return {
+          ok: true,
+          prescription: { kind: "long", distanceM: newDistance, paceRangeSecPerKm: prescription.paceRangeSecPerKm },
+        };
+      }
       return { ok: true, prescription: { ...prescription, distanceM: newDistance } };
     }
     case "tempo": {
@@ -223,7 +232,30 @@ export function adjustForHeat(
     };
   }
 
+  // A marathon-pace finish is race-effort intensity -- in red-flag heat it
+  // gets dropped the same way a tempo/vo2 session does above, not just
+  // slowed down, since "run easy by effort only" applies to it too.
+  if (zone === "red" && prescription.kind === "long" && prescription.marathonPaceSegment) {
+    return {
+      ok: true,
+      prescription: { kind: "long", distanceM: prescription.distanceM, paceRangeSecPerKm: paceZones.easy },
+    };
+  }
+
   const slowdown = zone === "yellow" ? YELLOW_SLOWDOWN : RED_EASY_SLOWDOWN;
+  if (prescription.kind === "long" && prescription.marathonPaceSegment) {
+    return {
+      ok: true,
+      prescription: {
+        ...prescription,
+        paceRangeSecPerKm: scalePace(prescription.paceRangeSecPerKm, slowdown),
+        marathonPaceSegment: {
+          ...prescription.marathonPaceSegment,
+          paceRangeSecPerKm: scalePace(prescription.marathonPaceSegment.paceRangeSecPerKm, slowdown),
+        },
+      },
+    };
+  }
   return {
     ok: true,
     prescription: { ...prescription, paceRangeSecPerKm: scalePace(prescription.paceRangeSecPerKm, slowdown) },

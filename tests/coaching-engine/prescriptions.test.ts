@@ -83,4 +83,46 @@ describe("buildWeekPrescriptions", () => {
       }
     }
   });
+
+  describe("marathon-pace long-run segments (long-bucket goals only)", () => {
+    const slots: WorkoutType[] = ["long", "easy", "easy", "easy", "easy"];
+
+    it("never embeds a segment in base phase, even for a long-bucket goal", () => {
+      const [long] = buildWeekPrescriptions(slots, WEEK_TOTAL_M, paceZones, "base", MARATHON_M);
+      if (long.kind !== "long") throw new Error("expected a long prescription");
+      expect(long.marathonPaceSegment).toBeUndefined();
+      expect(long.paceRangeSecPerKm).toEqual(paceZones.steady);
+    });
+
+    it("embeds a marathon-pace segment in build phase once the long run is long enough", () => {
+      const [long] = buildWeekPrescriptions(slots, WEEK_TOTAL_M, paceZones, "build", MARATHON_M);
+      if (long.kind !== "long") throw new Error("expected a long prescription");
+      expect(long.marathonPaceSegment).toBeDefined();
+      expect(long.paceRangeSecPerKm).toEqual(paceZones.easy);
+      expect(long.marathonPaceSegment?.paceRangeSecPerKm).toEqual(paceZones.steady);
+      expect(long.marathonPaceSegment!.distanceM).toBeLessThan(long.distanceM);
+    });
+
+    it("gives peak phase a bigger marathon-pace segment than build phase", () => {
+      const [buildLong] = buildWeekPrescriptions(slots, WEEK_TOTAL_M, paceZones, "build", MARATHON_M);
+      const [peakLong] = buildWeekPrescriptions(slots, WEEK_TOTAL_M, paceZones, "peak", MARATHON_M);
+      if (buildLong.kind !== "long" || peakLong.kind !== "long") throw new Error("expected long prescriptions");
+      expect(peakLong.marathonPaceSegment!.distanceM).toBeGreaterThan(buildLong.marathonPaceSegment!.distanceM);
+    });
+
+    it("never embeds a segment for a short/middle-bucket goal, even in build/peak phase", () => {
+      const fiveKPaceZones = derivePaceZones(5000, 20 * 60);
+      for (const phase of ["build", "peak"] as const) {
+        const [long] = buildWeekPrescriptions(slots, WEEK_TOTAL_M, fiveKPaceZones, phase, 5000);
+        if (long.kind !== "long") throw new Error("expected a long prescription");
+        expect(long.marathonPaceSegment).toBeUndefined();
+      }
+    });
+
+    it("skips the segment when the long run itself is too short to embed one meaningfully", () => {
+      const [long] = buildWeekPrescriptions(slots, 10 * 1609.34, paceZones, "build", MARATHON_M);
+      if (long.kind !== "long") throw new Error("expected a long prescription");
+      expect(long.marathonPaceSegment).toBeUndefined();
+    });
+  });
 });

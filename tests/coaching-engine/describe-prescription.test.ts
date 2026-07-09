@@ -13,6 +13,20 @@ describe("describePrescription", () => {
     expect(describePrescription(rx)).toContain("long");
   });
 
+  it("describes a marathon-pace-embedded long run as an easy portion plus a marathon-pace finish", () => {
+    const rx: WorkoutPrescription = {
+      kind: "long",
+      distanceM: 32187, // 20 mi
+      paceRangeSecPerKm: [310, 330],
+      marathonPaceSegment: { distanceM: 9656, paceRangeSecPerKm: [270, 280] }, // 6 mi
+    };
+    const text = describePrescription(rx);
+    expect(text).toContain("20.0 mi long");
+    expect(text).toContain("marathon pace");
+    expect(text).toContain("6.0 mi");
+    expect(text).toContain("14.0 mi easy");
+  });
+
   it("formats a tempo run with warmup/tempo/cooldown segments", () => {
     const rx: WorkoutPrescription = { kind: "tempo", warmupM: 1600, tempoM: 4800, cooldownM: 1600, paceRangeSecPerKm: [240, 250] };
     const text = describePrescription(rx);

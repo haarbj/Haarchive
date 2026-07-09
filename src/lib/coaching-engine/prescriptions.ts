@@ -1,3 +1,4 @@
+import { distanceBucket } from "@/lib/coaching-engine/distance-buckets";
 import type { MesocyclePhase, PaceZones, WorkoutPrescription, WorkoutType } from "@/lib/coaching-engine/types";
 
 const LONG_RUN_SHARE_DEFAULT = 0.3;
@@ -20,6 +21,16 @@ const VO2_RECOVERY_M = 400;
 const VO2_MIN_REPS = 3;
 
 const RACE_WEEK_SHAKEOUT_M = 3200; // ~2 miles
+
+// Marathon-specific long-run specificity ("22 miles with the final 10 at
+// marathon pace" -- Vandy Run Club guidelines): only for long-bucket goals,
+// only once the cycle has moved past base building, and only once the long
+// run itself is substantial enough for a race-pace finish to make sense.
+// The fraction grows from build to peak, matching "training increasingly
+// resembles race day" as race day approaches.
+const MIN_DISTANCE_FOR_MP_SEGMENT_M = 12875; // ~8 miles
+const BUILD_MP_FRACTION = 0.2;
+const PEAK_MP_FRACTION = 0.3;
 
 function round100(meters: number): number {
   return Math.round(meters / 100) * 100;
@@ -91,12 +102,26 @@ export function buildWeekPrescriptions(
 
   return slots.map((kind): WorkoutPrescription => {
     switch (kind) {
-      case "long":
+      case "long": {
+        const longDistanceM = round100(weekTotalMeters * scaledLongShare);
+        const mpFraction = phase === "peak" ? PEAK_MP_FRACTION : phase === "build" ? BUILD_MP_FRACTION : 0;
+        if (mpFraction > 0 && distanceBucket(goalDistanceM) === "long" && longDistanceM >= MIN_DISTANCE_FOR_MP_SEGMENT_M) {
+          return {
+            kind: "long",
+            distanceM: longDistanceM,
+            paceRangeSecPerKm: paceZones.easy,
+            marathonPaceSegment: {
+              distanceM: round100(longDistanceM * mpFraction),
+              paceRangeSecPerKm: paceZones.steady,
+            },
+          };
+        }
         return {
           kind: "long",
-          distanceM: round100(weekTotalMeters * scaledLongShare),
+          distanceM: longDistanceM,
           paceRangeSecPerKm: paceZones.steady,
         };
+      }
       case "tempo":
         return buildTempoPrescription(round100(weekTotalMeters * scaledTempoShare), paceZones);
       case "vo2":
