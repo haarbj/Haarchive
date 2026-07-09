@@ -10,10 +10,11 @@ import { StravaConnection, type LatestStravaActivity } from "@/app/(app)/dashboa
 import {
   addDays,
   diffDays,
+  distanceBucket,
+  phaseSummary,
   predictRaceTime,
   summarizeWeek,
   workoutPrescriptionSchema,
-  PHASE_SUMMARY,
   type MesocyclePhase,
   type WorkoutType,
 } from "@/lib/coaching-engine";
@@ -264,7 +265,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <p className="mt-1 text-lg font-semibold text-zinc-900 capitalize dark:text-white">
               {currentMesocycle.phase}
             </p>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{PHASE_SUMMARY[currentMesocycle.phase]}</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              {phaseSummary(currentMesocycle.phase, primaryGoal ? distanceBucket(primaryGoal.distance_m) : "middle")}
+            </p>
             <Link
               href="/plan"
               className="mt-3 inline-block text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"

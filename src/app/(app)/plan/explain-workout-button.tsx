@@ -3,17 +3,24 @@
 import { useState } from "react";
 
 import { logExplanation } from "@/app/(app)/plan/actions";
-import { PHASE_SUMMARY, WORKOUT_KIND_COACHING, type MesocyclePhase, type WorkoutPrescription } from "@/lib/coaching-engine";
+import {
+  phaseSummary,
+  workoutKindCoaching,
+  type DistanceBucket,
+  type MesocyclePhase,
+  type WorkoutPrescription,
+} from "@/lib/coaching-engine";
 
 type ExplainWorkoutButtonProps = {
   workoutId: string;
   phase: MesocyclePhase | null;
   workoutKind: WorkoutPrescription["kind"] | null;
+  distanceBucket: DistanceBucket;
 };
 
 type Status = "idle" | "loading" | "streaming" | "error";
 
-export function ExplainWorkoutButton({ workoutId, phase, workoutKind }: ExplainWorkoutButtonProps) {
+export function ExplainWorkoutButton({ workoutId, phase, workoutKind, distanceBucket }: ExplainWorkoutButtonProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [opened, setOpened] = useState(false);
   const [explanation, setExplanation] = useState("");
@@ -58,7 +65,7 @@ export function ExplainWorkoutButton({ workoutId, phase, workoutKind }: ExplainW
     }
   }
 
-  const coaching = workoutKind ? WORKOUT_KIND_COACHING[workoutKind] : null;
+  const coaching = workoutKind ? workoutKindCoaching(workoutKind, distanceBucket) : null;
 
   return (
     <div className="mt-3">
@@ -82,7 +89,7 @@ export function ExplainWorkoutButton({ workoutId, phase, workoutKind }: ExplainW
           {phase && (
             <p className="text-zinc-600 dark:text-zinc-300">
               <span className="font-semibold text-zinc-900 dark:text-white">Training phase </span>
-              <span className="capitalize">{phase}</span> — {PHASE_SUMMARY[phase]}
+              <span className="capitalize">{phase}</span> — {phaseSummary(phase, distanceBucket)}
             </p>
           )}
           {coaching && (

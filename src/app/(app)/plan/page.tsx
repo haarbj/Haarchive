@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { addDays, diffDays, PHASE_SUMMARY, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
+import { addDays, diffDays, distanceBucket, phaseSummary, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { WorkoutCard } from "./workout-card";
@@ -37,11 +37,17 @@ export default async function PlanPage() {
 
   const { data: goal } = await supabase
     .from("goals")
-    .select("race_name")
+    .select("race_name, distance_m")
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  // Falls back to "middle" for the edge case of a plan outliving its goal
+  // (e.g. the goal was later marked achieved/abandoned) -- a plan can't be
+  // generated without an active goal in the first place, so this is a
+  // defensive default, not the common path.
+  const bucket = goal?.distance_m ? distanceBucket(goal.distance_m) : "middle";
 
   const { data: plan } = await supabase
     .from("training_plans")
@@ -115,7 +121,7 @@ export default async function PlanPage() {
                 {currentMesocycle.phase}
               </p>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                {PHASE_SUMMARY[currentMesocycle.phase]}
+                {phaseSummary(currentMesocycle.phase, bucket)}
               </p>
               {currentMesocycle.focus_notes && (
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
@@ -139,6 +145,7 @@ export default async function PlanPage() {
                     key={workout.id}
                     workout={workout}
                     phase={currentMesocycle?.phase ?? null}
+                    distanceBucket={bucket}
                     completed={completedWorkoutIds.has(workout.id)}
                   />
                 ))

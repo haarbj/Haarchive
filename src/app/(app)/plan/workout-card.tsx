@@ -4,7 +4,7 @@ import { useActionState, useId } from "react";
 
 import { completeWorkout } from "@/app/(app)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/dashboard/form-constants";
-import { workoutPrescriptionSchema, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
+import { workoutPrescriptionSchema, type DistanceBucket, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
 import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { ExplainWorkoutButton } from "./explain-workout-button";
@@ -21,10 +21,11 @@ type WorkoutCardProps = {
     adaptation_explanation: string | null;
   };
   phase: MesocyclePhase | null;
+  distanceBucket: DistanceBucket;
   completed: boolean;
 };
 
-export function WorkoutCard({ workout, phase, completed }: WorkoutCardProps) {
+export function WorkoutCard({ workout, phase, distanceBucket, completed }: WorkoutCardProps) {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(completeWorkout, {});
 
@@ -114,6 +115,7 @@ export function WorkoutCard({ workout, phase, completed }: WorkoutCardProps) {
         workoutId={workout.id}
         phase={phase}
         workoutKind={parsed.success ? parsed.data.kind : null}
+        distanceBucket={distanceBucket}
       />
 
       {parsed.success && (
