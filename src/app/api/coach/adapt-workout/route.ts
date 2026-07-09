@@ -5,9 +5,11 @@ import { assembleCoachingContext } from "@/lib/ai/context";
 import { coachModel } from "@/lib/ai/model";
 import { buildAdaptationSystemPrompt, buildRetrievalQuery } from "@/lib/ai/prompts";
 import { retrieveRelevantContent } from "@/lib/ai/retrieval";
+import { lookupForecastForDate } from "@/lib/ai/weather";
 import { sections } from "@/lib/sections";
 import { createClient } from "@/lib/db/server";
 import {
+  adjustForHeat,
   compressWorkout,
   derivePaceZones,
   describePrescription,
@@ -97,6 +99,36 @@ export async function POST(request: Request) {
           if (!result.ok) return { proposed: false, reason: result.reason };
           proposedChange = { workoutType, before: currentPrescription, after: result.prescription };
           return { proposed: true, newWorkout: describePrescription(result.prescription) };
+        },
+      }),
+      adjustForHeat: tool({
+        description:
+          "Check the forecast for a hot day and, if conditions call for it, adjust today's workout for heat safety.",
+        inputSchema: z.object({
+          city: z.string().describe("The city the athlete will be running in"),
+          region: z.string().optional().describe("State or region, if the athlete mentioned one"),
+        }),
+        execute: async ({ city, region }: { city: string; region?: string }) => {
+          const location = region ? `${city}, ${region}` : city;
+          const weather = await lookupForecastForDate(location, context.workout!.scheduledDate);
+          if (!weather.ok) return { adjusted: false, reason: weather.reason };
+
+          const result = adjustForHeat(currentPrescription, weather.wbgtC, paceZones);
+          if (!result.ok) {
+            return {
+              adjusted: false,
+              reason: result.reason,
+              location: weather.locationLabel,
+              tempC: Math.round(weather.tempC),
+            };
+          }
+          proposedChange = { workoutType, before: currentPrescription, after: result.prescription };
+          return {
+            adjusted: true,
+            newWorkout: describePrescription(result.prescription),
+            location: weather.locationLabel,
+            tempC: Math.round(weather.tempC),
+          };
         },
       }),
     }),

@@ -38,18 +38,22 @@ describe("buildRetrievalQuery", () => {
 });
 
 describe("buildAdaptationSystemPrompt", () => {
-  it("includes the shared guardrails and names all three tools", () => {
+  it("includes the shared guardrails and names all four tools", () => {
     const prompt = buildAdaptationSystemPrompt(EMPTY_CONTEXT, []);
     expect(prompt).toMatch(/never state a race-time prediction as a certainty/i);
     expect(prompt).toMatch(/never diagnose an injury/i);
     expect(prompt).toContain("compressWorkout");
     expect(prompt).toContain("substituteForSurface");
     expect(prompt).toContain("insertRecoveryDay");
+    expect(prompt).toContain("adjustForHeat");
   });
 
   it("instructs the model not to invent numbers itself", () => {
     const prompt = buildAdaptationSystemPrompt(EMPTY_CONTEXT, []);
-    expect(prompt).toMatch(/never invent a new workout or new numbers yourself/i);
+    // \s+ rather than literal spaces -- this prose can reflow across lines
+    // in the source without changing its meaning, and the test shouldn't
+    // be brittle against exactly where that happens to wrap.
+    expect(prompt).toMatch(/never invent a new workout or new\s+numbers yourself/i);
   });
 
   it("still includes the same athlete/workout data block as the explain prompt", () => {

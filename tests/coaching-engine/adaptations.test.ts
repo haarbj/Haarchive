@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { compressWorkout, insertRecoveryDay, substituteForSurface } from "@/lib/coaching-engine/adaptations";
+import {
+  adjustForHeat,
+  compressWorkout,
+  estimateWBGT,
+  heatZoneFor,
+  insertRecoveryDay,
+  substituteForSurface,
+} from "@/lib/coaching-engine/adaptations";
 import { derivePaceZones } from "@/lib/coaching-engine/pace-zones";
 import type { WorkoutPrescription } from "@/lib/coaching-engine/types";
 
@@ -120,5 +127,81 @@ describe("substituteForSurface", () => {
     const result = substituteForSurface(VO2);
     if (!result.ok) throw new Error("expected guidance");
     expect(result.guidance).not.toMatch(/\d+\s*m\b/i);
+  });
+});
+
+describe("estimateWBGT / heatZoneFor", () => {
+  it("classifies a cool, dry day as green", () => {
+    expect(heatZoneFor(estimateWBGT(10, 30))).toBe("green");
+  });
+
+  it("classifies a mild, humid day as yellow", () => {
+    expect(heatZoneFor(estimateWBGT(20, 40))).toBe("yellow");
+  });
+
+  it("classifies a hot, humid day as red", () => {
+    expect(heatZoneFor(estimateWBGT(27, 50))).toBe("red");
+  });
+
+  it("classifies a very hot, humid day as black", () => {
+    expect(heatZoneFor(estimateWBGT(32, 60))).toBe("black");
+  });
+
+  it("rates higher humidity as riskier at the same temperature", () => {
+    expect(estimateWBGT(28, 80)).toBeGreaterThan(estimateWBGT(28, 20));
+  });
+});
+
+describe("adjustForHeat", () => {
+  const GREEN_WBGT = estimateWBGT(10, 30);
+  const YELLOW_WBGT = estimateWBGT(20, 40);
+  const RED_WBGT = estimateWBGT(27, 50);
+  const BLACK_WBGT = estimateWBGT(32, 60);
+
+  it("refuses on race day regardless of conditions", () => {
+    expect(adjustForHeat(RACE, BLACK_WBGT, paceZones).ok).toBe(false);
+  });
+
+  it("declines to change anything in green conditions", () => {
+    expect(adjustForHeat(LONG_RUN, GREEN_WBGT, paceZones).ok).toBe(false);
+  });
+
+  it("refuses outright in black-flag conditions rather than proposing a slower outdoor version", () => {
+    const result = adjustForHeat(TEMPO, BLACK_WBGT, paceZones);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reason).toMatch(/indoors|postpone/i);
+  });
+
+  it("eases pace targets moderately in yellow conditions without changing workout type", () => {
+    const result = adjustForHeat(LONG_RUN, YELLOW_WBGT, paceZones);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected an adjusted long prescription");
+    expect(result.prescription.paceRangeSecPerKm[0]).toBeGreaterThan(LONG_RUN.paceRangeSecPerKm[0]);
+    expect(result.prescription.distanceM).toBe(LONG_RUN.distanceM);
+  });
+
+  it("converts red-flag tempo/vo2 work to easy effort at roughly the same distance", () => {
+    for (const rx of [TEMPO, VO2]) {
+      const result = adjustForHeat(rx, RED_WBGT, paceZones);
+      if (!result.ok) throw new Error(result.reason);
+      expect(result.prescription.kind).toBe("easy");
+      if (result.prescription.kind !== "easy") continue;
+      expect(result.prescription.paceRangeSecPerKm).toEqual(paceZones.easy);
+      expect(result.prescription.distanceM).toBeGreaterThan(0);
+    }
+  });
+
+  it("just slows down (not converts) easy/long/recovery work in red conditions", () => {
+    const result = adjustForHeat(LONG_RUN, RED_WBGT, paceZones);
+    if (!result.ok || result.prescription.kind !== "long") throw new Error("expected an adjusted long prescription");
+    expect(result.prescription.paceRangeSecPerKm[0]).toBeGreaterThan(LONG_RUN.paceRangeSecPerKm[0]);
+  });
+
+  it("slows down more in red conditions than in yellow", () => {
+    const yellow = adjustForHeat(LONG_RUN, YELLOW_WBGT, paceZones);
+    const red = adjustForHeat(LONG_RUN, RED_WBGT, paceZones);
+    if (!yellow.ok || !red.ok || yellow.prescription.kind !== "long" || red.prescription.kind !== "long") {
+      throw new Error("expected both to succeed with long prescriptions");
+    }
+    expect(red.prescription.paceRangeSecPerKm[0]).toBeGreaterThan(yellow.prescription.paceRangeSecPerKm[0]);
   });
 });

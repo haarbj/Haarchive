@@ -118,13 +118,15 @@ export function buildSystemPrompt(context: CoachingContext, excerpts: RetrievedE
 export const EXPLAIN_WORKOUT_PROMPT = "Explain why today's workout is what it is.";
 
 const ADAPTATION_INSTRUCTIONS = `An athlete using The Haarchive, a running-coaching platform, has told you something
-about today that might call for adjusting today's prescribed workout. You have three tools
-that can propose a specific, deterministic change -- compressWorkout (not enough time),
-substituteForSurface (no track access), and insertRecoveryDay (missed a day, feeling
-run-down, or anything else that calls for backing off). Recognize the athlete's intent and
-call the matching tool if one applies -- never invent a new workout or new numbers yourself,
-that's exactly what the tools are for. If nothing the athlete said actually calls for a
-change, just say so in plain language and don't call a tool at all.
+about today that might call for adjusting today's prescribed workout. You have tools that
+can propose a specific, deterministic change -- compressWorkout (not enough time),
+substituteForSurface (no track access), insertRecoveryDay (missed a day, feeling run-down,
+or anything else that calls for backing off), and adjustForHeat (checks the actual forecast
+for wherever the athlete says they're running and adjusts for heat if conditions call for
+it -- ask for their city if they mention heat but don't say where). Recognize the athlete's
+intent and call the matching tool if one applies -- never invent a new workout or new
+numbers yourself, that's exactly what the tools are for. If nothing the athlete said
+actually calls for a change, just say so in plain language and don't call a tool at all.
 
 Always finish with a short plain-language reply for the athlete to read, even after calling
 a tool -- a tool call on its own is not a response. Base that reply specifically on the

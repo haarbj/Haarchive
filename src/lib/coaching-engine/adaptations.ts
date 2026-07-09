@@ -134,6 +134,102 @@ export function insertRecoveryDay(prescription: WorkoutPrescription, paceZones: 
   };
 }
 
+// Same 4-tier flag model already used by the Heat Tracker (Australian BOM
+// outdoor WBGT approximation, ACSM-aligned thresholds) -- reimplemented
+// here rather than imported, matching this project's existing pattern of
+// duplicating small formulas across independent features rather than
+// reaching into one component from another, but deliberately using the
+// identical formula and cutoffs so heat guidance reads the same everywhere
+// in the app.
+export type HeatZone = "green" | "yellow" | "red" | "black";
+
+export function estimateWBGT(tempC: number, relativeHumidityPct: number): number {
+  const vaporPressure =
+    (relativeHumidityPct / 100) * 6.105 * Math.exp((17.27 * tempC) / (237.7 + tempC));
+  return 0.567 * tempC + 0.393 * vaporPressure + 3.94;
+}
+
+export function heatZoneFor(wbgtC: number): HeatZone {
+  if (wbgtC < 18) return "green";
+  if (wbgtC < 23) return "yellow";
+  if (wbgtC < 28) return "red";
+  return "black";
+}
+
+const YELLOW_SLOWDOWN = 0.05; // "ease off pace targets"
+const RED_EASY_SLOWDOWN = 0.1; // easy/long/recovery days in red conditions
+
+function scalePace([fast, slow]: [number, number], factor: number): [number, number] {
+  return [fast * (1 + factor), slow * (1 + factor)];
+}
+
+// Distance-only total, ignoring recovery-jog meters for vo2 (bonus volume,
+// not core work) -- matches how prescriptions.ts already treats it.
+function coreDistanceOf(prescription: WorkoutPrescription): number {
+  switch (prescription.kind) {
+    case "easy":
+    case "recovery":
+    case "long":
+      return prescription.distanceM;
+    case "tempo":
+      return prescription.warmupM + prescription.tempoM + prescription.cooldownM;
+    case "vo2":
+      return prescription.warmupM + prescription.reps * prescription.repM + prescription.cooldownM;
+    case "race":
+      return prescription.distanceM;
+  }
+}
+
+// Adjusts (or refuses to adjust) today's workout for forecast heat, using
+// the same WBGT-based flag tiers as the Heat Tracker. Green needs no
+// change; yellow eases pace targets; red converts quality work (tempo/vo2)
+// to easy effort at the same rough distance rather than just a smaller
+// slowdown, matching the Heat Tracker's own "run easy by effort only"
+// guidance for that tier; black refuses outright -- heat stroke risk at
+// that level isn't something to solve by adjusting a workout at all.
+export function adjustForHeat(
+  prescription: WorkoutPrescription,
+  wbgtC: number,
+  paceZones: PaceZones,
+): AdaptationResult {
+  if (prescription.kind === "race") {
+    return {
+      ok: false,
+      reason: "Race-day pacing isn't something to adjust ahead of time for weather -- if conditions look genuinely dangerous, that's worth a direct conversation with your coach, not an automatic change.",
+    };
+  }
+
+  const zone = heatZoneFor(wbgtC);
+
+  if (zone === "green") {
+    return { ok: false, reason: "Conditions look fine for today's workout as scheduled -- no heat adjustment needed." };
+  }
+
+  if (zone === "black") {
+    return {
+      ok: false,
+      reason: "Conditions are in the black-flag range -- move this indoors or to a much cooler part of the day rather than adjusting the outdoor version. Heat stroke risk is too high to just slow down and push through.",
+    };
+  }
+
+  if (zone === "red" && (prescription.kind === "tempo" || prescription.kind === "vo2")) {
+    return {
+      ok: true,
+      prescription: {
+        kind: "easy",
+        distanceM: round100(coreDistanceOf(prescription)),
+        paceRangeSecPerKm: paceZones.easy,
+      },
+    };
+  }
+
+  const slowdown = zone === "yellow" ? YELLOW_SLOWDOWN : RED_EASY_SLOWDOWN;
+  return {
+    ok: true,
+    prescription: { ...prescription, paceRangeSecPerKm: scalePace(prescription.paceRangeSecPerKm, slowdown) },
+  };
+}
+
 export type SurfaceGuidance = { ok: true; guidance: string } | { ok: false; reason: string };
 
 // Doesn't change the stored prescription -- an interval session run on a
