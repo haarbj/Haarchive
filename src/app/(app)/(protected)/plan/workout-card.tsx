@@ -2,8 +2,8 @@
 
 import { useActionState, useId } from "react";
 
-import { completeWorkout } from "@/app/(app)/plan/actions";
-import { fieldClass, labelClass } from "@/app/(app)/dashboard/form-constants";
+import { completeWorkout } from "@/app/(app)/(protected)/plan/actions";
+import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { workoutPrescriptionSchema, type DistanceBucket, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
 import { AdaptWorkoutPanel } from "./adapt-workout-panel";

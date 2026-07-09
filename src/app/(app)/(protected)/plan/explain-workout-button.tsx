@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { logExplanation } from "@/app/(app)/plan/actions";
+import { logExplanation } from "@/app/(app)/(protected)/plan/actions";
 import {
   phaseSummary,
   workoutKindCoaching,

@@ -30,10 +30,6 @@ type WorkoutRow = {
 
 export default async function PlanPage() {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/login");
-  }
 
   const { data: goal } = await supabase
     .from("goals")

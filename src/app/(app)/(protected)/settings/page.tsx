@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
-import { SettingsForm } from "@/app/(app)/settings/settings-form";
+import { getAppSession } from "@/lib/auth/session";
+import { SettingsForm } from "@/app/(app)/(protected)/settings/settings-form";
 
 export const metadata: Metadata = {
   title: "Settings",
@@ -14,12 +14,8 @@ type Profile = {
 };
 
 export default async function SettingsPage() {
+  const session = await getAppSession(); // non-null: (protected)/layout.tsx already redirected otherwise
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-
-  if (error || !data?.claims) {
-    redirect("/login");
-  }
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -39,7 +35,7 @@ export default async function SettingsPage() {
         <SettingsForm
           initialDisplayName={profile?.display_name ?? ""}
           initialUnits={profile?.units ?? "mi"}
-          email={data.claims.email as string}
+          email={session!.email ?? ""}
         />
       </div>
     </section>

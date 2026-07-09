@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 
-import { syncStravaActivities } from "@/app/(app)/dashboard/strava-actions";
+import { syncStravaActivities } from "@/app/(app)/(protected)/dashboard/strava-actions";
 
 export function SyncStravaButton() {
   const [state, formAction, isPending] = useActionState(syncStravaActivities, {});

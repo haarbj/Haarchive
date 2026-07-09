@@ -2,8 +2,8 @@
 
 import { useActionState, useId } from "react";
 
-import { generatePlan } from "@/app/(app)/plan/actions";
-import { fieldClass, labelClass } from "@/app/(app)/dashboard/form-constants";
+import { generatePlan } from "@/app/(app)/(protected)/plan/actions";
+import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 
 type GeneratePlanFormProps = {
   defaultCurrentWeeklyMileage?: number;

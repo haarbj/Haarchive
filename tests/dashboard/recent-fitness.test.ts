@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { equivalentPerformances } from "@/app/(app)/dashboard/recent-fitness";
+import { equivalentPerformances } from "@/app/(app)/(protected)/dashboard/recent-fitness";
 
 describe("equivalentPerformances", () => {
   it("predicts equivalent times at the standard reference distances", () => {

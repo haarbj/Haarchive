@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 
-import { applyAdaptation, undoAdaptation } from "@/app/(app)/plan/actions";
-import { fieldClass } from "@/app/(app)/dashboard/form-constants";
+import { applyAdaptation, undoAdaptation } from "@/app/(app)/(protected)/plan/actions";
+import { fieldClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { describePrescription, type WorkoutPrescription } from "@/lib/coaching-engine";
 import { formatRelativeTime } from "@/lib/format";
 import type { ProposedChange } from "@/app/api/coach/adapt-workout/route";

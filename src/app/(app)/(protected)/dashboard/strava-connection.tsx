@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { disconnectStrava } from "@/app/(app)/dashboard/strava-actions";
-import { SyncStravaButton } from "@/app/(app)/dashboard/sync-strava-button";
-import { workoutTypeLabel } from "@/app/(app)/plan/format-workout";
+import { disconnectStrava } from "@/app/(app)/(protected)/dashboard/strava-actions";
+import { SyncStravaButton } from "@/app/(app)/(protected)/dashboard/sync-strava-button";
+import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { formatDate, formatMiles, formatRelativeTime } from "@/lib/format";
 import type { WorkoutType } from "@/lib/coaching-engine";
 

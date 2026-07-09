@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
-import { describePrescription, workoutTypeLabel } from "@/app/(app)/plan/format-workout";
-import { GoalCard, type FitnessEstimate } from "@/app/(app)/dashboard/goal-card";
-import { OnboardingForm } from "@/app/(app)/dashboard/onboarding-form";
-import { equivalentPerformances } from "@/app/(app)/dashboard/recent-fitness";
-import { StravaConnection, type LatestStravaActivity } from "@/app/(app)/dashboard/strava-connection";
+import { describePrescription, workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
+import { GoalCard, type FitnessEstimate } from "@/app/(app)/(protected)/dashboard/goal-card";
+import { OnboardingForm } from "@/app/(app)/(protected)/dashboard/onboarding-form";
+import { equivalentPerformances } from "@/app/(app)/(protected)/dashboard/recent-fitness";
+import { StravaConnection, type LatestStravaActivity } from "@/app/(app)/(protected)/dashboard/strava-connection";
 import {
   addDays,
   diffDays,
@@ -79,11 +78,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     await searchParams;
 
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-
-  if (error || !data?.claims) {
-    redirect("/login");
-  }
 
   const [
     { data: goals },
