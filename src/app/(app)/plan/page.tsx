@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { addDays, diffDays, type WorkoutType } from "@/lib/coaching-engine";
+import { addDays, diffDays, PHASE_SUMMARY, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { WorkoutCard } from "./workout-card";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 type Mesocycle = {
   id: string;
-  phase: string;
+  phase: MesocyclePhase;
   start_date: string;
   end_date: string;
   focus_notes: string | null;
@@ -25,6 +25,7 @@ type WorkoutRow = {
   prescription: unknown;
   adapted_at: string | null;
   adaptation_reason: string | null;
+  adaptation_explanation: string | null;
 };
 
 export default async function PlanPage() {
@@ -72,7 +73,7 @@ export default async function PlanPage() {
 
   const { data: workouts } = await supabase
     .from("workouts")
-    .select("id, scheduled_date, workout_type, prescription, adapted_at, adaptation_reason")
+    .select("id, scheduled_date, workout_type, prescription, adapted_at, adaptation_reason, adaptation_explanation")
     .eq("mesocycle_id", currentMesocycle?.id ?? mesocycles?.at(-1)?.id ?? "")
     .gte("scheduled_date", weekStart)
     .lte("scheduled_date", weekEnd)
@@ -113,6 +114,9 @@ export default async function PlanPage() {
               <p className="mt-1 text-lg font-semibold text-zinc-900 capitalize dark:text-white">
                 {currentMesocycle.phase}
               </p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+                {PHASE_SUMMARY[currentMesocycle.phase]}
+              </p>
               {currentMesocycle.focus_notes && (
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
                   {currentMesocycle.focus_notes}
@@ -134,6 +138,7 @@ export default async function PlanPage() {
                   <WorkoutCard
                     key={workout.id}
                     workout={workout}
+                    phase={currentMesocycle?.phase ?? null}
                     completed={completedWorkoutIds.has(workout.id)}
                   />
                 ))

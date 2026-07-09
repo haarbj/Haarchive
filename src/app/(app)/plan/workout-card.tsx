@@ -4,7 +4,7 @@ import { useActionState, useId } from "react";
 
 import { completeWorkout } from "@/app/(app)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/dashboard/form-constants";
-import { workoutPrescriptionSchema, type WorkoutType } from "@/lib/coaching-engine";
+import { workoutPrescriptionSchema, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
 import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { ExplainWorkoutButton } from "./explain-workout-button";
@@ -18,11 +18,13 @@ type WorkoutCardProps = {
     prescription: unknown;
     adapted_at: string | null;
     adaptation_reason: string | null;
+    adaptation_explanation: string | null;
   };
+  phase: MesocyclePhase | null;
   completed: boolean;
 };
 
-export function WorkoutCard({ workout, completed }: WorkoutCardProps) {
+export function WorkoutCard({ workout, phase, completed }: WorkoutCardProps) {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(completeWorkout, {});
 
@@ -102,8 +104,17 @@ export function WorkoutCard({ workout, completed }: WorkoutCardProps) {
           {state.error}
         </p>
       )}
+      {state.feedback && (
+        <p className="mt-2 rounded-lg bg-black/[0.03] p-3 text-sm text-zinc-700 dark:bg-white/[0.05] dark:text-zinc-200">
+          {state.feedback}
+        </p>
+      )}
 
-      <ExplainWorkoutButton workoutId={workout.id} />
+      <ExplainWorkoutButton
+        workoutId={workout.id}
+        phase={phase}
+        workoutKind={parsed.success ? parsed.data.kind : null}
+      />
 
       {parsed.success && (
         <AdaptWorkoutPanel
@@ -111,6 +122,7 @@ export function WorkoutCard({ workout, completed }: WorkoutCardProps) {
           currentPrescription={parsed.data}
           adaptedAt={workout.adapted_at}
           adaptationReason={workout.adaptation_reason}
+          adaptationExplanation={workout.adaptation_explanation}
         />
       )}
     </div>

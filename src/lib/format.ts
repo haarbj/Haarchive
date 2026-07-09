@@ -36,6 +36,14 @@ export function formatDistance(meters: number): string {
   return `${meters}m`;
 }
 
+// For logged/actual distances (a GPS run is essentially never a round
+// number of meters), as opposed to formatDistance's canonical-race-distance
+// labels above -- e.g. "6.2 mi" for a Strava activity or a manually logged
+// completion.
+export function formatMiles(meters: number): string {
+  return `${(meters / 1609.34).toFixed(1)} mi`;
+}
+
 export function formatDate(dateStr: string): string {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
     year: "numeric",

@@ -13,15 +13,28 @@ type AdaptWorkoutPanelProps = {
   currentPrescription: WorkoutPrescription;
   adaptedAt: string | null;
   adaptationReason: string | null;
+  adaptationExplanation: string | null;
 };
 
 type Status = "idle" | "open" | "loading" | "reviewing" | "applying";
+
+// Ready-to-send examples, shown as chips so an athlete who's never used
+// this before can see what kinds of things the coach can actually respond
+// to, rather than staring at a blank input guessing.
+const SUGGESTIONS = [
+  "I'm traveling.",
+  "I only have 30 minutes.",
+  "It's much hotter today.",
+  "My legs are sore.",
+  "I'm feeling sick.",
+];
 
 export function AdaptWorkoutPanel({
   workoutId,
   currentPrescription,
   adaptedAt,
   adaptationReason,
+  adaptationExplanation,
 }: AdaptWorkoutPanelProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
@@ -30,9 +43,9 @@ export function AdaptWorkoutPanel({
   const [error, setError] = useState<string | null>(null);
   const [undoing, setUndoing] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!message.trim()) return;
+  async function submitMessage(text: string) {
+    if (!text.trim()) return;
+    setMessage(text);
     setStatus("loading");
     setError(null);
     setExplanation(null);
@@ -42,7 +55,7 @@ export function AdaptWorkoutPanel({
       const response = await fetch("/api/coach/adapt-workout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workoutId, message }),
+        body: JSON.stringify({ workoutId, message: text }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -57,10 +70,15 @@ export function AdaptWorkoutPanel({
     }
   }
 
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    void submitMessage(message);
+  }
+
   async function handleApply() {
-    if (!proposedChange) return;
+    if (!proposedChange || !explanation) return;
     setStatus("applying");
-    const result = await applyAdaptation(workoutId, proposedChange.before, proposedChange.after, message);
+    const result = await applyAdaptation(workoutId, proposedChange.before, proposedChange.after, message, explanation);
     if (result.error) {
       setError(result.error);
       setStatus("reviewing");
@@ -95,12 +113,26 @@ export function AdaptWorkoutPanel({
   if (adaptedAt) {
     return (
       <div className="mt-3 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/30">
-        <p className="font-medium text-amber-900 dark:text-amber-200">
-          Adjusted {formatRelativeTime(adaptedAt)}
+        <p className="text-xs font-semibold tracking-wide text-amber-900/70 uppercase dark:text-amber-200/70">
+          AI Coach
         </p>
         {adaptationReason && (
-          <p className="mt-0.5 text-amber-800 dark:text-amber-300">&ldquo;{adaptationReason}&rdquo;</p>
+          <p className="mt-2">
+            <span className="font-semibold text-amber-900 dark:text-amber-200">You </span>
+            <span className="text-amber-800 dark:text-amber-300">&ldquo;{adaptationReason}&rdquo;</span>
+          </p>
         )}
+        <p className="mt-1.5">
+          <span className="font-semibold text-amber-900 dark:text-amber-200">Coach </span>
+          <span className="text-amber-800 dark:text-amber-300">Adjusted today&rsquo;s workout</span>
+        </p>
+        {adaptationExplanation && (
+          <p className="mt-1.5">
+            <span className="font-semibold text-amber-900 dark:text-amber-200">Reason </span>
+            <span className="text-amber-800 dark:text-amber-300">{adaptationExplanation}</span>
+          </p>
+        )}
+        <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">{formatRelativeTime(adaptedAt)}</p>
         <button
           type="button"
           onClick={handleUndo}
@@ -133,23 +165,38 @@ export function AdaptWorkoutPanel({
   return (
     <div className="mt-3">
       {(status === "open" || status === "loading") && (
-        <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="e.g. I only have 35 minutes today"
-            className={`${fieldClass} min-w-0 flex-1`}
-            autoFocus
-          />
-          <button
-            type="submit"
-            disabled={status === "loading" || !message.trim()}
-            className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            {status === "loading" ? "Thinking…" : "Send"}
-          </button>
-        </form>
+        <>
+          <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Tell your coach what's changed…"
+              className={`${fieldClass} min-w-0 flex-1`}
+              autoFocus
+            />
+            <button
+              type="submit"
+              disabled={status === "loading" || !message.trim()}
+              className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              {status === "loading" ? "Thinking…" : "Send"}
+            </button>
+          </form>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {SUGGESTIONS.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                disabled={status === "loading"}
+                onClick={() => void submitMessage(suggestion)}
+                className="rounded-full border border-black/10 px-2.5 py-1 text-xs font-medium text-zinc-600 transition hover:bg-black/5 disabled:opacity-60 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/10"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
       {error && (

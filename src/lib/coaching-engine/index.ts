@@ -12,8 +12,14 @@ export {
 } from "@/lib/coaching-engine/adaptations";
 export { describePrescription } from "@/lib/coaching-engine/describe-prescription";
 export { workoutPrescriptionSchema } from "@/lib/coaching-engine/types";
+export { PHASE_SUMMARY, WORKOUT_KIND_COACHING } from "@/lib/coaching-engine/coaching-copy";
+export { generateCompletionFeedback } from "@/lib/coaching-engine/completion-feedback";
+export { summarizeWeek } from "@/lib/coaching-engine/weekly-summary";
 export type { DistanceBucket } from "@/lib/coaching-engine/distance-buckets";
 export type { AdaptationResult, HeatZone, SurfaceGuidance } from "@/lib/coaching-engine/adaptations";
+export type { WorkoutCoaching } from "@/lib/coaching-engine/coaching-copy";
+export type { CompletionInput } from "@/lib/coaching-engine/completion-feedback";
+export type { WeekCompletionInput, WeeklySummary } from "@/lib/coaching-engine/weekly-summary";
 export type {
   GenerateTrainingPlanInput,
   GenerateTrainingPlanResult,

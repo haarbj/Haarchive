@@ -3,7 +3,12 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-import { generateTrainingPlan, type WorkoutPrescription } from "@/lib/coaching-engine";
+import {
+  generateCompletionFeedback,
+  generateTrainingPlan,
+  workoutPrescriptionSchema,
+  type WorkoutPrescription,
+} from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { parseTimeToSeconds } from "@/lib/format";
 import { completeWorkoutSchema, generatePlanSchema } from "@/lib/validation/plan";
@@ -151,7 +156,7 @@ export async function generatePlan(
   redirect("/plan");
 }
 
-export type CompleteWorkoutState = { error?: string };
+export type CompleteWorkoutState = { error?: string; feedback?: string };
 
 export async function completeWorkout(
   _prevState: CompleteWorkoutState,
@@ -209,7 +214,22 @@ export async function completeWorkout(
   }
 
   revalidatePath("/plan");
-  return {};
+
+  // Best-effort: a short coaching note comparing planned vs. actual, shown
+  // once right after logging. Not persisted -- it's cheaply recomputable
+  // from the same completion + prescription data, so there's no need for a
+  // column that could go stale.
+  const { data: workoutRow } = await supabase
+    .from("workouts")
+    .select("prescription")
+    .eq("id", workoutId)
+    .maybeSingle();
+  const parsedPrescription = workoutRow ? workoutPrescriptionSchema.safeParse(workoutRow.prescription) : null;
+  const feedback = parsedPrescription?.success
+    ? (generateCompletionFeedback(parsedPrescription.data, { actualDistanceM, actualTimeS, rpe }) ?? undefined)
+    : undefined;
+
+  return { feedback };
 }
 
 export type ApplyAdaptationState = { error?: string };
@@ -221,7 +241,8 @@ export async function applyAdaptation(
   workoutId: string,
   before: WorkoutPrescription,
   after: WorkoutPrescription,
-  reason: string,
+  athleteMessage: string,
+  explanation: string,
 ): Promise<ApplyAdaptationState> {
   if (!workoutId) return { error: "Missing workout" };
 
@@ -245,7 +266,8 @@ export async function applyAdaptation(
       prescription: after,
       original_prescription: existing?.original_prescription ?? before,
       adapted_at: new Date().toISOString(),
-      adaptation_reason: reason,
+      adaptation_reason: athleteMessage,
+      adaptation_explanation: explanation,
     })
     .eq("id", workoutId);
   if (error) return { error: error.message };
@@ -278,6 +300,7 @@ export async function undoAdaptation(workoutId: string): Promise<ApplyAdaptation
       original_prescription: null,
       adapted_at: null,
       adaptation_reason: null,
+      adaptation_explanation: null,
     })
     .eq("id", workoutId);
   if (error) return { error: error.message };

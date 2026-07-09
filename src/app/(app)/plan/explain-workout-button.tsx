@@ -3,20 +3,25 @@
 import { useState } from "react";
 
 import { logExplanation } from "@/app/(app)/plan/actions";
+import { PHASE_SUMMARY, WORKOUT_KIND_COACHING, type MesocyclePhase, type WorkoutPrescription } from "@/lib/coaching-engine";
 
 type ExplainWorkoutButtonProps = {
   workoutId: string;
+  phase: MesocyclePhase | null;
+  workoutKind: WorkoutPrescription["kind"] | null;
 };
 
 type Status = "idle" | "loading" | "streaming" | "error";
 
-export function ExplainWorkoutButton({ workoutId }: ExplainWorkoutButtonProps) {
+export function ExplainWorkoutButton({ workoutId, phase, workoutKind }: ExplainWorkoutButtonProps) {
   const [status, setStatus] = useState<Status>("idle");
+  const [opened, setOpened] = useState(false);
   const [explanation, setExplanation] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
     if (status === "loading" || status === "streaming") return;
+    setOpened(true);
     setStatus("loading");
     setExplanation("");
     setError(null);
@@ -53,6 +58,8 @@ export function ExplainWorkoutButton({ workoutId }: ExplainWorkoutButtonProps) {
     }
   }
 
+  const coaching = workoutKind ? WORKOUT_KIND_COACHING[workoutKind] : null;
+
   return (
     <div className="mt-3">
       <button
@@ -70,8 +77,37 @@ export function ExplainWorkoutButton({ workoutId }: ExplainWorkoutButtonProps) {
         </p>
       )}
 
-      {explanation && (
-        <p className="mt-2 max-w-prose text-sm text-zinc-600 dark:text-zinc-300">{explanation}</p>
+      {opened && (coaching || explanation) && (
+        <div className="mt-2 max-w-prose space-y-2 text-sm">
+          {phase && (
+            <p className="text-zinc-600 dark:text-zinc-300">
+              <span className="font-semibold text-zinc-900 dark:text-white">Training phase </span>
+              <span className="capitalize">{phase}</span> — {PHASE_SUMMARY[phase]}
+            </p>
+          )}
+          {coaching && (
+            <>
+              <p className="text-zinc-600 dark:text-zinc-300">
+                <span className="font-semibold text-zinc-900 dark:text-white">Today&rsquo;s objective </span>
+                {coaching.objective}
+              </p>
+              <div className="text-zinc-600 dark:text-zinc-300">
+                <span className="font-semibold text-zinc-900 dark:text-white">Primary adaptations</span>
+                <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                  {coaching.adaptations.map((adaptation) => (
+                    <li key={adaptation}>{adaptation}</li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+          {explanation && (
+            <p className="text-zinc-600 dark:text-zinc-300">
+              <span className="font-semibold text-zinc-900 dark:text-white">Coach&rsquo;s note </span>
+              {explanation}
+            </p>
+          )}
+        </div>
       )}
     </div>
   );

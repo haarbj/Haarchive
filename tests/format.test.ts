@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRelativeTime } from "@/lib/format";
+import { formatMiles, formatRelativeTime } from "@/lib/format";
 
 function isoMinutesAgo(minutes: number): string {
   return new Date(Date.now() - minutes * 60 * 1000).toISOString();
@@ -28,5 +28,12 @@ describe("formatRelativeTime", () => {
     const result = formatRelativeTime(isoMinutesAgo(60 * 24 * 10));
     expect(result).not.toMatch(/ago/);
     expect(result).toMatch(/\d{4}/); // contains a year, i.e. a real calendar date
+  });
+});
+
+describe("formatMiles", () => {
+  it("converts an arbitrary (non-round) GPS distance to one decimal of miles", () => {
+    expect(formatMiles(9977)).toBe("6.2 mi");
+    expect(formatMiles(11426.3)).toBe("7.1 mi");
   });
 });
