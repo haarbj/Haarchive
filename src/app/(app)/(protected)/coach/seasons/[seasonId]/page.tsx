@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
+import { getAppSession } from "@/lib/auth/session";
 import { PhaseEditor, type SeasonPhaseRow } from "./phase-editor";
+import { RosterGeneratePanel } from "./roster-generate-panel";
 import { WeekEditor, type SeasonWeekRow } from "./week-editor";
 
 export const metadata: Metadata = {
@@ -16,6 +18,9 @@ type SeasonPlan = {
   goal_race_name: string;
   goal_race_date: string;
 };
+
+type Membership = { user_id: string };
+type Profile = { id: string; display_name: string };
 
 type SeasonDetailPageProps = {
   params: Promise<{ seasonId: string }>;
@@ -31,6 +36,19 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
     .eq("id", seasonId)
     .maybeSingle<SeasonPlan>();
   if (!season) notFound();
+
+  const session = await getAppSession();
+  const { data: memberships } = await supabase
+    .from("team_memberships")
+    .select("user_id")
+    .eq("team_id", session!.teamId!)
+    .eq("role", "athlete")
+    .returns<Membership[]>();
+  const athleteIds = memberships?.map((m) => m.user_id) ?? [];
+  const { data: rosterProfiles } = athleteIds.length
+    ? await supabase.from("profiles").select("id, display_name").in("id", athleteIds).returns<Profile[]>()
+    : { data: [] as Profile[] };
+  const athletes = (rosterProfiles ?? []).map((p) => ({ id: p.id, display_name: p.display_name }));
 
   const [{ data: phases }, { data: weeks }] = await Promise.all([
     supabase
@@ -54,7 +72,11 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
         Building toward {season.goal_race_name} on {formatDate(season.goal_race_date)}.
       </p>
 
-      <div className="mt-10 space-y-8">
+      <div className="mt-10">
+        <RosterGeneratePanel seasonId={seasonId} athletes={athletes} />
+      </div>
+
+      <div className="mt-8 space-y-8">
         {phases?.map((phase, i) => (
           <PhaseEditor
             key={phase.id}

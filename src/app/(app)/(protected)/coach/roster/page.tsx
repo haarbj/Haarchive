@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
@@ -37,12 +38,13 @@ export default async function RosterPage() {
         {profiles && profiles.length > 0 ? (
           <div className="space-y-2">
             {profiles.map((athlete) => (
-              <div
+              <Link
                 key={athlete.id}
-                className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-zinc-900 dark:border-white/10 dark:bg-zinc-900 dark:text-white"
+                href={`/coach/athletes/${athlete.id}`}
+                className="block rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-zinc-900 transition hover:border-black/20 dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:hover:border-white/20"
               >
                 {athlete.display_name}
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
