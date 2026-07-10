@@ -39,6 +39,7 @@ export type SeasonPreviewResult =
   | { ok: false; error: string };
 
 export type SeasonPreviewInput = {
+  seasonStartDate: string;
   goalRaceName: string;
   goalRaceDate: string;
   goalDistanceM: number;
@@ -54,18 +55,22 @@ export async function previewSeasonBlueprint(input: SeasonPreviewInput): Promise
   const session = await getAppSession();
   if (session?.role !== "coach" || !session.teamId) return { ok: false, error: "Not authorized." };
 
+  if (!input.seasonStartDate) return { ok: false, error: "Choose when the season starts." };
   if (!input.goalRaceName.trim()) return { ok: false, error: "Enter a goal race name." };
   if (!input.goalRaceDate) return { ok: false, error: "Enter a goal race date." };
+  if (input.seasonStartDate > input.goalRaceDate) return { ok: false, error: "Season start date must be before the goal race date." };
   if (!input.goalDistanceM || input.goalDistanceM <= 0) return { ok: false, error: "Choose a goal distance." };
   if (!input.downWeeksIntervalWeeks || input.downWeeksIntervalWeeks < 2) {
     return { ok: false, error: "Down-week interval must be at least 2 weeks." };
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Drives both total-weeks-until-goal-race and the first phase's start
+  // date -- a coach planning ahead of time shouldn't have training silently
+  // assumed to start the day they happen to be building the season.
   const result = generateSeasonBlueprint({
     goal: { raceName: input.goalRaceName, distanceM: input.goalDistanceM, date: input.goalRaceDate },
     representativeAthlete: PREVIEW_REPRESENTATIVE_ATHLETE,
-    today,
+    today: input.seasonStartDate,
     downWeeks: { enabled: input.downWeeksEnabled, intervalWeeks: input.downWeeksIntervalWeeks },
   });
   if (!result.ok) return { ok: false, error: result.error };

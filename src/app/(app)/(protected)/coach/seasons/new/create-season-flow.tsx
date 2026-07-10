@@ -24,6 +24,7 @@ export function CreateSeasonFlow() {
 
   // Setup fields, carried into the preview step and finally into createSeason.
   const [name, setName] = useState("");
+  const [seasonStartDate, setSeasonStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [goalRaceName, setGoalRaceName] = useState("");
   const [goalRaceDate, setGoalRaceDate] = useState("");
   const [goalDistanceM, setGoalDistanceM] = useState(5000);
@@ -42,6 +43,7 @@ export function CreateSeasonFlow() {
     if (!name.trim()) return setError("Enter a season name.");
     setIsPending(true);
     const result = await previewSeasonBlueprint({
+      seasonStartDate,
       goalRaceName,
       goalRaceDate,
       goalDistanceM,
@@ -125,6 +127,22 @@ export function CreateSeasonFlow() {
             placeholder="e.g. Fall 2026 XC"
             className={fieldClass}
           />
+        </div>
+
+        <div>
+          <label htmlFor={`${baseId}-start-date`} className={labelClass}>
+            Season starts
+          </label>
+          <input
+            id={`${baseId}-start-date`}
+            value={seasonStartDate}
+            onChange={(e) => setSeasonStartDate(e.target.value)}
+            type="date"
+            className={dateFieldClass}
+          />
+          <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            When training actually begins -- not necessarily today.
+          </p>
         </div>
 
         <div>
