@@ -66,7 +66,15 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
       </p>
 
       <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
-        <p className="text-sm font-semibold text-zinc-900 dark:text-white">Group schedules</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-zinc-900 dark:text-white">Group schedules</p>
+          <Link
+            href={`/coach/seasons/${seasonId}/results`}
+            className="text-xs font-semibold text-zinc-600 underline decoration-black/10 underline-offset-2 hover:decoration-black dark:text-zinc-300 dark:decoration-white/10 dark:hover:decoration-white"
+          >
+            Race results
+          </Link>
+        </div>
         {groups && groups.length > 0 ? (
           <div className="mt-3 space-y-2">
             {groups.map((group) => (
