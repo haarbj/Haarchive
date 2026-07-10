@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { GenerateSeasonForm } from "./generate-season-form";
+import { CreateSeasonFlow } from "./create-season-flow";
 
 export const metadata: Metadata = {
   title: "Generate a Season",
@@ -13,11 +13,11 @@ export default function NewSeasonPage() {
         Generate a season
       </h1>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        A few numbers, and the season&rsquo;s phases and weekly themes are yours to tweak.
+        Set it up, preview exactly what will be created, then create it.
       </p>
 
       <div className="mt-10">
-        <GenerateSeasonForm />
+        <CreateSeasonFlow />
       </div>
     </section>
   );

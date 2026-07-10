@@ -3,51 +3,104 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-import { generateSeasonBlueprint, generateTrainingPlan, type WorkoutType } from "@/lib/coaching-engine";
+import {
+  diffDays,
+  generateSeasonBlueprint,
+  generateTrainingPlan,
+  parseScheduleText,
+  type MesocyclePhase,
+  type ParsedRace,
+  type SeasonPhaseDraft,
+  type WorkoutType,
+} from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { formatDistance } from "@/lib/format";
 import { getAppSession } from "@/lib/auth/session";
 
 const MILES_TO_METERS = 1609.34;
 
-export type GenerateSeasonState = { error?: string };
+// Phase timing/allocation depends only on (totalWeeks, goalDistanceM) --
+// confirmed by reading allocateMesocycles/buildWeeklyPhaseSequence in full.
+// This representative profile only shapes the season-level "typical"
+// mileageLevel/workoutSlots copy on each week (legacy fields, no longer
+// used to actually generate anyone's plan post-redesign) and the initial
+// keyWorkoutTypes guess on each phase (still coach-editable afterward) --
+// it never affects a single date the coach sees in the preview.
+const PREVIEW_REPRESENTATIVE_ATHLETE = { currentWeeklyMileageM: 25 * MILES_TO_METERS, daysPerWeek: 5 };
 
-// Mints season_phases ids client-side before insert, same reasoning as
-// generatePlan's mesocycle ids in plan/actions.ts: a bulk insert's returned
-// row order isn't guaranteed to match input order, and season_weeks.
-// season_phase_id must never depend on that guarantee holding.
-export async function generateSeason(
-  _prevState: GenerateSeasonState,
-  formData: FormData,
-): Promise<GenerateSeasonState> {
+const WEEK_THEME_BY_PHASE: Record<MesocyclePhase, string> = {
+  base: "Build aerobic volume",
+  build: "Increase threshold volume",
+  peak: "Sharpen race-specific fitness",
+  taper: "Cut volume, hold sharpness",
+  recovery: "Absorb and recover",
+};
+
+export type SeasonPreviewResult =
+  | { ok: true; phases: SeasonPhaseDraft[]; parsedRaces: ParsedRace[]; raceWarnings: string[] }
+  | { ok: false; error: string };
+
+export type SeasonPreviewInput = {
+  goalRaceName: string;
+  goalRaceDate: string;
+  goalDistanceM: number;
+  downWeeksEnabled: boolean;
+  downWeeksIntervalWeeks: number;
+  scheduleText: string;
+};
+
+// Pure preview -- no DB writes. Computes the exact same phase breakdown
+// createSeason will persist, so the coach approves (and can adjust) the
+// real thing before anything is saved, not a draft they clean up after.
+export async function previewSeasonBlueprint(input: SeasonPreviewInput): Promise<SeasonPreviewResult> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) {
-    return { error: "Not authorized." };
-  }
+  if (session?.role !== "coach" || !session.teamId) return { ok: false, error: "Not authorized." };
 
-  const name = formData.get("name");
-  const goalRaceName = formData.get("goalRaceName");
-  const goalRaceDate = formData.get("goalRaceDate");
-  const goalDistanceM = Number(formData.get("goalDistanceM"));
-  const currentWeeklyMileage = Number(formData.get("currentWeeklyMileage"));
-  const daysPerWeek = Number(formData.get("daysPerWeek"));
-
-  if (typeof name !== "string" || !name.trim()) return { error: "Enter a season name." };
-  if (typeof goalRaceName !== "string" || !goalRaceName.trim()) return { error: "Enter a goal race name." };
-  if (typeof goalRaceDate !== "string" || !goalRaceDate) return { error: "Enter a goal race date." };
-  if (!goalDistanceM || goalDistanceM <= 0) return { error: "Choose a goal distance." };
-  if (!currentWeeklyMileage || currentWeeklyMileage <= 0) {
-    return { error: "Enter a representative current weekly mileage." };
+  if (!input.goalRaceName.trim()) return { ok: false, error: "Enter a goal race name." };
+  if (!input.goalRaceDate) return { ok: false, error: "Enter a goal race date." };
+  if (!input.goalDistanceM || input.goalDistanceM <= 0) return { ok: false, error: "Choose a goal distance." };
+  if (!input.downWeeksIntervalWeeks || input.downWeeksIntervalWeeks < 2) {
+    return { ok: false, error: "Down-week interval must be at least 2 weeks." };
   }
-  if (!daysPerWeek || daysPerWeek < 3 || daysPerWeek > 6) return { error: "Choose 3-6 days per week." };
 
   const today = new Date().toISOString().slice(0, 10);
   const result = generateSeasonBlueprint({
-    goal: { raceName: goalRaceName, distanceM: goalDistanceM, date: goalRaceDate },
-    representativeAthlete: { currentWeeklyMileageM: currentWeeklyMileage * MILES_TO_METERS, daysPerWeek },
+    goal: { raceName: input.goalRaceName, distanceM: input.goalDistanceM, date: input.goalRaceDate },
+    representativeAthlete: PREVIEW_REPRESENTATIVE_ATHLETE,
     today,
+    downWeeks: { enabled: input.downWeeksEnabled, intervalWeeks: input.downWeeksIntervalWeeks },
   });
-  if (!result.ok) return { error: result.error };
+  if (!result.ok) return { ok: false, error: result.error };
+
+  const { races: parsedRaces, warnings: raceWarnings } = parseScheduleText(input.scheduleText);
+
+  return { ok: true, phases: result.phases, parsedRaces, raceWarnings };
+}
+
+export type SeasonRaceInput = { name: string; date: string; isGoalRace: boolean };
+
+export type CreateSeasonInput = {
+  name: string;
+  goalRaceName: string;
+  goalRaceDate: string;
+  goalDistanceM: number;
+  phases: SeasonPhaseDraft[];
+  races: SeasonRaceInput[];
+};
+
+export type CreateSeasonState = { error?: string };
+
+// Persists exactly what the coach approved in the preview -- phase dates
+// here may already differ from what generateSeasonBlueprint originally
+// computed (the coach can adjust them in the preview step), so this
+// re-derives each phase's own weeks from its (possibly-edited) date range
+// rather than reusing the original preview's week list.
+export async function createSeason(input: CreateSeasonInput): Promise<CreateSeasonState> {
+  const session = await getAppSession();
+  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+
+  if (!input.name.trim()) return { error: "Enter a season name." };
+  if (input.phases.length === 0) return { error: "No phases to save -- generate a preview first." };
 
   const supabase = await createClient();
 
@@ -56,10 +109,10 @@ export async function generateSeason(
     .insert({
       team_id: session.teamId,
       created_by: session.userId,
-      name,
-      goal_race_name: goalRaceName,
-      goal_race_date: goalRaceDate,
-      goal_distance_m: goalDistanceM,
+      name: input.name,
+      goal_race_name: input.goalRaceName,
+      goal_race_date: input.goalRaceDate,
+      goal_distance_m: input.goalDistanceM,
       status: "active",
     })
     .select("id")
@@ -68,9 +121,12 @@ export async function generateSeason(
     return { error: seasonError?.message ?? "Couldn't save the season." };
   }
 
-  const phaseIds = result.phases.map(() => crypto.randomUUID());
+  // Mints ids client-side before insert -- a bulk insert's returned row
+  // order isn't guaranteed to match input order, and season_weeks.
+  // season_phase_id must never depend on that guarantee holding.
+  const phaseIds = input.phases.map(() => crypto.randomUUID());
   const { error: phasesError } = await supabase.from("season_phases").insert(
-    result.phases.map((phase, i) => ({
+    input.phases.map((phase, i) => ({
       id: phaseIds[i],
       team_id: session.teamId,
       season_plan_id: insertedSeason.id,
@@ -86,18 +142,47 @@ export async function generateSeason(
   );
   if (phasesError) return { error: phasesError.message };
 
-  const { error: weeksError } = await supabase.from("season_weeks").insert(
-    result.weeks.map((week) => ({
-      team_id: session.teamId,
-      season_plan_id: insertedSeason.id,
-      season_phase_id: phaseIds[week.phaseOrderIndex],
-      week_index: week.weekIndex,
-      theme: week.theme,
-      mileage_level: week.mileageLevel,
-      workout_slots: week.workoutSlots,
-    })),
-  );
+  // Re-derives each phase's weeks from its own (possibly coach-edited)
+  // date range -- global week_index keeps counting across phase
+  // boundaries, matching how the rest of the app already reads it.
+  const weekRows: {
+    team_id: string;
+    season_plan_id: string;
+    season_phase_id: string;
+    week_index: number;
+    theme: string;
+  }[] = [];
+  let globalWeekIndex = 0;
+  for (let i = 0; i < input.phases.length; i++) {
+    const phase = input.phases[i];
+    const spanDays = diffDays(phase.startDate, phase.endDate) + 1;
+    const weekCount = Math.max(1, Math.round(spanDays / 7));
+    for (let w = 0; w < weekCount; w++) {
+      weekRows.push({
+        team_id: session.teamId,
+        season_plan_id: insertedSeason.id,
+        season_phase_id: phaseIds[i],
+        week_index: globalWeekIndex,
+        theme: WEEK_THEME_BY_PHASE[phase.phase],
+      });
+      globalWeekIndex += 1;
+    }
+  }
+  const { error: weeksError } = await supabase.from("season_weeks").insert(weekRows);
   if (weeksError) return { error: weeksError.message };
+
+  if (input.races.length > 0) {
+    const { error: racesError } = await supabase.from("season_races").insert(
+      input.races.map((race) => ({
+        team_id: session.teamId,
+        season_plan_id: insertedSeason.id,
+        name: race.name,
+        date: race.date,
+        is_goal_race: race.isGoalRace,
+      })),
+    );
+    if (racesError) return { error: racesError.message };
+  }
 
   redirect(`/coach/seasons/${insertedSeason.id}`);
 }
