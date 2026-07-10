@@ -7,6 +7,8 @@ import {
   copyWorkoutToGroups,
   deleteGroupPlanWorkout,
   duplicateWeekToGroup,
+  publishWeek,
+  unpublishWeek,
 } from "@/app/(app)/(protected)/coach/group-plans-actions";
 import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import type { WorkoutType } from "@/lib/coaching-engine";
@@ -37,6 +39,7 @@ export type Workout = {
   pace_slow_sec_per_mile: number | null;
   is_race: boolean;
   notes: string | null;
+  published_at: string | null;
 };
 
 function formatMinSecPerMile(secPerMile: number): string {
@@ -92,6 +95,9 @@ function WorkoutRow({
             </p>
           )}
           {workout.notes && <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">{workout.notes}</p>}
+          {!workout.published_at && (
+            <p className="mt-0.5 text-xs font-medium text-zinc-400 dark:text-zinc-500">Not published</p>
+          )}
         </div>
         <div className="flex shrink-0 gap-2 text-xs font-semibold">
           <button type="button" onClick={onEdit} className="text-zinc-700 dark:text-zinc-200">
@@ -189,6 +195,10 @@ function WeekSection({
     router.refresh();
   }
 
+  const publishedCount = workouts.filter((w) => w.published_at).length;
+  const publishState: "none" | "some" | "all" =
+    workouts.length === 0 || publishedCount === 0 ? "none" : publishedCount === workouts.length ? "all" : "some";
+
   return (
     <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -200,11 +210,42 @@ function WeekSection({
             {formatDate(week.startDate)} – {formatDate(week.endDate)} · {week.theme}
           </p>
         </div>
-        {otherGroups.length > 0 && (
-          <button type="button" onClick={() => setDuplicateOpen((v) => !v)} className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
-            Duplicate week to another group
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {workouts.length > 0 && (
+            <>
+              <span
+                className={`text-xs font-semibold ${
+                  publishState === "all"
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : publishState === "some"
+                      ? "text-amber-700 dark:text-amber-400"
+                      : "text-zinc-500 dark:text-zinc-400"
+                }`}
+              >
+                {publishState === "all" ? "Published" : publishState === "some" ? "Partially published" : "Not published"}
+              </span>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() =>
+                  startTransition(async () => {
+                    if (publishState === "all") await unpublishWeek(groupPlanId, week.startDate, week.endDate);
+                    else await publishWeek(groupPlanId, week.startDate, week.endDate);
+                    refresh();
+                  })
+                }
+                className="text-xs font-semibold text-zinc-700 underline decoration-black/20 underline-offset-2 hover:decoration-black disabled:opacity-60 dark:text-zinc-200 dark:decoration-white/20 dark:hover:decoration-white"
+              >
+                {publishState === "all" ? "Unpublish this week" : "Publish this week"}
+              </button>
+            </>
+          )}
+          {otherGroups.length > 0 && (
+            <button type="button" onClick={() => setDuplicateOpen((v) => !v)} className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
+              Duplicate week to another group
+            </button>
+          )}
+        </div>
       </div>
 
       {duplicateOpen && (

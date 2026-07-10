@@ -33,17 +33,20 @@ export async function ensureGroupPlan(seasonId: string, groupId: string): Promis
   return { groupPlanId: created.id };
 }
 
-// Reveals a group's schedule to its athletes -- generated/edited content
-// stays invisible to them until the coach explicitly publishes it.
-export async function publishGroupPlan(groupPlanId: string): Promise<ActionState> {
+// Reveals one specific week to its athletes -- publishing is per-entry, not
+// per-plan, so a coach can finalize and reveal this week without being
+// forced to also publish months of not-yet-settled weeks ahead of it.
+export async function publishWeek(groupPlanId: string, weekStartDate: string, weekEndDate: string): Promise<ActionState> {
   const session = await getAppSession();
   if (session?.role !== "coach") return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase
-    .from("group_plans")
+    .from("group_plan_workouts")
     .update({ published_at: new Date().toISOString() })
-    .eq("id", groupPlanId);
+    .eq("group_plan_id", groupPlanId)
+    .gte("scheduled_date", weekStartDate)
+    .lte("scheduled_date", weekEndDate);
   if (error) return { error: error.message };
 
   revalidatePath("/coach/seasons", "layout");
@@ -51,12 +54,37 @@ export async function publishGroupPlan(groupPlanId: string): Promise<ActionState
   return {};
 }
 
-export async function unpublishGroupPlan(groupPlanId: string): Promise<ActionState> {
+export async function unpublishWeek(groupPlanId: string, weekStartDate: string, weekEndDate: string): Promise<ActionState> {
   const session = await getAppSession();
   if (session?.role !== "coach") return { error: "Not authorized." };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("group_plans").update({ published_at: null }).eq("id", groupPlanId);
+  const { error } = await supabase
+    .from("group_plan_workouts")
+    .update({ published_at: null })
+    .eq("group_plan_id", groupPlanId)
+    .gte("scheduled_date", weekStartDate)
+    .lte("scheduled_date", weekEndDate);
+  if (error) return { error: error.message };
+
+  revalidatePath("/coach/seasons", "layout");
+  revalidatePath("/plan");
+  return {};
+}
+
+// Convenience for "just publish everything so far" -- publishes every
+// entry in this group's plan that isn't already published, regardless of
+// week.
+export async function publishAllWeeks(groupPlanId: string): Promise<ActionState> {
+  const session = await getAppSession();
+  if (session?.role !== "coach") return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("group_plan_workouts")
+    .update({ published_at: new Date().toISOString() })
+    .eq("group_plan_id", groupPlanId)
+    .is("published_at", null);
   if (error) return { error: error.message };
 
   revalidatePath("/coach/seasons", "layout");
