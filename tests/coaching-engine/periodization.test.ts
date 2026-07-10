@@ -85,6 +85,26 @@ describe("buildWeeklyPhaseSequence", () => {
       expect(week.phase).toBe("taper");
     }
   });
+
+  it("never substitutes a recovery week when down weeks are disabled", () => {
+    const allocation = allocateMesocycles(16, MARATHON_M);
+    const weeks = buildWeeklyPhaseSequence(allocation, { enabled: false, intervalWeeks: CUTBACK_INTERVAL_WEEKS });
+    expect(weeks.every((w) => !w.isCutback)).toBe(true);
+    expect(weeks.some((w) => w.phase === "recovery")).toBe(false);
+  });
+
+  it("respects a non-default down-week interval", () => {
+    const allocation = allocateMesocycles(16, MARATHON_M);
+    const weeks = buildWeeklyPhaseSequence(allocation, { enabled: true, intervalWeeks: 3 });
+
+    const originalPhaseByWeek = allocation.flatMap((block) => Array(block.weeks).fill(block.phase));
+    let trainingWeekCount = 0;
+    for (const week of weeks) {
+      if (originalPhaseByWeek[week.weekIndex] === "taper") continue;
+      trainingWeekCount += 1;
+      expect(week.isCutback).toBe(trainingWeekCount % 3 === 0);
+    }
+  });
 });
 
 describe("coalesceMesocycles", () => {

@@ -1,6 +1,11 @@
 import { diffDays } from "@/lib/coaching-engine/date-utils";
 import { buildWeeklyMileagePlan } from "@/lib/coaching-engine/mileage-progression";
-import { allocateMesocycles, buildWeeklyPhaseSequence, coalesceMesocycles } from "@/lib/coaching-engine/periodization";
+import {
+  allocateMesocycles,
+  buildWeeklyPhaseSequence,
+  coalesceMesocycles,
+  type DownWeekSettings,
+} from "@/lib/coaching-engine/periodization";
 import { weeklyTemplateFor } from "@/lib/coaching-engine/templates";
 import type { MesocyclePhase, WorkoutType } from "@/lib/coaching-engine/types";
 
@@ -11,6 +16,7 @@ export type GenerateSeasonBlueprintInput = {
   goal: { raceName: string; distanceM: number; date: string };
   representativeAthlete: { currentWeeklyMileageM: number; daysPerWeek: number };
   today: string;
+  downWeeks?: DownWeekSettings;
 };
 
 export type SeasonPhaseDraft = {
@@ -107,7 +113,7 @@ function mileageLevelFor(weekMeters: number, minMeters: number, maxMeters: numbe
 // prescriptions (that's Layer 3, generated per-athlete later against each
 // athlete's own mileage/pace, not here against a "representative" one).
 export function generateSeasonBlueprint(input: GenerateSeasonBlueprintInput): GenerateSeasonBlueprintResult {
-  const { goal, representativeAthlete, today } = input;
+  const { goal, representativeAthlete, today, downWeeks } = input;
 
   const totalWeeks = Math.floor(diffDays(today, goal.date) / 7) + 1;
   if (totalWeeks < MIN_SEASON_WEEKS) {
@@ -121,7 +127,7 @@ export function generateSeasonBlueprint(input: GenerateSeasonBlueprintInput): Ge
   }
 
   const allocation = allocateMesocycles(totalWeeks, goal.distanceM);
-  const weekPlan = buildWeeklyPhaseSequence(allocation);
+  const weekPlan = downWeeks ? buildWeeklyPhaseSequence(allocation, downWeeks) : buildWeeklyPhaseSequence(allocation);
   const { mesocycles, weekMesocycleIndex } = coalesceMesocycles(weekPlan, today);
   const mileagePlan = buildWeeklyMileagePlan(weekPlan, representativeAthlete.currentWeeklyMileageM, goal.distanceM);
   const minMileage = Math.min(...mileagePlan);

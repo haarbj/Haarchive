@@ -57,11 +57,20 @@ export function allocateMesocycles(totalWeeks: number, goalDistanceM: number): M
   ];
 }
 
+export type DownWeekSettings = { enabled: boolean; intervalWeeks: number };
+
+const DEFAULT_DOWN_WEEKS: DownWeekSettings = { enabled: true, intervalWeeks: CUTBACK_INTERVAL_WEEKS };
+
 // Expands a phase allocation into one entry per week, substituting a
-// recovery/cutback week every 4th training week -- counting only
-// base/build/peak weeks, since taper is already a deload and shouldn't be
-// interrupted by a second one.
-export function buildWeeklyPhaseSequence(allocation: MesocycleAllocation[]): WeekPlan[] {
+// recovery/cutback week every `intervalWeeks`th training week -- counting
+// only base/build/peak weeks, since taper is already a deload and shouldn't
+// be interrupted by a second one. Defaults preserve the original hardcoded
+// behavior (every 4th week) for every existing caller; a coach building a
+// season can now see and change this instead of it being invisible.
+export function buildWeeklyPhaseSequence(
+  allocation: MesocycleAllocation[],
+  downWeeks: DownWeekSettings = DEFAULT_DOWN_WEEKS,
+): WeekPlan[] {
   const weeks: WeekPlan[] = [];
   let weekIndex = 0;
   let trainingWeekCount = 0;
@@ -73,7 +82,7 @@ export function buildWeeklyPhaseSequence(allocation: MesocycleAllocation[]): Wee
 
       if (block.phase !== "taper") {
         trainingWeekCount += 1;
-        if (trainingWeekCount % CUTBACK_INTERVAL_WEEKS === 0) {
+        if (downWeeks.enabled && trainingWeekCount % downWeeks.intervalWeeks === 0) {
           phase = "recovery";
           isCutback = true;
         }
