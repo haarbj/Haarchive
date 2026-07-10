@@ -1,4 +1,5 @@
 export { generateTrainingPlan } from "@/lib/coaching-engine/plan-generator";
+export { generateSeasonBlueprint } from "@/lib/coaching-engine/season-generator";
 export { predictRaceTime } from "@/lib/coaching-engine/race-prediction";
 export { derivePaceZones, WORKOUT_TYPE_PACE_ZONE } from "@/lib/coaching-engine/pace-zones";
 export { addDays, diffDays, dayOfWeek } from "@/lib/coaching-engine/date-utils";
@@ -33,3 +34,10 @@ export type {
   WorkoutPrescription,
   WorkoutType,
 } from "@/lib/coaching-engine/types";
+export type {
+  GenerateSeasonBlueprintInput,
+  GenerateSeasonBlueprintResult,
+  MileageLevel,
+  SeasonPhaseDraft,
+  SeasonWeekDraft,
+} from "@/lib/coaching-engine/season-generator";
