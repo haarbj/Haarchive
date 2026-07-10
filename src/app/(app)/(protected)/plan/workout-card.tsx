@@ -4,7 +4,13 @@ import { useActionState, useId } from "react";
 
 import { completeWorkout } from "@/app/(app)/(protected)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
-import { workoutPrescriptionSchema, type DistanceBucket, type MesocyclePhase, type WorkoutType } from "@/lib/coaching-engine";
+import {
+  estimatedDurationRangeMin,
+  workoutPrescriptionSchema,
+  type DistanceBucket,
+  type MesocyclePhase,
+  type WorkoutType,
+} from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
 import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { ExplainWorkoutButton } from "./explain-workout-button";
@@ -30,6 +36,7 @@ export function WorkoutCard({ workout, phase, distanceBucket, completed }: Worko
   const [state, formAction, isPending] = useActionState(completeWorkout, {});
 
   const parsed = workoutPrescriptionSchema.safeParse(workout.prescription);
+  const durationRange = parsed.success ? estimatedDurationRangeMin(parsed.data) : null;
 
   return (
     <div className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
@@ -37,6 +44,7 @@ export function WorkoutCard({ workout, phase, distanceBucket, completed }: Worko
         <div>
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">
             {formatDate(workout.scheduled_date)} · {workoutTypeLabel(workout.workout_type)}
+            {durationRange && ` · ${durationRange[0]}–${durationRange[1]} min`}
           </p>
           <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-300">
             {parsed.success ? describePrescription(parsed.data) : "Details unavailable"}

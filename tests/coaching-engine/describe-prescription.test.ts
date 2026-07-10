@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describePrescription } from "@/lib/coaching-engine/describe-prescription";
+import { describePrescription, estimatedDurationRangeMin } from "@/lib/coaching-engine/describe-prescription";
 import type { WorkoutPrescription } from "@/lib/coaching-engine/types";
 
 describe("describePrescription", () => {
@@ -68,5 +68,60 @@ describe("describePrescription", () => {
   it("formats race day without a pace range", () => {
     const rx: WorkoutPrescription = { kind: "race", distanceM: 42195 };
     expect(describePrescription(rx)).toMatch(/race day/i);
+  });
+});
+
+describe("estimatedDurationRangeMin", () => {
+  it("computes an exact duration range for a simple easy run", () => {
+    const rx: WorkoutPrescription = { kind: "easy", distanceM: 8047, paceRangeSecPerKm: [300, 330] };
+    // 8.047 km * 300s/km = 2414.1s = 40.24min -> 40; * 330s/km = 2655.5s = 44.26min -> 44
+    expect(estimatedDurationRangeMin(rx)).toEqual([40, 44]);
+  });
+
+  it("returns a wider range for recovery than a faster easy run at the same distance", () => {
+    const easy: WorkoutPrescription = { kind: "easy", distanceM: 8047, paceRangeSecPerKm: [300, 330] };
+    const recovery: WorkoutPrescription = { kind: "recovery", distanceM: 8047, paceRangeSecPerKm: [340, 360] };
+    const [, easyMax] = estimatedDurationRangeMin(easy)!;
+    const [recoveryMin] = estimatedDurationRangeMin(recovery)!;
+    expect(recoveryMin).toBeGreaterThan(easyMax);
+  });
+
+  it("accounts for both the easy and marathon-pace segments of a long run", () => {
+    const plain: WorkoutPrescription = { kind: "long", distanceM: 19312, paceRangeSecPerKm: [300, 330] };
+    const withMp: WorkoutPrescription = {
+      kind: "long",
+      distanceM: 32187,
+      paceRangeSecPerKm: [310, 330],
+      marathonPaceSegment: { distanceM: 9656, paceRangeSecPerKm: [270, 280] },
+    };
+    const [plainMin, plainMax] = estimatedDurationRangeMin(plain)!;
+    const [mpMin, mpMax] = estimatedDurationRangeMin(withMp)!;
+    expect(plainMin).toBeGreaterThan(0);
+    expect(plainMax).toBeGreaterThanOrEqual(plainMin);
+    // The 20-mile run with a marathon-pace segment covers more total
+    // distance than the plain 12-mile run, so it must take longer.
+    expect(mpMin).toBeGreaterThan(plainMax);
+    expect(mpMax).toBeGreaterThanOrEqual(mpMin);
+  });
+
+  it("includes warmup and cooldown time in a tempo run's duration", () => {
+    const rx: WorkoutPrescription = { kind: "tempo", warmupM: 1600, tempoM: 4800, cooldownM: 1600, paceRangeSecPerKm: [240, 250] };
+    const [min, max] = estimatedDurationRangeMin(rx)!;
+    expect(min).toBeGreaterThan(0);
+    expect(max).toBeGreaterThanOrEqual(min);
+    // Warmup + tempo + cooldown = 8000m = 8km; at worst a bit under 240s/km fast bound.
+    expect(min).toBeGreaterThan(30);
+  });
+
+  it("includes rep, recovery, warmup, and cooldown distance for a vo2 session", () => {
+    const rx: WorkoutPrescription = { kind: "vo2", warmupM: 1600, reps: 6, repM: 800, recoveryM: 400, cooldownM: 1600, paceRangeSecPerKm: [200, 210] };
+    const [min, max] = estimatedDurationRangeMin(rx)!;
+    expect(min).toBeGreaterThan(0);
+    expect(max).toBeGreaterThanOrEqual(min);
+  });
+
+  it("returns null for race day -- no pace data to estimate from", () => {
+    const rx: WorkoutPrescription = { kind: "race", distanceM: 42195 };
+    expect(estimatedDurationRangeMin(rx)).toBeNull();
   });
 });

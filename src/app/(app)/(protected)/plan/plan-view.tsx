@@ -21,6 +21,7 @@ type Mesocycle = {
   start_date: string;
   end_date: string;
   focus_notes: string | null;
+  season_phase_id: string | null;
 };
 
 type WorkoutRow = {
@@ -134,7 +135,7 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
 
   const { data: mesocycles } = await supabase
     .from("mesocycles")
-    .select("id, phase, start_date, end_date, focus_notes")
+    .select("id, phase, start_date, end_date, focus_notes, season_phase_id")
     .eq("training_plan_id", plan.id)
     .order("start_date", { ascending: true })
     .returns<Mesocycle[]>();
@@ -143,6 +144,18 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
   const currentMesocycle =
     mesocycles?.find((m) => m.start_date <= today && today <= m.end_date) ?? null;
   const planComplete = !currentMesocycle && mesocycles && today > (mesocycles.at(-1)?.end_date ?? "");
+
+  // A coach-editable season phase's display name/goal, when this mesocycle
+  // is linked to one -- overrides the hardcoded phaseSummary() copy below.
+  // Absent for any self-serve plan with no season, which renders exactly
+  // as it always has.
+  const { data: seasonPhase } = currentMesocycle?.season_phase_id
+    ? await supabase
+        .from("season_phases")
+        .select("display_name, primary_goal")
+        .eq("id", currentMesocycle.season_phase_id)
+        .maybeSingle()
+    : { data: null };
 
   const weekIndex = Math.max(0, Math.floor(diffDays(plan.start_date, today) / 7));
   const weekStart = addDays(plan.start_date, weekIndex * 7);
@@ -189,10 +202,10 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
                 Current phase
               </p>
               <p className="mt-1 text-lg font-semibold text-zinc-900 capitalize dark:text-white">
-                {currentMesocycle.phase}
+                {seasonPhase?.display_name ?? currentMesocycle.phase}
               </p>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                {phaseSummary(currentMesocycle.phase, bucket)}
+                {seasonPhase?.primary_goal || phaseSummary(currentMesocycle.phase, bucket)}
               </p>
               {currentMesocycle.focus_notes && (
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">

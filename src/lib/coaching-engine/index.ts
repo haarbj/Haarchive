@@ -13,7 +13,7 @@ export {
   insertRecoveryDay,
   substituteForSurface,
 } from "@/lib/coaching-engine/adaptations";
-export { describePrescription } from "@/lib/coaching-engine/describe-prescription";
+export { describePrescription, estimatedDurationRangeMin } from "@/lib/coaching-engine/describe-prescription";
 export { workoutPrescriptionSchema } from "@/lib/coaching-engine/types";
 export { CORE_PRINCIPLE, phaseSummary, trainingVoiceFor, workoutKindCoaching } from "@/lib/coaching-engine/coaching-copy";
 export { generateCompletionFeedback } from "@/lib/coaching-engine/completion-feedback";

@@ -63,6 +63,7 @@ type Mesocycle = {
   start_date: string;
   end_date: string;
   focus_notes: string | null;
+  season_phase_id: string | null;
 };
 
 type TodayWorkoutRow = {
@@ -145,6 +146,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const today = new Date().toISOString().slice(0, 10);
 
   let currentMesocycle: Mesocycle | null = null;
+  let currentSeasonPhase: { display_name: string; primary_goal: string } | null = null;
   let todayWorkout: TodayWorkoutRow | null = null;
   let weeklySummary: ReturnType<typeof summarizeWeek> | null = null;
 
@@ -152,7 +154,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     const [{ data: mesocycles }, { data: todayWorkoutRows }] = await Promise.all([
       supabase
         .from("mesocycles")
-        .select("phase, start_date, end_date, focus_notes")
+        .select("phase, start_date, end_date, focus_notes, season_phase_id")
         .eq("training_plan_id", trainingPlan.id)
         .returns<Mesocycle[]>(),
       supabase
@@ -164,6 +166,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     ]);
     currentMesocycle = mesocycles?.find((m) => m.start_date <= today && today <= m.end_date) ?? null;
     todayWorkout = todayWorkoutRows?.[0] ?? null;
+
+    if (currentMesocycle?.season_phase_id) {
+      const { data: phaseRow } = await supabase
+        .from("season_phases")
+        .select("display_name, primary_goal")
+        .eq("id", currentMesocycle.season_phase_id)
+        .maybeSingle();
+      currentSeasonPhase = phaseRow ?? null;
+    }
 
     const weekIndex = Math.max(0, Math.floor(diffDays(trainingPlan.start_date, today) / 7));
     if (weekIndex >= 1) {
@@ -262,10 +273,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               Current training phase
             </p>
             <p className="mt-1 text-lg font-semibold text-zinc-900 capitalize dark:text-white">
-              {currentMesocycle.phase}
+              {currentSeasonPhase?.display_name ?? currentMesocycle.phase}
             </p>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              {phaseSummary(currentMesocycle.phase, primaryGoal ? distanceBucket(primaryGoal.distance_m) : "middle")}
+              {currentSeasonPhase?.primary_goal ||
+                phaseSummary(currentMesocycle.phase, primaryGoal ? distanceBucket(primaryGoal.distance_m) : "middle")}
             </p>
             <Link
               href="/plan"
