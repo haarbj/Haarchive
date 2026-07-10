@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { signOut } from "@/app/(app)/auth-actions";
 import { useAuthStatus } from "@/lib/use-auth-status";
+import { useSessionRole } from "@/lib/use-session-role";
 
 type AuthStatusProps = {
   className?: string;
@@ -47,6 +48,7 @@ function AccountMenu({
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const role = useSessionRole();
 
   useEffect(() => {
     if (!open) return;
@@ -92,12 +94,20 @@ function AccountMenu({
 
       {open && (
         <div className="absolute right-0 top-full z-10 mt-2 w-44 rounded-xl border border-black/10 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-zinc-900">
-          <Link href="/dashboard" onClick={closeAndNavigate} className={menuItemClass}>
-            Dashboard
-          </Link>
-          <Link href="/plan" onClick={closeAndNavigate} className={menuItemClass}>
-            Training Plan
-          </Link>
+          {role === "coach" ? (
+            <Link href="/coach" onClick={closeAndNavigate} className={menuItemClass}>
+              Coach
+            </Link>
+          ) : (
+            <>
+              <Link href="/dashboard" onClick={closeAndNavigate} className={menuItemClass}>
+                Dashboard
+              </Link>
+              <Link href="/plan" onClick={closeAndNavigate} className={menuItemClass}>
+                Training Plan
+              </Link>
+            </>
+          )}
           <Link href="/settings" onClick={closeAndNavigate} className={menuItemClass}>
             Settings
           </Link>

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { describePrescription, workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
+import { getAppSession } from "@/lib/auth/session";
 import { GoalCard, type FitnessEstimate } from "@/app/(app)/(protected)/dashboard/goal-card";
 import { OnboardingForm } from "@/app/(app)/(protected)/dashboard/onboarding-form";
 import { equivalentPerformances } from "@/app/(app)/(protected)/dashboard/recent-fitness";
@@ -74,6 +76,9 @@ type DashboardPageProps = {
 };
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const session = await getAppSession();
+  if (session?.role === "coach") redirect("/coach");
+
   const { strava_connected: stravaConnectedParam, strava_error: stravaErrorParam } =
     await searchParams;
 
