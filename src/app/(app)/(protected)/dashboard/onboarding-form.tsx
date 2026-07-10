@@ -11,7 +11,15 @@ import {
   labelClass,
 } from "./form-constants";
 
-export function OnboardingForm() {
+type OnboardingFormProps = {
+  // Team-connected athletes get their training plan from their coach, not
+  // from this goal -- the copy here shifts from "this drives your plan" to
+  // a purely psychological framing (why the goal matters to you, not what
+  // it unlocks) so it doesn't imply something that isn't true for them.
+  teamConnected?: boolean;
+};
+
+export function OnboardingForm({ teamConnected = false }: OnboardingFormProps) {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(saveOnboarding, {});
   const [includeResult, setIncludeResult] = useState(false);
@@ -25,12 +33,12 @@ export function OnboardingForm() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
-            Set your first goal
+            {teamConnected ? "Set a goal for yourself" : "Set your first goal"}
           </h2>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-            One goal race, and optionally your most recent result. That&rsquo;s
-            all it takes to start personalizing things — nothing else is
-            collected yet.
+            {teamConnected
+              ? "Your coach builds your actual training -- this is just for you: something to aim for, and a reason to care about the work each day. Why does this goal matter to you?"
+              : "One goal race, and optionally your most recent result. That’s all it takes to start personalizing things — nothing else is collected yet."}
           </p>
         </div>
         <button

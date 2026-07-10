@@ -33,6 +33,37 @@ export async function ensureGroupPlan(seasonId: string, groupId: string): Promis
   return { groupPlanId: created.id };
 }
 
+// Reveals a group's schedule to its athletes -- generated/edited content
+// stays invisible to them until the coach explicitly publishes it.
+export async function publishGroupPlan(groupPlanId: string): Promise<ActionState> {
+  const session = await getAppSession();
+  if (session?.role !== "coach") return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("group_plans")
+    .update({ published_at: new Date().toISOString() })
+    .eq("id", groupPlanId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/coach/seasons", "layout");
+  revalidatePath("/plan");
+  return {};
+}
+
+export async function unpublishGroupPlan(groupPlanId: string): Promise<ActionState> {
+  const session = await getAppSession();
+  if (session?.role !== "coach") return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("group_plans").update({ published_at: null }).eq("id", groupPlanId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/coach/seasons", "layout");
+  revalidatePath("/plan");
+  return {};
+}
+
 export type WorkoutInput = {
   id?: string;
   groupPlanId: string;

@@ -225,7 +225,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       )}
 
       <div className="mt-10 space-y-8">
-        {!primaryGoal && <OnboardingForm />}
+        {!primaryGoal && <OnboardingForm teamConnected={!!session?.teamId} />}
 
         {hasTrainingPlan && (
           <div className="rounded-2xl border-2 border-zinc-900 bg-white p-6 shadow-sm dark:border-white dark:bg-zinc-900">
@@ -278,7 +278,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {primaryGoal && <GoalCard goal={primaryGoal} estimate={fitnessEstimate} />}
 
-        {primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
+        {!session?.teamId && primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
           <Link
             href="/plan/new"
             className="block rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
@@ -292,10 +292,24 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </Link>
         )}
 
-        {primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
+        {!session?.teamId && primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
             Add a goal time and date above to unlock your training plan.
           </p>
+        )}
+
+        {session?.teamId && !hasTrainingPlan && (
+          <Link
+            href="/plan"
+            className="block rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
+          >
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">
+              View your training schedule →
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Your coach builds and publishes your schedule -- check here once it&rsquo;s up.
+            </p>
+          </Link>
         )}
 
         <div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
+import { getAppSession } from "@/lib/auth/session";
 import { GeneratePlanForm } from "./generate-plan-form";
 
 export const metadata: Metadata = {
@@ -9,6 +10,14 @@ export const metadata: Metadata = {
 };
 
 export default async function NewPlanPage() {
+  // Team-connected athletes get their schedule from their coach, not
+  // self-generated -- this route is fully blocked for them, not just
+  // hidden, since generating one here would collide with their coach's
+  // group plan (and there's nothing for it to attach to: no season/group
+  // context to associate it with).
+  const session = await getAppSession();
+  if (session?.teamId) redirect("/plan");
+
   const supabase = await createClient();
 
   const [{ data: goal }, { data: existingPlan }, { data: athleteProfile }] = await Promise.all([

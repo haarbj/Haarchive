@@ -308,3 +308,36 @@ export async function undoAdaptation(workoutId: string): Promise<ApplyAdaptation
   revalidatePath("/plan");
   return {};
 }
+
+export type ToggleGroupCompletionState = { error?: string };
+
+// Deliberately simpler than completeWorkout -- a coach-authored group
+// session is qualitative (free-text description, no distance/pace unless
+// the coach opted in), so there's no prescription to compare actuals
+// against and generate feedback from. Just "did you do it," toggled.
+export async function toggleGroupWorkoutCompletion(
+  groupPlanWorkoutId: string,
+  currentlyCompleted: boolean,
+): Promise<ToggleGroupCompletionState> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired -- sign in again." };
+
+  if (currentlyCompleted) {
+    const { error } = await supabase
+      .from("workout_completions")
+      .delete()
+      .eq("group_plan_workout_id", groupPlanWorkoutId)
+      .eq("user_id", userId);
+    if (error) return { error: error.message };
+  } else {
+    const { error } = await supabase
+      .from("workout_completions")
+      .insert({ group_plan_workout_id: groupPlanWorkoutId, user_id: userId });
+    if (error) return { error: error.message };
+  }
+
+  revalidatePath("/plan");
+  return {};
+}

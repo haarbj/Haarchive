@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
+import { TeamScheduleView } from "./team-schedule-view";
 import { WorkoutCard } from "./workout-card";
 
 type Mesocycle = {
@@ -75,6 +76,26 @@ type PlanViewProps = {
 // permits reading multiple different athletes' rows, not just one.
 export async function PlanView({ userId, coachView = false }: PlanViewProps) {
   const supabase = await createClient();
+
+  // Team-connected athletes get their schedule from a coach-published
+  // group plan, not an individually-generated one -- checked first and
+  // returned early so the rest of this function (self-serve training_plans/
+  // workouts) stays completely untouched for non-team athletes.
+  const { data: teamMembership } = await supabase
+    .from("team_memberships")
+    .select("team_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (teamMembership) {
+    return (
+      <>
+        <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Training Schedule</h1>
+        <div className="mt-10">
+          <TeamScheduleView userId={userId} coachView={coachView} />
+        </div>
+      </>
+    );
+  }
 
   const { data: goal } = await supabase
     .from("goals")

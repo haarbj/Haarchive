@@ -5,6 +5,7 @@ import { addDays } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { ensureGroupPlan } from "@/app/(app)/(protected)/coach/group-plans-actions";
+import { PublishToggle } from "./publish-toggle";
 import { ScheduleBuilder, type WeekRange, type Workout } from "./schedule-builder";
 
 export const metadata: Metadata = {
@@ -41,6 +42,8 @@ export default async function GroupSchedulePage({ params }: PageProps) {
       </section>
     );
   }
+
+  const { data: groupPlan } = await supabase.from("group_plans").select("published_at").eq("id", groupPlanId).single();
 
   const [{ data: phases }, { data: weeks }, { data: workouts }, { data: allGroups }] = await Promise.all([
     supabase
@@ -100,6 +103,10 @@ export default async function GroupSchedulePage({ params }: PageProps) {
       </p>
 
       <div className="mt-10">
+        <PublishToggle groupPlanId={groupPlanId} publishedAt={groupPlan?.published_at ?? null} />
+      </div>
+
+      <div className="mt-6">
         <ScheduleBuilder
           seasonId={seasonId}
           groupPlanId={groupPlanId}
