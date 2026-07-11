@@ -64,7 +64,7 @@ export function ViewToggle({
           otherGroupsData={otherGroupsData}
         />
       ) : (
-        <AllGroupsDayView dates={allGroupsDayData.dates} groups={allGroupsDayData.groups} />
+        <AllGroupsDayView seasonId={seasonId} dates={allGroupsDayData.dates} groups={allGroupsDayData.groups} />
       )}
     </div>
   );

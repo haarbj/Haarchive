@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 
 import {
   copyWorkoutToGroups,
@@ -222,7 +222,10 @@ function WeekSection({
     workouts.length === 0 || publishedCount === 0 ? "none" : publishedCount === workouts.length ? "all" : "some";
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <div
+      id={`week-${week.weekIndex}`}
+      className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
@@ -401,6 +404,20 @@ export function ScheduleBuilder({
   otherGroups: { id: string; name: string }[];
   otherGroupsData: GroupDayEntries[];
 }) {
+  const searchParams = useSearchParams();
+  const targetDate = searchParams.get("date");
+
+  useEffect(() => {
+    if (!targetDate) return;
+    const week = weekRanges.find((w) => targetDate >= w.startDate && targetDate <= w.endDate);
+    if (!week) return;
+    document.getElementById(`week-${week.weekIndex}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Deep-linking from "all groups, by day" is a one-time landing action,
+    // not something that should re-fire on every re-render this page does
+    // (e.g. after publishing/editing).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetDate]);
+
   return (
     <div className="space-y-6">
       {weekRanges.map((week) => (
