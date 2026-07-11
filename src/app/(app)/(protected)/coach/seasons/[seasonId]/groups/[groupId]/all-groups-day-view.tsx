@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 
-import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { formatDate } from "@/lib/format";
+import { WorkoutMetaLine } from "@/components/workout-summary-line";
 import type { Workout } from "./schedule-builder";
 
 export type GroupDayEntries = {
@@ -56,12 +56,11 @@ export function AllGroupsDayView({
                   <div className="mt-1.5 space-y-2">
                     {g.workoutsByDate[date].map((w) => (
                       <div key={w.id}>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                          {[w.time_of_day, w.location].filter(Boolean).join(" · ") || "—"}
-                          {w.workout_type && ` · ${workoutTypeLabel(w.workout_type)}`}
-                          {w.duration_min && ` · ${w.duration_min} min`}
-                          {w.is_race && " · Race"}
-                        </p>
+                        <WorkoutMetaLine
+                          workout={w}
+                          includeDuration
+                          className="text-xs text-zinc-500 dark:text-zinc-400"
+                        />
                         <p className="text-sm text-zinc-900 dark:text-white">{w.description}</p>
                       </div>
                     ))}

@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { fieldClass, labelClass } from "@/lib/form-styles";
 
 type DistanceKey =
   | "1500m"
@@ -196,10 +197,6 @@ const EFFORT_LEVELS = [
   { label: "Hard", pct: 0.8 },
 ];
 
-const fieldClass =
-  "rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white";
-const labelClass =
-  "mb-1 block text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
 const statCardClass =
   "rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900";
 const heroCardClass =

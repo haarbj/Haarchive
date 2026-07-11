@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/db/server";
-import { formatClock, formatDate } from "@/lib/format";
+import { formatClock } from "@/lib/format";
+import { WorkoutLengthLine, WorkoutMetaLine } from "@/components/workout-summary-line";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
-import { workoutTypeLabel } from "./format-workout";
 import { GroupWorkoutCompleteForm, UndoGroupCompletionButton } from "./group-workout-complete-form";
 import type { WorkoutType } from "@/lib/coaching-engine";
 
@@ -25,10 +25,6 @@ type GroupPlanWorkout = {
   explanation: string | null;
 };
 
-function formatMinSecPerMile(secPerMile: number): string {
-  return `${Math.floor(secPerMile / 60)}:${(secPerMile % 60).toString().padStart(2, "0")}`;
-}
-
 function GroupWorkoutRow({
   workout,
   completion,
@@ -46,28 +42,12 @@ function GroupWorkoutRow({
     <div className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-            {formatDate(workout.scheduled_date)}
-            {(workout.time_of_day || workout.location) &&
-              ` · ${[workout.time_of_day, workout.location].filter(Boolean).join(" · ")}`}
-            {workout.workout_type && ` · ${workoutTypeLabel(workout.workout_type)}`}
-            {workout.is_race && " · Race"}
-          </p>
+          <WorkoutMetaLine date={workout.scheduled_date} workout={workout} />
           <p className="mt-0.5 text-sm font-medium text-zinc-900 dark:text-white">{workout.description}</p>
           {workout.secondary_activity && (
             <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{workout.secondary_activity}</p>
           )}
-          {(workout.duration_min || workout.distance_m || workout.pace_fast_sec_per_mile) && (
-            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-              {workout.duration_min && `${workout.duration_min} min`}
-              {workout.duration_min && (workout.distance_m || workout.pace_fast_sec_per_mile) && " · "}
-              {workout.distance_m && `${(workout.distance_m / 1609.34).toFixed(1)} mi`}
-              {workout.distance_m && workout.pace_fast_sec_per_mile && " · "}
-              {workout.pace_fast_sec_per_mile &&
-                workout.pace_slow_sec_per_mile &&
-                `${formatMinSecPerMile(workout.pace_fast_sec_per_mile)}–${formatMinSecPerMile(workout.pace_slow_sec_per_mile)}/mi`}
-            </p>
-          )}
+          <WorkoutLengthLine workout={workout} />
           {workout.is_race && athleteGoal && (
             <p className="mt-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-400">
               Your goal: {athleteGoal.race_name}

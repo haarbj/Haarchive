@@ -10,9 +10,9 @@ import {
   publishWeek,
   unpublishWeek,
 } from "@/app/(app)/(protected)/coach/group-plans-actions";
-import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { addDays, diffDays, type WorkoutType } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
+import { WorkoutLengthLine, WorkoutMetaLine } from "@/components/workout-summary-line";
 import type { GroupDayEntries } from "./all-groups-day-view";
 import { WorkoutEntryForm } from "./workout-entry-form";
 
@@ -45,10 +45,6 @@ export type Workout = {
   explanation: string | null;
 };
 
-function formatMinSecPerMile(secPerMile: number): string {
-  return `${Math.floor(secPerMile / 60)}:${(secPerMile % 60).toString().padStart(2, "0")}`;
-}
-
 function WorkoutRow({
   workout,
   seasonId,
@@ -80,25 +76,12 @@ function WorkoutRow({
     <div className="rounded-xl border border-black/10 bg-white p-3 dark:border-white/10 dark:bg-zinc-900">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-            {[workout.time_of_day, workout.location].filter(Boolean).join(" · ") || "—"}
-            {workout.workout_type && ` · ${workoutTypeLabel(workout.workout_type)}`}
-            {workout.is_race && " · Race"}
-          </p>
+          <WorkoutMetaLine workout={workout} />
           <p className="mt-0.5 text-sm font-medium text-zinc-900 dark:text-white">{workout.description}</p>
           {workout.secondary_activity && (
             <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{workout.secondary_activity}</p>
           )}
-          {(workout.duration_min || workout.distance_m || workout.pace_fast_sec_per_mile) && (
-            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-              {workout.duration_min && `${workout.duration_min} min`}
-              {workout.duration_min && (workout.distance_m || workout.pace_fast_sec_per_mile) && " · "}
-              {workout.distance_m && `${(workout.distance_m / 1609.34).toFixed(1)} mi`}
-              {workout.distance_m && workout.pace_fast_sec_per_mile && " · "}
-              {workout.pace_fast_sec_per_mile && workout.pace_slow_sec_per_mile &&
-                `${formatMinSecPerMile(workout.pace_fast_sec_per_mile)}–${formatMinSecPerMile(workout.pace_slow_sec_per_mile)}/mi`}
-            </p>
-          )}
+          <WorkoutLengthLine workout={workout} />
           {workout.notes && <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">{workout.notes}</p>}
           {!workout.published_at && (
             <p className="mt-0.5 text-xs font-medium text-zinc-400 dark:text-zinc-500">Not published</p>

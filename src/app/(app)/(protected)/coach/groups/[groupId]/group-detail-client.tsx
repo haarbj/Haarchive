@@ -9,9 +9,7 @@ import {
   removeAthleteFromGroup,
   renameGroup,
 } from "@/app/(app)/(protected)/coach/groups-actions";
-
-const fieldClass =
-  "rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white";
+import { fieldClass } from "@/lib/form-styles";
 
 type Athlete = { id: string; display_name: string };
 

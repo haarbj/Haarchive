@@ -1,3 +1,7 @@
+import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
+
+export { labelClass };
+
 export const GOAL_DISTANCES = [
   { label: "1 Mile", meters: 1609 },
   { label: "5K", meters: 5000 },
@@ -14,10 +18,7 @@ export const COURSE_TYPES = [
   { label: "Trail", value: "trail" },
 ];
 
-export const fieldClass =
-  "w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white";
-export const labelClass =
-  "mb-1 block text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
+export const fieldClass = `w-full ${baseFieldClass}`;
 
 // Native date inputs render the calendar-picker icon black by default, which
 // is invisible against a dark background -- invert it in dark mode so the
