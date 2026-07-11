@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { addDays } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { ensureGroupPlan } from "@/app/(app)/(protected)/coach/group-plans-actions";
+import { BackLink } from "@/components/back-link";
 import type { GroupDayEntries } from "./all-groups-day-view";
 import type { WeekRange, Workout } from "./schedule-builder";
 import { ViewToggle } from "./view-toggle";
@@ -139,10 +141,30 @@ export default async function GroupSchedulePage({ params }: PageProps) {
 
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{group.name}</h1>
+      <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
+      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{group.name}</h1>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {season.name} — build this group&rsquo;s week-by-week schedule.
       </p>
+
+      {allGroups && allGroups.length > 1 && (
+        <div className="mt-6 flex flex-wrap gap-2">
+          {allGroups.map((g) => (
+            <Link
+              key={g.id}
+              href={`/coach/seasons/${seasonId}/groups/${g.id}`}
+              aria-current={g.id === groupId ? "page" : undefined}
+              className={`inline-flex min-h-12 items-center rounded-full px-4 text-sm font-semibold transition ${
+                g.id === groupId
+                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                  : "border border-black/10 text-zinc-700 hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
+              }`}
+            >
+              {g.name}
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="mt-10">
         <ViewToggle

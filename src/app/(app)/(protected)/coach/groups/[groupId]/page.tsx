@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
+import { BackLink } from "@/components/back-link";
 import { DeleteGroupButton, MembershipRoster, RenameGroupForm } from "./group-detail-client";
 
 export const metadata: Metadata = {
@@ -55,7 +56,8 @@ export default async function GroupDetailPage({ params }: GroupDetailPageProps) 
 
   return (
     <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{group.name}</h1>
+      <BackLink href="/coach/groups" label="Groups" />
+      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{group.name}</h1>
 
       <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">Rename</p>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { PlanView } from "@/app/(app)/(protected)/plan/plan-view";
+import { BackLink } from "@/components/back-link";
 
 export const metadata: Metadata = {
   title: "Athlete",
@@ -29,7 +30,8 @@ export default async function AthleteDetailPage({ params }: AthleteDetailPagePro
 
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-      <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+      <BackLink href="/coach/roster" label="Roster" />
+      <p className="mt-4 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
         Coaching view
       </p>
       <div className="mt-1">

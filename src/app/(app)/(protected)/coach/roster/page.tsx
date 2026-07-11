@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
+import { BackLink } from "@/components/back-link";
 
 export const metadata: Metadata = {
   title: "Roster",
@@ -29,7 +30,8 @@ export default async function RosterPage() {
 
   return (
     <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Roster</h1>
+      <BackLink href="/coach" label="Coach" />
+      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Roster</h1>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Athletes who&rsquo;ve signed up with an @brophybroncos.org email join automatically.
       </p>

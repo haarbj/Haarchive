@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { formatClock, formatDate } from "@/lib/format";
+import { BackLink } from "@/components/back-link";
 import { CompletionSummary, type CompletionDetail } from "@/app/(app)/(protected)/plan/completion-detail";
 
 export const metadata: Metadata = {
@@ -58,7 +59,8 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
   if (!groupPlans || groupPlans.length === 0) {
     return (
       <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-        <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Race results</h1>
+        <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
+        <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Race results</h1>
         <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-300">No group schedules for {season.name} yet.</p>
       </section>
     );
@@ -136,7 +138,8 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
 
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Race results</h1>
+      <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
+      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Race results</h1>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Logged results for {season.name}, against each athlete&rsquo;s own goal.
       </p>

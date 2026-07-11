@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { getAppSession } from "@/lib/auth/session";
+import { BackLink } from "@/components/back-link";
 import { PhaseEditor, type SeasonPhaseRow } from "./phase-editor";
 import { WeekEditor, type SeasonWeekRow } from "./week-editor";
 
@@ -60,7 +61,8 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
 
   return (
     <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{season.name}</h1>
+      <BackLink href="/coach" label="Coach" />
+      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{season.name}</h1>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Building toward {season.goal_race_name} on {formatDate(season.goal_race_date)}.
       </p>
