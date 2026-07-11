@@ -44,7 +44,11 @@ export function WorkoutMetaLine({
       {!date && (timeLocation || "—")}
       {workout.workout_type && ` · ${workoutTypeLabel(workout.workout_type)}`}
       {includeDuration && workout.duration_min && ` · ${workout.duration_min} min`}
-      {workout.is_race && " · Race"}
+      {workout.is_race && (
+        <span className="ml-1.5 rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold tracking-wide text-rose-800 normal-case dark:bg-rose-900/40 dark:text-rose-300">
+          RACE
+        </span>
+      )}
     </p>
   );
 }

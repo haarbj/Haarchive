@@ -39,7 +39,13 @@ function GroupWorkoutRow({
   athleteGoal: AthleteGoal | null;
 }) {
   return (
-    <div className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
+    <div
+      className={`rounded-xl border p-4 dark:bg-zinc-900 ${
+        workout.is_race
+          ? "border-rose-300 bg-rose-50/60 dark:border-rose-900/50 dark:bg-rose-950/20"
+          : "border-black/10 bg-white dark:border-white/10"
+      }`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <WorkoutMetaLine date={workout.scheduled_date} workout={workout} />
