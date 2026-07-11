@@ -139,7 +139,7 @@ export function SiteHeader() {
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
           onClick={() => setMobileOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5 md:hidden dark:hover:bg-white/10"
+          className="flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-black/5 md:hidden dark:hover:bg-white/10"
         >
           <span className="relative block h-4 w-5">
             <span

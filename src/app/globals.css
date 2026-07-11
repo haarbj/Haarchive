@@ -8,6 +8,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  /* Explicit "mobile" cutoff -- Tailwind's default sm(640)/md(768)/lg(1024)
+     scale already covers tablet/desktop, but nothing marks the phone-width
+     boundary specifically. Use as xs: for anything that needs to key off
+     it (most layout already reflows fine via flex-wrap without it). */
+  --breakpoint-xs: 480px;
 }
 
 @media (prefers-color-scheme: dark) {

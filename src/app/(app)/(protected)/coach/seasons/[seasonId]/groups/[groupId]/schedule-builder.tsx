@@ -104,17 +104,17 @@ function WorkoutRow({
             <p className="mt-0.5 text-xs font-medium text-zinc-400 dark:text-zinc-500">Not published</p>
           )}
         </div>
-        <div className="flex shrink-0 gap-2 text-xs font-semibold">
-          <button type="button" onClick={onEdit} className="text-zinc-700 dark:text-zinc-200">
+        <div className="-mr-2 -my-2 flex shrink-0 items-center gap-1 text-xs font-semibold">
+          <button type="button" onClick={onEdit} className="inline-flex min-h-12 items-center rounded-lg px-2 text-zinc-700 dark:text-zinc-200">
             Edit
           </button>
           {otherGroups.length > 0 && (
-            <button type="button" onClick={() => setCopyOpen((v) => !v)} className="text-zinc-700 dark:text-zinc-200">
+            <button type="button" onClick={() => setCopyOpen((v) => !v)} className="inline-flex min-h-12 items-center rounded-lg px-2 text-zinc-700 dark:text-zinc-200">
               Copy to groups
             </button>
           )}
           {!confirmingDelete ? (
-            <button type="button" onClick={() => setConfirmingDelete(true)} className="text-red-700 dark:text-red-400">
+            <button type="button" onClick={() => setConfirmingDelete(true)} className="inline-flex min-h-12 items-center rounded-lg px-2 text-red-700 dark:text-red-400">
               Delete
             </button>
           ) : (
@@ -122,7 +122,7 @@ function WorkoutRow({
               type="button"
               disabled={isPending}
               onClick={() => startTransition(async () => { await deleteGroupPlanWorkout(workout.id); onDeleted(); })}
-              className="text-red-700 dark:text-red-400"
+              className="inline-flex min-h-12 items-center rounded-lg px-2 text-red-700 dark:text-red-400"
             >
               Confirm?
             </button>

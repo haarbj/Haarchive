@@ -79,7 +79,7 @@ export function UndoGroupCompletionButton({ workoutId }: { workoutId: string }) 
       type="button"
       disabled={isPending}
       onClick={() => startTransition(async () => { await deleteGroupWorkoutCompletion(workoutId); })}
-      className="text-xs font-semibold text-zinc-500 underline decoration-black/10 underline-offset-2 hover:decoration-black disabled:opacity-60 dark:text-zinc-400 dark:decoration-white/10 dark:hover:decoration-white"
+      className="-ml-2 inline-flex min-h-12 items-center rounded-lg px-2 text-xs font-semibold text-zinc-500 underline decoration-black/10 underline-offset-2 hover:decoration-black disabled:opacity-60 dark:text-zinc-400 dark:decoration-white/10 dark:hover:decoration-white"
     >
       {isPending ? "Saving…" : "Undo"}
     </button>

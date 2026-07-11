@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import type { AuthActionState } from "@/app/(app)/auth-actions";
 
 const fieldClass =
-  "w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white";
+  "w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white";
 const labelClass =
   "mb-1 block text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
 

@@ -582,7 +582,7 @@ export function HeatTracker() {
               aria-activedescendant={
                 highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined
               }
-              className="w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white"
+              className="w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white"
             />
             {(suggestionsLoading || showSuggestions) && (
               <div
