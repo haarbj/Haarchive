@@ -104,7 +104,7 @@ function WorkoutRow({
             <p className="mt-0.5 text-xs font-medium text-zinc-400 dark:text-zinc-500">Not published</p>
           )}
         </div>
-        <div className="-mr-2 -my-2 flex shrink-0 items-center gap-1 text-xs font-semibold">
+        <div aria-live="polite" className="-mr-2 -my-2 flex shrink-0 items-center gap-1 text-xs font-semibold">
           <button type="button" onClick={onEdit} className="inline-flex min-h-12 items-center rounded-lg px-2 text-zinc-700 dark:text-zinc-200">
             Edit
           </button>
