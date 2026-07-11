@@ -16,6 +16,7 @@ export function ViewToggle({
   workouts,
   otherGroups,
   allGroupsDayData,
+  groupPlanIdByGroupId,
 }: {
   seasonId: string;
   groupPlanId: string;
@@ -24,6 +25,7 @@ export function ViewToggle({
   workouts: Workout[];
   otherGroups: { id: string; name: string }[];
   allGroupsDayData: { dates: string[]; groups: GroupDayEntries[] };
+  groupPlanIdByGroupId: Record<string, string>;
 }) {
   const otherGroupsData = allGroupsDayData.groups.filter((g) => g.groupId !== currentGroupId);
   const [view, setView] = useState<View>("group");
@@ -78,7 +80,12 @@ export function ViewToggle({
       ) : view === "day" ? (
         <AllGroupsDayView seasonId={seasonId} dates={allGroupsDayData.dates} groups={allGroupsDayData.groups} />
       ) : (
-        <ScheduleGrid weekRanges={weekRanges} allGroupsDayData={allGroupsDayData} />
+        <ScheduleGrid
+          seasonId={seasonId}
+          weekRanges={weekRanges}
+          allGroupsDayData={allGroupsDayData}
+          groupPlanIdByGroupId={groupPlanIdByGroupId}
+        />
       )}
     </div>
   );

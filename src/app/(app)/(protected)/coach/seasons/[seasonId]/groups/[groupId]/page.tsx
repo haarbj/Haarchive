@@ -117,6 +117,7 @@ export default async function GroupSchedulePage({ params }: PageProps) {
     : { data: [] as Workout[] };
 
   const groupIdByPlanId = new Map((allGroupPlans ?? []).map((gp) => [gp.id, gp.group_id]));
+  const groupPlanIdByGroupId = Object.fromEntries((allGroupPlans ?? []).map((gp) => [gp.group_id, gp.id]));
   const groupNameById = new Map((allGroups ?? []).map((g) => [g.id, g.name]));
   const workoutsByGroupThenDate = new Map<string, Map<string, Workout[]>>();
   const dateSet = new Set<string>();
@@ -175,6 +176,7 @@ export default async function GroupSchedulePage({ params }: PageProps) {
           workouts={workouts ?? []}
           otherGroups={otherGroups}
           allGroupsDayData={allGroupsDayData}
+          groupPlanIdByGroupId={groupPlanIdByGroupId}
         />
       </div>
     </section>
