@@ -122,7 +122,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .maybeSingle(),
     supabase
       .from("workout_completions")
-      .select("workout_id, actual_distance_m")
+      .select("workout_id, group_plan_workout_id, actual_distance_m")
       .not("strava_activity_id", "is", null)
       .order("completed_at", { ascending: false })
       .limit(1)
@@ -201,17 +201,32 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   let latestActivity: LatestStravaActivity | null = null;
   if (latestStravaCompletion?.actual_distance_m) {
-    const { data: matchedWorkout } = await supabase
-      .from("workouts")
-      .select("scheduled_date, workout_type")
-      .eq("id", latestStravaCompletion.workout_id)
-      .maybeSingle();
-    if (matchedWorkout) {
-      latestActivity = {
-        distanceM: latestStravaCompletion.actual_distance_m,
-        workoutType: matchedWorkout.workout_type,
-        matchedScheduledDate: matchedWorkout.scheduled_date,
-      };
+    if (latestStravaCompletion.workout_id) {
+      const { data: matchedWorkout } = await supabase
+        .from("workouts")
+        .select("scheduled_date, workout_type")
+        .eq("id", latestStravaCompletion.workout_id)
+        .maybeSingle();
+      if (matchedWorkout) {
+        latestActivity = {
+          distanceM: latestStravaCompletion.actual_distance_m,
+          workoutType: matchedWorkout.workout_type,
+          matchedScheduledDate: matchedWorkout.scheduled_date,
+        };
+      }
+    } else if (latestStravaCompletion.group_plan_workout_id) {
+      const { data: matchedGroupWorkout } = await supabase
+        .from("group_plan_workouts")
+        .select("scheduled_date, workout_type")
+        .eq("id", latestStravaCompletion.group_plan_workout_id)
+        .maybeSingle();
+      if (matchedGroupWorkout?.workout_type) {
+        latestActivity = {
+          distanceM: latestStravaCompletion.actual_distance_m,
+          workoutType: matchedGroupWorkout.workout_type,
+          matchedScheduledDate: matchedGroupWorkout.scheduled_date,
+        };
+      }
     }
   }
 

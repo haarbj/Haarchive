@@ -57,12 +57,42 @@ export async function syncStravaActivities(_prevState: SyncStravaState): Promise
     return { error: "Couldn't fetch activities from Strava right now -- try again in a moment." };
   }
 
+  // A team-connected athlete's schedule lives in group_plan_workouts, not
+  // workouts (the self-serve individual-plan table) -- this account may
+  // have neither, one, or (rarely, from a self-serve history predating a
+  // team join) both. Looked up once per sync, not per activity.
+  const { data: membership } = await supabase
+    .from("group_memberships")
+    .select("group_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+  let groupPlanId: string | null = null;
+  if (membership) {
+    const { data: groupPlan } = await supabase
+      .from("group_plans")
+      .select("id")
+      .eq("group_id", membership.group_id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    groupPlanId = groupPlan?.id ?? null;
+  }
+
   // v1 only matches training runs to an existing scheduled workout by date
   // -- races and unscheduled runs are a deliberate scope cut for now, not
   // silently dropped: the schema (and this dedup column) already supports
   // extending this later.
   let syncedCount = 0;
   for (const activity of activities.filter(isRunningActivity)) {
+    const { data: existing } = await supabase
+      .from("workout_completions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("strava_activity_id", activity.id)
+      .limit(1);
+    if (existing && existing.length > 0) continue;
+
     const date = activityLocalDate(activity);
 
     const { data: scheduledWorkouts } = await supabase
@@ -72,18 +102,26 @@ export async function syncStravaActivities(_prevState: SyncStravaState): Promise
       .eq("scheduled_date", date)
       .limit(1);
     const workout = scheduledWorkouts?.[0];
-    if (!workout) continue;
 
-    const { data: existing } = await supabase
-      .from("workout_completions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("strava_activity_id", activity.id)
-      .limit(1);
-    if (existing && existing.length > 0) continue;
+    let groupWorkout: { id: string } | undefined;
+    if (!workout && groupPlanId) {
+      // Only matches published entries -- an athlete can't see an
+      // unpublished one yet, so auto-matching a run to it would surface
+      // something the coach hasn't released.
+      const { data: groupWorkouts } = await supabase
+        .from("group_plan_workouts")
+        .select("id")
+        .eq("group_plan_id", groupPlanId)
+        .eq("scheduled_date", date)
+        .not("published_at", "is", null)
+        .limit(1);
+      groupWorkout = groupWorkouts?.[0];
+    }
+
+    if (!workout && !groupWorkout) continue;
 
     const { error } = await supabase.from("workout_completions").insert({
-      workout_id: workout.id,
+      ...(workout ? { workout_id: workout.id } : { group_plan_workout_id: groupWorkout!.id }),
       user_id: userId,
       ...mapToWorkoutCompletion(activity),
     });
