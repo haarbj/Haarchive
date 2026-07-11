@@ -4,8 +4,9 @@ import { useState } from "react";
 
 import { AllGroupsDayView, type GroupDayEntries } from "./all-groups-day-view";
 import { ScheduleBuilder, type WeekRange, type Workout } from "./schedule-builder";
+import { ScheduleGrid } from "./schedule-grid";
 
-type View = "group" | "day";
+type View = "group" | "day" | "grid";
 
 export function ViewToggle({
   seasonId,
@@ -52,6 +53,17 @@ export function ViewToggle({
         >
           All groups, by day
         </button>
+        <button
+          type="button"
+          onClick={() => setView("grid")}
+          className={`rounded-full px-4 py-1.5 font-semibold transition ${
+            view === "grid"
+              ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+              : "border border-black/10 text-zinc-700 hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
+          }`}
+        >
+          Grid
+        </button>
       </div>
 
       {view === "group" ? (
@@ -63,8 +75,10 @@ export function ViewToggle({
           otherGroups={otherGroups}
           otherGroupsData={otherGroupsData}
         />
-      ) : (
+      ) : view === "day" ? (
         <AllGroupsDayView seasonId={seasonId} dates={allGroupsDayData.dates} groups={allGroupsDayData.groups} />
+      ) : (
+        <ScheduleGrid weekRanges={weekRanges} allGroupsDayData={allGroupsDayData} />
       )}
     </div>
   );
