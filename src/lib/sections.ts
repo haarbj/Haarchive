@@ -93,6 +93,11 @@ export const sections: Section[] = [
           "Correct timing — build the whole plan backward from the goal race, not forward from today.",
         ],
       },
+      { type: "heading", text: "Why Response-Regulated Recovery Actually Works" },
+      {
+        type: "paragraph",
+        text: "The mechanism behind \"let how you're adapting dictate the next session\" has a name: super-compensation. A hard session doesn't build fitness by itself — it temporarily drops it, breaking the body down just enough to trigger a rebuild. During the recovery that follows, the body doesn't just repair back to where it started; it overshoots slightly, landing at a marginally higher fitness level than before the session. Training success is really just moderate stress plus adequate rest, repeated: stress, dip, overshoot, stress again from the new higher baseline. Skip the rest and the next stress lands on a body still in the dip, not the overshoot — which is the actual mechanical reason overtraining costs fitness rather than building it, and why an elevated morning heart rate, poor sleep, or persistent soreness are real signals to swap a workout for a recovery run rather than pushing through on schedule. Shigeharu Watanabe, who coached Yoko Shibui to a 2:19 marathon after training under Lydiard himself, put the whole philosophy in one line: \"We do only that which is necessary to do, we do not follow any numbers\" (Moller, \"Principles, Not Formulas,\" Runner's World, 2009).",
+      },
       { type: "heading", text: "Breath, Blood, and Brain" },
       {
         type: "paragraph",
@@ -331,6 +336,16 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Multiply session duration in minutes by a 0–10 session RPE — rated roughly 30 minutes after finishing, using exercise physiologist Carl Foster's scale — and you get a single training-load number that's crude but genuinely useful for spotting trends. A 90-minute easy run at an RPE of 3 comes out to 270; a 60-minute interval session at an RPE of 7 comes out to 420, despite being 30 minutes shorter. Across roughly 4,500 logged sessions, session RPE tracked cleanly with independently measured intensity category, which is a big part of why this crude multiplication still earns a place in serious training logs alongside heart rate and power data.",
       },
+      { type: "heading", text: "Two DIY Ways to Find Your Threshold" },
+      {
+        type: "paragraph",
+        text: "Lactate threshold heart rate is the anchor for every zone above it, and there are two practical ways to find it without a lab. The 30-minute time trial: warm up, then run as far as possible in 30 minutes wearing a heart rate monitor — the average heart rate over the final 10 minutes is a reasonable estimate of lactate threshold. It's accurate, but genuinely unpleasant, which is exactly why the second method exists. The talk test: start jogging slowly, and after a minute recite something fixed and memorized — the Pledge of Allegiance works, or simply counting upward — and note the heart rate. Increase pace slightly, wait a minute, repeat, and continue until talking is just slightly uncomfortable. The heart rate recorded at the last pace where speaking still felt comfortable is the estimate. Smaller pace increments between checks produce a more precise result (Fitzgerald, 80/20 Running).",
+      },
+      { type: "heading", text: "Why Heart Rate Misleads on Short, Hard Efforts" },
+      {
+        type: "paragraph",
+        text: "Heart rate takes a minute or more to catch up to a sudden jump in effort — a lag that barely matters on a 20-minute tempo run but actively misleads on a interval as short as 30–90 seconds, where the effort is already finishing before the heart rate has caught up to reflect it. That's the real mechanism behind the zone rule already covered in Five Training Zones, Anchored to One Number in Workout Library: heart rate governs low-intensity running well because effort there is steady and lag has time to settle, pace takes over once intervals get short and hard because it responds instantly, and on hills specifically even pace breaks down — a given heart rate represents the same physiological intensity whether the ground goes up, down, or flat, so perceived effort becomes the only metric left that stays honest. Across every zone, perceived effort gets the final say when the other two disagree, precisely because it's the only one of the three that's actually measuring how the body is doing rather than a proxy for it.",
+      },
       { type: "heading", text: "What's Worth Tracking, Consistently" },
       {
         type: "list",
@@ -413,6 +428,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "In 1962, Peter Snell — coached by Lydiard — built up to a 100-mile training week, ran hill circuits, and logged long aerobic runs up to 22 miles, all in the months before he broke the world mile record (3:54.4) and, weeks later, the 880-yard world record. He wasn't doing marathon-specific training; he was an 800/1500m runner. But the aerobic capacity built through that volume is what let him hold his speed deep into a race when it mattered most.",
       },
+      { type: "heading", text: "Marathon Training for a Miler, Explained by the Miler" },
+      {
+        type: "paragraph",
+        text: "Snell went on to earn a doctorate in exercise physiology, which makes his own later explanation of why marathon-length training worked for him worth taking seriously as more than a coach's hunch. Two mechanisms, in his own account: long, moderate-pace running appears to protect against the overtraining that heavy high-intensity work invites on its own, which in practice means an athlete can absorb more total race-specific training than they otherwise could. And fast-twitch fibers — normally recruited mainly by hard interval running — also get activated during a long moderate-pace run, once the slow-twitch fibers doing most of the work in the first one to two hours become glycogen-depleted and fast-twitch fibers have to pick up the load. Long runs aren't just building an aerobic base in that account; they're training fast-twitch fibers through a side door most interval-only programs never open.",
+      },
       { type: "heading", text: "Same Ingredients, Different Distances" },
       {
         type: "paragraph",
@@ -445,6 +465,10 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Vigil coached at altitude in Alamosa, Colorado, and built his system on a similar aerobic-first premise to Lydiard's, layered with an unusually heavy emphasis on running mechanics and psychology — he treated economical form and mental composure as trainable skills, not fixed traits. His best-known result, Deena Kastor's American record and Olympic bronze in the marathon, came from exactly that combination: high-altitude aerobic volume paired with deliberate technical and mental work most programs treat as secondary.",
+      },
+      {
+        type: "paragraph",
+        text: "The practical sequencing behind altitude training is straightforward, even if the payoff isn't instant: do the aerobic conditioning at sea level first, then move up. The body needs roughly six to twelve weeks to complete its blood adaptation to altitude, and pace and volume both have to come down during that window — an athlete simply can't sustain sea-level pace or sea-level mileage continuously at elevation. Speed work and race-specific sessions fit into that same six-to-twelve-week window once the initial adaptation is underway, not before it.",
       },
       { type: "heading", text: "Phil Maffetone: The MAF Method" },
       {
@@ -547,10 +571,178 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Lydiard's own marathon fueling advice predates modern carb-loading protocols by decades, and it's simpler: keep eating your normal balanced meals in the days before the race, add up to 8 ounces of honey on top of that over the final two days for easy-to-digest calories, and finish eating about three hours before the gun. He was just as direct about what to skip — salt tablets, which he considered unnecessary and potentially harmful, in favor of diluted electrolyte drink and plain water taken steadily through the race rather than a concentrated dose swallowed all at once.",
       },
+      { type: "heading", text: "Where Modern Carb-Loading Numbers Land Differently" },
+      {
+        type: "paragraph",
+        text: "Lydiard's numbers here predate the modern carbohydrate-loading literature by decades, and current evidence-based guidance sets the target meaningfully higher — roughly 8–12 grams of carbohydrate per kilogram of body weight per day for the final 24–48 hours before a long race, combined with reduced training (see Carb Loading Before a Long Race in Nutrition & Fueling). For a 65 kg runner, that's 520–780 grams over two days against Lydiard's roughly 200-gram cap — a real gap, not a rounding difference. Both approaches share the same goal: arrive at the start line with glycogen stores full and the stomach settled, not weighed down by a huge last meal. If you're choosing between the two, the higher modern range has the stronger evidence base behind it (Thomas et al., 2016, joint position of the Academy of Nutrition and Dietetics, Dietitians of Canada, and ACSM); Lydiard's version is worth understanding as a workable, lower-carbohydrate approach many runners used successfully before the current numbers existed, not as the strongest guidance available today.",
+      },
       { type: "heading", text: "How Often You Can Actually Race a Marathon" },
       {
         type: "paragraph",
         text: "A hard-raced marathon costs more recovery than most runners budget for. Lydiard's own guidance: no more than one full marathon every couple of months if you're racing it honestly rather than jogging it, and after a hard half or full marathon, two full weeks of easy jogging only — nothing fast — before any quality work resumes. The two-day carb top-up before a race has a ceiling too: up to about 200 grams (roughly half a pound) of glucose or fructose in the two days beforehand is sufficient, and more than that doesn't buy additional benefit (Lydiard, Running to the Top).",
+      },
+    ],
+  },
+  {
+    slug: "nutrition-and-fueling",
+    title: "Nutrition & Fueling",
+    mission:
+      "Carbohydrate, hydration, and electrolyte strategy for training and racing, grounded in modern sports-nutrition evidence rather than folklore.",
+    topics: ["Carbohydrate strategy", "Hydration & electrolytes", "Legal performance aids"],
+    category: "coaching-and-training",
+    content: [
+      { type: "heading", text: "How Much Carbohydrate a Session Actually Needs" },
+      {
+        type: "paragraph",
+        text: "Carbohydrate needs during exercise scale mostly with duration, intensity, and gut tolerance — not with how a session feels. As a starting point: under an hour, most runners need little or none; 60–120 minutes calls for roughly 30–60 grams an hour; 2–3 hours moves that up to roughly 60–90 grams an hour; and efforts past 3 hours can use 90 grams an hour or more once the gut is trained, with elite and highly gut-trained athletes pushing past 100–120 grams. Classic sports-nutrition guidance set 30–60 g/h as the ceiling for exercise lasting 1–2.5 hours and up to 90 g/h for longer events using multiple carbohydrate types together (Jeukendrup, 2014). The best target isn't a fixed number so much as the highest amount a given athlete can absorb and use consistently without GI distress (Cao et al., 2025 review). For many runners, simply moving from 30 g/h toward 60–90 g/h is already a large upgrade — see Gut Training Is a Real, Trainable Skill below for how to get there without wrecking a long run in the process.",
+      },
+      { type: "heading", text: "The 90–120 g/h Era" },
+      {
+        type: "paragraph",
+        text: "For years, 60 g/h was considered a high intake. Elite marathoning has since moved well past that — Eliud Kipchoge reportedly fueled around 100 g/h during the Breaking2 project, more recent sub-2-hour marathon attempts have been reported near 115 g/h, and professional cycling now runs 100–120 g/h routinely in hard stages (Jeukendrup, 2014). The benefit isn't only about avoiding a late bonk, either. A study comparing 60, 90, and 120 g/h in elite trail runners during a mountain marathon found the 120 g/h group showed lower markers of muscle damage and better recovery of high-intensity running capacity the next day (Viribay et al., 2020), and a follow-up study found 120 g/h also preserved neuromuscular function and next-day high-intensity capacity after a trail marathon (Urdampilleta et al., 2020). None of this means every runner should target 120 g/h — it shows what's possible with a trained gut, and that high-carb fueling is as much a recovery tool for the next hard session as it is race-day energy.",
+      },
+      { type: "heading", text: "Gut Training Is a Real, Trainable Skill" },
+      {
+        type: "paragraph",
+        text: "Jumping straight to 90–120 g/h on race day without practice is a reliable way to get GI distress. Regularly taking in carbohydrate during training raises tolerance and reduces symptoms over time (Jeukendrup, 2017) — and it's worth taking seriously specifically for runners, since running's impact and gut movement make GI tolerance a bigger obstacle than it typically is for cyclists.",
+      },
+      {
+        type: "list",
+        items: [
+          "Start at your current comfortable intake, not zero and not the target.",
+          "Add roughly 5–15 g/h every few key sessions, not all at once.",
+          "Practice on long runs and race-specific workouts, not just easy days where nothing is at stake.",
+          "Test your exact race-day products, or your DIY mix, before race day — not for the first time on it.",
+          "Never debut a new fueling strategy in a race. Race day is execution, not experimentation.",
+        ],
+      },
+      { type: "heading", text: "Short, Hard Efforts and the Carbohydrate Mouth Rinse" },
+      {
+        type: "paragraph",
+        text: "A 5K or 10K rarely needs meaningful carbohydrate during the race itself — glycogen from a well-fueled start usually covers the distance. But a small carbohydrate exposure in the mouth, without necessarily swallowing much, may still help through a different mechanism: carbohydrate receptors in the mouth appear to signal the brain that fuel is available, which can influence perceived effort and motor output independent of anything that actually reaches the muscle. This 'carbohydrate mouth rinse' effect has genuinely mixed evidence behind it — a 5K running study found no clear dose-response benefit across rinse concentrations in recreational runners (Clarke et al., 2017) — but newer work found carbohydrate dissolvable strips improved a 12.87 km treadmill time trial compared with water, and a rinse improved some pacing markers without raising perceived effort (Guadagni et al., 2026), and a 2025 meta-analysis concluded the effect is real but small and context-dependent (Deng et al., 2025 meta-analysis). For a hard 5K/10K workout, a VO2 max session, or a race-pace tempo, a small carb sip or rinse — or actually fueling the session lightly — is worth testing as a marginal-gain tool, not treating as a foundation. It's the same logic behind VO2 Max Intervals in 5K Training: something to test deliberately in training, not improvise on race day.",
+      },
+      { type: "heading", text: "Is All That Sugar During Exercise Actually Healthy?" },
+      {
+        type: "paragraph",
+        text: "It's a reasonable question. The key context is that sugar during hard or long exercise isn't the same as sugar consumed at rest. Contracting muscle rapidly increases glucose uptake during exercise, partly through insulin-independent GLUT4 transporter activity — in plain terms, working muscle actively pulls carbohydrate out of the blood and burns it, rather than that carbohydrate sitting around raising blood sugar the way it would sitting still. Skeletal muscle is responsible for most whole-body glucose disposal, and exercise increases that uptake dramatically compared with rest (Evans et al., 2019) — one reason regular endurance training is associated with better insulin sensitivity and lower metabolic disease risk, not worse. For a healthy endurance athlete, carbohydrate taken during long or hard exercise is generally supporting performance, maintaining blood glucose, and limiting excessive glycogen depletion, not adding empty calories to the diet (Jeukendrup, 2014). That doesn't mean sugar belongs in the diet all day — it means it belongs during the work: long runs, races, hard workouts, and big training days. For a short easy run, most athletes still need little or nothing during the session (see Eat Without a Label in Recovery for the everyday version of this same idea).",
+      },
+      { type: "heading", text: "Why Fueling Mixes Glucose and Fructose" },
+      {
+        type: "paragraph",
+        text: "Modern fueling often combines carbohydrate types for a simple reason: the gut has more than one absorption pathway. Glucose and maltodextrin mainly use the SGLT1 transporter; fructose mainly uses a separate one, GLUT5. Combining glucose or maltodextrin with fructose lets the gut use both pathways at once, raising the total amount of carbohydrate that can be absorbed and oxidized during exercise (Jeukendrup, 2010). Glucose-only fueling tends to plateau around 1.0–1.1 g/min of exogenous carbohydrate oxidation; glucose plus fructose pushes that ceiling higher, and one classic comparison found better cycling time-trial performance with glucose plus fructose than with glucose alone.",
+      },
+      {
+        type: "list",
+        items: [
+          "2:1 ratio — the classic endurance fueling split, and often a better fit for athletes more sensitive to fructose.",
+          "1:0.8 ratio — common in modern high-carb commercial products, especially ones aiming at the higher end of the intake range.",
+          "1:1 ratio — what table sugar (sucrose) already provides, since it's glucose and fructose bonded together. Cheap, simple, and works very well for many athletes.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "The exact ratio matters most once carbohydrate intake is already high. For most runners well under that ceiling, total carbs, gut training, drink concentration, and timing matter just as much as the specific glucose-to-fructose split.",
+      },
+      { type: "heading", text: "Concentration and Timing Matter as Much as the Total" },
+      {
+        type: "paragraph",
+        text: "Carbohydrate amount is only one part of the plan. Very concentrated drinks or gels can sit heavily in the stomach or pull water into the gut, raising the risk of bloating, nausea, or diarrhea. Maltodextrin can help in a high-carb mix because it delivers glucose units at a lower osmolality than the same amount of simple sugar, which can improve tolerance at higher intakes (Pérez-Castillo et al., 2023). Small, frequent doses generally beat large gaps followed by panic fueling — taking carbohydrate roughly every 15–25 minutes is a practical rhythm for most runners. If your stomach struggles during a session, don't reach only for less carbohydrate; check concentration, timing, fluid intake, fructose amount, and race intensity too.",
+      },
+      { type: "heading", text: "Sodium Is the Electrolyte That Actually Matters" },
+      {
+        type: "paragraph",
+        text: "The main electrolyte lost in sweat is sodium, and sodium losses vary a lot by sweat rate, heat, body size, fluid intake, and an individual's own sweat sodium concentration (McDermott et al., 2017, National Athletic Trainers' Association). Sodium can help with fluid retention and taste, but it isn't a safeguard on its own — taking sodium does not fully protect against exercise-associated hyponatremia if fluid intake is too high, since overdrinking is the primary risk factor for that condition, not an electrolyte shortfall (Hew-Butler et al., 2017). For most runners, the goal isn't replacing 100% of sodium lost during an event; it's taking in enough fluid and sodium to support performance without overhydrating (Sawka et al., 2007, ACSM position stand). That's a more sodium-centered framework than the potassium-depletion mechanism described in Salt Tablets, Potassium, and Heatstroke in Recovery — both views land on the same practical advice, skip the salt tablets in favor of food and a diluted electrolyte drink, even though the underlying mechanism they each point to isn't quite the same.",
+      },
+      { type: "heading", text: "Potassium, Magnesium, and the DIY Apple-Juice Trick" },
+      {
+        type: "paragraph",
+        text: "Potassium is also lost in sweat, but in much smaller amounts than sodium. ACSM describes typical fluid-replacement drinks as containing roughly 2–5 mmol/L of potassium, or about 80–200 mg/L (Sawka et al., 2007, ACSM). For races over 3–4 hours, adding a small potassium source is reasonable, though optional — a simple DIY option is 100 ml of apple juice per 500 ml bottle, which adds flavor, some carbohydrate, and potassium in one move. Magnesium and calcium matter for general health but aren't core during-exercise fueling targets: sweat losses of both are much smaller than sodium, and there's no real case for adding them to a race drink by default (Montain et al., 2007).",
+      },
+      { type: "heading", text: "Hydration Is Individual, Not a Fixed Formula" },
+      {
+        type: "paragraph",
+        text: "Fixed advice like 'drink X ml every hour' tends to be too generic, because sweat rate varies enormously between athletes and conditions — larger athletes, hotter weather, higher intensity, and longer duration all raise fluid needs (McDermott et al., 2017, NATA). A good hydration plan avoids both extremes: too little fluid, which impairs performance and raises heat strain, and too much fluid, which raises the risk of hyponatremia. The practical approach is to start hydrated, drink regularly during longer sessions, adjust for heat and sweat rate, and avoid gaining body weight over the course of an endurance event. The simple daily water target in Hydration in Recovery is a reasonable everyday baseline — but treat it as a starting point to adjust from during a long run or race, not a number to hit exactly once sweat rate and heat are actually in play.",
+      },
+      { type: "heading", text: "Carb Loading Before a Long Race" },
+      {
+        type: "paragraph",
+        text: "Carb loading is most useful before races where glycogen depletion can limit performance — marathons, long trail races, ultras, triathlons, and long cycling events. A common evidence-based target is roughly 8–12 grams of carbohydrate per kilogram of body weight per day for the final 24–48 hours before the event, combined with reduced training (Wallis, 2025, Gatorade Sports Science Institute). A pre-race meal of roughly 1–4 g/kg of carbohydrate 1–4 hours before competition is also commonly recommended, depending on timing and gut tolerance (Wallis, 2025, GSSI) — the same window covered in Fueling Before You Race in Recovery, just with a more precise dose attached to it. This is meaningfully higher than the older approach in Marathon Training's Honey Over Carb-Loading, and Skip the Salt Tablets — see Where Modern Carb-Loading Numbers Land Differently there for how the two compare.",
+      },
+      {
+        type: "list",
+        items: [
+          "Choose familiar high-carb foods — race week is the wrong time to try something new.",
+          "Reduce fiber slightly in the final day or two if your gut is sensitive.",
+          "Avoid huge last-minute meals; spread carbohydrate across the day instead.",
+          "Don't rely on one massive pasta dinner to do all the work.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Carb loading fills the tank. Fueling during the race is what keeps the engine supplied once the gun goes off.",
+      },
+      { type: "heading", text: "Building Your Own Fueling Mix" },
+      {
+        type: "paragraph",
+        text: "Most sports drinks and gels are built from four ingredients: carbohydrate, sodium, water, and flavoring. That means homemade fueling can work extremely well if the amounts are right. A simple sugar-and-salt mix is already effective, since table sugar provides both glucose and fructose at a 1:1 ratio; more advanced DIY mixes can use maltodextrin and fructose to match common commercial ratios like 1:0.8 or 2:1. The underlying logic is identical either way: combine carbohydrate types to raise the amount the gut can absorb and oxidize at higher intakes (Jeukendrup, 2010). The things worth getting right, in order, are carbs per hour, the glucose-to-fructose ratio, fluid amount, sodium amount, concentration, and timing — a commercial product buys convenience, not a different physiological effect.",
+      },
+      { type: "heading", text: "The Real Health Tradeoff: Your Teeth" },
+      {
+        type: "paragraph",
+        text: "The biggest realistic health downside of frequent high-carb fueling isn't metabolic — it's dental. Gels, drinks, chews, and homemade sugar mixes all expose the teeth to frequent carbohydrate, and many commercial products are acidic, which can raise enamel erosion risk. Exercise itself amplifies the exposure: hard breathing, dehydration, and reduced saliva flow dry out the mouth's natural protection while it's happening (Schulze et al., 2024). A 2025 systematic review found genuinely mixed evidence linking sports drinks alone to dental erosion — the real risk depends on frequency, acidity, saliva, oral hygiene, and total exposure, not any single product (Gálvez-Bravo et al., 2025). None of this is a reason to skip fueling sessions that matter. It's a reason to manage the exposure.",
+      },
+      {
+        type: "list",
+        items: [
+          "Use high-carb fueling mainly for the sessions where it actually matters.",
+          "Avoid sipping sugary or acidic drinks for hours outside of training.",
+          "Rinse your mouth with water after gels or sports drinks when it's practical to.",
+          "Choose a less acidic flavoring when the option exists.",
+          "Don't brush immediately after an acidic sports drink — rinse with water first and wait.",
+          "Keep fluoride toothpaste and normal dental checkups in the routine.",
+          "For everyday training, consider a simpler, less acidic DIY mix over a race-day product.",
+        ],
+      },
+      { type: "heading", text: "Legal Performance Aids: Caffeine, Bicarbonate, and Nitrate" },
+      {
+        type: "paragraph",
+        text: "Fueling is the foundation. A handful of legal supplements sit on top of it and can add small but real performance benefits in the right situation — additions to good fueling, never replacements for it.",
+      },
+      {
+        type: "paragraph",
+        text: "Caffeine is one of the best-supported legal performance aids in endurance sport. A common effective range is 3–6 mg/kg of body weight, though some athletes respond well to less; the ISSN position stand states that caffeine consistently improves endurance performance when used in that range (Guest et al., 2021, ISSN caffeine position stand). More isn't automatically better — high doses can raise anxiety, heart rate, sleep disruption, and GI discomfort. It's best used for races, key workouts, late-race focus, and longer events where fatigue accumulates.",
+      },
+      {
+        type: "paragraph",
+        text: "Sodium bicarbonate can help specifically when high-intensity effort and acidosis are the limiting factor — hard intervals, repeated surges, middle-distance races, intense hill racing, or a brutal race finish. The ISSN position stand reports performance benefits around 0.2–0.5 g/kg of body weight, but GI distress is the major practical obstacle (Grgic et al., 2021, ISSN bicarbonate position stand), which makes it a supplement that needs training-day testing more than almost any other on this list.",
+      },
+      {
+        type: "paragraph",
+        text: "Dietary nitrate, usually from beetroot juice or nitrate salts, can raise nitric oxide availability and may reduce the oxygen cost of exercise in some athletes. A 2025 umbrella review of 20 systematic reviews found evidence that nitrate supplementation can improve several exercise-performance outcomes, though the response varies by event type, training status, dose, and the individual athlete (Poon et al., 2025). It's most worth testing for endurance events and repeated high-intensity efforts, in athletes who turn out to respond well in training.",
+      },
+      {
+        type: "paragraph",
+        text: "The rule that governs all three is the same one that governs fueling itself: test in training, never for the first time on race day. The IOC consensus statement on supplements is explicit that they should be used only after weighing an athlete's goals, the actual evidence, safety, and the risk of contamination — not adopted because a competitor uses them (Maughan et al., 2018, IOC consensus statement).",
+      },
+      { type: "heading", text: "Common Fueling Mistakes" },
+      {
+        type: "list",
+        items: [
+          "Underfueling long races — many runners take far less carbohydrate than the current evidence supports, and pay for it with late-race fading.",
+          "Debuting new fueling on race day — the gut needs practice beforehand; race day should be execution, not experimentation.",
+          "Overdrinking — 'more hydration is always better' isn't true, and taken far enough, it's dangerous (Hew-Butler et al., 2015).",
+          "Assuming good fueling has to be expensive — a properly calculated DIY mix works as well as anything off a shelf; commercial products buy convenience, not a different result.",
+          "Ignoring everyday nutrition — no amount of in-race fueling compensates for chronic under-eating, poor sleep, or bad training.",
+        ],
+      },
+      { type: "heading", text: "The Strategy, Simplified" },
+      {
+        type: "paragraph",
+        text: "Good fueling was never about taking the maximum amount possible. It's about matching the right amount to the event, the intensity, your gut, the environment, and the goal — little or nothing for a short easy run, and a real, rehearsed plan for the long races and key sessions where it becomes one of the largest performance levers available.",
+      },
+      {
+        type: "quote",
+        text: "Train the gut the same way you train the legs — deliberately, and long before it matters on race day.",
       },
     ],
   },
@@ -685,7 +877,7 @@ export const sections: Section[] = [
       { type: "heading", text: "VO2 Max Intervals" },
       {
         type: "paragraph",
-        text: "VO2 max work builds aerobic power and the ability to hold a hard effort for longer. More advanced athletes typically run 5–8x1000m at current 5K pace with a 2:00 400m jog recovery; less experienced runners get the same relative effort from 5–8x800m. Either way, the goal is consistency across reps — the first one should never be the fastest.",
+        text: "VO2 max work builds aerobic power and the ability to hold a hard effort for longer. More advanced athletes typically run 5–8x1000m at current 5K pace with a 2:00 400m jog recovery; less experienced runners get the same relative effort from 5–8x800m. Either way, the goal is consistency across reps — the first one should never be the fastest. For sessions like this, a small carbohydrate sip or mouth rinse beforehand is worth testing as a marginal-gain tool — see Short, Hard Efforts and the Carbohydrate Mouth Rinse in Nutrition & Fueling.",
       },
       { type: "heading", text: "Long Runs" },
       {
@@ -711,6 +903,16 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A varsity-level buildup generally works toward at least 60 minutes of running every day, a 75-minute medium-long run, a 90-minute long run, and no more than two quality sessions a week. Shakeout doubles can be added after long-run days, 30–60 minutes easy after races helps the body absorb the effort, and a short shakeout the morning of an evening race keeps the legs ready without spending anything. The goal across a season is to feel fresh 2–3 days out from a race, keep easy days truly easy, hold mileage through most of the season, and save any real volume cut for the championship taper.",
+      },
+      { type: "heading", text: "Avoid the Middle of a Crowded Pack" },
+      {
+        type: "paragraph",
+        text: "In a large field, position matters as much as pace for a big stretch of the race. The middle of a crowded pack — roughly 6th through 10th in a field of 12, scaled up for bigger races — is where the real trouble tends to happen: boxed-in spacing, clipped heels, a trip an athlete never sees coming, and no room to react to any of it. The safer place to be is one of the extremes: either near the front, in position to actually compete, or content to sit off the back with room to move when the moment's right. That's also why leading a race through its middle third is rarely the right call even for a strong runner — running exposed out front for minutes at a time spends energy a race plan usually needs for the close instead.",
+      },
+      { type: "heading", text: "Playing Offense or Defense" },
+      {
+        type: "paragraph",
+        text: "Not every race has the same job. In a preliminary round or a qualifier, the only outcome that matters is finishing inside the qualifying spots — that's a defensive race, and the only real instruction worth giving is to stay clear of the danger zone above and never let the position slip below the cutoff line, whatever the pace looks like. A final, or any race actually being run to win, is offensive — the athlete has to be willing to take control of the pace rather than just react to it. Deciding which race is which, out loud, before it starts is part of the plan itself; changing that answer mid-race is usually a mistake, even when the moment tempts it (see Racing the Last 25% in Marathon Training for how the closing portion of either kind of race gets run).",
       },
       { type: "heading", text: "Principles Worth Repeating" },
       {
@@ -872,6 +1074,11 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A specific time goal is a double-edged tool. The same target that sharpens effort when it's perceived as something to chase toward becomes a ceiling that quietly limits effort once it's perceived as a hard limit instead — runners given a \"difficult but realistic\" goal improve more than runners given either an easy one or a genuinely unrealistic one. It shows up in marathon finish times too: runners who end up close to a round number (a 3:00, a 3:30) tend to slow down less in the final miles than runners without that kind of target pulling them in — evidence that a well-chosen number changes how effort gets interpreted, not that the number does the work by itself. The best goals thread a needle: specific enough to actually pull an athlete past a previous limit, but loose enough that hitting it doesn't quietly cap performance below what was actually possible that day (Fitzgerald, How Bad Do You Want It?).",
       },
+      { type: "heading", text: "Perceived Effort Has Two Layers" },
+      {
+        type: "paragraph",
+        text: "The raw sensation of how hard an effort feels is only the first layer — the physiological one. A second, separate layer sits on top of it: how an athlete feels about that sensation. The same physical intensity can carry a good attitude or a bad one, and a good attitude genuinely changes what happens next — an athlete who isn't bothered by a given level of discomfort tends to push harder against it, not because the discomfort is smaller, but because the second layer isn't amplifying the first. Bracing yourself, running mantras, and letting go of the outcome below are all really the same move applied to different moments: managing the second layer, since the first one is largely just what it is (Fitzgerald, How Bad Do You Want It?). For the theoretical model behind why perceived effort matters this much in the first place, see What Actually Limits Endurance: Two Competing Models in Exercise Physiology.",
+      },
       { type: "heading", text: "Letting Go of the Outcome" },
       {
         type: "paragraph",
@@ -948,15 +1155,24 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "If it's man-made, it's probably not good for you — the simplest nutrition rule that actually holds up. Eat whatever you want, as much as you want, as long as it doesn't have a label on it: fruits, vegetables, and meat, not processed food. Carbohydrates digest faster than protein or fat, which is why they belong before training or racing, not after. Complex carbs — rice, potatoes, pasta — provide longer-lasting energy than simple sugars. Unsaturated fats, liquid at room temperature, are the better everyday choice over saturated fats, solid at room temperature, though the body needs some of both, along with sugar and red meat in moderation. Papaya and pineapple are worth having on hand for sore muscles.",
       },
+      { type: "heading", text: "Micronutrients Worth Knowing About" },
+      {
+        type: "paragraph",
+        text: "A varied, whole-food diet covers most of what an athlete needs, but a handful of micronutrients are worth understanding specifically because training load raises the demand for them. The B-vitamins do a lot of the metabolic heavy lifting: B1 (thiamine) helps convert carbohydrate into usable glucose, B2 (riboflavin) supports fat digestion, B3 (niacin) is central to red blood cell function, and B12 supports the nervous system's signaling between brain and body — found richly in animal products, which is one reason B12 deficiency is a real, checkable concern for athletes eating a fully plant-based diet. Folate, found in leafy greens and legumes, works alongside B12 in forming new red blood cells; a deficiency in either shows up as anemia, which is worth ruling out directly with bloodwork in any endurance athlete who's unexplainably fatigued rather than guessed at. Vitamin C supports iron absorption from plant sources specifically — pairing a vitamin-C-rich food with a plant iron source in the same meal measurably improves how much of that iron the body actually absorbs. Calcium and vitamin D matter for bone density in particular — see Relative Energy Deficiency in Sport (RED-S) below for why that matters more for a training athlete than it might seem.",
+      },
+      {
+        type: "paragraph",
+        text: "Two honest caveats on supplementation. First, iron: increasing iron intake meaningfully raises endurance work capacity in athletes who are actually low, but iron overdose is a real risk, not a theoretical one — a daily multivitamin dose plus vitamin C is enough for most people, and any real deficiency should be confirmed by bloodwork and treated under a doctor's guidance rather than self-dosed. Second, the fat-soluble vitamins — A, D, E, K — accumulate in the body rather than washing out the way water-soluble B-vitamins and vitamin C do, which means high daily doses that were common advice decades ago (five-figure IU vitamin A doses turn up in older coaching literature, for instance) now sit well above the tolerable upper intake levels current nutrition science recognizes, particularly for vitamin A specifically. The safer, evergreen version of this advice hasn't changed: get most of it from food — citrus and peppers for C, dairy and leafy greens for calcium, fatty fish and sensible sun exposure for D — and treat any supplement beyond a standard daily multivitamin as something to discuss with a doctor or dietitian, not something to dose by feel.",
+      },
       { type: "heading", text: "Fueling Before You Race" },
       {
         type: "paragraph",
-        text: "Eat 3–4 hours before a race — something carbohydrate-based, around 300–400 calories — and give it time to clear, since digestion competes with running muscles for blood flow. For early starts where a full meal isn't practical, liquid calories (100–200 calories) digest faster and sit better than solid food. Test the routine in training first, not on race morning.",
+        text: "Eat 3–4 hours before a race — something carbohydrate-based, around 300–400 calories — and give it time to clear, since digestion competes with running muscles for blood flow. For early starts where a full meal isn't practical, liquid calories (100–200 calories) digest faster and sit better than solid food. Test the routine in training first, not on race morning. For the more precise gram-per-kilogram numbers behind that window, and how the two days before it should look for a long race, see Carb Loading Before a Long Race in Nutrition & Fueling.",
       },
       { type: "heading", text: "Hydration" },
       {
         type: "paragraph",
-        text: "A simple daily target: water need in ounces equals body weight in pounds divided by two. Sip through the day — aim for at least one sip every 20 minutes — rather than trying to catch up all at once.",
+        text: "A simple daily baseline: water need in ounces equals body weight in pounds divided by two. Sip through the day — aim for at least one sip every 20 minutes — rather than trying to catch up all at once. Treat that number as an everyday starting point, not a target to hit exactly during a long run or race: sweat rate varies enormously by athlete, heat, and effort, so training and race hydration deserves real individual adjustment rather than a fixed formula (see Hydration Is Individual, Not a Fixed Formula in Nutrition & Fueling).",
       },
       { type: "heading", text: "Thirst Slows You Down Before Dehydration Does" },
       {
@@ -968,20 +1184,41 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Lydiard's skepticism of salt tablets had a specific physiological reason behind it: in one review, roughly half of athletes hospitalized for heatstroke after intense exercise turned out to be potassium-depleted, and many of them had been taking salt tablets — which force potassium out of the body as sodium is added. Athletes who don't sweat heavily don't need extra potassium in the first place; those who do and still take salt tablets need to double their potassium intake just to break even, which is a real argument for skipping the tablets and taking salt in through food and a diluted electrolyte drink instead (Lydiard, Running to the Top).",
       },
+      {
+        type: "paragraph",
+        text: "Modern sports-medicine position stands frame the risk somewhat differently: sodium, not potassium, is treated as the primary electrolyte of practical concern during exercise, and the leading danger is overdrinking itself, which sodium intake alone doesn't fully protect against (see Sodium Is the Electrolyte That Actually Matters in Nutrition & Fueling). The two views land on the same practical advice — skip the salt tablets, favor food and a diluted electrolyte drink — even though the mechanism each one points to isn't quite the same.",
+      },
       { type: "heading", text: "Cross-Training That Actually Carries Over" },
       {
         type: "paragraph",
         text: "Not all cross-training transfers evenly to running. Research comparing supplemental training modes found cycling produced a real, measurable improvement in running performance, while swimming did not — the likely reason is that swimming removes both gravity and the alternating-leg-drive pattern running depends on, while cycling keeps the alternating-leg mechanics intact even though it removes the impact. The practical rule when picking a nonimpact option during an injury or a heavy-volume block — cycling, the elliptical, pool running — is to favor whatever keeps that alternating-leg action closest to running's own movement pattern (Fitzgerald, 80/20 Running).",
+      },
+      {
+        type: "paragraph",
+        text: "A few options worth knowing by name: pool running with a flotation vest (AquaJogger is the common brand) lets an injured runner mimic an overground stride closely enough to hold fitness through an injury that rules out impact entirely; uphill treadmill walking is an easy way to reach a genuine Zone 1–2 heart rate response indoors, something flat outdoor walking rarely produces; and elliptical-style machines like the ElliptiGO reproduce roughly 90–95% of running's effective bodyweight loading, which is why runners who use them for supplemental training can treat the volume as close to equivalent rather than purely supplemental. Whatever the modality, cross-training only replaces a missed run if it's dosed the same way that run would have been — an easy day gets an easy cross-training session, a tempo effort gets the same duration at the same relative intensity, not just whatever feels good that day. A sensible weekly ceiling across running and cross-training combined is around 13 total sessions; even a runner fully committed to the sport rarely needs more than 6 or 7 of those to actually be runs. Many coaches also recommend at least one cross-training session a week even for uninjured runners, purely so the body and mind already have a comfortable fallback in place the day an injury forces the issue, rather than improvising one for the first time under stress.",
       },
       { type: "heading", text: "Strength Training Actually Needs a Schedule" },
       {
         type: "paragraph",
         text: "How often a strength stimulus repeats matters as much as the stimulus itself. Training the same muscle group every second day produces roughly 80% of the maximum attainable strength gain; twice a week drops that to about 60%; once a week to about 40%; and a stimulus spaced 14 days apart produces no measurable strength gain at all. The muscle reinforces the point locally, too — after one real training stimulus, it's essentially unresponsive to a second stimulus later the same day, the same recovery logic that governs hard running sessions applied to the weight room (Lydiard, Running to the Top).",
       },
+      {
+        type: "paragraph",
+        text: "A simple way to progress a strength session without overthinking it: run through each exercise for one set in the first workout, two sets in the second, three in the third, alternating upper- and lower-body movements within a session so no single muscle group is asked to work twice in a row. Isometric holds — the kind used in a plank or a wall sit — need surprisingly little to produce a training effect: a maximal contraction held for just one to two seconds is enough, or four to six seconds at roughly two-thirds of maximum effort. More time under tension isn't the lever that matters most here; consistent, appropriately spaced repetition is (Lydiard, Running to the Top).",
+      },
       { type: "heading", text: "Jog Through Soreness, Don't Wait It Out" },
       {
         type: "paragraph",
         text: "The instinct to rest completely until sore muscles feel normal again is usually the wrong call. A slow, easy jog the day after a hard effort pushes blood through the muscle and helps clear the waste products causing the soreness — the heart doing, in effect, a gentle massage a resting runner can't get any other way. Stopping until the soreness fully resolves just means starting from scratch and working through the same soreness again once training resumes (Lydiard, Running to the Top).",
+      },
+      { type: "heading", text: "Three Common Injuries and Their First Response" },
+      {
+        type: "list",
+        items: [
+          "Shin splints — pain along the shin from repeated impact, often triggered by downhill running or overstriding. Shortening the stride and being deliberate about footstrike on downhills addresses the cause; rest, ice, and gradually reintroduced heat treat the symptom in the meantime.",
+          "Hamstring strain — usually a consequence of leg-speed or sprint work done without the muscle properly warmed up and stretched first. Prevention is the real fix here: a genuine warm-up before any fast running, not just before a race.",
+          "A muscle bruise or contusion — a specific, locatable point of internal bleeding after a direct knock or hard fall. Ice or cold water for the first three days limits how much it spreads; only after that window does massage or heat actually help rather than aggravate it.",
+        ],
       },
       { type: "heading", text: "Relative Energy Deficiency in Sport (RED-S)" },
       {
