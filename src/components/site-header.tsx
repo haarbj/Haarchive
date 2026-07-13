@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { categories, sectionsInCategory } from "@/lib/sections";
 import { AuthStatus } from "@/components/auth-status";
+import { SiteSearchBox } from "@/components/site-search";
 
 // Every category except Tools lives inside the "Learn" mega menu -- Tools
 // gets its own top-level link because calculators are a different kind of
@@ -39,6 +40,29 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Global so ⌘K/Ctrl+K jumps to search from anywhere on the site, not just
+  // while the header itself has focus -- preventDefault stops the browser's
+  // own Ctrl+K (Firefox's address-bar search) from firing alongside it.
+  // Queries both the desktop and mobile search inputs (both are always
+  // mounted -- only one is ever visible per Tailwind's responsive display
+  // classes) and focuses whichever one actually has layout, since
+  // offsetParent is null for anything the current breakpoint hides.
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) return;
+      e.preventDefault();
+      const inputs = document.querySelectorAll<HTMLInputElement>("[data-site-search-input]");
+      for (const input of inputs) {
+        if (input.offsetParent !== null) {
+          input.focus();
+          break;
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const openLearn = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -155,7 +179,33 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        <div className="hidden md:block">
+        {/* flex-1 lets this slot absorb all the space between the left
+            cluster and the account menu -- justify-between on the outer
+            row then has nothing left to redistribute, so this sits exactly
+            in the gap that used to just be empty. Hidden on mobile, where
+            search instead lives as a row inside the accordion menu below. */}
+        <div className="hidden flex-1 justify-center px-6 md:flex">
+          <SiteSearchBox variant="header" onNavigate={closeAll} />
+        </div>
+
+        <div className="hidden items-center gap-3 md:flex">
+          <Link
+            href="/questions"
+            onClick={closeAll}
+            aria-label="Questions and feedback"
+            title="Questions and feedback"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+          >
+            <svg className="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M10 2.5c-4.14 0-7.5 2.91-7.5 6.5 0 1.79.85 3.41 2.23 4.59-.14.9-.49 1.94-1.15 2.91-.1.15.02.36.2.33 1.35-.19 2.68-.75 3.68-1.36.79.2 1.63.28 2.54.28 4.14 0 7.5-2.91 7.5-6.5s-3.36-6.75-7.5-6.75Z"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
           <AuthStatus />
         </div>
 
@@ -179,6 +229,12 @@ export function SiteHeader() {
             />
           </span>
         </button>
+      </div>
+
+      {/* Persistent on mobile too -- search specifically must never be
+          something a visitor has to open the hamburger to find. */}
+      <div className="border-t border-black/5 px-6 py-3 md:hidden dark:border-white/10">
+        <SiteSearchBox variant="header" onNavigate={closeAll} />
       </div>
 
       {/* Mobile menu */}
@@ -263,6 +319,25 @@ export function SiteHeader() {
               }`}
             >
               Tools
+            </Link>
+          </div>
+
+          <div className="border-b border-black/5 py-3 dark:border-white/10">
+            <Link
+              href="/questions"
+              onClick={closeAll}
+              className="flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-white"
+            >
+              <svg className="h-4 w-4 shrink-0 text-zinc-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path
+                  d="M10 2.5c-4.14 0-7.5 2.91-7.5 6.5 0 1.79.85 3.41 2.23 4.59-.14.9-.49 1.94-1.15 2.91-.1.15.02.36.2.33 1.35-.19 2.68-.75 3.68-1.36.79.2 1.63.28 2.54.28 4.14 0 7.5-2.91 7.5-6.5s-3.36-6.75-7.5-6.75Z"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Questions
             </Link>
           </div>
 

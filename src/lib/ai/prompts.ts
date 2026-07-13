@@ -221,3 +221,17 @@ export function buildContentSuggestionPrompt(
     serializeExcerpts(excerpts),
   ].join("\n");
 }
+
+// Fallback for the site's own search box -- only reached when keyword
+// matching (title/heading index plus body retrieval) found genuinely
+// nothing, so the ask stays narrow: pick from the real section list, or
+// say none fit. The caller's schema is an enum of actual slugs, so a bad
+// guess fails to parse instead of ever rendering a dead link.
+export function buildSearchFallbackPrompt(query: string, sectionSummaries: string): string {
+  return `A visitor searched "${query}" on The Haarchive, a running-education site, and no keyword match was
+found anywhere in the site's content. Below is the full list of sections (slug: title -- mission). Pick up
+to 3 slugs that are most plausibly what they meant -- a synonym, a misspelling, or a related concept phrased
+differently. Return none if nothing genuinely fits; don't force a guess just to fill the list.
+
+${sectionSummaries}`;
+}
