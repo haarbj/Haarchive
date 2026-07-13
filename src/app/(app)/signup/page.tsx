@@ -5,6 +5,8 @@ import { signUp } from "@/app/(app)/auth-actions";
 import { resolveInvite } from "./invite-actions";
 import { AuthForm } from "@/components/auth-form";
 import { GoogleSignInButton } from "@/components/oauth-buttons";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Sign up",
@@ -19,10 +21,10 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const invite = inviteToken ? await resolveInvite(inviteToken) : null;
 
   return (
-    <section className="mx-auto w-full max-w-sm px-6 py-16 animate-fade-in">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+    <Container variant="auth">
+      <Heading variant="compact">
         {invite ? "Set up your coach account" : "Sign up"}
-      </h1>
+      </Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
         {invite
           ? "You've been invited to coach on The Haarchive. Finish setting up your account below."
@@ -66,6 +68,6 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
           }
         />
       </div>
-    </section>
+    </Container>
   );
 }

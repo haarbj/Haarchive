@@ -21,6 +21,10 @@ import {
 } from "@/lib/coaching-engine";
 import { formatClock, formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
 import { createClient } from "@/lib/db/server";
+import { Card } from "@/components/ui/card";
+import { CardLink } from "@/components/ui/card-link";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -231,10 +235,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   return (
-    <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+    <Container variant="dashboard">
+      <Heading>
         Dashboard
-      </h1>
+      </Heading>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         You&rsquo;re signed in.
       </p>
@@ -254,7 +258,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {!primaryGoal && <OnboardingForm teamConnected={!!session?.teamId} />}
 
         {hasTrainingPlan && (
-          <div className="rounded-2xl border-2 border-zinc-900 bg-white p-6 shadow-sm dark:border-white dark:bg-zinc-900">
+          <Card padding="md" emphasis>
             <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
               Today&rsquo;s workout
             </p>
@@ -279,11 +283,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 during recovery, not just during training.
               </p>
             )}
-          </div>
+          </Card>
         )}
 
         {hasTrainingPlan && currentMesocycle && (
-          <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+          <Card padding="md">
             <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
               Current training phase
             </p>
@@ -300,23 +304,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             >
               View full plan →
             </Link>
-          </div>
+          </Card>
         )}
 
         {primaryGoal && <GoalCard goal={primaryGoal} estimate={fitnessEstimate} />}
 
         {!session?.teamId && primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
-          <Link
-            href="/plan/new"
-            className="block rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
-          >
+          <CardLink href="/plan/new">
             <p className="text-lg font-semibold text-zinc-900 dark:text-white">
               Generate your training plan →
             </p>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
               Two questions, and the deterministic coaching engine builds the rest.
             </p>
-          </Link>
+          </CardLink>
         )}
 
         {!session?.teamId && primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
@@ -326,17 +327,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         )}
 
         {session?.teamId && !hasTrainingPlan && (
-          <Link
-            href="/plan"
-            className="block rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
-          >
+          <CardLink href="/plan">
             <p className="text-lg font-semibold text-zinc-900 dark:text-white">
               View your training schedule →
             </p>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
               Your coach builds and publishes your schedule -- check here once it&rsquo;s up.
             </p>
-          </Link>
+          </CardLink>
         )}
 
         <div>
@@ -345,7 +343,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </p>
 
           {weeklySummary && (
-            <div className="mt-3 rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
+            <Card padding="sm" shadow={false} className="mt-3">
               <p className="text-sm font-semibold text-zinc-900 dark:text-white">Last week</p>
               <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-zinc-600 dark:text-zinc-300">
                 <span>{formatMiles(weeklySummary.mileageM)} total</span>
@@ -356,16 +354,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 {weeklySummary.avgRpe !== null && <span>RPE {weeklySummary.avgRpe.toFixed(1)} avg</span>}
               </div>
               <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{weeklySummary.summary}</p>
-            </div>
+            </Card>
           )}
 
           {raceResults && raceResults.length > 0 && (
             <div className="mt-3 space-y-2">
               {raceResults.map((result) => (
-                <div
-                  key={result.id}
-                  className="flex items-center justify-between rounded-xl border border-black/10 bg-white px-4 py-3 text-sm dark:border-white/10 dark:bg-zinc-900"
-                >
+                <Card key={result.id} padding="sm" shadow={false} className="flex items-center justify-between text-sm">
                   <span className="font-medium text-zinc-900 dark:text-white">
                     {result.race_name}
                   </span>
@@ -373,7 +368,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     {formatDistance(result.distance_m)} in{" "}
                     {formatClock(result.finish_time_s)} · {formatDate(result.race_date)}
                   </span>
-                </div>
+                </Card>
               ))}
             </div>
           )}
@@ -384,10 +379,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 {savedCalculations.map((calc) => {
                   const equivalents = equivalentPerformances(calc.input_json);
                   return (
-                    <div
-                      key={calc.id}
-                      className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm dark:border-white/10 dark:bg-zinc-900"
-                    >
+                    <Card key={calc.id} padding="sm" shadow={false} className="text-sm">
                       <div className="flex items-center justify-between gap-3">
                         <span className="font-medium text-zinc-900 dark:text-white">
                           {calc.label ?? calc.calculator_type}
@@ -401,7 +393,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                           {equivalents.map((eq) => `${eq.label} ${formatClock(eq.seconds)}`).join(" · ")}
                         </p>
                       )}
-                    </div>
+                    </Card>
                   );
                 })}
               </div>
@@ -419,6 +411,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           latestActivity={latestActivity}
         />
       </div>
-    </section>
+    </Container>
   );
 }

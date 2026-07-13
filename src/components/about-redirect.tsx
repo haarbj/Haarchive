@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Container } from "@/components/ui/container";
 
 export function AboutRedirect() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export function AboutRedirect() {
   }, [router]);
 
   return (
-    <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
+    <Container variant="content">
       <p className="text-zinc-600 dark:text-zinc-300">
         This page has moved.{" "}
         <Link
@@ -22,6 +23,6 @@ export function AboutRedirect() {
           Continue to the homepage →
         </Link>
       </p>
-    </section>
+    </Container>
   );
 }

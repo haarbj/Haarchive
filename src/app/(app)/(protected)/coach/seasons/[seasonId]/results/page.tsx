@@ -5,6 +5,9 @@ import { createClient } from "@/lib/db/server";
 import { formatClock, formatDate } from "@/lib/format";
 import { BackLink } from "@/components/back-link";
 import { CompletionSummary, type CompletionDetail } from "@/app/(app)/(protected)/plan/completion-detail";
+import { Card } from "@/components/ui/card";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Race results",
@@ -58,11 +61,11 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
 
   if (!groupPlans || groupPlans.length === 0) {
     return (
-      <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
+      <Container variant="dashboard">
         <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
-        <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Race results</h1>
+        <Heading className="mt-4">Race results</Heading>
         <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-300">No group schedules for {season.name} yet.</p>
-      </section>
+      </Container>
     );
   }
 
@@ -137,9 +140,9 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
   }
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
+    <Container variant="dashboard">
       <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
-      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Race results</h1>
+      <Heading className="mt-4">Race results</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Logged results for {season.name}, against each athlete&rsquo;s own goal.
       </p>
@@ -153,10 +156,7 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
               <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">{groupName}</p>
               <div className="mt-3 space-y-3">
                 {groupRows.map((row, i) => (
-                  <div
-                    key={i}
-                    className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900"
-                  >
+                  <Card key={i} padding="sm" shadow={false}>
                     <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
                       {formatDate(row.raceDate)} · {row.raceDescription}
                     </p>
@@ -174,13 +174,13 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
                         )}
                       </p>
                     )}
-                  </div>
+                  </Card>
                 ))}
               </div>
             </div>
           ))}
         </div>
       )}
-    </section>
+    </Container>
   );
 }

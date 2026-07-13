@@ -93,7 +93,7 @@ function AccountMenu({
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-10 mt-2 w-44 rounded-xl border border-black/10 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-zinc-900">
+        <div className="absolute right-0 top-full z-[var(--z-dropdown)] mt-2 w-44 rounded-xl border border-black/10 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-zinc-900">
           {role === "coach" ? (
             <Link href="/coach" onClick={closeAndNavigate} className={menuItemClass}>
               Coach

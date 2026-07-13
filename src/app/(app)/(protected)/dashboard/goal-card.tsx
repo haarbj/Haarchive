@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { EditGoalForm } from "./edit-goal-form";
 import { formatClock, formatDate, formatDistance } from "@/lib/format";
+import { Card } from "@/components/ui/card";
 
 type Goal = {
   id: string;
@@ -44,7 +45,7 @@ export function GoalCard({ goal, estimate }: GoalCardProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="md">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
@@ -103,6 +104,6 @@ export function GoalCard({ goal, estimate }: GoalCardProps) {
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

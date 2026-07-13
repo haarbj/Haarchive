@@ -10,3 +10,12 @@ import { groq } from "@ai-sdk/groq";
 // is all this app asks of it. Everything that calls the model imports
 // this instead of a specific provider package directly.
 export const coachModel = groq("llama-3.1-8b-instant");
+
+// A separate model for the one call site that needs guaranteed structured
+// output (the Questions admin dashboard's generateObject call): Groq only
+// supports JSON-schema structured outputs on a small allowlist of models
+// (see https://console.groq.com/docs/structured-outputs#supported-models),
+// which coachModel is not on -- generateObject fails outright against it
+// rather than silently degrading. gpt-oss-20b is on that allowlist and
+// still free-tier, so it's the model, not the provider, that changes here.
+export const structuredOutputModel = groq("openai/gpt-oss-20b");

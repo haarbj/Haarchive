@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { CreateGroupForm } from "./create-group-form";
+import { Card } from "@/components/ui/card";
+import { Container } from "@/components/ui/container";
+import { ListRow } from "@/components/ui/list-row";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Groups",
@@ -33,37 +36,37 @@ export default async function GroupsPage() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Groups</h1>
+    <Container variant="dashboard">
+      <Heading>Groups</Heading>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Training groups -- Varsity, JV, Frosh, or however you split things up. Each group gets its own
         schedule.
       </p>
 
-      <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md" className="mt-10">
         <CreateGroupForm />
-      </div>
+      </Card>
 
       <div className="mt-8">
         {groups && groups.length > 0 ? (
           <div className="space-y-2">
             {groups.map((group) => (
-              <Link
+              <ListRow
                 key={group.id}
                 href={`/coach/groups/${group.id}`}
-                className="flex items-center justify-between rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-zinc-900 transition hover:border-black/20 dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:hover:border-white/20"
+                className="font-medium text-zinc-900 dark:text-white"
               >
                 <span>{group.name}</span>
                 <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
                   {countByGroup.get(group.id) ?? 0} athlete{(countByGroup.get(group.id) ?? 0) === 1 ? "" : "s"}
                 </span>
-              </Link>
+              </ListRow>
             ))}
           </div>
         ) : (
           <p className="text-sm text-zinc-600 dark:text-zinc-300">No groups yet -- create one above.</p>
         )}
       </div>
-    </section>
+    </Container>
   );
 }

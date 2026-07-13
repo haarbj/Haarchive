@@ -4,6 +4,7 @@ import { useActionState, useId } from "react";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { updateProfile } from "./actions";
+import { Button } from "@/components/ui/button";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -64,13 +65,9 @@ export function SettingsForm({ initialDisplayName, initialUnits, email }: Settin
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
+      <Button type="submit" size="lg" disabled={isPending}>
         {isPending ? "Saving…" : "Save changes"}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -5,6 +5,8 @@ import { SyncStravaButton } from "@/app/(app)/(protected)/dashboard/sync-strava-
 import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { formatDate, formatMiles, formatRelativeTime } from "@/lib/format";
 import type { WorkoutType } from "@/lib/coaching-engine";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export type LatestStravaActivity = {
   distanceM: number;
@@ -20,7 +22,7 @@ type StravaConnectionProps = {
 
 export function StravaConnection({ connected, lastSyncedAt, latestActivity }: StravaConnectionProps) {
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="md">
       <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
         Strava
       </p>
@@ -44,12 +46,9 @@ export function StravaConnection({ connected, lastSyncedAt, latestActivity }: St
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <SyncStravaButton />
             <form action={disconnectStrava}>
-              <button
-                type="submit"
-                className="rounded-full border border-black/10 px-4 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
-              >
+              <Button type="submit" variant="outline" size="sm">
                 Disconnect
-              </button>
+              </Button>
             </form>
           </div>
         </>
@@ -66,6 +65,6 @@ export function StravaConnection({ connected, lastSyncedAt, latestActivity }: St
           </Link>
         </>
       )}
-    </div>
+    </Card>
   );
 }

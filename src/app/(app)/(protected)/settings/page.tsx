@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { SettingsForm } from "@/app/(app)/(protected)/settings/settings-form";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Settings",
@@ -23,10 +25,10 @@ export default async function SettingsPage() {
     .single<Profile>();
 
   return (
-    <section className="mx-auto w-full max-w-sm px-6 py-16 animate-fade-in">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+    <Container variant="auth">
+      <Heading variant="compact">
         Settings
-      </h1>
+      </Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
         Update your display name and preferred units.
       </p>
@@ -38,6 +40,6 @@ export default async function SettingsPage() {
           email={session!.email ?? ""}
         />
       </div>
-    </section>
+    </Container>
   );
 }

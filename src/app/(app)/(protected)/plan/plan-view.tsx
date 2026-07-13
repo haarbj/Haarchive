@@ -15,6 +15,8 @@ import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 import { TeamScheduleView } from "./team-schedule-view";
 import { WorkoutCard } from "./workout-card";
+import { Card } from "@/components/ui/card";
+import { Heading } from "@/components/ui/heading";
 
 type Mesocycle = {
   id: string;
@@ -44,7 +46,7 @@ type WorkoutRow = {
 function ReadOnlyWorkoutRow({ workout, completion }: { workout: WorkoutRow; completion: CompletionDetail | null }) {
   const parsed = workoutPrescriptionSchema.safeParse(workout.prescription);
   return (
-    <div className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="sm">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">
@@ -61,7 +63,7 @@ function ReadOnlyWorkoutRow({ workout, completion }: { workout: WorkoutRow; comp
           </span>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -92,7 +94,7 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
   if (teamMembership) {
     return (
       <>
-        <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Training Schedule</h1>
+        <Heading>Training Schedule</Heading>
         <div className="mt-10">
           <TeamScheduleView userId={userId} coachView={coachView} />
         </div>
@@ -183,24 +185,24 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
 
   return (
     <>
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+      <Heading>
         {plan.name}
-      </h1>
+      </Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {goal?.race_name ? `Building toward ${goal.race_name} on ${formatDate(plan.end_date)}.` : null}
       </p>
 
       {planComplete ? (
-        <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+        <Card padding="md" className="mt-10">
           <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
             This plan has run its course.{" "}
             {coachView ? "Nice work." : "Nice work — set a new goal on your dashboard whenever you’re ready for the next one."}
           </p>
-        </div>
+        </Card>
       ) : (
         <>
           {currentMesocycle && (
-            <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+            <Card padding="md" className="mt-10">
               <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
                 Current phase
               </p>
@@ -218,7 +220,7 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
               <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                 {formatDate(currentMesocycle.start_date)} – {formatDate(currentMesocycle.end_date)}
               </p>
-            </div>
+            </Card>
           )}
 
           <div className="mt-8">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/format";
 import { WorkoutMetaLine } from "@/components/workout-summary-line";
 import type { Workout } from "./schedule-builder";
+import { Card } from "@/components/ui/card";
 
 export type GroupDayEntries = {
   groupId: string;
@@ -37,7 +38,7 @@ export function AllGroupsDayView({
         const groupsWithEntries = groups.filter((g) => (g.workoutsByDate[date] ?? []).length > 0);
         if (groupsWithEntries.length === 0) return null;
         return (
-          <div key={date} className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+          <Card key={date} padding="md">
             <p className="text-sm font-semibold text-zinc-900 dark:text-white">{formatDate(date)}</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {groupsWithEntries.map((g) => (
@@ -68,7 +69,7 @@ export function AllGroupsDayView({
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
         );
       })}
     </div>

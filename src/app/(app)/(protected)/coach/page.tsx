@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { getAppSession } from "@/lib/auth/session";
+import { CardLink } from "@/components/ui/card-link";
+import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Coach",
@@ -29,31 +32,22 @@ export default async function CoachPage() {
     .returns<SeasonPlan[]>();
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Coach</h1>
+    <Container variant="dashboard">
+      <Heading>Coach</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Build a season once, then generate individualized plans for your roster from it.
       </p>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          href="/coach/seasons/new"
-          className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button href="/coach/seasons/new" size="lg">
           Generate a season
-        </Link>
-        <Link
-          href="/coach/roster"
-          className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
-        >
+        </Button>
+        <Button href="/coach/roster" variant="outline" size="lg">
           View roster
-        </Link>
-        <Link
-          href="/coach/groups"
-          className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
-        >
+        </Button>
+        <Button href="/coach/groups" variant="outline" size="lg">
           Groups
-        </Link>
+        </Button>
       </div>
 
       <div className="mt-10">
@@ -63,16 +57,12 @@ export default async function CoachPage() {
         {seasons && seasons.length > 0 ? (
           <div className="mt-3 space-y-2">
             {seasons.map((season) => (
-              <Link
-                key={season.id}
-                href={`/coach/seasons/${season.id}`}
-                className="block rounded-xl border border-black/10 bg-white px-4 py-3 text-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
-              >
+              <CardLink key={season.id} href={`/coach/seasons/${season.id}`} padding="sm" className="block text-sm">
                 <span className="font-medium text-zinc-900 dark:text-white">{season.name}</span>
                 <span className="ml-2 text-zinc-600 dark:text-zinc-300">
                   {season.goal_race_name} · {formatDate(season.goal_race_date)}
                 </span>
-              </Link>
+              </CardLink>
             ))}
           </div>
         ) : (
@@ -81,6 +71,6 @@ export default async function CoachPage() {
           </p>
         )}
       </div>
-    </section>
+    </Container>
   );
 }

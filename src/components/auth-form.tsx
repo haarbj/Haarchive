@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 
 import type { AuthActionState } from "@/app/(app)/auth-actions";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
+import { Button } from "@/components/ui/button";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -83,13 +84,9 @@ export function AuthForm({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
+      <Button type="submit" size="lg" disabled={isPending} className="w-full">
         {isPending ? pendingLabel : submitLabel}
-      </button>
+      </Button>
 
       {footer}
     </form>

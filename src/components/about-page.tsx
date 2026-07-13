@@ -2,6 +2,9 @@ import Link from "next/link";
 
 import { categories } from "@/lib/sections";
 import { PullQuote } from "@/components/pull-quote";
+import { CardLink } from "@/components/ui/card-link";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 const timeline: {
   label: string;
@@ -70,13 +73,13 @@ const influences: { name: string; note: string }[] = [
 
 export function AboutPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
+    <Container variant="content">
       <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
         Distance Running Knowledge Hub
       </p>
-      <h1 className="mt-3 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+      <Heading className="mt-3">
         For runners who want to understand the sport at the deepest level.
-      </h1>
+      </Heading>
       <p className="mt-6 max-w-[66ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
         The Haarchive is a long-term resource dedicated to the physiology,
         psychology, philosophy, and practice of distance running — helping
@@ -84,9 +87,9 @@ export function AboutPage() {
         training.
       </p>
 
-      <Link
+      <CardLink
         href="/why-running-is-valuable-for-everyone"
-        className="group mt-10 flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:flex-row sm:items-center sm:justify-between dark:border-white/10 dark:bg-zinc-900"
+        className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
@@ -105,7 +108,7 @@ export function AboutPage() {
         <span className="shrink-0 text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white">
           Read the essay →
         </span>
-      </Link>
+      </CardLink>
 
       <a
         href="#what-youll-find-here"
@@ -410,6 +413,6 @@ export function AboutPage() {
           </p>
         </div>
       </section>
-    </div>
+    </Container>
   );
 }

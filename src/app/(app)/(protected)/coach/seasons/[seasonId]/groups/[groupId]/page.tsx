@@ -10,6 +10,8 @@ import { BackLink } from "@/components/back-link";
 import type { GroupDayEntries } from "./all-groups-day-view";
 import type { WeekRange, Workout } from "./schedule-builder";
 import { ViewToggle } from "./view-toggle";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Group Schedule",
@@ -38,11 +40,11 @@ export default async function GroupSchedulePage({ params }: PageProps) {
   const { groupPlanId, error: ensureError } = await ensureGroupPlan(seasonId, groupId);
   if (!groupPlanId) {
     return (
-      <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
+      <Container variant="dashboard">
         <p className="text-sm font-medium text-red-700 dark:text-red-400">
           {ensureError ?? "Couldn't set up this group's schedule."}
         </p>
-      </section>
+      </Container>
     );
   }
 
@@ -141,9 +143,9 @@ export default async function GroupSchedulePage({ params }: PageProps) {
   };
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
+    <Container variant="dashboard">
       <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
-      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{group.name}</h1>
+      <Heading className="mt-4">{group.name}</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {season.name} — build this group&rsquo;s week-by-week schedule.
       </p>
@@ -179,6 +181,6 @@ export default async function GroupSchedulePage({ params }: PageProps) {
           groupPlanIdByGroupId={groupPlanIdByGroupId}
         />
       </div>
-    </section>
+    </Container>
   );
 }

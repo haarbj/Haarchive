@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/db/server";
 import { PlanView } from "@/app/(app)/(protected)/plan/plan-view";
 import { BackLink } from "@/components/back-link";
+import { Container } from "@/components/ui/container";
 
 export const metadata: Metadata = {
   title: "Athlete",
@@ -29,7 +30,7 @@ export default async function AthleteDetailPage({ params }: AthleteDetailPagePro
   if (!profile) notFound();
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
+    <Container variant="dashboard">
       <BackLink href="/coach/roster" label="Roster" />
       <p className="mt-4 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
         Coaching view
@@ -37,6 +38,6 @@ export default async function AthleteDetailPage({ params }: AthleteDetailPagePro
       <div className="mt-1">
         <PlanView userId={profile.id} coachView />
       </div>
-    </section>
+    </Container>
   );
 }

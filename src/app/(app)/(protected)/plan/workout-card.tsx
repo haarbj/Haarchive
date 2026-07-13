@@ -16,6 +16,8 @@ import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { ExplainWorkoutButton } from "./explain-workout-button";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type WorkoutCardProps = {
   workout: {
@@ -40,7 +42,7 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
   const durationRange = parsed.success ? estimatedDurationRangeMin(parsed.data) : null;
 
   return (
-    <div className="rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="sm">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">
@@ -126,13 +128,9 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
               className={fieldClass}
             />
           </div>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
+          <Button type="submit" disabled={isPending}>
             {isPending ? "Saving…" : "Mark complete"}
-          </button>
+          </Button>
         </form>
       )}
       {state.error && (
@@ -162,6 +160,6 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
           adaptationExplanation={workout.adaptation_explanation}
         />
       )}
-    </div>
+    </Card>
   );
 }

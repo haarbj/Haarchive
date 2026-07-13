@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { BackLink } from "@/components/back-link";
 import { CreateSeasonFlow } from "./create-season-flow";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Generate a Season",
@@ -9,11 +11,11 @@ export const metadata: Metadata = {
 
 export default function NewSeasonPage() {
   return (
-    <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
+    <Container variant="narrow">
       <BackLink href="/coach" label="Coach" />
-      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+      <Heading className="mt-4">
         Generate a season
-      </h1>
+      </Heading>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Set it up, preview exactly what will be created, then create it.
       </p>
@@ -21,6 +23,6 @@ export default function NewSeasonPage() {
       <div className="mt-10">
         <CreateSeasonFlow />
       </div>
-    </section>
+    </Container>
   );
 }

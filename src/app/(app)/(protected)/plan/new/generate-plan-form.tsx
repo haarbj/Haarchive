@@ -4,6 +4,8 @@ import { useActionState, useId } from "react";
 
 import { generatePlan } from "@/app/(app)/(protected)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type GeneratePlanFormProps = {
   defaultCurrentWeeklyMileage?: number;
@@ -18,10 +20,7 @@ export function GeneratePlanForm({
   const [state, formAction, isPending] = useActionState(generatePlan, {});
 
   return (
-    <form
-      action={formAction}
-      className="space-y-5 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900"
-    >
+    <Card as="form" action={formAction} padding="md" className="space-y-5">
       <div>
         <label htmlFor={`${baseId}-mileage`} className={labelClass}>
           Current weekly mileage
@@ -68,13 +67,9 @@ export function GeneratePlanForm({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
+      <Button type="submit" size="lg" disabled={isPending}>
         {isPending ? "Building your plan…" : "Generate my training plan"}
-      </button>
-    </form>
+      </Button>
+    </Card>
   );
 }

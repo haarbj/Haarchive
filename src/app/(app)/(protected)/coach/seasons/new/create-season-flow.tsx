@@ -11,6 +11,8 @@ import {
 import { dateFieldClass, fieldClass, labelClass, GOAL_DISTANCES } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { addDays, diffDays, type SeasonPhaseDraft } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Step = "setup" | "preview";
 
@@ -114,7 +116,7 @@ export function CreateSeasonFlow() {
 
   if (step === "setup") {
     return (
-      <div className="space-y-5 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md" className="space-y-5">
         <div>
           <label htmlFor={`${baseId}-name`} className={labelClass}>
             Season name
@@ -241,21 +243,16 @@ export function CreateSeasonFlow() {
           </p>
         )}
 
-        <button
-          type="button"
-          onClick={handlePreview}
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="button" size="lg" onClick={handlePreview} disabled={isPending}>
           {isPending ? "Building preview…" : "Preview season"}
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md">
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">Phases</p>
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
           This is what will actually be created. Adjust an end date if it doesn&rsquo;t look right --
@@ -297,9 +294,9 @@ export function CreateSeasonFlow() {
             {formatDate(goalRaceDate)}. Adjust a phase above if that&rsquo;s not intentional.
           </p>
         )}
-      </div>
+      </Card>
 
-      <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md">
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">Race schedule</p>
         {raceWarnings.length > 0 && (
           <div className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
@@ -351,7 +348,7 @@ export function CreateSeasonFlow() {
         >
           + Add a race
         </button>
-      </div>
+      </Card>
 
       {error && (
         <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
@@ -360,21 +357,12 @@ export function CreateSeasonFlow() {
       )}
 
       <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={() => setStep("setup")}
-          className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
-        >
+        <Button type="button" variant="outline" size="lg" onClick={() => setStep("setup")}>
           Back
-        </button>
-        <button
-          type="button"
-          onClick={handleCreate}
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        </Button>
+        <Button type="button" size="lg" onClick={handleCreate} disabled={isPending}>
           {isPending ? "Creating…" : "Create season"}
-        </button>
+        </Button>
       </div>
     </div>
   );

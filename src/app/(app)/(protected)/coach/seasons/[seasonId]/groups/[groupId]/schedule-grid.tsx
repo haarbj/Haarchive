@@ -67,9 +67,9 @@ function DetailOverlay({
   onCancel: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 p-6" onClick={onCancel}>
+    <div className="fixed inset-0 z-[var(--z-modal)] overflow-y-auto bg-black/40 p-6" onClick={onCancel}>
       <div
-        className="mx-auto mt-16 w-full max-w-xl rounded-2xl bg-stone-50 p-4 shadow-xl dark:bg-zinc-950"
+        className="mx-auto mt-16 w-full max-w-xl rounded-2xl bg-white p-4 shadow-modal dark:bg-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
         <WorkoutEntryForm

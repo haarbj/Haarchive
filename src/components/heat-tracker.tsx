@@ -588,7 +588,7 @@ export function HeatTracker() {
               <div
                 id={listboxId}
                 role="listbox"
-                className="absolute left-0 top-full z-10 mt-1 w-full overflow-hidden rounded-lg border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900"
+                className="absolute left-0 top-full z-[var(--z-dropdown)] mt-1 w-full overflow-hidden rounded-lg border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900"
               >
                 {suggestionsLoading ? (
                   <p className="px-4 py-2.5 text-sm text-zinc-500 dark:text-zinc-400">

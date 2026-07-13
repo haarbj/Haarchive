@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { formatRelativeTime } from "@/lib/format";
 import { CreateInviteForm } from "./create-invite-form";
+import { CardLink } from "@/components/ui/card-link";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -27,13 +30,25 @@ export default async function AdminPage() {
     .returns<CoachInvite[]>();
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Admin</h1>
+    <Container variant="dashboard">
+      <Heading>Admin</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Invite coaches. Athletes with an @brophybroncos.org email join automatically, no invite needed.
       </p>
 
       <div className="mt-10 space-y-8">
+        <CardLink href="/admin/questions" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Questions</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Triage reader questions and topic suggestions into the content pipeline.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white">
+            Open →
+          </span>
+        </CardLink>
+
         <CreateInviteForm />
 
         <div>
@@ -65,6 +80,6 @@ export default async function AdminPage() {
           )}
         </div>
       </div>
-    </section>
+    </Container>
   );
 }

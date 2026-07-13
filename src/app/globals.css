@@ -1,24 +1,130 @@
 @import "tailwindcss";
 
+/* Design tokens. Everything in the @theme block below turns into a real
+   Tailwind utility class automatically (bg-surface, rounded-card,
+   shadow-card, max-w-dashboard, gap-md, ...) -- this is what makes the
+   design system apply to future pages with zero JS import, not just an
+   aspiration. Color tokens are defined here as raw values, then re-exposed
+   through @theme inline so the same var() indirection that already drove
+   --background/--foreground (light value here, dark override below) covers
+   the new semantic colors too.
+
+   Container widths mirror src/design/layout.ts -- Tailwind can't read a
+   .ts file, so those numbers are the one deliberate duplication in this
+   system. Keep the two in sync by hand; both files say so at the top.
+
+   No named --spacing-* scale here on purpose: xs/sm/md/lg/xl/2xl are
+   reserved keywords shared across many Tailwind theme namespaces
+   (spacing, containers, breakpoints...), and a first attempt at this
+   confirmed the collision the hard way -- defining --spacing-sm/xl/2xl
+   silently redefined max-w-sm/xl/2xl everywhere in the app, since
+   max-width falls back to the spacing scale for keys it doesn't have its
+   own entry for. The existing numeric scale (p-6, gap-4, mt-10, ...) is
+   already a disciplined, consistent rhythm -- see src/design/spacing.ts
+   for the semantic-name-to-numeric-value reference instead of a
+   colliding utility class. */
 :root {
   --background: #f8f7f4;
   --foreground: #121212;
+
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --hairline: rgb(0 0 0 / 10%);
+  --heading: #18181b;
+  --body-text: #52525b;
+  --muted: #71717a;
+
+  --accent-tip: #0ea5e9;
+  --accent-warning: #f59e0b;
+  --accent-research: #8b5cf6;
+  --accent-success: #10b981;
+  --accent-error: #dc2626;
+
+  /* Tailwind v4 has no extensible theme namespace for z-index (unlike
+     spacing/color/radius/shadow/container, which all generated real
+     utilities below) -- these stay plain custom properties, consumed via
+     arbitrary-value syntax (z-[var(--z-header)]) at each of the 5 call
+     sites instead of a named z-* utility. */
+  --z-header: 10;
+  --z-toc: 20;
+  --z-dropdown: 30;
+  --z-modal: 40;
+  --z-toast: 50;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-hairline: var(--hairline);
+  --color-heading: var(--heading);
+  --color-body: var(--body-text);
+  --color-muted: var(--muted);
+
+  --color-accent-tip: var(--accent-tip);
+  --color-accent-warning: var(--accent-warning);
+  --color-accent-research: var(--accent-research);
+  --color-accent-success: var(--accent-success);
+  --color-accent-error: var(--accent-error);
+
   /* Explicit "mobile" cutoff -- Tailwind's default sm(640)/md(768)/lg(1024)
      scale already covers tablet/desktop, but nothing marks the phone-width
      boundary specifically. Use as xs: for anything that needs to key off
      it (most layout already reflows fine via flex-wrap without it). */
   --breakpoint-xs: 480px;
+
+  --radius-pill: 9999px;
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 8%);
+  --shadow-dropdown: 0 10px 24px -4px rgb(0 0 0 / 12%);
+  --shadow-modal: 0 24px 48px -12px rgb(0 0 0 / 25%);
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* Semantic container widths -- see src/design/layout.ts for the same
+     numbers exposed to component logic, and the Container component
+     (src/components/ui/container.tsx) for how pages consume these. Four
+     variants total (plus --container-chrome for the header/footer bar,
+     applied directly rather than through a Container variant) -- see
+     container.tsx's own comment for what each one is for.
+
+     --container-chrome matches --container-content on purpose: with the
+     nav down to two real items (Learn, Tools) plus the account menu,
+     there's no longer content-width reason to keep the bar wider than the
+     page -- see site-header.tsx's own comment. Same number, kept as its
+     own token because the header still isn't a Container variant. */
+  --container-chrome: 1080px;
+  --container-content: 1080px;
+  --container-dashboard: 900px;
+  --container-narrow: 680px;
+  --container-auth: 400px;
+  --container-article-prose: 72ch;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #09090b;
     --foreground: #f4f4f5;
+
+    --surface: #18181b;
+    --surface-muted: #27272a;
+    --hairline: rgb(255 255 255 / 10%);
+    --heading: #ffffff;
+    --body-text: #d4d4d8;
+    --muted: #a1a1aa;
+
+    --accent-tip: #38bdf8;
+    --accent-warning: #fbbf24;
+    --accent-research: #a78bfa;
+    --accent-success: #34d399;
+    --accent-error: #f87171;
   }
 }
 
@@ -27,6 +133,19 @@ body {
   color: var(--foreground);
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   text-rendering: optimizeLegibility;
+}
+
+/* Native anchor-jump smooth scrolling for table-of-contents links --
+   scroll-mt-24 on headings (see [slug]/page.tsx) keeps the sticky header
+   from covering the target. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 @keyframes fade-in {

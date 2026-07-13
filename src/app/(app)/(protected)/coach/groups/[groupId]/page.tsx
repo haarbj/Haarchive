@@ -5,6 +5,9 @@ import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { BackLink } from "@/components/back-link";
 import { DeleteGroupButton, MembershipRoster, RenameGroupForm } from "./group-detail-client";
+import { Card } from "@/components/ui/card";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Group",
@@ -55,18 +58,18 @@ export default async function GroupDetailPage({ params }: GroupDetailPageProps) 
   }
 
   return (
-    <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
+    <Container variant="dashboard">
       <BackLink href="/coach/groups" label="Groups" />
-      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{group.name}</h1>
+      <Heading className="mt-4">{group.name}</Heading>
 
-      <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md" className="mt-10">
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">Rename</p>
         <div className="mt-3">
           <RenameGroupForm groupId={group.id} name={group.name} />
         </div>
-      </div>
+      </Card>
 
-      <div className="mt-8 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md" className="mt-8">
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">Roster</p>
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Check who&rsquo;s in this group.</p>
         <div className="mt-3">
@@ -77,11 +80,11 @@ export default async function GroupDetailPage({ params }: GroupDetailPageProps) 
             otherGroupNamesByAthlete={Object.fromEntries(otherGroupNamesByAthlete)}
           />
         </div>
-      </div>
+      </Card>
 
       <div className="mt-8">
         <DeleteGroupButton groupId={group.id} />
       </div>
-    </section>
+    </Container>
   );
 }

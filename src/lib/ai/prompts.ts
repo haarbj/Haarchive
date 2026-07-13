@@ -161,3 +161,63 @@ ${SHARED_GUARDRAILS}
 export function buildAdaptationSystemPrompt(context: CoachingContext, excerpts: RetrievedExcerpt[]): string {
   return [ADAPTATION_INSTRUCTIONS, "", buildDataBlock(context, excerpts)].join("\n");
 }
+
+// Editorial assistant for the Questions dashboard -- helps Brody (the site
+// owner, the only person who sees this) turn a reader question into either
+// an expansion of an existing article or a brand-new one. The output is a
+// draft for a human editor to revise, not something that gets auto-published
+// -- sections.ts is a hand-authored, git-committed file, not a CMS. The
+// prompt says this explicitly so the model doesn't overreach into a
+// finished-feeling "final" voice it hasn't earned.
+export type ContentSuggestionQuestion = {
+  title: string;
+  description: string | null;
+  type: "question" | "topic_suggestion";
+  category: string | null;
+};
+
+const CONTENT_SUGGESTION_INSTRUCTIONS = `You are an editorial assistant for The Haarchive, a running-education website written in
+the voice of one experienced, opinionated coach -- not a textbook, not a listicle. You're
+helping the site's single author turn a reader's question or topic suggestion into a content
+draft. Nobody but the author will read your output; it is a starting draft for them to revise,
+not a finished article and not something that gets published automatically.
+
+Write in the site's established voice: explain mechanisms and the "why," not just the "what";
+name tradeoffs and coaching implications; avoid textbook throat-clearing ("In this article we
+will discuss..."); cite real research by author/year when you reference a specific finding,
+and say plainly when you're drawing on general training knowledge instead.
+
+${SHARED_GUARDRAILS}
+- If the question is too vague or too narrow to justify real content, say so plainly in the
+  outline rather than padding out a draft that shouldn't exist.`;
+
+function serializeQuestion(question: ContentSuggestionQuestion): string {
+  const lines = [
+    `Reader ${question.type === "topic_suggestion" ? "topic suggestion" : "question"}: ${question.title}`,
+  ];
+  if (question.description) lines.push(`Additional detail from the reader: ${question.description}`);
+  if (question.category) lines.push(`Reader-suggested category: ${question.category}`);
+  return lines.join("\n");
+}
+
+export function buildContentSuggestionPrompt(
+  question: ContentSuggestionQuestion,
+  excerpts: RetrievedExcerpt[],
+  mode: "expand" | "new_article",
+): string {
+  const modeInstruction =
+    mode === "expand"
+      ? "The author believes this belongs inside an existing page rather than as a new one. Identify which existing page (by title) it should extend, and draft the new section/paragraphs to add -- not a whole new article."
+      : "The author believes this deserves a brand-new page. Recommend where it belongs in the site's category structure and draft a full first-pass article.";
+
+  return [
+    CONTENT_SUGGESTION_INSTRUCTIONS,
+    "",
+    modeInstruction,
+    "",
+    serializeQuestion(question),
+    "",
+    "Existing site content most relevant to this topic (cite/build on these where they genuinely overlap; don't repeat them verbatim):",
+    serializeExcerpts(excerpts),
+  ].join("\n");
+}

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { BackLink } from "@/components/back-link";
+import { Container } from "@/components/ui/container";
+import { ListRow } from "@/components/ui/list-row";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Roster",
@@ -29,9 +31,9 @@ export default async function RosterPage() {
     : { data: [] as Profile[] };
 
   return (
-    <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
+    <Container variant="dashboard">
       <BackLink href="/coach" label="Coach" />
-      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">Roster</h1>
+      <Heading className="mt-4">Roster</Heading>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Athletes who&rsquo;ve signed up with an @brophybroncos.org email join automatically.
       </p>
@@ -40,13 +42,9 @@ export default async function RosterPage() {
         {profiles && profiles.length > 0 ? (
           <div className="space-y-2">
             {profiles.map((athlete) => (
-              <Link
-                key={athlete.id}
-                href={`/coach/athletes/${athlete.id}`}
-                className="block rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-zinc-900 transition hover:border-black/20 dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:hover:border-white/20"
-              >
+              <ListRow key={athlete.id} href={`/coach/athletes/${athlete.id}`} className="font-medium text-zinc-900 dark:text-white">
                 {athlete.display_name}
-              </Link>
+              </ListRow>
             ))}
           </div>
         ) : (
@@ -55,6 +53,6 @@ export default async function RosterPage() {
           </p>
         )}
       </div>
-    </section>
+    </Container>
   );
 }

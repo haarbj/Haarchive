@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { GeneratePlanForm } from "./generate-plan-form";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Generate Your Training Plan",
@@ -43,10 +45,10 @@ export default async function NewPlanPage() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-2xl px-6 py-16 animate-fade-in">
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+    <Container variant="narrow">
+      <Heading>
         Generate your training plan
-      </h1>
+      </Heading>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         For <span className="font-semibold text-zinc-900 dark:text-white">{goal.race_name}</span>.
         Two numbers, and the plan is yours.
@@ -58,6 +60,6 @@ export default async function NewPlanPage() {
           defaultDaysPerWeek={athleteProfile?.running_days_per_week ?? undefined}
         />
       </div>
-    </section>
+    </Container>
   );
 }

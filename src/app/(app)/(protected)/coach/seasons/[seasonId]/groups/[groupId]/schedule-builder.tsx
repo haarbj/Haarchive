@@ -15,6 +15,7 @@ import { formatDate } from "@/lib/format";
 import { WorkoutLengthLine, WorkoutMetaLine } from "@/components/workout-summary-line";
 import type { GroupDayEntries } from "./all-groups-day-view";
 import { WorkoutEntryForm } from "./workout-entry-form";
+import { Card } from "@/components/ui/card";
 
 export type WeekRange = {
   weekIndex: number;
@@ -217,10 +218,7 @@ function WeekSection({
     workouts.length === 0 || publishedCount === 0 ? "none" : publishedCount === workouts.length ? "all" : "some";
 
   return (
-    <div
-      id={`week-${week.weekIndex}`}
-      className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900"
-    >
+    <Card id={`week-${week.weekIndex}`} padding="md">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
@@ -381,7 +379,7 @@ function WeekSection({
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 

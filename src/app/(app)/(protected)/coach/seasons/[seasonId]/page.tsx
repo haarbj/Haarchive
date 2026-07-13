@@ -8,6 +8,10 @@ import { getAppSession } from "@/lib/auth/session";
 import { BackLink } from "@/components/back-link";
 import { PhaseEditor, type SeasonPhaseRow } from "./phase-editor";
 import { WeekEditor, type SeasonWeekRow } from "./week-editor";
+import { Card } from "@/components/ui/card";
+import { Container } from "@/components/ui/container";
+import { ListRow } from "@/components/ui/list-row";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Season",
@@ -60,14 +64,14 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
   ]);
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-16 animate-fade-in">
+    <Container variant="dashboard">
       <BackLink href="/coach" label="Coach" />
-      <h1 className="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">{season.name}</h1>
+      <Heading className="mt-4">{season.name}</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Building toward {season.goal_race_name} on {formatDate(season.goal_race_date)}.
       </p>
 
-      <div className="mt-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+      <Card padding="md" className="mt-10">
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">Group schedules</p>
           <Link
@@ -80,13 +84,13 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
         {groups && groups.length > 0 ? (
           <div className="mt-3 space-y-2">
             {groups.map((group) => (
-              <Link
+              <ListRow
                 key={group.id}
                 href={`/coach/seasons/${seasonId}/groups/${group.id}`}
-                className="block rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium text-zinc-900 transition hover:border-black/20 dark:border-white/10 dark:text-white dark:hover:border-white/20"
+                className="font-medium text-zinc-900 dark:text-white"
               >
                 {group.name}
-              </Link>
+              </ListRow>
             ))}
           </div>
         ) : (
@@ -95,7 +99,7 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
             schedule.
           </p>
         )}
-      </div>
+      </Card>
 
       <div className="mt-8 space-y-8">
         {phases?.map((phase, i) => (
@@ -116,6 +120,6 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
           </PhaseEditor>
         ))}
       </div>
-    </section>
+    </Container>
   );
 }

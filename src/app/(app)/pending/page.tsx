@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 
 import { signOut } from "@/app/(app)/auth-actions";
 import { getAppSession } from "@/lib/auth/session";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Access pending",
@@ -17,10 +19,10 @@ export default async function PendingPage() {
   if (session.approved || session.isAdmin) redirect("/dashboard"); // stale bookmark, now approved
 
   return (
-    <section className="mx-auto w-full max-w-sm px-6 py-16 animate-fade-in">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+    <Container variant="auth">
+      <Heading variant="compact">
         Not yet available
-      </h1>
+      </Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
         The Haarchive&rsquo;s coaching platform is currently limited to Brophy
         Prep coaches and Brophy Broncos athletes. If you think you should have
@@ -35,6 +37,6 @@ export default async function PendingPage() {
           Sign out
         </button>
       </form>
-    </section>
+    </Container>
   );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -14,13 +16,13 @@ const proseClass = "mt-10 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600
 
 export default function PrivacyPolicyPage() {
   return (
-    <section className="mx-auto w-full max-w-4xl px-6 py-16 animate-fade-in">
+    <Container variant="content">
       <Link href="/" className={backLinkClass}>
         <span aria-hidden="true">←</span> Back to home
       </Link>
-      <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+      <Heading>
         Privacy Policy
-      </h1>
+      </Heading>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Last updated July 8, 2026. This page explains what The Haarchive
         collects, why, and how it&rsquo;s protected. The Haarchive is
@@ -157,6 +159,6 @@ export default function PrivacyPolicyPage() {
           .
         </p>
       </div>
-    </section>
+    </Container>
   );
 }

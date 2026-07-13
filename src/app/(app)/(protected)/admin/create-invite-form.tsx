@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 
 import { fieldClass } from "@/lib/form-styles";
 import { createCoachInvite } from "./actions";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export function CreateInviteForm() {
   const [state, formAction, isPending] = useActionState(createCoachInvite, {});
@@ -17,7 +19,7 @@ export function CreateInviteForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="md">
       <p className="text-sm font-semibold text-zinc-900 dark:text-white">Invite a coach</p>
       <form action={formAction} className="mt-3 flex flex-wrap items-end gap-3">
         <div>
@@ -33,13 +35,9 @@ export function CreateInviteForm() {
             className={`${fieldClass} w-72`}
           />
         </div>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="submit" disabled={isPending}>
           {isPending ? "Creating…" : "Create invite"}
-        </button>
+        </Button>
       </form>
 
       {state.error && (
@@ -57,16 +55,12 @@ export function CreateInviteForm() {
             <code className="break-all rounded bg-black/5 px-2 py-1 text-xs text-zinc-900 dark:bg-white/10 dark:text-white">
               {state.inviteUrl}
             </code>
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="rounded-full border border-black/10 px-3 py-1 text-xs font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
-            >
+            <Button type="button" variant="outline" size="sm" onClick={handleCopy}>
               {copied ? "Copied!" : "Copy"}
-            </button>
+            </Button>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

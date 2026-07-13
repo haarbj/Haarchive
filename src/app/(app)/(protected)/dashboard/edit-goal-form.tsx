@@ -4,6 +4,8 @@ import { useActionState, useEffect, useId } from "react";
 
 import { updateGoal } from "./actions";
 import { GOAL_DISTANCES, dateFieldClass, fieldClass, labelClass } from "./form-constants";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Goal = {
   id: string;
@@ -38,7 +40,7 @@ export function EditGoalForm({ goal, onCancel, onSaved }: EditGoalFormProps) {
   }, [state.success, onSaved]);
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="md">
       <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Edit goal</h2>
 
       <form action={formAction} className="mt-4 space-y-5">
@@ -111,22 +113,14 @@ export function EditGoalForm({ goal, onCancel, onSaved }: EditGoalFormProps) {
         )}
 
         <div className="flex items-center gap-4">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
+          <Button type="submit" size="lg" disabled={isPending}>
             {isPending ? "Saving…" : "Save changes"}
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-sm font-semibold text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-          >
+          </Button>
+          <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   );
 }

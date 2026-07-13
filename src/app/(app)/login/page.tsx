@@ -4,6 +4,8 @@ import Link from "next/link";
 import { signIn } from "@/app/(app)/auth-actions";
 import { AuthForm } from "@/components/auth-form";
 import { GoogleSignInButton } from "@/components/oauth-buttons";
+import { Container } from "@/components/ui/container";
+import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -11,10 +13,10 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <section className="mx-auto w-full max-w-sm px-6 py-16 animate-fade-in">
-      <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+    <Container variant="auth">
+      <Heading variant="compact">
         Sign in
-      </h1>
+      </Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
         Track goals, get a training plan, and pick up your saved
         calculations.
@@ -49,6 +51,6 @@ export default function LoginPage() {
           }
         />
       </div>
-    </section>
+    </Container>
   );
 }

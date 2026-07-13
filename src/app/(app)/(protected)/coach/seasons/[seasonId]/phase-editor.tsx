@@ -7,6 +7,8 @@ import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-c
 import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { formatDate } from "@/lib/format";
 import type { MesocyclePhase, WorkoutType } from "@/lib/coaching-engine";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const ALL_WORKOUT_TYPES: WorkoutType[] = ["easy", "recovery", "long", "tempo", "vo2", "race", "strength"];
 
@@ -99,20 +101,12 @@ function PhaseEditForm({
       )}
 
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="submit" disabled={isPending}>
           {isPending ? "Saving…" : "Save"}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="text-sm font-semibold text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-        >
+        </Button>
+        <Button type="button" variant="ghost" onClick={onCancel}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -137,7 +131,7 @@ export function PhaseEditor({ phase, seasonId, isFirst, isLast, children }: Phas
   }
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="md">
       <div className="flex items-start justify-between gap-4">
         <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
           {formatDate(phase.start_date)} – {formatDate(phase.end_date)}
@@ -197,6 +191,6 @@ export function PhaseEditor({ phase, seasonId, isFirst, isLast, children }: Phas
           {children}
         </>
       )}
-    </div>
+    </Card>
   );
 }

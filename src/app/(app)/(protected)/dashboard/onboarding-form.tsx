@@ -10,6 +10,8 @@ import {
   fieldClass,
   labelClass,
 } from "./form-constants";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type OnboardingFormProps = {
   // Team-connected athletes get their training plan from their coach, not
@@ -29,7 +31,7 @@ export function OnboardingForm({ teamConnected = false }: OnboardingFormProps) {
   if (dismissed) return null;
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900">
+    <Card padding="md">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -201,14 +203,10 @@ export function OnboardingForm({ teamConnected = false }: OnboardingFormProps) {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="submit" size="lg" disabled={isPending}>
           {isPending ? "Saving…" : "Save"}
-        </button>
+        </Button>
       </form>
-    </div>
+    </Card>
   );
 }
