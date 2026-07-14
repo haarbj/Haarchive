@@ -1598,6 +1598,10 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Triathlete Siri Lindley spent years choking under exactly this kind of pressure before her coach, Brett Sutton, told her flatly: \"Starting today, you're retired. The way you look at this sport and the pressure you put on yourself are just all wrong... let's just see how fit, how fast, and how strong you can be — and have fun doing it.\" Caring a little less about the outcome, counterintuitively, produced better outcomes. Self-belief that holds up whether an athlete wins or loses lets her put the goal out of her mind and race in the moment instead of racing against the fear of falling short of it (Fitzgerald, How Bad Do You Want It?).",
       },
+      {
+        type: "paragraph",
+        text: "A coach's own definition of success shapes how much of this pressure an athlete carries in the first place. Decades before sports psychology formalized the choking-versus-flow distinction, basketball coach John Wooden built his entire program around a definition of success that had nothing to do with the scoreboard — see Don't Let the Scoreboard Set Your Standard in For Coaches for the specific, and specifically counterintuitive, season he pointed to as proof it worked.",
+      },
       { type: "heading", text: "No Expectations, No Limitations" },
       {
         type: "paragraph",
@@ -1737,6 +1741,10 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "The wheel metaphor is about a team's spokes all doing their job. A related but separate point is about which spokes you're actually standing next to: outcomes tend to trend toward the average of whoever you spend the most time with, for better or worse — training around people who normalize skipping easy days or cutting workouts short makes it quietly easier to do the same. The fix isn't necessarily cutting anyone out entirely; it's being honest about how much time a given relationship deserves. Some training partners are worth two hours; some are only really worth two minutes, and pretending otherwise just imports their habits into yours by proximity.",
+      },
+      {
+        type: "paragraph",
+        text: "A coach's role in this is worth stating plainly: left alone, public credit flows almost entirely to whoever finishes fastest, even though a result is nearly always a product of more spokes than the one that crossed the line first. See The Star of the Team Is the Team in For Coaches for the coach's-side responsibility this creates — actively naming what the less visible spokes actually contributed, rather than assuming the team already knows.",
       },
     ],
   },
@@ -2031,19 +2039,30 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A corrective worth applying to any training plan measured purely in hours or miles: when actual on-task minutes were timed during real practices, most elite athletes across one study were only genuinely training five to ten minutes out of every practice hour, the rest lost to transition, setup, and standing around — even on some of the best teams in the country. The rare exception, an eventual Olympic gold medalist, hit roughly twenty productive minutes an hour, four times the field's average. Two athletes can log an identical number of hours and develop at meaningfully different rates purely because of how densely each hour was actually used — which is a real argument for treating warm-up, transitions, and drift between reps as part of what a session is actually training, not dead time around the real training.",
       },
+      {
+        type: "paragraph",
+        text: "The Practice Plan Is the Product in For Coaches covers the coaching side of the same finding directly — a program is only as tight as the planning that goes into eliminating exactly this kind of dead time before it happens.",
+      },
     ],
   },
   {
     slug: "for-coaches",
     title: "For Coaches",
     mission: "The coach-athlete relationship and team culture — the parts of coaching that aren't the workout itself.",
-    topics: ["Coach-athlete relationship", "Team culture", "Program building"],
+    topics: [
+      "Coach-athlete relationship",
+      "Team culture",
+      "Program building",
+      "Leadership",
+      "Discipline and motivation",
+      "Practice planning",
+    ],
     category: "mind-and-recovery",
     lastUpdated: "2026-07-13",
     content: [
       {
         type: "paragraph",
-        text: "Everywhere else on this site is written for the athlete reading it. This page is written for whoever's writing the plan — the parts of the job that don't show up in a training log: how you talk to the athletes you coach, and how you build a group of individuals into something that actually functions as a team.",
+        text: "Everywhere else on this site is written for the athlete reading it. This page is written for whoever's writing the plan — the parts of the job that don't show up in a training log: how you teach, how you talk to the athletes you coach, how you build a group of individuals into something that actually functions as a team, and how you plan and run the practice itself.",
       },
       { type: "heading", text: "Demand Sincerity, Explain the Why" },
       {
@@ -2055,14 +2074,150 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Many coaches deliver a team talk moments before competition starts, when athletes are already keyed up and mentally out on the course or field. Lydiard's read: that's the wrong moment entirely — minds are already gone, and there's nothing left for a pep talk to land on. Tactics get discussed two nights before, not two minutes before; once the race is close, the best thing a coach can do is leave the athlete alone with what they already know.",
       },
+      {
+        type: "paragraph",
+        text: "Basketball coach John Wooden, whose UCLA teams won ten national championships in twelve years, ran practice for the exact same reason: by his own account, his teaching job was finished by the time competition started, so a locker-room speech minutes beforehand was never going to make up ground that should already have been covered. Before UCLA's first national championship game, his entire pregame talk covered where the team should stand for the national anthem and how they should carry themselves once the final buzzer sounded — not one word about the opponent, because by then there was nothing left to teach (Wooden, Wooden on Leadership).",
+      },
+      { type: "heading", text: "Call Yourself a Teacher, Not Just a Coach" },
+      {
+        type: "paragraph",
+        text: "Wooden took his first head coaching job in 1932 having just finished three years as a three-time All-American guard at Purdue and captain of a national championship team — by any measure of basketball knowledge, about as qualified as a 21-year-old could be. He quit that first job, football at a small Kentucky high school, within two weeks. His own explanation decades later was blunt: he knew the sport inside and out and knew almost nothing about teaching it, and the gap between those two things very nearly ended his career before it started (Wooden, Wooden on Leadership). The distinction matters for a running coach the same way it mattered for him — knowing what a good workout looks like and knowing how to get a specific athlete to actually execute it are different skills, and only the second one is coaching.",
+      },
+      {
+        type: "paragraph",
+        text: "What eventually fixed it was a sequence he kept returning to for the next four decades: explanation, demonstration, imitation, correction of the imitation, then repetition until the corrected version becomes the automatic one. Skipping straight to correction — telling an athlete what they did wrong without first showing them, concretely, what right looks like — is the single most common shortcut a new coach takes, and it's the one that produces the least actual change. Demonstration doesn't have to mean the coach personally performing the skill; it means making the correct version specific and visible enough that an athlete can compare their own attempt against it, rather than working from a verbal description alone.",
+      },
+      {
+        type: "paragraph",
+        text: "Wooden's other early mistake, by his own account, was assuming that because he'd picked up a skill quickly as a player, everyone he coached would too — and reacting with visible frustration when they didn't. Patience, in his later framing, isn't a personality trait a coach either has or lacks; it's a working assumption that different athletes absorb the same instruction at genuinely different rates, and that the gap is a normal part of teaching rather than a sign the athlete isn't trying. A coach who treats a slow learning curve as defiance teaches the athlete to hide confusion instead of asking for it to be explained again — exactly the opposite of what actually closes the gap.",
+      },
+      { type: "heading", text: "Personal Example Outweighs Instruction" },
+      {
+        type: "paragraph",
+        text: "A coach's own behavior sets the actual ceiling for what a team's standards will be, regardless of what gets said out loud. Wooden's own test for this was uncomfortably literal: he quit smoking as a young high school coach not because a player ever saw him do it, but because he realized he was still doing it in the off-season, when no one connected to the team was watching — and concluded that setting a bad example privately was still setting a bad example, just an unwitnessed one (Wooden, Wooden on Leadership). The practical version for a running coach: if the standard is showing up on time, sleeping enough, and not cutting corners on the unglamorous parts of training, a coach who visibly cuts those same corners has already told the team what the real standard is, whatever the written plan says.",
+      },
+      {
+        type: "paragraph",
+        text: "This runs in both directions — a coach's own consistency is also what actually attracts athletes who share it, more reliably than any recruiting pitch does. Wooden turned down a highly talented recruit after watching him snap at his own mother for asking an innocent question during a recruiting visit, reasoning that a young man who wouldn't extend basic respect to someone he had every reason to be kind to wasn't likely to extend it to a coach or a teammate once things got difficult. The player went on to have a good college career elsewhere. Wooden never second-guessed the decision, because the specific behavior he was screening for — how someone treats people they have no strategic reason to treat well — turned out to be exactly the trait that predicts how they'll behave under real pressure, long before any workout does.",
+      },
       { type: "heading", text: "Building a Team, Not Just Training Individuals" },
       {
         type: "paragraph",
         text: "A training group is a collection of individual athletes by default; it becomes a team through specific, repeatable choices a coach makes, not through proximity alone. Sports psychologist Stan Beecham lays out a version of this as six linked habits, worth treating as a checklist for anyone building a program from scratch or trying to figure out why an existing one feels flat.",
       },
       {
+        type: "list",
+        items: [
+          "Recruit and select for character as much as talent — a roster of gifted individuals who don't actually want to be around each other caps out lower than a less-gifted group that does.",
+          "Build real friendship deliberately, through genuine vulnerability and shared history, not just shared practice times; a team that only ever interacts through workouts stays a collection of training partners, not a team.",
+          "Put a real, explicit belief system into words — a stated philosophy or a genuine team motto everyone can actually recite, not a vague sense that everyone's pointed the same direction.",
+          "Normalize conflict rather than suppressing it: a team that's never learned to disagree without it becoming personal either avoids every hard conversation or lets a small one become a season-ending one — the goal is a group that can fight about a real disagreement without it damaging the relationship underneath it.",
+          "Cultivate peer leadership deliberately rather than routing everything through the coach — a team where senior athletes actively bring newer ones along is more durable than one where all authority and culture-setting flows from a single person who eventually leaves or burns out.",
+          "Define team success as a single shared goal with no separate individual awards attached to it — individual awards, however well-intentioned, quietly reintroduce the exact internal competition a team is supposed to replace with mutual investment.",
+        ],
+      },
+      {
         type: "paragraph",
-        text: "Recruit and select for character as much as talent — a roster of gifted individuals who don't actually want to be around each other caps out lower than a less-gifted group that does. Build real friendship deliberately, through genuine vulnerability and shared history, not just shared practice times; a team that only ever interacts through workouts stays a collection of training partners, not a team. Put a real, explicit belief system into words — a stated philosophy or a genuine team motto everyone can actually recite, not a vague sense that everyone's pointed the same direction. Normalize conflict rather than suppressing it: a team that's never learned to disagree without it becoming personal either avoids every hard conversation or lets a small one become a season-ending one — the goal is a group that can fight about a real disagreement without it damaging the relationship underneath it. Cultivate peer leadership deliberately rather than routing everything through the coach — a team where senior athletes actively bring newer ones along is more durable than one where all authority and culture-setting flows from a single person who eventually leaves or burns out. And define team success as a single shared goal with no separate individual awards attached to it — individual awards, however well-intentioned, quietly reintroduce the exact internal competition a team is supposed to replace with mutual investment (see The Wheel, above, for the same idea from the athlete's side of it).",
+        text: "Peer leadership is easier to describe than to actually build, and Wooden's own fix for it is a small, reusable mechanic rather than a philosophy. Instead of letting a team elect one season-long captain months in advance — which one year left him with an elected captain who didn't even make the starting lineup, standing at midcourt representing a team he then watched from the bench — he named a captain fresh before each individual competition, rotating the honor to whichever athlete had actually earned it that week through effort in practice that nobody outside the team would otherwise notice. Over 27 seasons at UCLA he made an exception only four times, each for a team with a single returning starter who needed the stability of a season-long title. The mechanism, not the exact format, is the transferable part: recognition doesn't have to be a fixed title handed out once and left alone, and rotating it deliberately toward whoever is quietly doing the work is a more durable way to build peer leadership than hoping the group elects the right person once and it holds all season (Wooden, Wooden on Leadership).",
+      },
+      {
+        type: "paragraph",
+        text: "The instinct behind removing individual awards goes further in Wooden's program than most teams take it. He refused for his entire career to let UCLA retire a player's jersey number, even for his most decorated stars, on the reasoning that doing so declares one player permanently greater than every other athlete who ever wore that number and filled that role competently — one center wore the number that later got retired for a Hall-of-Fame teammate for two full championship seasons before that teammate ever arrived, and got no credit for it once the number went up on the wall. In place of a coach-selected Most Valuable Player, UCLA's team voted on its own MVP at the end of each season, and the alumni awards Wooden actively steered toward went to categories like most improved player and most unselfish teammate rather than leading scorer — on the theory that whatever a program chooses to formally recognize is what it's actually telling athletes to value, regardless of what the mission statement says. Every one of these is a mechanical answer to the same problem The Wheel describes from the athlete's side: a team only holds together if no single spoke is treated as more important than the others, and a coach's award structure is one of the more overlooked places that principle quietly gets undermined or reinforced.",
+      },
+      { type: "heading", text: "The Carrot Is Mightier Than the Stick" },
+      {
+        type: "paragraph",
+        text: "Wooden's own framing for this is worth keeping as a plain rule: punishment teaches an athlete to fear a mistake, and pride teaches the same athlete to want to avoid one — and only the second motivation survives contact with a long season, because fear is exhausting to sustain while pride compounds. A specific, correctable bias worth watching for: a program's most visible performer already gets recognition from everyone — teammates, spectators, results boards — so a coach's own praise for that athlete does more good delivered privately, where it isn't competing with an audience the athlete already has. A role player who quietly does the unglamorous work — pacing a workout, holding a pack together, absorbing a bad-weather day without complaint — rarely gets noticed by anyone else at all, which is exactly why that praise does the most good delivered in front of the group.",
+      },
+      {
+        type: "callout",
+        variant: "mistake",
+        title: "Praise That Doesn't Do Anything",
+        text: "Generic superlatives — \"great job,\" \"awesome run\" — cost a coach nothing to say and, repeated often enough, teach an athlete to discount them entirely. Wooden's own substitute was almost boringly specific: naming exactly what was done well (\"that was the right decision to hold back on the hill\") rather than reaching for the biggest available adjective. Specific praise is harder to fake, which is precisely what makes it worth more when an athlete hears it.",
+      },
+      {
+        type: "paragraph",
+        text: "The same asymmetry applies in reverse to correction. Deliver it privately rather than in front of the group, in a level, businesslike tone rather than an angry one, and aim it at the mistake rather than the person — and once it's been said, consider it closed rather than letting it color the next interaction. None of this is about being soft; Wooden was, by every account from athletes who played for him, demanding and exacting in every practice. The distinction is between correction that's meant to fix something and criticism that's meant to vent something, and only the first kind actually changes behavior.",
+      },
+      {
+        type: "paragraph",
+        text: "One specific rule worth adopting outright: only the coach delivers criticism, and athletes are never allowed to criticize each other. This isn't in tension with normalizing conflict, above — it's one of the more reliable ways to actually achieve it. A team where athletes police each other's standards out loud tends to curdle into cliques and grudges dressed up as accountability; a team where the coach holds sole responsibility for correction can still have real, honest disagreement about tactics or effort without it becoming personal, because no one on the team is being asked to sit in judgment of a training partner they still have to run beside tomorrow.",
+      },
+      {
+        type: "paragraph",
+        text: "It's also worth being deliberate about how rules themselves get enforced. A long list of specific rules paired with specific, known penalties lets an athlete quietly calculate whether breaking one is worth the cost — a rule with a known price is just a rule with a posted price. Wooden moved, over the course of his career, toward fewer hard rules and more firm expectations with consequences that were real but genuinely unspecified in advance, which meant an athlete considering cutting a corner couldn't run the actual cost-benefit math, because the number wasn't published. The handful of standards worth making into hard, explicit rules are the ones tied to genuine values — honesty, effort, how teammates treat each other — not the ones that are really just preferences dressed up as principle.",
+      },
+      { type: "heading", text: "Consistency Over Emotion" },
+      {
+        type: "paragraph",
+        text: "Wooden drew a sharp line between intensity, which he wanted from every athlete in every session, and emotionalism — visible swings between elation and despair depending on how the last few minutes went — which he treated as a genuine liability rather than a sign of caring. His own reasoning: a coach who looks devastated after a bad loss and euphoric after a good win is teaching the team, by example, that their worth is set by the outcome of the last competition rather than the quality of the effort that produced it — exactly backward from the standard covered in Letting Go of the Outcome and What Winning Actually Means. He worked deliberately at keeping his own outward composure identical whether UCLA had just won a close game or lost one, on the theory that a team takes its emotional cues from its coach whether or not the coach intends to be sending any.",
+      },
+      {
+        type: "paragraph",
+        text: "The measurable version of this restraint: across 40 years of coaching, by his own count, Wooden was assessed a technical foul for arguing with an official exactly once — a genuinely remarkable record in a sport where sideline eruptions are common, achieved not by caring less about the outcome but by treating his own composure as something to train the same way an athlete trains a skill. The same discipline that keeps an athlete's perceived effort from spiraling under pressure, covered in There's No Such Thing as 110 Percent in Performing Under Pressure, applies just as directly to the person standing on the sideline — a coach who's visibly rattled adds tension to a moment that already has enough of it, in exactly the way that section describes for competitive arousal generally.",
+      },
+      { type: "heading", text: "Don't Let the Scoreboard Set Your Standard" },
+      {
+        type: "paragraph",
+        text: "Wooden wrote out a working definition of success in 1934, his first year of coaching, specifically because he was tired of watching parents and outside observers judge a player or a team purely by the scoreboard.",
+      },
+      {
+        type: "quote",
+        text: "Success is peace of mind which is a direct result of self-satisfaction in knowing you made the effort to become the best of which you are capable.",
+        attribution: "John Wooden, Wooden on Leadership",
+      },
+      {
+        type: "paragraph",
+        text: "It's a standard that has nothing to do with a final score and everything to do with what was actually within the athlete's control, and he held to it even when it produced conclusions that ran against public opinion. One UCLA team finished 14–12, missing the postseason, in a year most of the roster's talent had graduated and the program was still serving out a postseason ban left over from an unrelated football violation — by every outside measure, a disappointing season. Wooden called it privately one of the best coaching jobs of his career, because that specific group had come as close to its actual ceiling as any team he ever led, undefeated national championship teams included.",
+      },
+      {
+        type: "paragraph",
+        text: "The mechanism worth borrowing isn't the specific definition — it's the practice of writing one down before the season starts and holding to it under outside pressure, rather than letting the definition quietly drift toward whatever the standings say by December. See Letting Go of the Outcome in Sports Psychology and What Winning Actually Means in Performing Under Pressure for the athlete-facing version of the same idea — a coach who visibly measures the team by a standard other than the result is usually the reason an individual athlete is able to hold that same standard for themselves under pressure, rather than the other way around.",
+      },
+      { type: "heading", text: "The Star of the Team Is the Team" },
+      {
+        type: "paragraph",
+        text: "Wooden's own version of this, delivered to basketball players for four decades, was that it takes ten hands to score a single basket — the pass that led to the pass that led to the shot all mattered, even though only the shooter's name ends up in the box score. The running-specific version of the same distortion is familiar to anyone who's watched credit flow after a race: the athlete who ran fastest gets named, and the training partner who dragged the pace through the middle miles of every hard workout, the athlete who paced a teammate through a rough patch mid-race, and the returning athlete who spent a whole season losing to a teammate in practice specifically so that teammate would be sharper on race day, get none of it — despite being a real, measurable part of the result.",
+      },
+      {
+        type: "paragraph",
+        text: "Wooden's clearest example of this was a center who spent his entire UCLA career as a Hall-of-Fame teammate's backup — talented enough to start for nearly any other program in the country, but never once ahead of that teammate on the depth chart. His actual contribution happened almost entirely in practice: being tall, skilled, and difficult enough to guard that the starter had to work at full intensity against a real opponent every day, rather than coasting through drills. Wooden later named him as one of the most successful players he ever coached, by his own definition of success — not because of anything that showed up in a box score, but because he had made the team measurably better in a role no spectator ever saw (Wooden, Wooden on Leadership).",
+      },
+      {
+        type: "paragraph",
+        text: "The practical takeaway for a coach isn't a slogan, it's a habit: naming, specifically and out loud, what a non-visible contribution actually did for the team's result — not as vague encouragement, but as an accurate accounting of cause and effect the athlete otherwise has no way of knowing was noticed. Left alone, credit flows almost entirely toward whoever crossed the line first, which is exactly the bias The Wheel in Sports Psychology and no separate individual awards, above, are both trying to correct from different angles. A coach who never actively redistributes recognition is relying on the group to fix a bias that mostly runs the other way on its own.",
+      },
+      { type: "heading", text: "Adversity Is Not an Excuse" },
+      {
+        type: "paragraph",
+        text: "For 13 years as UCLA's head coach, Wooden practiced and played home games in a cramped, poorly ventilated gym that seated so few fans it was eventually declared a fire hazard, forcing the team to play actual home games at other schools' gyms — once 100 miles away — while waiting for a proper facility that took seventeen years to actually get built. He privately believed, without ever quite stating it out loud, that a national championship simply wasn't realistic under those conditions, and coached accordingly for over a decade. In 1962, an unseeded, unheralded UCLA team nearly won the national title anyway, losing by two points in the national semifinal on a last-second shot. The near-miss did something a win wouldn't have: it proved the facility had never actually been the ceiling he'd assumed it was, and that he had quietly been using it as permission to stop looking for real improvements elsewhere.",
+      },
+      {
+        type: "paragraph",
+        text: "What followed was a genuine audit of his own program rather than a vague resolution to try harder. Reviewing years of his own practice notes, he found three habits he'd never questioned that were actually costing the team: he'd been rotating playing time democratically across nearly a dozen players instead of committing to a tight, consistent rotation of seven; he'd been over-training the team right before the postseason instead of resting them into it; and he'd been adding new plays and wrinkles right before the tournament instead of simplifying. He made all three changes for the following season, and separately agreed to install a full-court pressing defense an assistant coach had been pitching for years and Wooden had previously dismissed. UCLA won its first national championship the year after that — the beginning of a run of ten titles in twelve years.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "The Audit Worth Running Once a Season",
+        text: "Any circumstance genuinely outside a coach's control — a bad facility, a short roster, a rough travel schedule — can quietly turn into an unconscious excuse for accepting less than full effort on everything that IS in the coach's control. The fix isn't pretending the real constraint doesn't exist; it's periodically asking which of the program's current limits have actually been tested recently, and which have simply gone unquestioned the longest.",
+      },
+      {
+        type: "paragraph",
+        text: "This is the coach's-side version of the audit described in Where Your Beliefs Actually Came From in Goal Setting & Identity — a coach who never runs it on their own program is asking athletes to interrogate their limiting beliefs without ever having modeled doing the same thing.",
+      },
+      { type: "heading", text: "The Practice Plan Is the Product" },
+      {
+        type: "paragraph",
+        text: "Wooden planned every UCLA practice to the minute, using index cards that broke a two-hour session into five- and ten-minute blocks, each assigned a specific drill with a specific purpose — never open-ended scrimmage time left to fill itself. Before writing a new practice plan, he reviewed his own notes from the same week in the previous season, comparing what had worked against what hadn't, so each year's planning genuinely built on the last one instead of starting over from instinct. His own summary of the underlying belief: a coach who is careless with practice time is teaching the team the same carelessness, whether or not that's the intention.",
+      },
+      {
+        type: "paragraph",
+        text: "That level of planning turns out to be a direct, decades-early answer to a specific modern finding: see How Much of Your Practice Is Actually Practice in Performing Under Pressure, where timed observation of real practices found that most elite athletes spend only five to ten genuinely on-task minutes out of every practice hour, the rest lost to transition, setup, and standing around waiting for the next drill to start. Wooden's index cards were, in effect, a manual solution to exactly that leak, built decades before anyone measured it directly: budgeting every transition and every drill in advance is what actually converts a two-hour practice into two hours of real training rather than two hours with training somewhere inside it.",
+      },
+      {
+        type: "paragraph",
+        text: "He applied the same audit to his own drills, not just the schedule around them. Full-squad scrimmaging was useful early in preseason for conditioning and evaluating players, but he cut it almost entirely once the season began, on the grounds that running the length of the court repeatedly taught less per minute than breaking a skill into its component parts, drilling each part in isolation, and then reassembling it — the same whole-part teaching method behind Call Yourself a Teacher, above. The specific drill he cut is less important than the standard behind cutting it: any recurring piece of practice, however traditional, is worth periodically checking against a simple question — is this actually the most efficient use of this block of time for what we're trying to build right now, or is it just what we've always done here.",
       },
     ],
   },

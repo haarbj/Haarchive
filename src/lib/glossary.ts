@@ -264,4 +264,54 @@ export const glossaryTerms: GlossaryTerm[] = [
     aliases: ["Norwegian Threshold Training"],
     href: "/coaching-library#norwegian-threshold-training-living-at-the-edge-of-the-threshold",
   },
+  {
+    id: "the-wheel",
+    aliases: ["The Wheel"],
+    href: "/sports-psychology#the-wheel",
+  },
+  {
+    id: "the-star-of-the-team-is-the-team",
+    aliases: ["The Star of the Team Is the Team"],
+    href: "/for-coaches#the-star-of-the-team-is-the-team",
+  },
+  {
+    id: "consistency-over-emotion",
+    aliases: ["Consistency Over Emotion"],
+    href: "/for-coaches#consistency-over-emotion",
+  },
+  {
+    id: "dont-let-the-scoreboard-set-your-standard",
+    aliases: ["Don't Let the Scoreboard Set Your Standard"],
+    href: "/for-coaches#don-t-let-the-scoreboard-set-your-standard",
+  },
+  {
+    id: "adversity-is-not-an-excuse",
+    aliases: ["Adversity Is Not an Excuse"],
+    href: "/for-coaches#adversity-is-not-an-excuse",
+  },
+  {
+    id: "the-practice-plan-is-the-product",
+    aliases: ["The Practice Plan Is the Product"],
+    href: "/for-coaches#the-practice-plan-is-the-product",
+  },
+  {
+    id: "what-winning-actually-means",
+    aliases: ["What Winning Actually Means"],
+    href: "/performing-under-pressure#what-winning-actually-means",
+  },
+  {
+    id: "no-such-thing-as-110-percent",
+    aliases: ["There's No Such Thing as 110 Percent"],
+    href: "/performing-under-pressure#there-s-no-such-thing-as-110-percent",
+  },
+  {
+    id: "how-much-of-your-practice-is-actually-practice",
+    aliases: ["How Much of Your Practice Is Actually Practice"],
+    href: "/performing-under-pressure#how-much-of-your-practice-is-actually-practice",
+  },
+  {
+    id: "where-your-beliefs-actually-came-from",
+    aliases: ["Where Your Beliefs Actually Came From"],
+    href: "/goal-setting#where-your-beliefs-actually-came-from",
+  },
 ];
