@@ -49,3 +49,36 @@ export async function fetchRecentActivities(accessToken: string, afterUnixSecond
 
   return activities;
 }
+
+export type StravaStreamSet = {
+  latlng?: [number, number][];
+  altitude?: number[];
+  /** Seconds elapsed since the start of the activity. */
+  time?: number[];
+};
+
+type StravaStreamsResponse = {
+  latlng?: { data: [number, number][] };
+  altitude?: { data: number[] };
+  time?: { data: number[] };
+};
+
+// GPS + elevation + time for one specific activity -- unlike
+// fetchRecentActivities, which only ever returns summaries. Needs the same
+// activity:read_all scope already requested during the OAuth connect flow,
+// so no re-authorization is needed for existing connected accounts.
+export async function fetchActivityStreams(accessToken: string, activityId: number): Promise<StravaStreamSet> {
+  const res = await fetch(
+    `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=latlng,altitude,time&key_by_type=true`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (!res.ok) {
+    throw new Error(`Strava streams fetch failed with status ${res.status}`);
+  }
+  const data: StravaStreamsResponse = await res.json();
+  return {
+    latlng: data.latlng?.data,
+    altitude: data.altitude?.data,
+    time: data.time?.data,
+  };
+}

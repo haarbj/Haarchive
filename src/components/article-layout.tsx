@@ -101,6 +101,7 @@ export function ArticleLayout({ section, category, content }: ArticleLayoutProps
                   variant={block.variant}
                   title={block.title}
                   text={block.text}
+                  items={block.items}
                   collapsed={block.collapsed}
                 />
               );

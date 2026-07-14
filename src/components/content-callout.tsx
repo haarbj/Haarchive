@@ -3,7 +3,8 @@ import type { CalloutVariant } from "@/lib/sections";
 type ContentCalloutProps = {
   variant: CalloutVariant;
   title?: string;
-  text: string;
+  text?: string;
+  items?: string[];
   collapsed?: boolean;
 };
 
@@ -34,10 +35,21 @@ const VARIANT_STYLES: Record<CalloutVariant, { label: string; classes: string }>
   },
 };
 
-export function ContentCallout({ variant, title, text, collapsed }: ContentCalloutProps) {
+export function ContentCallout({ variant, title, text, items, collapsed }: ContentCalloutProps) {
   const style = VARIANT_STYLES[variant];
   const heading = title ?? style.label;
-  const body = <p className="text-base leading-7 text-zinc-700 dark:text-zinc-300">{text}</p>;
+  const body = (
+    <>
+      {text ? <p className="text-base leading-7 text-zinc-700 dark:text-zinc-300">{text}</p> : null}
+      {items && items.length > 0 ? (
+        <ul className={`space-y-2 text-base leading-7 text-zinc-700 dark:text-zinc-300 ${text ? "mt-2" : ""}`}>
+          {items.map((item) => (
+            <li key={item}>• {item}</li>
+          ))}
+        </ul>
+      ) : null}
+    </>
+  );
 
   if (variant === "advanced") {
     return (

@@ -12,6 +12,8 @@ import {
   type Category,
   type Section,
 } from "@/lib/sections";
+import { EnvironmentalCalculator } from "@/components/environmental-calculator";
+import { GapCalculator } from "@/components/gap-calculator";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { ArticleLayout } from "@/components/article-layout";
@@ -25,6 +27,8 @@ import { Heading } from "@/components/ui/heading";
 const sectionTools: Record<string, ComponentType> = {
   "heat-tracker": HeatTracker,
   "pace-calculator": PaceCalculator,
+  "environmental-calculator": EnvironmentalCalculator,
+  "gap-calculator": GapCalculator,
 };
 
 type SectionPageProps = {

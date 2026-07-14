@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
+import Link from "next/link";
 
-type ZoneName = "green" | "yellow" | "red" | "black";
+import { LocationSearchField } from "@/components/location-search-field";
+import type { LocationMeta } from "@/lib/geocode";
+import { cToF, estimateWBGT, HEAT_ZONES, heatGuidance, heatZoneFor, type HeatZone, type HeatZoneName } from "@/lib/heat-physics";
+import { useLocationSearch } from "@/lib/use-location-search";
 
-type Zone = {
-  maxC: number;
-  name: ZoneName;
-  flagLabel: string;
+type ZoneStyle = {
   textClass: string;
   fillClass: string;
   bandClass: string;
@@ -19,11 +20,8 @@ type Zone = {
   hex: string;
 };
 
-const ZONES: Zone[] = [
-  {
-    maxC: 18,
-    name: "green",
-    flagLabel: "Green flag",
+const ZONE_STYLES: Record<HeatZoneName, ZoneStyle> = {
+  green: {
     textClass: "text-green-600 dark:text-green-500",
     fillClass: "fill-green-600",
     bandClass: "fill-green-600/10",
@@ -31,10 +29,7 @@ const ZONES: Zone[] = [
     ringClass: "stroke-green-600",
     hex: "#16a34a",
   },
-  {
-    maxC: 23,
-    name: "yellow",
-    flagLabel: "Yellow flag",
+  yellow: {
     textClass: "text-amber-600 dark:text-amber-500",
     fillClass: "fill-amber-600",
     bandClass: "fill-amber-600/10",
@@ -42,10 +37,7 @@ const ZONES: Zone[] = [
     ringClass: "stroke-amber-600",
     hex: "#d97706",
   },
-  {
-    maxC: 28,
-    name: "red",
-    flagLabel: "Red flag",
+  red: {
     textClass: "text-red-600 dark:text-red-500",
     fillClass: "fill-red-600",
     bandClass: "fill-red-600/10",
@@ -53,10 +45,7 @@ const ZONES: Zone[] = [
     ringClass: "stroke-red-600",
     hex: "#dc2626",
   },
-  {
-    maxC: Infinity,
-    name: "black",
-    flagLabel: "Black flag",
+  black: {
     textClass: "text-zinc-900 dark:text-white",
     fillClass: "fill-zinc-900 dark:fill-white",
     bandClass: "fill-zinc-900/10 dark:fill-white/10",
@@ -67,7 +56,14 @@ const ZONES: Zone[] = [
     // legible on both a white and a zinc-900 chart card.
     hex: "#7f1d1d",
   },
-];
+};
+
+// The shared numeric/label data (heat-physics.ts) merged with this
+// component's own Tailwind styling -- every `zone.textClass`,
+// `ZONES[0].maxC`, etc. reference below reads exactly as it did before
+// this was split into a shared module.
+type Zone = HeatZone & ZoneStyle;
+const ZONES: Zone[] = HEAT_ZONES.map((zone) => ({ ...zone, ...ZONE_STYLES[zone.name] }));
 
 const BLACK_FLAG_C = 28;
 const SCALE_MIN_C = -5;
@@ -82,19 +78,6 @@ const PAD_TOP = 16;
 const PAD_BOTTOM = 34;
 const PLOT_WIDTH = CHART_WIDTH - PAD_LEFT - PAD_RIGHT;
 const PLOT_HEIGHT = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
-
-type GeocodeResult = {
-  id: number;
-  latitude: number;
-  longitude: number;
-  name: string;
-  admin1?: string;
-  country?: string;
-};
-
-type GeocodeResponse = {
-  results?: GeocodeResult[];
-};
 
 type ForecastResponse = {
   hourly: {
@@ -111,133 +94,9 @@ type WbgtPoint = {
   wbgtC: number;
 };
 
-type LocationMeta = {
-  lat: number;
-  lon: number;
-  label: string;
-};
-
-// Australian Bureau of Meteorology outdoor WBGT approximation. Folds
-// evaporative cooling (humidity) and a calibrated radiant-heat term into a
-// single estimate, without needing a physical black-globe sensor.
-function estimateWBGT(tempC: number, rh: number): number {
-  const vaporPressure =
-    (rh / 100) * 6.105 * Math.exp((17.27 * tempC) / (237.7 + tempC));
-  return 0.567 * tempC + 0.393 * vaporPressure + 3.94;
-}
-
-function cToF(c: number): number {
-  return (c * 9) / 5 + 32;
-}
-
 function zoneFor(wbgtC: number): Zone {
-  return ZONES.find((zone) => wbgtC < zone.maxC) ?? ZONES[ZONES.length - 1];
-}
-
-// Training guidance within the green flag band, per ACSM-aligned tiers.
-function runnerGuidance(
-  wbgtC: number,
-  zoneName: ZoneName,
-): { title: string; sub: string } {
-  if (zoneName === "green") {
-    if (wbgtC < 10) {
-      return {
-        title: "Ideal training conditions",
-        sub: "Full go-ahead — intervals, tempo, long runs, whatever's on the plan.",
-      };
-    }
-    if (wbgtC < 15) {
-      return {
-        title: "Optimal for hard efforts",
-        sub: "Good day for intervals or tempo — heat won't be a limiter.",
-      };
-    }
-    return {
-      title: "Low risk",
-      sub: "Hydrate well before and after — carry water mid-run only if that's already part of your routine. Intervals and tempo can go as planned.",
-    };
-  }
-  if (zoneName === "yellow") {
-    return {
-      title: "Moderate risk",
-      sub: "Easy mileage is fine. Ease off pace targets on intervals or tempo work and add recovery.",
-    };
-  }
-  if (zoneName === "red") {
-    return {
-      title: "High risk",
-      sub: "Move intervals or tempo work to a treadmill or a cooler part of the day, or run easy by effort only.",
-    };
-  }
-  return {
-    title: "Extreme risk — black flag",
-    sub: "Move training indoors or postpone. Heat stroke risk is too high for outdoor work at this level.",
-  };
-}
-
-// Open-Meteo's admin1 field holds the full state name (e.g. "Arizona"), so a
-// typed abbreviation needs mapping before it can be compared against it.
-const US_STATE_ABBREVIATIONS: Record<string, string> = {
-  al: "alabama", ak: "alaska", az: "arizona", ar: "arkansas", ca: "california",
-  co: "colorado", ct: "connecticut", de: "delaware", fl: "florida", ga: "georgia",
-  hi: "hawaii", id: "idaho", il: "illinois", in: "indiana", ia: "iowa",
-  ks: "kansas", ky: "kentucky", la: "louisiana", me: "maine", md: "maryland",
-  ma: "massachusetts", mi: "michigan", mn: "minnesota", ms: "mississippi", mo: "missouri",
-  mt: "montana", ne: "nebraska", nv: "nevada", nh: "new hampshire", nj: "new jersey",
-  nm: "new mexico", ny: "new york", nc: "north carolina", nd: "north dakota", oh: "ohio",
-  ok: "oklahoma", or: "oregon", pa: "pennsylvania", ri: "rhode island", sc: "south carolina",
-  sd: "south dakota", tn: "tennessee", tx: "texas", ut: "utah", vt: "vermont",
-  va: "virginia", wa: "washington", wv: "west virginia", wi: "wisconsin", wy: "wyoming",
-  dc: "district of columbia",
-};
-
-function normalizeRegion(text: string): string {
-  const lower = text.trim().toLowerCase();
-  return US_STATE_ABBREVIATIONS[lower] ?? lower;
-}
-
-function geocodeLabel(result: GeocodeResult): string {
-  return [result.name, result.admin1, result.country].filter(Boolean).join(", ");
-}
-
-async function fetchGeocodeCandidates(
-  cityName: string,
-  count: number,
-): Promise<GeocodeResult[]> {
-  const res = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=${count}`,
-  );
-  if (!res.ok) throw new Error("Location lookup failed.");
-  const data: GeocodeResponse = await res.json();
-  return data.results ?? [];
-}
-
-async function geocodeCity(query: string): Promise<LocationMeta> {
-  // The geocoding API matches a place's literal name field, so "Phoenix, AZ"
-  // finds nothing -- only "Phoenix" does. Split off an optional state/country
-  // qualifier and use it to pick the right candidate among several matches
-  // instead, rather than sending the whole string as the name to search for.
-  const [namePart, regionPart] = query.split(",");
-  const cityName = namePart.trim();
-  const region = regionPart ? normalizeRegion(regionPart) : null;
-
-  const results = await fetchGeocodeCandidates(cityName, 10);
-  if (results.length === 0) throw new Error("No matching location found.");
-
-  const result =
-    (region &&
-      results.find(
-        (candidate) =>
-          candidate.admin1?.toLowerCase() === region ||
-          candidate.country?.toLowerCase() === region,
-      )) ||
-    results[0];
-
-  return {
-    lat: result.latitude,
-    lon: result.longitude,
-    label: geocodeLabel(result),
-  };
+  const heatZone = heatZoneFor(wbgtC);
+  return { ...heatZone, ...ZONE_STYLES[heatZone.name] };
 }
 
 async function fetchForecastSeries(
@@ -301,23 +160,13 @@ function buildSmoothPath(points: { x: number; y: number }[]): string {
 }
 
 export function HeatTracker() {
-  const [cityInput, setCityInput] = useState("");
   const [message, setMessage] = useState("Trying your device location…");
   const [series, setSeries] = useState<WbgtPoint[] | null>(null);
   const [meta, setMeta] = useState<LocationMeta | null>(null);
   const [clock, setClock] = useState("");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const chartSvgRef = useRef<SVGSVGElement>(null);
-  const searchBoxRef = useRef<HTMLDivElement>(null);
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const suggestionRequestId = useRef(0);
-  const skipNextSuggestionFetch = useRef(false);
   const gradientBaseId = useId();
-  const listboxId = `heat-tracker-suggestions-${gradientBaseId}`;
   const lineGradientId = `wbgt-line-${gradientBaseId}`;
   const areaFadeId = `wbgt-area-fade-${gradientBaseId}`;
   const areaMaskId = `wbgt-area-mask-${gradientBaseId}`;
@@ -357,138 +206,14 @@ export function HeatTracker() {
     [],
   );
 
-  const attemptGeolocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setMessage(
-        "Your browser doesn't support location lookup — search for a city instead.",
-      );
-      return;
-    }
-    setMessage("Asking for your location…");
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        void loadLocation(
-          latitude,
-          longitude,
-          `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`,
-        );
-      },
-      () => {
-        setMessage(
-          "Location access was blocked — search for a city above instead.",
-        );
-      },
-      { timeout: 8000 },
-    );
-  }, [loadLocation]);
-
-  useEffect(() => {
-    attemptGeolocation();
-    // Only ever run this once, on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Debounced as-you-type suggestions. Skipped once right after a selection
-  // programmatically fills the input, so picking a suggestion doesn't
-  // immediately reopen a dropdown for the text it just wrote.
-  useEffect(() => {
-    if (skipNextSuggestionFetch.current) {
-      skipNextSuggestionFetch.current = false;
-      return;
-    }
-
-    const [namePart] = cityInput.split(",");
-    const cityName = namePart.trim();
-
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-
-    // Too-short input is cleared synchronously in the input's own onChange
-    // handler below, not here -- this effect only ever sets state inside
-    // its async fetch callback.
-    if (cityName.length < 2) return;
-
-    debounceTimer.current = setTimeout(() => {
-      const requestId = ++suggestionRequestId.current;
-      setSuggestionsLoading(true);
-      fetchGeocodeCandidates(cityName, 6)
-        .then((results) => {
-          if (requestId !== suggestionRequestId.current) return; // superseded by a newer keystroke
-          setSuggestions(results);
-          setShowSuggestions(true);
-          setSuggestionsLoading(false);
-          setHighlightedIndex(-1);
-        })
-        .catch(() => {
-          if (requestId !== suggestionRequestId.current) return;
-          setSuggestions([]);
-          setShowSuggestions(false);
-          setSuggestionsLoading(false);
-        });
-    }, 300);
-
-    return () => {
-      if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    };
-  }, [cityInput]);
-
-  useEffect(() => {
-    if (!showSuggestions) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (searchBoxRef.current && !searchBoxRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showSuggestions]);
-
-  const selectSuggestion = (result: GeocodeResult) => {
-    const label = geocodeLabel(result);
-    skipNextSuggestionFetch.current = true;
-    setCityInput(label);
-    setSuggestions([]);
-    setShowSuggestions(false);
-    setHighlightedIndex(-1);
-    void loadLocation(result.latitude, result.longitude, label);
-  };
-
-  const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || suggestions.length === 0) return;
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setHighlightedIndex((i) => Math.min(i + 1, suggestions.length - 1));
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setHighlightedIndex((i) => Math.max(i - 1, 0));
-    } else if (event.key === "Enter" && highlightedIndex >= 0) {
-      event.preventDefault();
-      selectSuggestion(suggestions[highlightedIndex]);
-    } else if (event.key === "Escape") {
-      setShowSuggestions(false);
-    }
-  };
-
-  const handleSearch = async () => {
-    const query = cityInput.trim();
-    if (!query) {
-      setMessage("Type a city name first.");
-      return;
-    }
-    setMessage("Looking that up…");
-    try {
-      const location = await geocodeCity(query);
-      await loadLocation(location.lat, location.lon, location.label);
-    } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Could not find that location.",
-      );
-    }
-  };
+  const search = useLocationSearch({
+    onResolved: (lat, lon, label) => void loadLocation(lat, lon, label),
+    setStatusMessage: setMessage,
+  });
 
   const current = series?.[0] ?? null;
   const zone = current ? zoneFor(current.wbgtC) : null;
-  const guidance = current && zone ? runnerGuidance(current.wbgtC, zone.name) : null;
+  const guidance = current && zone ? heatGuidance(current.wbgtC, zone.name) : null;
 
   const values = series?.map((point) => point.wbgtC) ?? [];
   const minValue = Math.min(...values, 5);
@@ -550,95 +275,7 @@ export function HeatTracker() {
         <span className="font-mono">{clock || "—"}</span>
       </div>
 
-      <div>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            void handleSearch();
-          }}
-          className="flex flex-wrap gap-2"
-        >
-          <div ref={searchBoxRef} className="relative min-w-[180px] flex-1">
-            <input
-              type="text"
-              value={cityInput}
-              onChange={(event) => {
-                const value = event.target.value;
-                setCityInput(value);
-                const [namePart] = value.split(",");
-                if (namePart.trim().length < 2) {
-                  setSuggestions([]);
-                  setShowSuggestions(false);
-                }
-              }}
-              onKeyDown={handleInputKeyDown}
-              onFocus={() => setShowSuggestions(suggestions.length > 0)}
-              placeholder="Enter a city, e.g. Phoenix, AZ"
-              autoComplete="off"
-              role="combobox"
-              aria-expanded={showSuggestions}
-              aria-autocomplete="list"
-              aria-controls={listboxId}
-              aria-activedescendant={
-                highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined
-              }
-              className="w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-base text-zinc-900 transition focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus:ring-white"
-            />
-            {(suggestionsLoading || showSuggestions) && (
-              <div
-                id={listboxId}
-                role="listbox"
-                className="absolute left-0 top-full z-[var(--z-dropdown)] mt-1 w-full overflow-hidden rounded-lg border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-zinc-900"
-              >
-                {suggestionsLoading ? (
-                  <p className="px-4 py-2.5 text-sm text-zinc-500 dark:text-zinc-400">
-                    Searching…
-                  </p>
-                ) : suggestions.length > 0 ? (
-                  suggestions.map((result, index) => (
-                    <button
-                      key={result.id}
-                      id={`${listboxId}-option-${index}`}
-                      role="option"
-                      aria-selected={index === highlightedIndex}
-                      type="button"
-                      onClick={() => selectSuggestion(result)}
-                      onMouseEnter={() => setHighlightedIndex(index)}
-                      className={`block w-full px-4 py-2 text-left text-sm ${
-                        index === highlightedIndex
-                          ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
-                          : "text-zinc-700 dark:text-zinc-200"
-                      }`}
-                    >
-                      {geocodeLabel(result)}
-                    </button>
-                  ))
-                ) : (
-                  <p className="px-4 py-2.5 text-sm text-zinc-500 dark:text-zinc-400">
-                    No matches found
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            Look up
-          </button>
-          <button
-            type="button"
-            onClick={attemptGeolocation}
-            className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/20 dark:text-zinc-200 dark:hover:bg-white/10"
-          >
-            Use my location
-          </button>
-        </form>
-        <p className="mt-2 min-h-[1.25rem] text-xs text-zinc-600 dark:text-zinc-300">
-          {message}
-        </p>
-      </div>
+      <LocationSearchField search={search} message={message} />
 
       <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
@@ -1201,6 +838,17 @@ export function HeatTracker() {
           </ol>
         </div>
       </div>
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Want a race-time estimate, not just a training flag? The{" "}
+        <Link
+          href="/environmental-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Environmental Performance Calculator
+        </Link>{" "}
+        combines heat with wind, humidity, and elevation into one equivalent time.
+      </p>
 
       <p className="border-t border-black/10 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-zinc-300">
         Data: Open-Meteo forecast &amp; geocoding APIs · Formula: Australian

@@ -63,7 +63,10 @@ export type ContentBlock =
       type: "callout";
       variant: CalloutVariant;
       title?: string;
-      text: string;
+      // At least one of text/items should be set. Both may be set -- text
+      // renders as a lead-in line above the bullet list.
+      text?: string;
+      items?: string[];
       // Only meaningful for "advanced" -- other variants always render open.
       // Defaults to true for "advanced" and is ignored otherwise.
       collapsed?: boolean;
@@ -139,6 +142,22 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Beyond the general principle, Lydiard's cues were concrete. \"Try to make yourself six inches taller when you're running\" was his shorthand for the tall, upright posture he wanted, since a lot of runners never fully straighten the driving leg and lose power on every stride as a result. He'd check footfall by having athletes run across sand or a dewy lawn — a straight, efficient stride leaves footprints that form almost a single line, not a wide, wandering one. And his combination drill for both leg speed and posture at once was three cues layered together while running fast: high knees, hard ankle drive, and running tall — practiced separately first, then combined.",
       },
+      { type: "heading", text: "Applying This: Using Five Principles as a Decision Filter" },
+      {
+        type: "paragraph",
+        text: "The real value of the five principles above isn't reciting them — it's running every training decision through them before making it. Tempted to add a hard session because a race is coming up? Check it against sequential development first: is the aerobic base and the strength layer underneath it actually built, or would this session be borrowing against a foundation that isn't there yet. Feeling behind on mileage compared to a teammate or a training plan found online? Check it against feeling-based effort: a number copied from someone else's plan isn't a target if it doesn't match what your own body is signaling. The five principles aren't a checklist to complete once — they're the filter every other page on this site's coaching advice should pass through before it gets applied to a specific athlete.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Before copying any specific number from a plan, book, or teammate, run it through the five principles first — a session that violates sequential development or ignores feeling-based effort is a bad fit regardless of who it worked for.",
+          "An elevated morning heart rate, poor sleep, or persistent soreness are real signals to swap a hard session for recovery, not obstacles to push through on schedule.",
+          "Technique is a skill to practice deliberately, not something every runner already arrives with — even a naturally talented athlete benefits from concrete form cues, not just added volume.",
+          "This philosophy is explicitly patient — real results from an aerobic-first approach can take 7 to 10 years to fully show up. Judge a training approach by its trajectory, not by how fast it produces results in month one.",
+        ],
+      },
     ],
   },
   {
@@ -203,6 +222,34 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The FASTER study tested elite ultra-endurance runners split between habitual high-carbohydrate and long-term fat-adapted (\"keto-adapted\") diets, all similarly trained. Under identical treadmill protocol, the fat-adapted group hit a peak fat oxidation rate of 1.54 g/min — more than double the 0.67 g/min recorded in the high-carbohydrate group. Training status alone didn't explain the gap; the metabolic state built by chronic diet did (Volek, Phinney, et al., \"Metabolic characteristics of keto-adapted ultra-endurance runners,\" Metabolism, 2016).",
       },
+      { type: "heading", text: "Applying This: Judging Your Easy Pace and Fueling Decisions", level: 3 },
+      {
+        type: "paragraph",
+        text: "Two threads above point at the same daily decision: where your easy pace actually sits relative to the crossover point, and whether the fat-burning shift that comes from easy volume is worth chasing through diet instead. For almost every runner, it isn't a diet decision — running genuinely easy, for enough cumulative time, builds the fat-oxidation machinery on its own, and a fat-adapted diet like the one in the FASTER study mostly buys an edge for multi-hour ultra efforts where glycogen truly runs out, not a weeknight 6-miler. The costlier mistake runs the other way: an \"easy\" run that quietly drifts up past the crossover point trains the wrong system twice — it burns through glycogen faster than it needs to, and it never spends enough time in the fat-dominant zone to build the capacity this section describes.",
+      },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "🏃 Put This Into Practice",
+        text: "On your next easy run, check whether you could hold a full conversation for its entire duration — not just the first mile. If you couldn't, you were very likely training your carbohydrate system instead of your fat-burning one. Slow down, even if the pace feels uncomfortably conservative.",
+      },
+      {
+        type: "callout",
+        variant: "mistake",
+        title: "⚠️ Avoid This Mistake",
+        text: "Running every \"easy\" day at the same pace as your last tempo run is the most common way this section's physiology gets wasted. That pace usually sits well past the aerobic crossover point, so the day does almost none of the fat-adaptation work it's supposed to, while still adding real fatigue on top.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Your easy pace has a real physiological job: staying below the aerobic/carbohydrate crossover point (roughly 60–65% of VO2 max) is what builds fat-burning capacity — not a specific diet.",
+          "The ~19-to-1 efficiency gap between aerobic and anaerobic energy production is the real reason redlining early in a long run wrecks the back half of it — it's chemistry, not a toughness problem.",
+          "Raising your Steady State ceiling through aerobic volume is what turns a hard pace into a sustainable one; chasing a higher tolerance for the burn targets the wrong side of the equation.",
+          "Don't adopt a specialty diet (like long-term keto-adaptation) just to move your fat-burning ceiling — for most runners, consistent easy-pace volume gets there more reliably and without the tradeoffs.",
+        ],
+      },
       { type: "heading", text: "Muscle Fiber Types and the Size Principle" },
       { type: "heading", text: "Three Fiber Types, Three Different Jobs", level: 3 },
       {
@@ -231,6 +278,28 @@ export const sections: Section[] = [
         title: "A correction to how energy systems were split by distance",
         text: "Older estimates of the aerobic-to-anaerobic split at short distances relied on an oxygen-debt method that, in hindsight, badly undercounted the aerobic contribution. A more accurate accumulated-oxygen-deficit methodology corrected the numbers meaningfully upward: 400m runs on roughly 46% aerobic energy rather than the old estimate of 25%, 800m on about 69% rather than 50%, and 1500m on about 83% rather than 65% (Spencer, Gastin & Payne, \"Energy System Contribution During 400m to 1500m Running,\" New Studies in Athletics, 1996, cited in Livingstone, Healthy Intelligent Training). The practical read is the same one this page keeps landing on from different angles: even races that feel purely anaerobic are decided mostly by how well the aerobic engine underneath them was built.",
       },
+      { type: "heading", text: "Applying This: Sequencing Aerobic Base and VO2 Max Work", level: 3 },
+      {
+        type: "paragraph",
+        text: "For a high school or club-level runner, this changes what a season plan should actually prioritize, and when. The aerobic contribution to VO2 max — capillary density, mitochondrial volume — takes years of low-intensity volume to build and can't be shortcut. The anaerobic-chemistry contribution develops in as little as four to five weeks. That asymmetry is the whole argument for sequencing: spend the early season building the slow-developing piece, and save the fast-developing piece for the four-to-six weeks before a goal race, once there's an aerobic engine underneath it worth sharpening. A coach who reaches for hard VO2 max intervals (95–100% of VO2 max pace, roughly current 5K-to-3K effort) in week one of a season is training the piece that was never the bottleneck, and skipping the piece that actually was. This is also the direct coaching answer to Reversing the Size Principle above: hill bounding, hill springing, and heavy lifting are what recruit the fibers a season of aerobic volume never reaches on its own, and belong in the program specifically because easy running structurally can't do that job.",
+      },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "🎯 Coaching Application",
+        text: "If an athlete's hard workouts have plateaued despite solid effort, ask which half of VO2 max is actually undertrained before adding more interval volume. An athlete who's never built real aerobic mileage doesn't need harder intervals — they need months of base first. An athlete who already has a deep aerobic base but hasn't touched genuine 95–100%-effort work in years is the one who actually benefits from adding it now.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Easy running alone never recruits your fastest (Type IIB) fibers — the size principle means volume can't develop what it never activates. Hills, bounding, and heavy lifting (85%+ of 1RM) are the only reliable way to reach them.",
+          "VO2 max is really two adaptations: a slow-building aerobic base (years) and a fast-building anaerobic-chemistry piece (4–5 weeks). Build the first before spending real time on the second.",
+          "Don't judge a race's demands purely by its label — even 400m running is roughly half aerobic energy. Neglecting aerobic training for a \"short, anaerobic\" event costs more than it seems like it should.",
+          "A high VO2 max doesn't decide who wins on its own — see VO2 Max Doesn't Decide Who Wins in the Research Library for what actually separates athletes who share a similar number.",
+        ],
+      },
       { type: "heading", text: "The Muscular Limiter" },
       { type: "heading", text: "Why Skiers and Cyclists Absorb More Hard Training Than Runners Do", level: 3 },
       {
@@ -246,6 +315,33 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Delayed-onset muscle soreness is exactly that — delayed: it typically emerges after an initial low-symptom window, peaks 24 to 72 hours after the session that caused it, and resolves over five to seven days, tracking with the same lagged timeline as creatine kinase and myoglobin, the blood markers of muscle-fiber damage. Muscle tone runs on a completely different clock. Because most of it is neural and biochemical rather than structural damage, it can shift meaningfully within hours — a hard session can measurably raise it, and an easy jog, a massage, or simply time can measurably lower it again, all well inside the window where DOMS hasn't even started to show up yet. That gap between the two timelines is the whole mechanical case for training twice in one day at a controlled intensity: a second session run before the slow, structural damage-and-inflammation response has kicked in isn't stacking fatigue onto fatigue the way it would if run the next day instead — see Norwegian Threshold Training in Coaching Library for how that gap gets used in practice, and Muscle Tone vs. Muscle Soreness in Recovery for what to do about tone on an ordinary training day.",
+      },
+      { type: "heading", text: "Applying This: Deciding How Much Load You Can Actually Absorb", level: 3 },
+      {
+        type: "paragraph",
+        text: "This is the physiological answer to a question every runner eventually asks: why does a cyclist teammate seem to handle double the hard training days without falling apart? It isn't a fitness gap — it's that running loads one leg at a time with full body weight, thousands of times a session, in a way cycling and skiing never do. That means \"how hard was that session\" is really two separate questions: how hard did it tax the aerobic system, and how much did it cost the legs specifically. A coach or athlete who only tracks the first (heart rate, pace, RPE) will keep scheduling hard days that look recoverable on paper but aren't, because the muscular cost never shows up in those numbers until it's already a problem.",
+      },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "✅ Athlete Checklist",
+        text: "Before deciding whether to run a same-day double or push a second hard session, ask:",
+        items: [
+          "Do my legs feel heavy or flat, independent of how tired I feel generally? That's tone, not soreness — and it's the more honest signal for a same-day double.",
+          "Has real DOMS (soreness peaking 24–72 hours out) already set in from yesterday's session? If so, a second hard effort now is stacking fatigue on fatigue, not training the muscular-cost gap.",
+          "Am I comparing my training load to a cyclist's or skier's program? If so, stop — their ceiling isn't built on the same muscular cost structure as running.",
+        ],
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Running's real ceiling on hard training is usually muscular, not cardiovascular — \"I could push harder if my legs would let me\" is often literally true, not an excuse.",
+          "Muscle tone recovers within hours; soreness (DOMS) takes days to even arrive. A second controlled session run before DOMS sets in doesn't stack fatigue the way one run the next day does.",
+          "Track how your legs feel specifically, not just how tired you feel overall — heavy or flat legs on an otherwise fresh day is real signal, not laziness.",
+          "Don't copy a cyclist's or skier's training-load ceiling directly — running's one-leg-at-a-time impact cost makes it a different sport for recovery purposes, even at equal cardiovascular effort.",
+        ],
       },
       { type: "heading", text: "What Actually Limits Endurance: Two Competing Models" },
       {
@@ -289,6 +385,32 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "This is a different property from the muscle tone described above — tone is baseline resting tension between efforts, while voluntary activation is how much of the muscle a maximal effort can actually recruit in the moment. At the extreme endurance end, exercise physiologist Guillaume Millet found ultramarathon finishers who'd run 100+ hours through the 205-mile Tor des Géants had lost only about 25% of pre-race leg strength — less than runners tested after a single 24-hour run. His summary: \"the brain is able to do more, but it doesn't.\" It's the same conclusion as the rugby sprint-after-failure study above, just measured at the opposite end of the distance spectrum. Two genuinely peripheral limiters are worth naming honestly alongside all this brain-centered evidence, since not every ceiling is soft: about 70% of elite endurance athletes show measurable arterial oxygen desaturation during all-out effort even at sea level, a real hardware constraint on oxygen delivery (Constantini et al., Medicine & Science in Sports & Exercise, 2017); and core temperature has a genuine, fairly consistent circuit-breaker around 104°F past which the brain stops driving muscles regardless of how the effort feels (see Heat Acclimatization in Training Plans for the practical training implications of that threshold).",
       },
+      { type: "heading", text: "Applying This: Training the Effort Ceiling, Not Just the Legs", level: 3 },
+      {
+        type: "paragraph",
+        text: "The practical upshot of the Noakes/Marcora debate is the same regardless of which model turns out to be more correct: what actually stops you in a race is rarely true physical failure — it's reaching the ceiling of effort you're willing to tolerate, and that ceiling is trainable in its own right, separate from physical fitness. For an athlete, that means the mental side of racing isn't a soft add-on to \"real\" training — trained self-talk and deliberate practice under mental fatigue are legitimate performance levers with measured effect sizes, not motivational fluff (see Self-Talk, Trained Rather Than Improvised in Sports Psychology). For a coach, it reframes a race that falls apart mid-race and then finishes with a surprisingly fast last lap: that isn't the athlete sandbagging, it's a miscalibrated internal template for how each mile is supposed to feel finally catching back down to reality. The fix for next time is recalibrating the template in training — running goal race pace enough in practice that the effort it should feel like is a known quantity on race day, not a guess.",
+      },
+      {
+        type: "callout",
+        variant: "advanced",
+        title: "🧠 Decision Framework",
+        text: "When a workout or race starts feeling harder than expected early on, it's worth pausing to ask which of two things is actually happening, since they call for opposite responses:",
+        items: [
+          "Is there real physiological evidence backing it up — heart rate elevated for the pace, legs genuinely heavy, a rough night of sleep or a stressful week behind it? If so, respect it: back off, since the effort signal is tracking something real.",
+          "Or does the data (heart rate, recent training, sleep) actually look normal, and it's the first mile of a race or a session you've mentally built up? If so, the template is likely just miscalibrated by nerves — hold the planned pace a little longer before trusting the urge to slow down.",
+        ],
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "What stops you in a race is rarely true physical failure — it's hitting the ceiling of effort you're willing to tolerate. That ceiling is trainable through self-talk and deliberate mental practice, not just physical fitness.",
+          "A race that falls apart mid-race and then finishes with a fast final lap isn't mysterious — it means your internal template for how each mile should feel was miscalibrated, and effort finally caught back down to it.",
+          "Mental fatigue and physical fatigue draw from the same pool — a stressful week before a big race is a real form of pre-fatigue, worth accounting for, not something to just push through.",
+          "Two genuinely hard physical ceilings do exist regardless of mindset: arterial oxygen desaturation and a roughly 104°F core-temperature circuit-breaker. Heat and altitude aren't purely mental problems, even under the psychobiological model.",
+        ],
+      },
     ],
   },
   {
@@ -309,10 +431,22 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Oxygen acts as a catalyst for the aerobic system; the anaerobic system, by contrast, is muscles with molecules sitting around waiting for oxygen that hasn't arrived. Building the aerobic engine means growing more capillaries into working muscle, adding mitochondria, and developing the enzymatic pathways that convert oxygen to usable energy — and none of it happens on one run. The body's development shifts at defined points during sustained aerobic effort, roughly 20, 30, 55, 90, 120, 150, and 180 minutes in, which is part of why long, easy running does something shorter running can't replicate. Build the capillaries, then rest — the growth happens during recovery, not the run itself.",
       },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "📋 Before Your Next Long Run",
+        text: "If your long run has plateaued at the same distance for months, the adaptation-window list above is a real reason to nudge it out rather than leave it alone — the 90, 120, and 150-minute marks each unlock development the shorter version of the same run doesn't. Extend by 10–15 minutes every few weeks rather than jumping a full adaptation window at once, and treat the extra time as strictly easy — this is base-building, not a test.",
+      },
       { type: "heading", text: "60,000 Miles of Plumbing" },
       {
         type: "paragraph",
         text: "The capillary network reaching into working muscle spans an estimated 60,000 miles in an adult body — the fine-scale delivery system that gets oxygen-rich blood and glucose to muscle cells and clears the waste products back out. Easy aerobic running is what builds it out: steady, low-intensity volume is the primary stimulus for new capillary growth into the muscles that actually need it, which is a large part of why \"just go slow and build the base\" isn't a cop-out — it's targeting a specific adaptation that hard running doesn't reach nearly as efficiently.",
+      },
+      {
+        type: "callout",
+        variant: "mistake",
+        title: "⚠️ Avoid This Mistake",
+        text: "Running \"base\" miles at a pace that's easy in name only is the single most common way this entire adaptation gets skipped. Capillary growth is driven by time spent at low intensity — if the pace is fast enough to push meaningfully past the aerobic crossover point (see Exercise Physiology), the run is doing double duty as a mediocre tempo session, not full duty as a base-building one.",
       },
       { type: "heading", text: "What the Capillary Difference Actually Looks Like" },
       {
@@ -328,6 +462,22 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "An untrained athlete typically can't fuel much past 50% of their capacity on fat alone before switching over to carbohydrate; a well-trained aerobic athlete can push that fat-fueled ceiling to roughly 80% of capacity. That shift matters because carbohydrate stores are finite and fat stores effectively aren't — an athlete who can run harder before tapping into glycogen has a longer runway before bonking becomes a risk, which is exactly the adaptation months of easy aerobic volume are built to produce (Costill, Distance Running, TAFNEWS, 1979).",
+      },
+      { type: "heading", text: "Applying This: How Much Base, and for How Long" },
+      {
+        type: "paragraph",
+        text: "None of the adaptations on this page happen quickly, which is exactly why \"how much base do I actually need\" has a real, if unwelcome, answer: think in months and years, not weeks. A runner new to the sport, or returning from a long break, gets the most value from simply accumulating easy volume with no hard days at all for a stretch — there's nothing yet for intervals to sharpen. A more experienced runner still needs a real aerobic block before each competitive season, even though their capillary and mitochondrial density won't fall back to zero between seasons the way it did the first time. The signal that the base is actually working isn't how far you can run — it's whether a pace that used to feel moderately hard now feels genuinely easy at the same heart rate. That's the deflection-point shift described above showing up in daily training, and it's a better readiness check than mileage alone.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Aerobic base-building is a matter of months, not weeks — capillary and mitochondrial growth happen during recovery from repeated easy volume, not from any single long run.",
+          "\"Easy\" has to mean physiologically easy, not just slower than a hard day. Base miles run too close to the aerobic crossover point train the wrong system and stall the capillary growth this page describes.",
+          "Extend your long run gradually toward the 90–150-minute adaptation windows rather than leaving it static for months — but add time, not pace.",
+          "The best sign your base is working isn't distance covered — it's a familiar pace starting to feel easier at the same heart rate. Track that shift, not just weekly mileage.",
+        ],
       },
     ],
   },
@@ -386,10 +536,32 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A series of studies out of Seiler's lab compared interval sessions matched for perceived \"maximal session effort\" but built from different work-bout lengths — four sets of 16, 8, or 4 minutes. All three felt like giving everything, but they weren't physiologically equal: the 4-minute intervals produced nearly triple the blood lactate of the 16-minute version (12.7 vs. 4.7 mmol/L) and pushed 61% of sessions to a peak RPE of 19–20, compared to just 8% for the longer intervals. Counterintuitively, the longer, lower-intensity intervals produced equal or greater fitness gains — more accumulated work at 90% of max heart rate beat less accumulated work nearer to max. The practical read: work-bout duration and total accumulated interval time are the real levers on intensity, and going slightly longer and slightly easier on intervals often buys more fitness for less damage (Seiler & Sylta, International Journal of Sports Physiology and Performance, 2017).",
       },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "🏃 Put This Into Practice",
+        text: "If your last few hard interval sessions have felt like all-out survival by the final rep, the fix usually isn't more willpower — it's slightly longer, slightly easier reps. Before defaulting to short, brutal intervals, try the same total work in longer bouts (12–16 minutes instead of 3–4) at a pace that feels merely hard rather than maximal. The research above says you'll likely get equal or better fitness gains for meaningfully less damage.",
+      },
       { type: "heading", text: "One Long Threshold Session vs. Two Shorter Ones" },
       {
         type: "paragraph",
         text: "A 2024 study out of NTNU (Kjøsen Talsnes et al., Frontiers in Physiology) ran the most direct head-to-head test yet of double threshold training's central claim. Fourteen well-trained endurance athletes (average VO2 max 69.2 ml/kg/min) each completed two protocols on separate occasions: a single session of 6x10-minute intervals, and the identical total volume split into two sessions of 3x10 minutes, 6.5 hours apart. In the single long session, heart rate and lactate both climbed over the course of the workout — classic cardiac drift, ending about 2.8% higher in heart rate and 0.41 mmol/L higher in lactate in the second half than the first, with perceived effort climbing from 13.4 to 14.8 on the Borg scale as the session wore on. In the split protocol, the pattern reversed: the evening session showed lower heart rate and lower lactate than the morning one, effort stayed flat across both sessions, and the athletes reported less next-day muscle soreness and lower resting heart rate than after the single long session, despite covering the identical total workload. It's a real, controlled data point for the muscular-cost mechanism described in The Muscular Limiter in Exercise Physiology — the same total dose of threshold work, at a measurably lower physiological and perceptual cost, simply by splitting it across a long enough gap.",
+      },
+      { type: "heading", text: "Applying This: Building Your Own Intensity-Distribution Week", level: 3 },
+      {
+        type: "paragraph",
+        text: "Taken together, this cluster of research answers a question most runners never formalize: what should this week's mix of easy and hard actually look like? The honest answer isn't a single magic ratio — it's a strong default (roughly 80% low intensity, 20% moderate-to-high) that's easy to drift away from in both directions. The most common drift is toward the middle: threshold-paced running that feels productive without being either genuinely easy or genuinely hard. The fix isn't complicated, just uncomfortable to commit to — make your easy days honestly easy and your hard days honestly hard, and let the gravitational pull toward comfortable-but-mediocre threshold work be the thing you actively guard against, not the default you fall into.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Roughly 80% low intensity, 20% moderate-to-high is a strong default distribution — but treat it as a ratio to check yourself against, not a rule to hit precisely every single week.",
+          "The lactate-threshold zone is a trap disguised as a sweet spot: it feels sustainable and productive, but accumulates fatigue faster than easy running while building fitness no faster than genuinely hard intervals.",
+          "When choosing interval format, longer and slightly easier reps (12–16 minutes at hard-but-not-maximal effort) often out-perform brutal short reps for the same perceived total effort.",
+          "Splitting a large threshold dose into two same-day sessions, hours apart, can deliver the identical workload at a measurably lower physiological cost than one long session — see Norwegian Threshold Training in Coaching Library for how to structure it.",
+        ],
       },
       {
         type: "heading",
@@ -414,6 +586,23 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A recurring finding across running-form research: deliberately imposed changes to a runner's natural stride almost always make performance worse, not better. The stride behaves like a self-optimizing system — the brain continuously searches for the movement pattern that produces a given speed with the least muscular effort, and that search runs automatically as training volume accumulates. The practical implication is blunt: the most reliable way to develop a more efficient stride is to run enough that the body has the mileage to optimize against, not to consciously rebuild mechanics (Fitzgerald, 80/20 Running). That's in real tension with Lydiard's insistence on deliberately coached technique (see Training Philosophy) — a genuine unresolved disagreement, not an oversight on either page.",
+      },
+      {
+        type: "callout",
+        variant: "advanced",
+        title: "💡 Think About This",
+        text: "These two findings sit next to each other on purpose: long, slow running is mentally taxing in a way sprints aren't, and it's also the volume that lets your stride self-optimize without conscious tinkering. If a long run leaves you mentally fried but you never let your form settle into its own rhythm — because you're consciously cueing your posture or footstrike the whole way — you may be fighting the exact adaptation the run was supposed to deliver. Save deliberate form cues for short, fresh strides; let long runs run themselves.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Long, easy runs tax the brain's tolerance for discomfort in a way short, hard efforts don't — don't assume a long run was \"easy\" just because the pace was slow.",
+          "Mental fatigue resistance transfers across contexts — sustained focus on a demanding cognitive task (a long exam, a stressful workday) draws on the same reserve a long run does.",
+          "Resist the urge to consciously rebuild your stride mid-run or mid-season. The most reliable way to a more efficient stride is accumulated easy mileage, not deliberate mechanical tinkering.",
+          "Where this disagrees with Training Philosophy's deliberately coached technique is a real, unresolved tension in the evidence — not a mistake on either page. Reasonable coaches land in different places here.",
+        ],
       },
       {
         type: "heading",
@@ -451,6 +640,22 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Michael Joyner's 1991 thought experiment (see the Prologue framing referenced throughout this page's VO2 max discussion) put a real number on a hypothetical sub-2-hour marathoner and was dismissed as \"preposterous\" when first proposed. In May 2017, Nike's Breaking2 project put the thought experiment on an actual racetrack: the Monza Formula One circuit outside Milan, a rotating formation of pacers, a Tesla projecting laser pacing lines, and three of the best marathoners alive, chosen after 18 months of lab testing on the exact three variables Joyner's paper had flagged as decisive — VO2 max, running economy, and lactate threshold. Eliud Kipchoge ran alone for the final third of the race after his two training partners faded, passed halfway in 59:54, visibly struggled over the final two laps, and crossed the line in 2:00:25 — 25 seconds short, and not an eligible world record given the rotating pacers and pace car. It stands as the clearest real-world demonstration this page has of everything above it: a runner selected and trained against precisely the physiological variables the research says matter most, still separated from history's first sub-2 marathon by a margin decided in the final, most human-seeming mile rather than in the lab data beforehand (Hutchinson, Endure, 2018). Kipchoge's own framing afterward doubled as a fitting close to the whole question this page keeps circling: \"The world now is just twenty-five seconds away.\"",
+      },
+      { type: "heading", text: "Applying This: What a VO2 Max Number Should — and Shouldn't — Change", level: 3 },
+      {
+        type: "paragraph",
+        text: "If you've had VO2 max tested and the number disappointed you, this cluster is the direct answer to what to do about it: very little, at least not directly. Prefontaine, Shorter, and Clayton were all genuinely competitive with a 15-point spread between them; Radcliffe broke the marathon world record without her own number moving meaningfully for over a decade. What separated all of them was running economy and how much of that ceiling they could actually use at race pace — both trainable, neither shown on a lab printout. For a coach, that means a below-average VO2 max test is not a reason to write off an athlete's ceiling, and an impressive one (like Oskar Svendsen's) is not a promise of anything by itself. Spend less time chasing the number and more time on the two variables that actually separated real athletes: economy and fractional utilization.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "A VO2 max number is a ceiling, not a forecast — running economy and how much of that ceiling an athlete can actually sustain at race pace decide outcomes far more than the number itself.",
+          "Don't let a disappointing VO2 max test discourage an athlete, and don't let an impressive one create false confidence — Oskar Svendsen's record-highest test and unremarkable career is the cautionary case worth remembering.",
+          "Once an athlete is already well trained, more easy volume stops moving VO2 max — genuinely hard intervals at 95–100% of VO2 max pace are what's needed to raise it further from there.",
+          "Breaking2 is a useful reality check on how much even a near-optimal athletic and logistical setup can close the final gap — sports science moved the number close, but the last mile still came down to the athlete on the day.",
+        ],
       },
     ],
   },
@@ -506,6 +711,12 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Because the margin for error is that tight, one signal alone isn't a reliable enough guide — heart rate, the talk test, and perceived effort should be cross-checked against each other rather than trusted individually, and treated as a real signal whenever they disagree. If heart rate reads in range but the effort feels distinctly harder than it should, or the talk test fails at a pace the watch says should still be comfortable, that disagreement is worth acting on rather than dismissing — the fix is almost always to back the pace down, not to trust whichever metric happens to be the most convenient one that day.",
       },
+      {
+        type: "callout",
+        variant: "mistake",
+        title: "⚠️ Avoid This Mistake",
+        text: "Programming threshold sessions to the textbook 4 mmol/L benchmark is one of the most common ways a well-trained runner ends up chronically overreaching. For most trained athletes, real threshold sits closer to 2.3–3.0 mmol/L — training to 4.0 on purpose means running threshold days measurably harder than the intensity actually calls for, week after week.",
+      },
       { type: "heading", text: "A Simple Traffic-Light System for a Threshold Session", level: 3 },
       {
         type: "callout",
@@ -539,6 +750,17 @@ export const sections: Section[] = [
           "A simple load number (duration × sRPE) — not because it's precise, but because trends over months matter more than precision on any single day.",
           "Heart rate or lactate, if you have access to it.",
           "Test and race results, to check whether all the above is actually translating.",
+        ],
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "No single metric tells the whole story — triangulate external workload (pace), physiological response (heart rate/lactate), and perceived effort, and treat disagreement between them as a real signal, not noise.",
+          "Heart rate is a loose guide, not a precise one — calibrate a zone to how the effort actually feels rather than chasing a number, especially on short intervals or hills where heart rate lags or misleads.",
+          "Don't train threshold sessions to the textbook 4 mmol/L benchmark — most trained runners' real threshold sits closer to 2.3–3.0 mmol/L, and the gap is large enough to mean chronic overreaching if ignored.",
+          "Pick one load-tracking method (session RPE × duration is the simplest) and stay consistent with it for months — the trend line matters far more than precision on any single day.",
         ],
       },
     ],
@@ -622,6 +844,22 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Lydiard's own explanation for why he had milers run marathon-length long runs rather than piling on track intervals: speed is common — plenty of runners can manage a single fast quarter-mile — but almost none can hold that pace for four in a row. His view was that stamina, not raw speed, was the real limiter for most runners, and that endurance built through volume translated directly into the ability to finally use the speed they already had, right when the race demanded it.",
       },
+      { type: "heading", text: "Applying This: Should You Actually Run Lydiard's Exact Schedule?", level: 3 },
+      {
+        type: "paragraph",
+        text: "The Non-Race Week and Race Week templates above were built for Olympic-caliber milers and marathoners at the peak of years of aerobic development — copying them verbatim onto an athlete without that foundation underneath them is the single most common way this system gets misapplied. What actually transfers is the pattern, not the exact numbers: a hard anaerobic/speed phase happens only after the aerobic base is genuinely built, a time trial mid-cycle checks fitness honestly rather than guessing at it, and the final days before a goal race freshen the legs rather than adding anything new. A high school coach can use that pattern with a 25-mile-a-week runner exactly as legitimately as with a 100-mile-a-week one — the phase order stays the same even though the volume inside each phase has to scale down.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "The best-prepared athlete usually beats the most talented one — a program that gets an athlete durably and consistently to the start line beats a \"perfect\" one that breaks down first.",
+          "Loading anaerobic work onto a talented young runner before their aerobic base is ready produces fast early results and a lower long-term ceiling. Resist the temptation, especially with your most gifted athletes.",
+          "A workout that's right for one athlete can be wrong for another even if it looks identical on paper — judge a session by what a specific athlete needs that day, not by whether it worked for someone else.",
+          "Don't copy Lydiard's exact weekly schedule wholesale — copy the phase order (base, then anaerobic/speed, then freshen) and scale the volume inside each phase to what your athlete has actually built toward.",
+        ],
+      },
       { type: "heading", text: "Comparing the Major Systems" },
       {
         type: "paragraph",
@@ -700,6 +938,19 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Strip away the branding and each system is chasing a specific adaptation. Lydiard's base phase, Vigil's altitude volume, and Maffetone's heart-rate-capped base phase are all after the same capillary density and mitochondrial growth — see The Aerobic Base for the mechanism — just enforced by feel, altitude, or a strict intensity ceiling respectively. Norwegian threshold work targets lactate clearance and buffering capacity directly, at the exact intensity where that system is normally the limiter. Canova's marathon-specific blocks target glycogen-sparing efficiency at goal race pace specifically, rather than fitness in general. Daniels' interval and repetition paces target VO2max and running economy respectively. None of it is mysterious once you ask what's actually being trained instead of what the workout is called.",
       },
+      {
+        type: "callout",
+        variant: "advanced",
+        title: "🧠 Decision Framework",
+        text: "None of these systems are mutually exclusive, and most good coaches borrow across several. As a starting point for which to lean on:",
+        items: [
+          "Aerobically underdeveloped, or coming off a talent-driven early push with no real base? Start with Lydiard, Vigil, or Maffetone's aerobic-first approach — the specific enforcement mechanism (feel, altitude, heart-rate cap) matters less than committing to months of genuine base first.",
+          "Have a solid base and want precise, individualized pace prescriptions? Daniels' VDOT system gives you exact zones recalculated as fitness changes.",
+          "Training specifically for a marathon with real volume already in place? Canova's marathon-pace \"special blocks\" target the exact adaptation a marathon needs most — sustained effort, not short reps.",
+          "Racing 1500m through 10K and have access to frequent lactate testing? The Norwegian double-threshold model rewards that precision; without lactate testing, it's easy to drift into training too hard by feel alone.",
+          "Self-coached, or unsure which of the above fits? Start with the 80/20 ratio as a simple self-audit — it requires no special equipment and catches the most common mistake (too much time near threshold) on its own.",
+        ],
+      },
       { type: "heading", text: "A Week, Compared", level: 3 },
       {
         type: "list",
@@ -745,6 +996,17 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Numbers vary by event and level, but the pattern holds across nearly every system above: more volume, applied consistently, is the most reliable long-term lever available. Most elite 5K runners train in the 70–100-plus mile-per-week range; maximizing performance from 1500m up typically takes something in the 80–90-mile range, with many elite milers well over 100. It's possible to compete on 50 miles a week and run reasonably well — plenty of runners do — but that volume caps how much of the aerobic adaptation is actually available. The load itself is what builds resilience and the ability to recover faster between sessions, which is exactly why \"add more consistent volume\" remains the simplest lever in every system above, disagreements about pacing and intensity aside.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Every credible system agrees on two fundamentals: aerobic volume is the foundation, and recovery has to be managed deliberately. The real disagreements are about intensity distribution and how prescriptive training should be, not about whether the basics matter.",
+          "Match the system to what's actually true about your context — current aerobic base, event distance, access to lactate testing, appetite for precise pace prescriptions — rather than picking one by reputation or which elite currently uses it.",
+          "More consistent volume, applied over years, is the single most reliable lever across every system here. Pick the structure whose demands you'll actually sustain, not the one that looks most impressive on paper.",
+          "Don't copy a system's exact numbers wholesale — a 100-mile week built for an Olympic miler, or a strict 180-minus-age heart-rate cap — without checking it against your own training history first.",
+        ],
       },
     ],
   },
@@ -810,6 +1072,17 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A hard-raced marathon costs more recovery than most runners budget for. Lydiard's own guidance: no more than one full marathon every couple of months if you're racing it honestly rather than jogging it, and after a hard half or full marathon, two full weeks of easy jogging only — nothing fast — before any quality work resumes. The two-day carb top-up before a race has a ceiling too: up to about 200 grams (roughly half a pound) of glucose or fructose in the two days beforehand is sufficient, and more than that doesn't buy additional benefit (Lydiard, Running to the Top).",
       },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Build for up to about 24 weeks, then take a real recovery block before the next cycle — pushing volume up indefinitely past that stops adding fitness and starts just adding fatigue.",
+          "A marathon buildup should lean on sustained tempo work and marathon-pace long runs, not double-threshold intervals — the race itself demands continuous effort, not repeated short reps.",
+          "Taper the long run down gradually (roughly 80% of peak, then 60%), but don't go completely silent on threshold and VO2 max work — a small, controlled dose in the final two weeks keeps those gears available on race day.",
+          "Racing a marathon honestly costs real recovery — cap it at roughly one every couple of months, with two weeks of easy jogging only afterward before quality work resumes.",
+        ],
+      },
     ],
   },
   {
@@ -852,6 +1125,12 @@ export const sections: Section[] = [
           "Never debut a new fueling strategy in a race. Race day is execution, not experimentation.",
         ],
       },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "📋 Before Your Next Long Run",
+        text: "Pick one specific number to test, not a vague intention to \"fuel better.\" If you're currently taking 30 g/h, plan for 40–45 g/h on your next long run and see how your gut handles it. That's a real, checkable experiment — \"eat more during long runs\" isn't.",
+      },
       { type: "heading", text: "Short, Hard Efforts and the Carbohydrate Mouth Rinse", level: 3 },
       {
         type: "paragraph",
@@ -888,6 +1167,17 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Carbohydrate amount is only one part of the plan. Very concentrated drinks or gels can sit heavily in the stomach or pull water into the gut, raising the risk of bloating, nausea, or diarrhea. Maltodextrin can help in a high-carb mix because it delivers glucose units at a lower osmolality than the same amount of simple sugar, which can improve tolerance at higher intakes (Pérez-Castillo et al., 2023). Small, frequent doses generally beat large gaps followed by panic fueling — taking carbohydrate roughly every 15–25 minutes is a practical rhythm for most runners. If your stomach struggles during a session, don't reach only for less carbohydrate; check concentration, timing, fluid intake, fructose amount, and race intensity too.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Carbohydrate needs scale with duration and intensity, not with how a session feels — most runners can safely push toward 60–90 g/h for anything past 2 hours once the gut is trained.",
+          "Never debut new fueling on race day. Gut tolerance is trainable, but only through repeated practice on long runs and race-specific workouts beforehand.",
+          "If your stomach struggles during a session, don't just cut carbohydrate — check concentration, timing, and fructose ratio first. The fix is often the mix, not the amount.",
+          "A 5K or 10K rarely needs in-race carbohydrate for fuel, but a mouth rinse or small sip is a legitimate, low-cost marginal gain worth testing in training.",
+        ],
       },
       { type: "heading", text: "Hydration & Electrolytes" },
       { type: "heading", text: "Hydration", level: 3 },
@@ -939,6 +1229,17 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Perception plays a bigger role in all of this than the plumbing-only framing suggests. A study that had subjects rehydrate after exercise, then secretly siphoned the swallowed water back out through a tube, found thirst and the hormone that drives fluid retention both dropped anyway — from the sensation of swallowing alone, before any water actually reached the bloodstream (a Yale study, 1997). A separate trial found participants performed just as well with fluids delivered by hidden IV as with normal drinking, once the psychological act of drinking-or-not was removed from the test — suggesting a real share of hydration's performance effect runs through the same expectation-and-perception channels covered in Belief Effects in Sports Psychology, not through blood volume alone.",
       },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "\"Drink to thirst\" is better default guidance than a fixed volume target — fluid losses under 4% of body weight are very unlikely to hurt performance on their own.",
+          "Faster marathoners are consistently the most dehydrated finishers, not the least — some of that weight loss is fuel leaving the body, not sweat, so don't treat body-weight loss alone as a red flag.",
+          "Skip salt tablets regardless of which mechanism you find more convincing (sodium-centered or potassium-centered) — food plus a diluted electrolyte drink covers both concerns.",
+          "Overdrinking, not underdrinking, is the more dangerous failure mode — exercise-associated hyponatremia has killed runners who followed \"drink early and often\" advice too literally.",
+        ],
+      },
       { type: "heading", text: "Low-Carbohydrate, High-Fat Diets: Where the Evidence Actually Lands" },
       {
         type: "paragraph",
@@ -953,6 +1254,12 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Carb loading is most useful before races where glycogen depletion can limit performance — marathons, long trail races, ultras, triathlons, and long cycling events. A common evidence-based target is roughly 8–12 grams of carbohydrate per kilogram of body weight per day for the final 24–48 hours before the event, combined with reduced training (Wallis, 2025, Gatorade Sports Science Institute). A pre-race meal of roughly 1–4 g/kg of carbohydrate 1–4 hours before competition is also commonly recommended, depending on timing and gut tolerance (Wallis, 2025, GSSI). In practical terms, that's eating something carbohydrate-based, around 300–400 calories, roughly 3–4 hours out and giving it time to clear, since digestion competes with running muscles for blood flow; for early starts where a full meal isn't practical, liquid calories (100–200 calories) digest faster and sit better than solid food. Test the exact routine in training first, not on race morning. This is meaningfully higher than the older approach in Marathon Training's Honey Over Carb-Loading, and Skip the Salt Tablets — see Where Modern Carb-Loading Numbers Land Differently there for how the two compare.",
+      },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "🏁 Race Day Tip",
+        text: "If your start time is early and a full carb-load meal isn't realistic, don't skip it — switch to liquid calories instead. 100–200 calories of a familiar sports drink or juice digests faster and sits better than solid food when there isn't a full 3–4 hours to clear it before the gun.",
       },
       {
         type: "list",
@@ -1037,7 +1344,14 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "takeaway",
-        text: "Good fueling was never about taking the maximum amount possible. It's about matching the right amount to the event, the intensity, your gut, the environment, and the goal — little or nothing for a short easy run, and a real, rehearsed plan for the long races and key sessions where it becomes one of the largest performance levers available.",
+        title: "Key Takeaways",
+        text: "Good fueling was never about taking the maximum amount possible — it's about matching the right amount to the event, your gut, the environment, and the goal.",
+        items: [
+          "Little or nothing for a short easy run; a real, rehearsed plan for long races and key sessions, where fueling becomes one of the largest performance levers available.",
+          "Test everything — carb amount, ratio, concentration, timing, caffeine, bicarbonate, nitrate — in training. Race day is execution, never experimentation.",
+          "Underfueling long races is the more common mistake than overfueling — most runners take less carbohydrate than the current evidence actually supports.",
+          "No amount of in-race fueling compensates for chronic under-eating, poor sleep, or inconsistent training the rest of the week.",
+        ],
       },
       {
         type: "quote",
@@ -1150,6 +1464,17 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A double-threshold week typically includes one additional session at a different, higher intensity — the \"X element\" — most often short hill sprints in the 200–800m range, a format that traces back to Peter Coe's own sprint-training hill work. The point of the X element is deliberate contrast: two threshold days a week train the same muscular pattern at the same intensity repeatedly, and a single different stimulus — genuinely harder, over a shorter distance, on a different surface — is what keeps the week from training only one gear. It plays a similar role to the steep hill running and hill bounding already covered in Three Ways Lydiard Used a Hill above, though the two traditions arrived at short hill work independently.",
       },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Pick a session by the adaptation you actually need, not by which one sounds hardest — a tempo run, hill circuit, and micro-interval block are training genuinely different systems, not interchangeable ways to suffer.",
+          "Run interval pace off your current, honest fitness — not a goal you haven't hit yet. Short, fast reps at an unearned pace mostly accumulate acidosis without the aerobic base to buffer it.",
+          "Ease into hill work specifically — it feels moderate in the moment because the bouts are short, which is exactly what makes it easy to overdo before the delayed soreness shows up.",
+          "If you're building a double-threshold week, the \"X element\" (a different, harder stimulus) matters as much as the two threshold sessions themselves — without it, the week trains only one gear.",
+        ],
+      },
     ],
   },
   {
@@ -1218,6 +1543,17 @@ export const sections: Section[] = [
         type: "quote",
         text: "I am convinced all middle distance runners should train with weights using the accepted strength training techniques of low repetitions and heavy weights.",
         attribution: "Wilf Paish, former Great Britain Olympic team coach, cited in Livingstone, Healthy Intelligent Training",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Rep scheme, not lifting itself, is what makes strength training compatible with running — 3–6 reps at 85%+ of a one-rep max targets power without the mass and long recovery a bodybuilding-style 8–12-rep set adds.",
+          "Three compound lifts (deadlift, a pull, a press), done heavy and briefly with full recovery between sets, cover essentially the whole body — isolation work adds complexity without adding much a runner actually needs.",
+          "The payoff isn't hypothetical: a controlled study found real 5K improvement from added strength work with zero change in VO2 max — the entire gain came from running economy and power.",
+          "Ease in for the first two to three weeks at lighter loads, and treat technique as non-negotiable before adding weight — a heavy lift done with poor form is a genuine injury risk, not just an inefficient one.",
+        ],
       },
     ],
   },
@@ -1478,6 +1814,17 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "One more small, genuinely unresolved detail worth knowing rather than acting on: some athletes report a lower lactate reading in the evening session of a double-threshold day than the morning session at the same effort, possibly related to running the second session in a partially glycogen-reduced state left over from the morning — see How Much Carbohydrate a Session Actually Needs in Nutrition & Fueling for the general fueling picture this fits inside of. Whether that's a real, exploitable training signal or just a curiosity isn't settled, and it isn't a reason to deliberately underfuel — it's mentioned here only because it's the kind of pattern a runner logging their own lactate numbers will eventually notice and wonder about.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "A beginner needs a feeling (\"pleasantly tired\"), not a pace — no chart can predict how far or fast a specific new runner should go on day one.",
+          "Advanced periodization (double threshold, clustered quality work) is a tool for an athlete who already has a large, established aerobic base — it solves a different problem than a beginner plan, and isn't a shortcut past building that base first.",
+          "Whichever plan you're on, treat multi-signal intensity control (heart rate, talk test, perceived effort together) as more important than hitting a prescribed number — a session that costs too much undoes the benefit of the one after it.",
+          "Environmental adaptation (heat, altitude) is trainable on its own timeline — heat acclimatizes in about two weeks, altitude takes six to twelve — so build the exposure block into the plan deliberately rather than hoping race-day conditions cooperate.",
+        ],
       },
     ],
   },
@@ -1746,6 +2093,17 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A coach's role in this is worth stating plainly: left alone, public credit flows almost entirely to whoever finishes fastest, even though a result is nearly always a product of more spokes than the one that crossed the line first. See The Star of the Team Is the Team in For Coaches for the coach's-side responsibility this creates — actively naming what the less visible spokes actually contributed, rather than assuming the team already knows.",
       },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Self-talk is a trained skill, not an improvised pep talk — rehearse specific, positive, present-tense cues for weeks before a race, not for the first time mid-effort.",
+          "Bracing for discomfort in advance (\"this will hurt, but no worse than last time\") measurably reduces how unpleasant that discomfort feels — expecting the hard day beats hoping for an easy one.",
+          "Letting go of a fixed outcome doesn't mean caring less — it removes the self-consciousness that causes choking, which is why the least outcome-attached version of an athlete often performs the best.",
+          "Who you train alongside matters — outcomes trend toward the average of your training partners, so be honest about how much time a given relationship actually deserves.",
+        ],
+      },
     ],
   },
   {
@@ -1818,6 +2176,22 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A three-stage way of thinking about how far an athlete has actually gone, illustrated through St. Francis of Assisi's own path from a captured, imprisoned young man to founder of a movement. First comes the necessary — the fundamentals, the obligations, the actual to-do list of training — and mastering just that can take years with no shame in it. Then comes the possible: true full capacity, not merely everything on the checklist. Almost nobody actually gets here, because it's easy to mistake finishing the necessary for doing the possible — \"I did the session\" quietly substitutes for \"I did what I was actually capable of today.\" The corrective habit is assuming you're underperforming relative to your real capability rather than assuming the opposite; there is more danger in overestimating a performance than underestimating one. Only from a sustained practice of doing the actual possible, not the merely necessary, does anything that looks like the impossible — a record, a breakthrough — start to happen, and even then it was never aimed at directly.",
+      },
+      { type: "heading", text: "Applying This: Turning Belief Work Into a Weekly Habit" },
+      {
+        type: "paragraph",
+        text: "This page is more abstract than most on this site, so it's worth being explicit about what to actually do with it. Pick one exercise, not all of them at once: run the belief audit above (write down what you believe about yourself as an athlete, then interrogate each item for real evidence), or the 100%-down-to-anxious-percentage goal rewrite, or simply ask yourself the \"have/do/be\" question honestly at the end of a week. A coach can use the Barbara Parker and Justin Gatlin cases directly and concretely: watch what an athlete's body does in the moments before a race starts or a rep begins — where they position themselves, whether they hesitate — since unconscious expectation tends to leak out into checkable physical behavior before it shows up in the result.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Belief changes behavior faster than willpower does — if a goal isn't sticking, question what you actually believe about your own ceiling before assuming you just need more discipline.",
+          "Watch for the curse of talent: a belief that \"I'm just naturally good\" is accurate right up until everyone around you is also talented, at which point it becomes the thing that causes a plateau.",
+          "Chase \"best\" (a reachable daily standard), not \"better\" (an endless comparison) — the two produce different psychological undercurrents even when the training is identical.",
+          "A goal with zero real chance of failure isn't a goal — if writing it down doesn't produce some genuine nervousness, it's probably too safe to actually change anything.",
+        ],
       },
     ],
   },
@@ -1892,6 +2266,23 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A different kind of technique entirely, aimed at tempo rather than belief: attach a number, not a word, to the phases of a motion under pressure. A word like \"relax\" is a judgment — it can itself create tension, because it's implicitly noting that you're currently not relaxed. A steady count doesn't carry that judgment; repeated enough, it becomes an automatic rhythm the body settles into rather than a mental note to remember. Breath works the same way and is available to literally everyone: a fixed in-out count, used as a metronome, resets pace and tension without needing any words at all.",
       },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "📋 Before Your Next Workout",
+        text: "Don't wait for race day to write your first script. Spend two days just noticing your unedited internal monologue during a normal run, without trying to change it yet. Then write down three replacement phrases — one about identity, one about physical sensation, one for a specific trigger — on a card or your phone, and read them at the same point every day (after a shower, before a warm-up) for at least two weeks before expecting them to feel automatic.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Watch for Level II self-talk (\"I need to be more consistent\") disguised as responsibility — it names a problem without a solution and mostly just manufactures guilt.",
+          "Replace, don't just remove — deciding to stop a negative thought without a specific replacement ready means the old thought comes right back within a day or two.",
+          "New self-talk is supposed to feel strange at first. That discomfort is a sign an old belief is being genuinely challenged, not proof the technique isn't working.",
+          "Build the practice on ordinary training days, not under race pressure — self-talk invented in the moment it's needed is the hardest version to execute well.",
+        ],
+      },
     ],
   },
   {
@@ -1965,6 +2356,23 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A few habits worth practicing specifically on ordinary training days, not just big ones. Set aside whatever physical discomfort or outside stress might color the session before it starts, rather than carrying it onto the watch. Look for something to enjoy in the session regardless of pace, weather, or how the legs feel that particular day — that's a decision made before starting, not a verdict rendered afterward. Set a small mental goal for the day's practice the same way a workout has a physical one. And don't do it entirely alone if it can be helped: as 800m Olympic gold medalist and longtime Bowling Green head coach Dave Wottle put it about his own team, \"We all train in a group and we draw strength from the group\" — consistency is easier to sustain when it's shared with people who'll notice if you disappear. None of this guarantees a good day. It's a bet that a season built from many such ordinary days beats one built from waiting for the good ones.",
+      },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "🏃 Put This Into Practice",
+        text: "Pick a daily minimum sized for your worst realistic day, not your best one — if you're not sure it's low enough, it isn't. Then start a training log that records what you actually did, not what was scheduled, and give yourself explicit permission for roughly two off or reduced days out of every three-day stretch across the year. That's the actual mechanism behind consistency — not a perfect streak, a floor you can hold on a bad week.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "A missed day or a flat-feeling stretch isn't evidence the plan is failing — being off course most of the time is the normal operating mode of any goal-directed system, not a warning sign.",
+          "Reaching a plateau isn't a stable place to stand. Every day is compounding upward or downward, even during stretches that feel identical — a comfortable plateau relaxes into a slow decline if the daily habits quietly relax with it.",
+          "Track what you actually did, not what was planned — a nightly log of real behavior is a stronger accountability tool than any schedule, and it's worth logging what went right, not only what got missed.",
+          "Size your daily minimum for your worst realistic day, not an ideal one. A modest habit that survives a busy week beats an ambitious one that only survives a good one.",
+        ],
       },
     ],
   },
@@ -2042,6 +2450,29 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "The Practice Plan Is the Product in For Coaches covers the coaching side of the same finding directly — a program is only as tight as the planning that goes into eliminating exactly this kind of dead time before it happens.",
+      },
+      {
+        type: "callout",
+        variant: "advanced",
+        title: "🧠 Decision Framework",
+        text: "Next time a session or race feels like it's slipping away, run through these in order rather than just gritting through it:",
+        items: [
+          "Am I trying to add conscious effort on top of what the moment already has? If so, that's adding tension, not output — back off toward roughly 85–90% and let the current carry more of the work.",
+          "Is my visual focus too broad (\"just get through this\") instead of narrowed to one specific target — a landmark, a split, a runner just ahead? Narrow it.",
+          "Am I inferring failure that no one has actually handed me — assuming I'm done because the pace feels hard, not because I've actually stopped moving forward?",
+          "Is today's setback becoming tomorrow's pattern? A bad day is only a day unless it's followed by a second one — the real skill is not stacking two Ls in a row.",
+        ],
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Trying to add conscious effort on top of what competitive arousal already supplies doesn't add output — it adds tension and a loss of fine motor control, which is what choking physically is.",
+          "Focus is a trainable visual skill, not a fixed trait — narrow the actual target (a landmark, a specific split) rather than aiming vaguely at \"getting through it.\"",
+          "Fully disengaging after a hard effort is its own skill, separate from physical rest — recovery capacity spent still mentally replaying a workout isn't available for tomorrow's session.",
+          "Track effort, not outcome, day to day (a simple W/L for whether you gave real effort) and set a hard rule against two bad days in a row — that's the actual difference between a slump and a single rough day.",
+        ],
       },
     ],
   },
@@ -2219,6 +2650,23 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "He applied the same audit to his own drills, not just the schedule around them. Full-squad scrimmaging was useful early in preseason for conditioning and evaluating players, but he cut it almost entirely once the season began, on the grounds that running the length of the court repeatedly taught less per minute than breaking a skill into its component parts, drilling each part in isolation, and then reassembling it — the same whole-part teaching method behind Call Yourself a Teacher, above. The specific drill he cut is less important than the standard behind cutting it: any recurring piece of practice, however traditional, is worth periodically checking against a simple question — is this actually the most efficient use of this block of time for what we're trying to build right now, or is it just what we've always done here.",
       },
+      {
+        type: "callout",
+        variant: "tip",
+        title: "🎯 Coaching Application",
+        text: "Before your next practice, write it out in real time blocks the way Wooden's index cards did — not just a list of what to do, but how many minutes each piece actually gets, including transitions. Then compare it against last season's notes from the same week, if you kept any. If you didn't, start now: the plan only compounds year over year if there's a record to build the next one from.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Explain the why before assigning the workout — an athlete who understands the reason behind a session invests in it differently than one just following instructions.",
+          "Deliver praise for a role player's invisible contribution publicly, and correction privately and specifically — the reverse of what most coaches default to, and the one that actually changes behavior.",
+          "A coach's own outward composure sets the team's emotional standard whether or not that's the intention — visible swings between elation and despair teach the team their worth is set by the last result.",
+          "Run an honest audit of your own program at least once a season: which current constraints have actually been tested recently, and which have just gone unquestioned the longest because they're convenient to blame?",
+        ],
+      },
     ],
   },
   {
@@ -2277,6 +2725,19 @@ export const sections: Section[] = [
         text: "Overtraining rarely announces itself as a single bad workout — it builds from too many hard or glycolytic sessions stacked without the easy running in between to buffer them, and it shows up first as a cluster of symptoms that are easy to individually excuse: unusually dark urine, a face that looks puffy or swollen, cravings for salty and sugary food that weren't there before, elevated resting heart rate, and a training pace that used to feel comfortable suddenly feeling like a grind. Physiologically, that cluster points to chronically elevated cortisol and adrenal-hormone stress rather than any single injury — the same stress-hormone system covered in Relative Energy Deficiency in Sport (RED-S) below, reached through chronic training load rather than chronic underfueling. One coached case illustrates how far it can go unaddressed: a 31-year-old runner who'd stalled for years despite (or because of) daily short, fast track repetitions arrived showing exactly this symptom cluster, and the fix wasn't more discipline — it was weeks of genuinely slow jogging with no pace goal at all, gradually reintroducing effort only once easy running stopped feeling difficult (Livingstone, Healthy Intelligent Training).",
       },
       {
+        type: "callout",
+        variant: "tip",
+        title: "✅ Athlete Checklist",
+        text: "None of these alone is proof of overtraining, but two or more showing up together, especially alongside a familiar easy pace suddenly feeling hard, is a real signal to back off before a harder session forces the issue:",
+        items: [
+          "Unusually dark urine",
+          "A puffy or swollen-looking face",
+          "New cravings for salty or sugary food",
+          "Resting heart rate creeping up from your normal baseline",
+          "A familiar easy pace that suddenly feels like a grind",
+        ],
+      },
+      {
         type: "paragraph",
         text: "The structural fix is the same one this page keeps returning to: alternate hard and easy rather than stacking hard on hard, and make the easy days genuinely easy rather than moderately hard. A simple weekly pattern — hard, easy, hard, hard, easy, or just hard, easy, repeated — gives the body the buffer it needs between real stress sessions; two hard days in a row, or a long run and a fast track session inside the same 48 hours, is the pattern that shows up again and again in overtraining case histories. The single most useful diagnostic tool is boring but reliable: a consistent easy run over the same familiar loop, at the same easy heart rate, checked periodically against how it used to feel. When that easy pace starts requiring a noticeably higher heart rate or perceived effort than it used to, that's the signal to back off before a harder session forces the issue (Livingstone, Healthy Intelligent Training). See Tolerance for Suffering Is a Trainable Skill in Sports Psychology for the flip side of this — mental toughness is genuinely trainable, but treating every hard day as one more test of it is exactly the mindset overtraining hides behind.",
       },
@@ -2295,6 +2756,17 @@ export const sections: Section[] = [
         type: "callout",
         variant: "research",
         text: "Fixing low energy availability doesn't fix everything on the same clock. Energy status itself can start recovering within days to weeks of increased intake or reduced training load; menstrual function typically takes months to normalize even after energy status improves; bone mineral density can lag years behind both, meaning an athlete can feel and perform better long before the skeleton has actually caught up (2014 Female Athlete Triad Coalition consensus statement). That mismatch is exactly why a fast return to full training after a short break from RED-S symptoms is often premature — feeling recovered and being recovered aren't the same timeline.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "\"Heavy legs\" and soreness aren't the same problem — soreness is structural damage on its own repair timeline, while tone is nervous-system tension that can drop within hours. Most persistent heaviness is tone, not unresolved damage.",
+          "An easy jog the day after a hard effort helps clear both soreness and elevated tone — resting completely until soreness fully resolves just means re-earning the same soreness once training resumes.",
+          "Watch for the overtraining symptom cluster (dark urine, puffy face, new salt/sugar cravings, rising resting heart rate, a familiar easy pace suddenly feeling hard) together, not any single one in isolation.",
+          "If energy availability has been low, expect recovery to happen in stages — energy status improves in weeks, menstrual function in months, bone density in years. Feeling better isn't the same as being fully recovered.",
+        ],
       },
     ],
   },
@@ -2505,6 +2977,22 @@ export const sections: Section[] = [
     mission:
       "Understand what your race result says about your fitness, where your training zones fall, and how your current ability translates across distances.",
     topics: ["Race-time prediction", "Training paces", "Heart-rate zones"],
+    category: "tools",
+  },
+  {
+    slug: "environmental-calculator",
+    title: "Environmental Performance Calculator",
+    mission:
+      "Combine heat, humidity, wind, and elevation into one equivalent time -- analyze a past race, predict an upcoming one, or convert between conditions.",
+    topics: ["Equivalent performance", "Environmental breakdown", "Analyze / predict / convert"],
+    category: "tools",
+  },
+  {
+    slug: "gap-calculator",
+    title: "GAP Calculator",
+    mission:
+      "Find the flat-ground effort a hill pace was really worth, or the pace to target on a grade for an even effort.",
+    topics: ["Grade-adjusted pace", "Vertical speed targets", "Uphill/downhill asymmetry"],
     category: "tools",
   },
 ];

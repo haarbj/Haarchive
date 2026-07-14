@@ -1,10 +1,24 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId } from "react";
 import Link from "next/link";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { fieldClass, labelClass } from "@/lib/form-styles";
+import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
+import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
+import {
+  detailsBodyClass,
+  detailsClass,
+  groupLabelClass,
+  heroCardClass,
+  learnMoreClass,
+  sectionLabelClass,
+  statCardClass,
+  statLabelClass,
+  summaryClass,
+  toggleClass,
+} from "@/lib/tool-styles";
 
 type DistanceKey =
   | "1500m"
@@ -197,52 +211,6 @@ const EFFORT_LEVELS = [
   { label: "Hard", pct: 0.8 },
 ];
 
-const statCardClass =
-  "rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900";
-const heroCardClass =
-  "rounded-xl border-2 border-zinc-900 bg-white p-5 dark:border-white dark:bg-zinc-900";
-const statLabelClass =
-  "text-[10.5px] tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
-const sectionLabelClass =
-  "mb-3 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
-const groupLabelClass =
-  "mb-2 text-[11px] font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400";
-const learnMoreClass =
-  "mt-2 inline-block text-xs font-semibold text-zinc-700 underline decoration-black/30 underline-offset-2 transition hover:decoration-black dark:text-zinc-200 dark:decoration-white/30 dark:hover:decoration-white";
-const toggleClass =
-  "inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-zinc-700 transition hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white";
-const detailsClass =
-  "group rounded-lg border border-black/10 dark:border-white/10";
-const summaryClass =
-  "flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-semibold text-zinc-900 [&::-webkit-details-marker]:hidden dark:text-white";
-const detailsBodyClass =
-  "px-4 pb-4 pt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300";
-
-function parseTimeToSeconds(input: string): number | null {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
-  const parts = trimmed.split(":");
-  if (parts.length < 2 || parts.length > 3) return null;
-  const nums = parts.map((part) => Number(part.trim()));
-  if (nums.some((n) => Number.isNaN(n) || n < 0)) return null;
-  if (nums.length === 2) {
-    const [m, s] = nums;
-    return m * 60 + s;
-  }
-  const [h, m, s] = nums;
-  return h * 3600 + m * 60 + s;
-}
-
-function formatClock(totalSeconds: number): string {
-  const rounded = Math.round(Math.max(0, totalSeconds));
-  const h = Math.floor(rounded / 3600);
-  const m = Math.floor((rounded % 3600) / 60);
-  const s = rounded % 60;
-  const mm = h > 0 ? String(m).padStart(2, "0") : String(m);
-  const ss = String(s).padStart(2, "0");
-  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
-}
-
 function formatPace(secondsPerMile: number): string {
   return `${formatClock(secondsPerMile)}/mi`;
 }
@@ -371,71 +339,36 @@ function ZoneCard({
 export function PaceCalculator() {
   const baseId = useId();
 
-  const [distanceKey, setDistanceKeyRaw] = useState<DistanceKey>("5k");
-  const [timeInput, setTimeInput] = useState("20:00");
-  const [course, setCourse] = useState<Course>("xc");
-  const [xcDifficultyIndex, setXcDifficultyIndex] = useState(1);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showMethodology, setShowMethodology] = useState(false);
+  const persisted = usePersistedJSON<PersistedState>(STORAGE_KEY);
 
-  const [ageInput, setAgeInput] = useState("16");
-  const [restingHrInput, setRestingHrInput] = useState("60");
-  const [knownMaxHrInput, setKnownMaxHrInput] = useState("");
-  const [isFemale, setIsFemale] = useState(false);
-  const [mafIndex, setMafIndex] = useState(2);
+  const safeDistanceKey =
+    persisted?.distanceKey && DISTANCES.some((d) => d.key === persisted.distanceKey)
+      ? persisted.distanceKey
+      : undefined;
+  const [distanceKey, setDistanceKeyRaw] = usePersistedField<DistanceKey>(safeDistanceKey, "5k");
+  const [timeInput, setTimeInput] = usePersistedField(persisted?.timeInput, "20:00");
+  const [course, setCourse] = usePersistedField<Course>(persisted?.course, "xc");
+  const safeXcDifficultyIndex =
+    typeof persisted?.xcDifficultyIndex === "number" &&
+    persisted.xcDifficultyIndex >= 0 &&
+    persisted.xcDifficultyIndex < XC_ADJUSTMENTS.length
+      ? persisted.xcDifficultyIndex
+      : undefined;
+  const [xcDifficultyIndex, setXcDifficultyIndex] = usePersistedField(safeXcDifficultyIndex, 1);
+  const [showAdvanced, setShowAdvanced] = usePersistedField(persisted?.showAdvanced, false);
+  const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
 
-  const skipNextPersist = useRef(true);
+  const [ageInput, setAgeInput] = usePersistedField(persisted?.ageInput, "16");
+  const [restingHrInput, setRestingHrInput] = usePersistedField(persisted?.restingHrInput, "60");
+  const [knownMaxHrInput, setKnownMaxHrInput] = usePersistedField(persisted?.knownMaxHrInput, "");
+  const [isFemale, setIsFemale] = usePersistedField(persisted?.isFemale, false);
+  const safeMafIndex =
+    typeof persisted?.mafIndex === "number" && persisted.mafIndex >= 0 && persisted.mafIndex < MAF_ADJUSTMENTS.length
+      ? persisted.mafIndex
+      : undefined;
+  const [mafIndex, setMafIndex] = usePersistedField(safeMafIndex, 2);
 
-  // Restore whatever was last entered, once, on mount.
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as Partial<PersistedState>;
-      if (saved.distanceKey && DISTANCES.some((d) => d.key === saved.distanceKey)) {
-        setDistanceKeyRaw(saved.distanceKey);
-      }
-      if (saved.timeInput !== undefined) setTimeInput(saved.timeInput);
-      if (saved.course) setCourse(saved.course);
-      if (
-        typeof saved.xcDifficultyIndex === "number" &&
-        saved.xcDifficultyIndex >= 0 &&
-        saved.xcDifficultyIndex < XC_ADJUSTMENTS.length
-      ) {
-        setXcDifficultyIndex(saved.xcDifficultyIndex);
-      }
-      if (saved.ageInput !== undefined) setAgeInput(saved.ageInput);
-      if (saved.restingHrInput !== undefined) {
-        setRestingHrInput(saved.restingHrInput);
-      }
-      if (saved.knownMaxHrInput !== undefined) {
-        setKnownMaxHrInput(saved.knownMaxHrInput);
-      }
-      if (saved.isFemale !== undefined) setIsFemale(saved.isFemale);
-      if (
-        typeof saved.mafIndex === "number" &&
-        saved.mafIndex >= 0 &&
-        saved.mafIndex < MAF_ADJUSTMENTS.length
-      ) {
-        setMafIndex(saved.mafIndex);
-      }
-      if (saved.showAdvanced !== undefined) setShowAdvanced(saved.showAdvanced);
-      if (saved.showMethodology !== undefined) {
-        setShowMethodology(saved.showMethodology);
-      }
-    } catch {
-      // Ignore malformed or unavailable storage.
-    }
-  }, []);
-
-  // Skip the very first write: it fires in the same pass as the restore
-  // effect above, before that effect's setState calls have actually been
-  // applied, and would otherwise overwrite the saved data with defaults.
-  useEffect(() => {
-    if (skipNextPersist.current) {
-      skipNextPersist.current = false;
-      return;
-    }
     try {
       const state: PersistedState = {
         distanceKey,
@@ -1366,6 +1299,17 @@ export function PaceCalculator() {
           .
         </p>
       </div>
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Training on hills or a treadmill incline? The{" "}
+        <Link
+          href="/gap-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          GAP Calculator
+        </Link>{" "}
+        finds the flat-ground effort a grade was really worth.
+      </p>
 
       <p className="border-t border-black/10 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-zinc-300">
         Formulas: Riegel endurance equation, adjusted for cross country by a

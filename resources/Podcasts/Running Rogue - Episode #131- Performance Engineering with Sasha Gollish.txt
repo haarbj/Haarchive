@@ -1,0 +1,387 @@
+Hey everybody, this is episode 131 of the Running Rogue Podcast. This is Chris coming at you from Austin, Texas on a Wednesday. I had planned a little longer intro for you, but got completely laid up today with sickness, with a fever and a cough. And for that reason, I'm going to cut it short and get straight to my conversation today with a prior guest, Sasha Gollish, who was on episode 118. She, of course, is a Canadian elite distance runner who ran a 232 earlier this year at Houston, is hopefully gearing up to make the Olympics in the marathon for Canada. And at the time, I was talking to her last. She was with a different coach, has since made a coaching change, and has gotten back to training in Toronto. So if you want more background on our guest, you can definitely go check out that prior podcast. Again, Episode 118. This episode actually came as an idea from her. She got in touch with me, has been listening to the podcast. She listened to my Human Performance Project series with Dr. Noah Moose and Jason Brooks. And she said that she loved the episodes, but also found sometimes that it was hard to assimilate some of the things into more practical application. And so she got in touch with me and said, hey, I'd love to come on and talk about how to take some of those concepts and put it into practice, a concept that she's calling as an engineer, performance engineering. So that's what we're going to talk about today with her. Hopefully through that, we'll give you some really practical ways to apply some of the lessons from that human performance project series. One thing, incidentally, for me that hits home, especially today, as we talk about sleep in particular, and that's definitely my biggest opportunity area for improvement. And I think part of me getting sick was due to the fact that I haven't been prioritizing sleep recently the way I need to. And so it kind of hits me in the face as I intro this episode. That's something that I can't afford to put off any longer in terms of just simply doing better. And she coaches me up on the sleep topic actually quite a bit in our conversation. Quickly, before we jump right in, I wanted to announce that on June 1st, our virtual podcast group will start and be open for signups. You can find more information on that by going to our website, roguerunning.com, and then clicking on the training menu, drop down, podcast training. We'll have all the details there. And you can sign up starting June 1st, all the way through June, I believe it's 22nd. So we've got about a three week window where you can get, plug into that program, and we'll be starting the training right away in June for those that will be training for fall races. And we'll have a speed track, we'll have a half marathon track, and we'll have a marathon track for those that might be racing between September and December. So if you're interested in that, check it out. And of course, if you have questions, you can email me, chris at roguerunning.com. So with that as an intro, let's jump into my conversation on Performance Engineering with Sasha Gollish. Here we go.
+
+Welcome, Sasha Gollish, back to the show. How are you doing today, Sasha?
+
+Hi, Chris. I'm great. How are you?
+
+Doing awesome. You're back in the great north, right?
+
+Oh, it's north.
+
+It's cold today.
+
+There's no wall there, but you're north of the wall. In a figurative sense.
+
+Yep. I'm missing the Austin weather. I'm missing running with you guys. But yeah, it's also nice to be home.
+
+I'm not sure that you would be missing the Austin weather if you have experienced it over the last seven days. We've fast forwarded to summer and all of its humid and hot glory. So it's been pretty rocky for those of us trying to transition into that. And I would imagine you're probably getting better weather right now.
+
+So I secretly, not so secretly, so I don't know if altitude works for me, but I know that heat and humidity are my stimulus for creating red blood cells. And even better, I love hot, humid weather for training. So I know I'm not most people, but that's my jam.
+
+Well, I'd be curious then to experience you experiencing our version of hot and humid. Because it's a very special case. I kind of wonder if maybe you would change your mind. Because I think Toronto hot and humid might be a little bit different, but maybe I'm wrong. Maybe I'm wrong.
+
+So maybe I need someone to buy me a plane ticket so that-
+
+You need.
+
+We need someone to buy me a plane ticket so I can come run with you and we'll see if I implode.
+
+Maybe we can find a rogue benefactor who will fly you down just for this test.
+
+Ah, count me in.
+
+So welcome back. We had you on episode 118 on the now infamous float pod episode.
+
+Yep.
+
+It's good to have you back. This episode was actually initiated by you. And because you were listening to my Human Performance Project episodes with Noah and Dr. Moose and Jason, and you said, hey, this is all great stuff, but I'm an engineer and need something a little bit more practical. And a podcast episode was born. So give us two seconds on why we're having this conversation. And then I want to get a little more of an update on you, and then we'll come back.
+
+Sure. So it's the idea that engineers build tools and just this abundance of information out there. For me, it's overwhelming as I look at all the research. And if I find it overwhelming, I'm sure a lot of other people find it overwhelming. And just given my background as a civil engineer and then my background as a coach, I was like, I think I can combine these two and really help people and help them and build tools that they can use in their lives based on the research that's out there.
+
+So basically assimilate some of this great knowledge into something more practical.
+
+Totally. And also kind of look at the various studies and make sure it's also good science.
+
+Cool. So we'll come back to the good science. First, I want to get an update on you. Obviously, you're training in Toronto now, but you've had some shifts since we had you on the podcast since you were in Austin. You were previously training under coach Brad Hudson. That's no longer the case. And so give us just an update on your training. I know you've also had some motivational doldrums that you've been working through. So we'd love to just update the world on how you're doing.
+
+Sure. So yes, no longer working with Brad.
+
+Brad called me on a Friday and was like, I don't want to coach you anymore. And obviously, I took it pretty personally. But Brad was just making a shift and him not wanting to coach me had nothing to do with me. But it did leave me in a spot without a coach. And then combined with that, when I left Austin, I had so much fun training there with you guys. And I came home and I was like, oh no, like the joy is gone. And I kind of had to work through the weeds of why the joy was gone. And I bombarded you a lot with questions and comments and just really asking why. And you were incredibly patient and kind with me to help me work through it. And I asked myself a lot of questions about why was I not finding the joy in running anymore. And for me, it's this sense of community. And I had a coaching change a year ago as well, when the person I had been working with at the university I was at, his position was not renewed as they're framing it. And so I was sort of torn out of a great training environment because I wanted to stay with that coach at the time. And I just wasn't surrounded by a whole bunch of people that really made me excited to go to practice. Like, don't get me wrong, those high school boys were wonderful. But, you know, as a 37-year-old woman, I don't have much in common with high school boys anymore. You know, I'm not going to the Madison or, you know, local pub to, you know, crush beers with the boys. And then, you know, I needed a coach not to push me, right? You know, Sarah Lesko and you both said this, like, I didn't get to where I am today because I needed someone to push me. Like, probably somewhere earlier in my career I did, but, you know, I've gotten to where I am because I can push boundaries. But, you know, as I've gotten older, recovery really is king, as Brent would say, and I need someone to hold me back. And, you know, when Brad decided he no longer wanted to work with me, I thought I could coach myself, but I am my own worst enemy because I will push and push and push till I break, which you saw. And so I knew that I needed to be with a coach that was going to hold me back when I needed to be held back. And just change. Like, I've been with the same coach, like, on and off since I was in high school. And while the training would have worked, you know, and I got to a place where I did a couple years ago, you know, doing the same thing over and over again isn't going to net a new result. And so I just knew I needed to make a change. And so, you know, I've partnered up with the with the Masters Track and Field program here. And there's a bunch of people that one, I can relate to. I have two coaches who we call Statler and Waldorf. If you think of the Muppets of those two old guys making commentary up in the corner, we laugh a lot about that. And it's a great community to be around. Like, I'm just surrounded by this group of guys that all they want is to have success in their own running. But they also really want to see me have success as I, you know, chase an Olympic team.
+
+You were also feeling pretty shitty too, right? The legs weren't underneath you, so to speak, and that seemed to also be affecting your motivation.
+
+Totally. And I think that really had to do with the joy. Like, I think if you wake up and you don't really want to do something, I think your body's going to say, fine, you don't want to do this, and we'll prove to you that you don't want to do this, and we'll make you feel terrible. But also to the point of I was definitely pushing way too hard too often and just wasn't recovering. If you look at my Strava, there's a couple runs where I was like, oh, I felt like I've been billy clubbed. And it's like this light tapping for an hour and a half of running, which leads to very painful legs at the end. Like, it was terrible. And just sort of having a reset that week where you said to me, no workouts, like, just go find your legs again. It was, you know, it was the reset point. And I haven't had that feeling since. And I found the joy. Like, I smile all the time when running again.
+
+The magic joy. There was probably also something there about maybe not giving yourself proper recovery from Houston as a part of that funk.
+
+Absolutely. So, like, looking back now, you know, again, I need to be held back. Two and a half weeks after Houston, I went on a ski vacation with my parents, which is fine. But I was in the gym every night for two and a half to three hours hammering away on the bike and the elliptical. Like, that was the last thing that I needed to be doing. Going out and skiing and having an awesome time, no problem. But then going to the gym and hammering was, someone needed to say, just go ski and enjoy the time with your parents.
+
+It's funny too, because, or not funny, I'm not laughing at you. But as someone, I mean, we talked about this on our last episode with you, as someone who is generally oriented appropriately around recovery, you also fell in a trap where you weren't recovering.
+
+Totally. And, you know, Ali alluded to this too in her podcast with you with Brad. And I'm not faulting Brad in this, but, you know, I am known as question girl. I am going to, if you are my coach, I'm going to bombard you with questions. And it's not because I don't buy into what you're doing. I am just genuinely curious. And so, you know, I was asking him, like, should I be doing this? You know, should I be training and I'm skiing? And do I need to do this? And do I need to do this? And as opposed to saying, just go enjoy yourself, it was when I asked those questions about training, to him it triggered, she's ready. And so it was just a complete miscommunication on what I really needed. And I think, you know, looking back, Brad even said to me, you needed the rest then. But because you asked those questions, I thought you were ready. And again, it was just a total miscommunication between the two of us.
+
+Interesting.
+
+And, you know, I am my own worst coach. I can never coach myself. Like someone else, I would totally tell to rest, but I just I don't have that ability to, you know, really step back and look at myself because I'm in my own body. And I'm like, I feel good. But the data tells me something else. And probably my stride told me something else, too, that I wasn't willing to admit.
+
+Yeah, I think the same is true for everybody. I think it's really hard to coach yourself.
+
+I don't think you should. I really think it's so important to have somebody on the outside looking out for your best interest.
+
+It's also interesting for me to hear somebody who's an aspiring Olympian say, I struggled with motivation. I know that's a common theme among athletes that I coach here, the everyday runner who's just trying to get a PR or run under a certain threshold or Boston qualify or run their first marathon or run their first half. We struggle with motivation all the time, but I feel like a lot of us think that those at your level are immune to it. So in some ways, it's comforting to actually see you struggle with that too.
+
+Well, I'm still human.
+
+I think most elites are still human. And I think it's normal. And so one of the reasons I picked the two people that are coaching me now, Mike Scherar and Paul Ozlin, was Mike Scherar said to me back when I first came back, stop chasing times. If you just race to race, the times will come. But also with that, if you just race to race, it's so much more fun. And that relates to everything. My boyfriend, Raul, is a cyclist, and he had his provincial championship, so the equivalent of state championships this weekend, and his goal was to win. And I knew from the outset with him saying that, that his race was not going to go well. And when we set ourselves up for whatever that expectation is, often it ends in failure, because there's no markers that we can mark against unless we get that one super tiny specific thing. And I think he could have won the race if he had raced to race the race. Because in those moments when we set those really specific targets, if it doesn't go precisely the way we've had in our head, we give up. And we give up in the sense that we're not motivated because it's not going the way we want it to. But when you just set out to go run a marathon, and let's say your goal is to qualify for Boston. So if you set out to go and run your marathon, and run it the first half in this time, so that you're on track, because you have to have that kind of performance goal, but that you're going to smile at every volunteer you see, or you're going to relax, and you're going to stay in it when it gets tough, and you're going to focus on persevering and being in it. I think then the times come. And if they don't, one, you can reflect back and say, okay, where might I have made these mistakes? But two, that there's so much more positivity, which is then future fuel for motivation in the future to do it again.
+
+That's interesting. I think, and I've talked about this before on the podcast, where to me, goal nirvana is when you have something that you know you're going to give everything for, but at the same time, and this almost seems paradoxical, but at the same time, you also know that it's going to be okay if you don't get it.
+
+Totally.
+
+If you can get to that place where you can simultaneously have both of those things coexist in your mind around a goal, that's where the magic is because then you know you're going to give everything, but you're also not so knotted up and tied up to that goal that you can't go with the flow and be loose within the context of the performance.
+
+Right. And I think it's a little bit of the comparison of perfectionism, right? When you chase a goal with perfectionism, you actually are setting yourself up not to reach your highest possible level of achievement because you've basically set the bar in a sense that you know you can achieve this one thing, but then you don't give yourself the freedom to really see what you can do. And it's like that all comes back to the like Carol Dweck fixed mindset, the grit Angela Duckworth stuff, just this idea of letting go so that you can set yourself up for mega success, but also understand that failure is part of that process.
+
+So this seems like a good segue into our main topic on what we're calling Performance Engineering. Basically, how do you take all the data and the tools that are out there and try to practically apply that in your world before? And we're going to talk about sleep, nutrition, training, goal setting, which we just covered, and then tracking habits, those sorts of topics as we go through this. Where do you want to start?
+
+Well, I mean, I would start at sleep. It's my favorite thing in the world to do. We've talked about it a lot.
+
+Let's start there, because we have talked about it, and we talked about it on the podcast a lot. We talked about how important it is. Christy Eshwanden's book, Good to Go, that I talked about with her and Alex Hutchinson. Sleep was basically the only thing that had, the only recovery tool that had any scientific validity. I'm exaggerating that slightly, but that was basically the conclusion of her book. And yet, it's probably the biggest thing that we all struggle with, including me. So let's just start with the case for sleep, because I know you've been talking to a sleep expert. So let's make people feel bad first, even more terrible about their sleep habits. You know, why is it so important? Let's start there.
+
+So not only have I been talking to the sleep expert, I'm actually going to start working with the sleep expert, which I'm super pumped about. So one of the things we're learning in sleep is it's not just muscle recovery that happens, but brain recovery. So that deep REM sleep, which you can only get the longer you sleep, actually clears out brain toxicity. And brain toxicity, there's a host of things that go with that. So if you don't sleep enough and you have sort of a toxic brain, your cortisol levels go up, you're going to be more stressed, your bandwidth for coping is going to be lower, which then increases stress. And I think according to the research in the US, stress is the number four killer of people.
+
+So right there, right?
+
+Like don't sleep enough, it's probably going to kill you. For students and even for people working hard on projects or whatever they're doing, when you don't clear out the brain toxins, you don't have any deep learning. So in the context of not talking about students, but in work, if you're working on a big presentation or something really important, all of that work that you did the day before, if you don't sleep enough, you actually kind of have to take three or four steps back to redo that work, to reengage with it, to move forward. So this idea of cleaning out the toxins, I think is the most important reason why people need to sleep, so you don't die at an early age.
+
+So one of the things, too, that you found out that I had asked about was that fortunately napping and sleep outside of your overnight sleep does actually have an additive effect to your sleep total, whereas I think there was some thought out there that maybe it didn't, or that it didn't. It wasn't a one plus one equals two. It was a one plus one equals one and a half or something sort of game with napping. But it does seem like that napping time adds to your total sleep time just like it would if you were sleeping at night more.
+
+Sure. So think about it in the way of running training. And so if you miss one running workout, it's not a big deal, right? And it's the idea of looking at sort of the macro. And so for sleep, think about it in terms of a week. And so ideally, you want to get eight hours over the seven nights, so 56 hours of sleep. And so if you know that one night that you're only going to be able to get five hours, it's not a big deal if it's not occurring over and over again. So you can nap, and napping counts at a one to one ratio. And then you just need to sleep in and around that, let's call it a rough night, a little bit more, so that on the aggregate that you're getting to that 56 hours. When I did the sleep study, they really are a huge proponent of naps. And I said, I really don't nap. And this was back when I was running more shorter stuff. And Amy Bender, who is the sleep expert, she was really looking forward to telling me that I was going to need to nap. She got my data back, and she was like, wow, you are the greatest sleeper I've ever met. You don't need to nap right now. But as I moved in to the longer training and the marathon training, I probably need more than 56 hours a week, and I'm probably getting up towards needing 70 to 75 hours a week. A daily nap on those big days has become totally part of my routine. And even if I don't fall asleep for more than 5 to 10 minutes, that 30 minutes of shutdown where you sort of go into almost a light sleep, that counts as 30 minutes towards your sleep, because you're clearing out some of the brain toxin, you're letting go of stress, and you're really just letting your body recover for that moment so you can go again.
+
+So getting practical for a second, if someone's trying to improve on their total hours. You know, it's funny, I've never heard that 56-hour number ever. You always hear eight hours a night. And I actually was reading something recently on this topic that said you should be looking at your weekly sleep instead of your daily sleep, because it matters more in the aggregate. But I've never heard someone say try to get 56 hours in a week. I've always heard eight hours a day, whatever, seven, eight hours a day. And so that's really interesting to me. It's just thinking about tracking it differently. But what can people practically do to get better about it?
+
+So I think this is going to be very individualistic. So, you know, if you're someone who has to get up early in the morning for whatever reason, then it's probably figuring out how to go to bed earlier. If you have the latitude in your life where you could actually sleep in, can you give yourself that ability? You know, I jokingly said to Raul after he rode his bike at 5 o'clock this morning, I said, you know, like, don't forget to take a 20-minute nap in your office today with your hands on the keyboard. And when I was working full time and training and not training at this level, like I used to turn my chair around, stick my hands on my keyboard and take a 20-minute nap. So it's figuring out what you need to do for you. And I think the best way to do that is to journal. And, you know, I'm not asking anyone to write a, you know, poetry or a novel about their sleep. But, you know, on your phone, just start tracking like I, you know, Monday, I went to bed at this time. This is what I did the hour before. This is when I got up. This is what I did the hour after. And figuring out if on either end of those, you can shift it in and get yourself some more sleep.
+
+And write it down. Track it like you would your training miles. Track it like you would your training miles. I mean, for me, you know, just let's coach me up for a second here. You know, I'm getting, and if I do do some quick rough math, I'm getting about five and a half hours, four nights a week, which is 22 hours. And then I'll get maybe nine hours, one night a week. And then the other two days, probably closer to seven. So that puts me at forty five roughly per week. Which would be probably a good week for me. That's probably a really good week. That means I don't have a reason to get up early on a Sunday or my kids are generous to me. They don't wake me up at 630 on a Sunday, which is my day to quote unquote sleep in a little bit. And so, yeah, I'm probably getting forty five instead of fifty six, which means I need to be adding, what is that, an hour and a half a day.
+
+About that.
+
+That sounds really hard. It sounds really hard.
+
+So to me, the nights that you're sleeping only five and a half hours, how can you get an extra twenty to thirty minutes? And so instead of trying to think of, oh, my goodness, I need to get to seven, start small, right? Don't, it shouldn't be something that's so overwhelming. I think one, you know, about positive or sorry, psychology today on the flight home. I love spending money on magazines and airports. Such a sucker. But, you know, they were talking about social media, and so social media has been accused of causing us to not sleep enough, and it's been accused of causing anxiety and depression. And what they're actually seeing in some of the research is that people who suffer from those disorders tend to then spend more time with social media. So along with tracking when you're going to bed and when you're getting up, it's also really important to track what you're doing in that hour before you go to bed and that hour just after you get up. And trying to figure out if there is time in there that you can give up so that you can sleep more.
+
+My biggest challenge, again, making this about me, is that I'm a night owl, but I have to wake up early because I coach early. And there were some stats I saw recently where about half the population falls in either the night owl bucket or is a super early person. And so about half the population has a skewed circadian rhythm if left to their own devices. And for those of us who are night owls, we have to modify our patterns in order to fit into the world. And so if I were left to my own devices and allowed to just sleep and wake up normally, and that sometimes happens in random blocks of time where I'll be on vacation or have a little bit of time post-training where I'm not having to wake up at certain times, my rhythm naturally just shifts, and it'll go to where I'm probably going to bed at 1 a.m. and waking up at like 9 a.m. That's eight hours, but that would be what I would fall into if my body just sort of let the schedule establish itself. But as it is, that doesn't work for me. I have to be up at 4.30 to coach at 5.30 three times a week and sometimes four, depending on Saturdays. And so what do I do? What do I do if I am most alert at 10.30 p.m.?
+
+So one of the things I've sort of been reading about is that as we get older, we actually have more ability to shift our circadian rhythm, but you have to do it slowly. So I laugh about this every time I say microwaving training. So you can't microwave sleep and ask your body to go to sleep at 8.30. And so for you, I think it would be going to bed 10 to 15 minutes earlier for a couple weeks and then shifting it again so that you can train your body to shift its circadian rhythm a bit. You know, the one sort of stretch of people that really can't change their sleep patterns are generally teenagers and they really are night owls. But as we get older, we actually have much more control over that. And you, unfortunately, might be one of the standard deviation of people who have no control over that, and you'll never be able to go to bed earlier. But encouraging your body just to try to go to bed 10 to 15 minutes earlier for the next couple weeks on those early mornings for you, you know, right there, that's 45 minutes more of sleep.
+
+Shut down the Netflix.
+
+Shut down the Netflix.
+
+Go to bed a little bit earlier.
+
+Let's talk about blue light then, right?
+
+So, yeah. So what else? What are other sleep habit things that people should be thinking about?
+
+So if you want to watch Netflix, so like not everybody can read, like ideally you read fiction or you read nonfiction that's story like, so that your brain can go into a dreamlike state. But it's also about minimizing blue light. So they have blue blockers, which you can Amazon, Google, whatever you want to call it, but search on Amazon to block out the effects of blue light. And so I think there's a misconception that blue light only comes from screens, but blue light is emitted by the sun. It's emitted by overhead light. Basically, anything that illuminates contains blue light. And blue light sends a blue light wave into your brain, and it suppresses the secretion of melatonin, and melatonin is what makes us fall asleep. So if you would like to continue watching Netflix, but turning it off 15 minutes earlier to go to bed earlier, I'd recommend getting those blue blocker glasses. So the other two are alcohol and caffeine. So I know caffeine doesn't apply to you, since you're not a coffee drinker. But I think most people need to, when you're tired in the afternoon, when you get the, it's the adenosine push, and so adenosine and melatonin work in opposite to each other, and so we get this kind of mid-afternoon fatigue with the adenosine push, and you need to get through that, most people need to get through that without coffee. And so when you take, when you drink coffee in the afternoon, it really tends to shift the melatonin cycle, so that you're not going to be able to sleep at night. And so most people need to stop drinking coffee at noon, just before noon. And then alcohol, basically just don't drink yourself to sleep. So like having a glass of wine with dinner is okay, but having three glasses of wine to make yourself fall asleep is not good sleep. I think we all learned that in our early 20s at the bar.
+
+Yeah, it's the worst because well, at least for me, I'll wake up at 3 a.m. wide awake, you know, after the alcohol wears off.
+
+And I have to pee.
+
+Like it's like, oh my gosh, I'm going to pee my pants.
+
+Like I have to pee so ugly.
+
+So, you know, the other thing I have to do, I mean, electronics are weird these days. So we have a TV in our room. It has this like blue ring around the on button. And then I have to have a cable box that has like a red light, a blue light that just never turn off regardless of whether it's on or off. And so I have to cover those every night too, so that I don't feel like I'm sleeping in a theater. You know what I mean?
+
+Yeah. Yeah. So we put electrical tape over all those things. Like we have an alarm pad in our room that has this bright green alien color on it that like drives me cuckoo bananas.
+
+So cover all of that. Lower the temperatures, right? So that a cooler space is better for sleep.
+
+Dark. You got to have black out blinds so that, again, you're not getting that light emitted into your brain, which won't allow the melatonin to be secreted, which keeps you asleep.
+
+And then nap. I mean, to me, I think the most... I mean, look, I will take your advice and try to shift my sleep schedule, but I think practically the bigger chunks of time are going to be getting naps in. I have a cohort coach in Austin who also is up early, and pretty much every morning of the week to coach, and he says he doesn't schedule meetings between 1 and 3, because that's his nap time. Like, man, you're on to something there. Maybe I need to start instituting the 1pm nap time.
+
+Well, I think for you, there's two ways in which we should nap. One is the 20-minute nap where we don't get into deep sleep, which is generally what I do, given how much I do sleep. And then for you, you probably need a 90-minute nap where you go through a full sleep cycle. So 1 to 3 sounds good to me.
+
+Read a little bit.
+
+Yes, just block it off.
+
+Earplugs, get an eye mask. I know where you record your podcast.
+
+Go up there, get yourself a pillow.
+
+Life will be good.
+
+I'm going to need a quieter space. I don't actually have problems napping. That is something. I'm a stellar napper if I just give myself permission to do it. But I do like this idea of tracking because I think that's, you know, we're obsessed generally with tracking things and start tracking activity now in our world, especially as runners. We've got the Strava. We've got the activity trackers, the Apple Watch telling us to move every two hours. But yet we're not as good about tracking sleep as we should be.
+
+Well, you know, Garmin in particular is really updating their dashboard on phones. And it actually is a pretty good sleep tracking device if you wear your watch enough. So I wear, I have an Apple Watch, not so that I can answer phone calls when running. Mostly, so I have it for two reasons. One, my dad was not happy with the safety in our city, and so he wanted a way to know if I was ever in danger, and I refused to run with my phone. But I wanted it for the ability to track basically everything outside of training that I find important. And so for me, it was really the sleep. So I use two widgets. I use auto sleep, which detects napping and your nighttime sleep. And then I just use whatever the heart app is that comes with Apple that checks your HRV and your heart rate.
+
+What was the first one you mentioned?
+
+It's called auto sleep.
+
+What is that?
+
+So presumably, and it's not the best of the best, because unless you got your brain wired, you're not really tracking your sleep all that well. But essentially what it does is it tracks your heart rate and your movement while sleeping. And so the theory is that the less you are moving, the deeper the sleep that you are in. And so every morning, it tells me how long I was asleep for and roughly how long I was in deep sleep for. And I think it does that based on both heart rate and movement to track the deep sleep, because the deeper you go into sleep, the lower your heart rate should go.
+
+Interesting.
+
+You have a garment, you can try this.
+
+Yeah, but I don't have a garment that has that functionality. I need an updated garment.
+
+You don't have the one with the wrist?
+
+No, I don't. I'm old school over here.
+
+Old school is also good.
+
+Just tracking when you go to bed and writing it down is probably just as worthwhile.
+
+Right. Yeah, I don't think I have a sleep quality problem, but I do have a sleep quantity problem. Okay, so that's sleep. Now let's get to nutrition. We talked a lot about this in the third episode of my miniseries with Jason and Dr. Moose. Nutrition is a tricky topic to me because people are so passionate about it in that everybody thinks they found the secret and that if you don't follow their secret, then you're somehow a terrible person. And that part of the nutrition debate is frustrating to me. And we like to label things and put people into camps and separate them as if they're warring factions in Game of Thrones. And that's just weird to me. But for me, it's more trying to think about it holistically and not necessarily get tied to a paradigm or another. How do you think about it?
+
+So I think you kind of nailed it with the first thing that worked.
+
+It's the individuality of it. So you're right. Everybody has their secret thing that they're going to say is the winning formula. And they're right for them. And what works for me might not work for you. So again, I'm kind of laughing, so knowing your family life a bit. But I know how much you love hummus. And I know that your wife, just like me, cannot eat chickpeas. And the number of people that have reached out to me to say, you need to be a vegan.
+
+And I'm like, I cannot be a vegan.
+
+I'm fairly certain that I'm becoming anaphylactically allergic to legumes, which are chickpeas and all the other beans. Just because you think that's the winning formula for you does not make it the winning formula for me. And I think Noah did such a wonderful job talking about people understanding not necessarily what their food allergies are, but what their food sensitivities are as well. So there's nothing worse than going for a run with gut stress, right? When you're just like, where's the closest bathroom? Not only is it painful, it's just not enjoyable. And again, I think it's figuring out, and it's a science experiment of one, of eating things in your diet and figuring out what works for you and when. And as you said, eating holistically. We can't change that the macronutrients that we need for food are carbohydrate, protein and fat. The balance of those are generally, we need to eat the most in carbohydrate, protein falls in the middle, and we need to eat the least amount of fat. And then it comes down to the micronutrients, like your iron, your vitamin Bs, your vitamin A, vitamin D, and figuring out how to get those from food sources. So this comes from the sleep expert when we were talking about melatonin, and I was asking her, you know, should you be taking melatonin? And the answer is, and it's like other supplements, yes, but only for a period of time, and that you should be able to rely on natural things to get what you, to get the macro and micronutrients that you need. So I go in, so I take iron every day. So as a female runner who too much information, but has a regular cycle, there is not enough red meat in this world that I can eat to keep up with my ferritin. So I take an iron supplement, and when I'm done training, I will probably not take my iron supplement. But filling our bodies with, in a sense, chemicals to meet our macronutrient and micronutrient needs, I don't think is the right approach.
+
+I agree. But it does seem like we're throwing a lot of these things. I mean, I've been watching elite athletes put things like athletic greens in their smoothies. You see all of these different supplements. I mean, everybody wants a pill, a powder, a solution that you can just take.
+
+They want a microwave nutrition, yeah.
+
+And it's much harder to think about getting that from real food, or at least not feeling like you have to somehow make up for your diet inadequacies in other ways. So how do you think about it? As someone who wants to perform at the highest level, who's pushing your body in ways that us plebeians are not, what do you do?
+
+I think this applies to everyone. I don't like it when my stomach feels uncomfortable. To me, nothing worse than having that bloated, uncomfortable stomach feeling. And so for me, it was trying to figure out what caused that. So when I was a kid, like most kids, McDonald's was a treat, right? You got to go play in the play area and eat McDonald's. But every time I ate there, I would just get the worst stomach aches ever. And I basically, as a kid, was like, I don't want to do this anymore. And I kind of have the same attitude now about, okay, I want to put things in my body that work for me. And so my diet is not going to work for somebody else. But one of the things that's been really helpful is tracking what I'm eating to make sure I'm eating enough of the right stuff. And Under Armour actually has a phenomenal app for that. We're basically, it's called My Fitness App. And so many people have entered all of the different things that you could possibly eat. And it, at the end of the day, spits out the macro and micronutrients that you've eaten. And it's this idea of knowing what you've actually eaten so that you can make improvements. So my biggest weakness is cookies. Like I would eat cookies for every meal if I could, but there's not quite enough nutrients in cookies.
+
+Don't we all wish.
+
+Right? Well, some people don't like cookies. They'd rather eat chips. I mean, I eat chips too. But it's balancing that. And so making sure you figure out that you're getting enough of the right stuff. And it's also being kind to yourself, right? Like if I'm coming back to Austin, I'm for sure going to eat barbecue.
+
+Like there's just no question.
+
+Like at least if I'm there for a week, at least three times, right? Like, but, you know, on the days I eat barbecue, like depending on what I eat for barbecue, I'm going to need to make sure that I eat, you know, a little bit more greens at either my lunch or breakfast or dinner, opposite barbecue. And just finding that balance and being kind to yourself. Like if you're hungry and you're craving a chocolate bar and you don't do it often, go eat that chocolate bar.
+
+I have a suspicion that I'm sensitive to legumes as well, at least to peanuts. And it's really depressing me. Just as a side note, because I love peanut butter. But it does go back to this idea that just just listen to how you're feeling.
+
+Yeah.
+
+And and if you're having issues, write down what you're eating, log it. As you said, I've used my fitness pal before as well. To me, it's not something I can use on an ongoing basis because it's too much. It's too much. But for short little stints where I'm trying to reset or kind of see where I am for a day or two or three, then that works for me. There was a period of time where I did attract everything for four months, and it was way too much. But I do think it is a useful tool to use as a checkpoint, as a reference point to see where you are, so that you can then make some adjustments from there. And it will show you those glaring things, because part of it is that sometimes we just don't know. Until you track it, you just don't know.
+
+And you nailed it there, saying just track two to three days. It doesn't need to be this onerous, ongoing process that feels daunting. Do what makes sense for you. And so for me, one of the things in terms of diet and nutrition was between lunch and workouts, I was not eating enough. And not that I was bonking in workouts, but there was just this gap of time where I should have been consuming more calories. And like you, unfortunately, peanuts and I don't get along before runs. So it's now a post-run snack. Like there's breakfast rounds with peanut butter, hemp hearts and banana is my favorite thing to eat after. But just a bowl of cereal in the middle of the afternoon with cow's milk is full of protein, fat and carbohydrate. And it's the perfect snack for me to eat before I go for a run. About an hour to an hour and 20 minutes out. I mean, unfortunately, your US dairy standards are a little lower than Canadian, but I'll forgive you guys. Buy organic milk in the US. That's my recommendation.
+
+Yes, yes.
+
+But actually, just quickly on that topic, I was talking about this with someone the other day, and a lot of people don't know that milk outside of dairy milk isn't high in protein. And so if you do a comparison of almond milk, and if you think about almonds and almond milk, you'd be like, oh, there's protein in there because it's almonds, but it's not. And so it's really important to look at the labels and what you're consuming to ensure that you're again getting enough of those macronutrients.
+
+Track for a few days.
+
+Yeah.
+
+Listen to your body. Make notes on how you feel. Make adjustments. Make more notes. Iterate till you figure it out.
+
+Keep snacks in your desk.
+
+Good to go. So that's sleep and nutrition. Where do you want to go next?
+
+I think goal setting.
+
+Okay, goal setting. We kind of teed it up a little bit at the beginning, and you're talking about Rolls-Royce. But how would you frame the goal setting discussion?
+
+So in two ways. I think one, goal setting in our lives typically happens in silos, which is too bad, and I think that's where we really need to see a shift. And so, I mean, I'm totally guilty of this as well. So as opposed to setting my running goals, you know, for me, my academic and career goals and my family goals in three different silos, which is where I found tons of failure, setting goals together and then setting goals both based on performance and outcome and finding the right balance so that you can achieve success, whatever your definition of success might be. I actually was just talking about this with Brent, this idea of setting goals in silos and the number of people who pick races that they want to do without looking necessarily about what's going on in their lives. So I said to him, I was like, I can't ever run Houston again. And it's not because Houston is not a great race. Houston is a phenomenal race. But the holidays are one of my favorite times of the year. So it's my birthday and my brother's birthday, and as a Jew, I love Christmas. So a lot of indulging happens in that sort of 10 days, which does not set you up for a good race in January. And so, you know, I could probably go run a half marathon there, but I probably shouldn't try and run a marathon there again.
+
+And just looking at it in the context of your life.
+
+Yeah.
+
+And, you know, for people with kids, like back to school is an incredibly busy time. The holidays are an incredibly busy time. Anytime you have spring breaks with your kids, like also an incredibly busy time, probably looking at races in and around those hectic times is not a good idea. Or if it's a section of training that needs to be very specific and you need to hit, if you know your family life is going to be busy, then you probably need to shift what your goal race is going to be.
+
+You know, it's interesting too on this topic, you know, mentioning the family idea is that it's surprising how many people don't engage their partners on the goal setting discussion. And this can, I've done a couple of goal setting workshops over the last four months, and that's been a consistent theme where somebody will say, well, I want to do this thing, or I have this goal, but my wife doesn't really understand why, or my husband doesn't really get it, or my partner doesn't know why it's important to me. And my question always back is, have you talked to them about it? And have you explained why it's important to you? Have you given them an insight into why you want this thing? And generally, the answer is no. And I get it, because I fall in the same trap and actually had a mentor in my old work life that basically pushed me to engage Amy at that time on career goals. And as somebody who just sort of tries to figure out the world sometimes too much on my own, I hadn't as well as I should have. And I still struggle with that tendency today and need to constantly remind myself to engage her. But I think the same is true for everyone. It's like, why aren't you engaging your community, your partner first, and then your community on your goals so that people understand and they can lift you up in it?
+
+I think there's this, I don't know what it is, but goals are often communicated. And it's actually one of the number one things you need to set yourself up to achieve a goal, is to communicate it with others. But we kind of have been taught that goals are almost like dirty secrets that we hide.
+
+It's like, I'm not going to tell you mine.
+
+You're not going to tell me yours. But if we could communicate them to each other, we'd actually realize that one, we probably have, there's a lot of overlap in what we're trying to achieve together, and that what we're trying to do is really cool and that the other people around us will buy in because they're just as excited as we are. And I think it's shifting this attitude of this sort of idea of secrecy with goals and communicating them. But also not in a way where, you know, Brené Brown talks about vulnerability, but like not in an overshare, uncomfortable way.
+
+Right. There's a balance.
+
+Yeah, I mean, there's certain things like, there's certain goals that like between you and your partner that are probably not meant to be communicated, right? Like that's, you know, preserving the intimacy between you and your partner.
+
+But what if, I mean, but what if they don't understand? Because I do think there's situations where a partner might not be supportive for whatever reason or might not fully get it. What do you do then?
+
+Throw them in the garbage? I think a lot of times that actually comes back to the other person's insecurity and often not an insecurity about the goal that they're trying to chase. And it's a matter of communication. And so sometimes when we present a goal to a coach or to a partner or whomever, it seems in a way disconnected from other things. Or to some, like in terms of partners, it seems like it's going to take away from that relationship. And I often, like I don't think that at all. I think as long as a goal is not harming somebody else and is kind and is beneficial, I think we need to be supportive of those goals. But it's often the other person's insecurities that cause that friction. But we have to be conscious of that and be sensitive towards that and make sure that we are communicating with our partners and asking them the right questions and letting them ask the questions. Because this idea of uncertainty is the stuff that makes us super stressful. And when you look at uncertainty, it often seems sort of big and overwhelming. But when you sit down and talk about it, it's often something very small and very surmountable. And so addressing that uncertainty with your partner I think is really important.
+
+Yeah, and then I think also understanding that compromise is okay in the context of it. I had an athlete recently who was training to qualify for Boston at a marathon in the spring, and he is also planning this big move to the Northwest that is going to be coming soon. So basically right after the race, and they were going to be getting their house ready to sell and all these other things that needed to be done in order to prep for the move. And so the context wasn't great. And his partner was like, I don't know. And so he sat down with me and said, Hey, okay, coach, what can I do to make some adjustments to my training in terms of when things happen so that I can be present as I need to be to do the work to get ready to move? And so, and he was also like, and also, what's the bare minimum I need to do? Not in a sense that he was trying to get out of things, but he's like, you know, I don't want to over, I can't afford to overdo it. I need to do exactly the amount of work I need to do to get this goal. And so we had that conversation as well and basically shifted things around a little bit, adjusted his runs a little bit, manipulated his long run schedule a little bit so that he could be present in the way he needed to be for his partner as they prepped for this move, and he got his goal. But in the context of communication and compromise, that made it all fit together.
+
+Totally. And again, that's kind of coming back to not setting goals in silos. So next time, perhaps not pick a race around when you're moving. I mean, sometimes these things come up. But thinking about it personally, it's also people like you who are coaches holding us accountable and saying, you know what? That actually can't be your goal. And I think in the context of partners, then it's very hurtful when it comes across that way. But when it comes from a coach, it's a very different conversation. And so, you know, you knew that I was not going to be ready for Peyton Jordan. And as opposed to saying, let's do this, this and this and get you to the start line, it was like, nope, just no. And it hurts, but it hurts for a very brief moment as opposed to going to that start line and it hurting for a lot longer. And having people outside, coaches, you know, integrated support team in terms of like mentors, partners, parents, friends, even your kids that say, I don't think this is a good idea, is also really important.
+
+So you mentioned earlier this idea that Roll had a goal to win this race, and it was probably too big, right? And maybe there were a few things going on there that I wanted to unpack. How do we know that we're setting goals that are big enough?
+
+I think you have to fail, right? I think you have to set goals that are big enough and go out and try stuff and fail. And if you haven't failed yet, you haven't also achieved your greatest success yet.
+
+Yeah, failure.
+
+Failure is the number one thing for me. And being okay with failure. So that's, I guess, the second part of it, is surrounding yourself with coaches and family and friends who get you through that failure. And you know, like Passion Paradox nailed it. Like take 24 hours and embrace that failure and then pick apart what was really good and what didn't work. And then you're going to go be able to chase your greatest successes.
+
+But if failure is the bar for figuring out if it's big enough, it still seems like you could go well beyond. So for me, if I was like, hey, Sasha, I want to run a 215 marathon with my PR being 245 at approaching 40 years old, you would say, that's crazy, Chris. You're never going to be a 215 marathoner. Let's perhaps calibrate that differently. Right?
+
+Right.
+
+So.
+
+That's me.
+
+So then how would you do it?
+
+I think you also have to have realistic expectations. And if you want to chase 215, then let's go chase it. But back to failure, let's go do some workouts that are working towards 215. And you'll probably in that context have failure. So I'm not talking about having catastrophic failure and going to a big race and it going poorly. I think these check-ins at workouts, maybe a test for school, different context in life, failing in a safe environment, so that as opposed to me then saying to you, I don't know that 215 is realistic, you will probably come back to me and say, you know what, I don't know that I'm ready to run 215, but let's set a goal of trying to run 235. Because you now have context within of what you want to do. And you can then still chase 215, but you have a little bit more awareness and self-check-in as you're going after these goals.
+
+I mean, I don't think I should under any circumstances ever chase 215.
+
+I think you should. I think it would be fun to watch.
+
+Why?
+
+It would be fun to watch for me.
+
+I mean, I probably couldn't even run 800 meters at the pace needed, which I think is about a 510.
+
+I have no idea what you're saying.
+
+Sorry, yeah. Sorry. So there is the balance. And I do actually think that's where you need a coach or somebody who knows you who can say, hey, this is real or not. And I've had this happen before. I've had, in one particular case, I'm thinking about an athlete come to me and say, hey, I want to run this time for a marathon. And it was a significant jump from where she was. And I told her that she couldn't do it, that that was too much. Not that she could never do it, but that she couldn't do it in the time frame that she was discussing. And it completely demoralized her, completely actually had her leave me as a coach for a time period. And as a coach, I was frustrated because I was just being honest.
+
+Yeah.
+
+And I wasn't saying it in a negative way. I said, look, you can absolutely do this, but it might take three or four years and not one training cycle. She didn't want to hear that. But as athletes, we need those people in our lives who can check us and say, yes, this is the right amount of aspirational goal, but also realistic. And you can do it in this time frame. And then you have to listen to those people.
+
+You have to fully trust them.
+
+So again, microwaving training really was what that person I think was looking for. So this idea of life hacks, like these books and these ideas of people producing life hacks, and the reason they're able to talk about them is they worked inordinately hard to actually get there. And we as a society right now almost place more value on that life hack as opposed to the working hard. And that athlete didn't want to hear, Hey, this isn't like you're going to have to work really hard for a really long time to get there. They just didn't want to hear that. And I think what I really admire about you is you're not afraid to have that conversation with someone as opposed to just letting them hear what they want to hear. And the really good coaches are the ones that are honest with us, not in a mean way, but in a way that we actually, you're doing it so that we can have success.
+
+Yeah, unlock more potential down the road.
+
+Yeah, yeah.
+
+So another goal question, as it relates to a race, sometimes people come to me and they'll say, Hey, Chris, here's my A goal. And then I have this B goal. And then if that doesn't work, I have a C goal. Where as generally as a coach, I don't think it's a good idea to have three levels of goals going into a race. You have to be sold out for one. And by the way, that's different from at the end of a race being able to say, okay, I didn't get this A goal, but I had success in other ways, and so I'm going to take those lessons and magnify those things while changing a few other things that I did wrong. How did you think about that ABC concept when it comes to goals?
+
+So I model ABC goals in very different ways. So if I'm going to have an A, B and C goal, my B and C goals are completely performance-related goals, and so they're not outcome-related. So what I mean by that is, you know, in a 10K, what I might say is, you know, at 5K, I'm going to race even harder, and every time that it gets challenging and I'm in discomfort, I'm going to push the negative thoughts out and only allow positive thoughts in, and my C goal might be smiling at every volunteer, which actually is a huge performance booster. And my A goal might either be based on, I mean, I don't think it's a good idea to set position, but it's often based on time. Having said that, my goal at Houston really was just across the finish line, and my B goal was based on time. I think when people set A, B and C goals in a deescalating manner, it's that they're giving themselves permission to give up. And that's why I don't think that people should do it that way. And when we set these performance goals of working hard, not letting negative thoughts in, racing the whole time, chasing down people, that you can go back and evaluate those things in a very positive way.
+
+So basically, if you're going to go that route, pick things that support your ultimate goal, other activities, tasks, thought processes, versus saying, oh, my door number two and door number three options are going to be these. And maybe I'll be OK with them.
+
+Right.
+
+Because it's just giving yourself permission to give up, which is a goal on any race should really be, I'm never going to give up while I'm out there. Because that's when we have race regrets. It's like, I should have just pushed a little bit more out there. But if you set it with a race goal of, I'm never going to let myself give up when you cross the finish line, you'll know that you probably put it all out there that day.
+
+So let's talk about creating habits that support goals and how to track them and stick with them. I was turned on to habit tracking when I talked to Colleen Quigley, US steeplechaser has been on the show a couple of times, and she talked about... She's also a general badass, a really awesome, fun follow on social media. She does bullet journaling, which is a way to track habits. And basically, it's like a grid like pattern, where you're just basically checking the boxes, say, hey, or coloring boxes in her case. Here are the habits I want to stick to, to get my goals, and you just track those on a daily basis. Not that you have to be perfect in tracking, but that gives you that visual to see, okay, am I actually doing the things that I say I need to do to support this goal? And that's something I've used. I don't use it all the time, but for me, I'll use it in chunks of time where I'm trying to establish new habits. How do you think about building and sustaining habits?
+
+So I think first, you have to figure out what's most important. And so part of the reason I reached out to you to do this podcast was we're telling people they have to do all of these things. And I think people feel like they have to do all of these things all at once. And it's just too much, and it's too overwhelming. So it's really important to pick the things that are important that you need to make a priority in your life. So for you, it sounds like it's sleep. And given that I'm a good sleeper, for me, it's more on the eating side of things. And so, you know, just like most of the stuff we talked about, it's being very individualistic about what your priorities need to be. I've actually never bullet journaled, but given that you get to color, I think I might have to look into this because pretty. I think tracking, you know, which is what a bullet journal is trying to get you to do, I think when you're trying to set a new habit, I think tracking is the most important thing that you can do because then you can reflect back upon what's working and what's not working for you. And so whether that's, you know, just a simple note on your phone, whether it's a piece of paper, a document, a Google Doc, you know, you just, you need to figure out for you where you can actually write that down so you can go back and look at what's working and not working.
+
+And then I think part of it, too, is just knowing whether you're actually doing it. I mean, I think some of us, you know, it's funny how I'll have this question of athletes, especially in one-on-ones where I'll say, you know, what is your recent mileage look like or what is your, you know, how many days you've been running recently? This typically will happen early in the cycle when we're restarting. And then they'll say something, but then I'll ask them to pull out their Strava or their app or whatever their tracking mechanism is just to get it exactly right. And it's always a little different than what they remember. I don't think anybody's intentionally lying to me about how much they're running. I think it's just one of those things where you don't always remember exactly how it went.
+
+What's narrative fallacy, right? Like thinking fast and slow of Daniel Kahneman. We tell ourselves the story we want to hear. But when you track data, that's the real story as opposed to the story that you want to hear.
+
+So you're right.
+
+Tracking is super important.
+
+How do we hone in on what matters though? Because I think your point there is really valid, which is that we get stuff thrown at us. So many things. It's all the things, right? If I could just do all the things all the time, I would be an amazing runner. And we throw nutrition at them. We throw sleep at them. Recovery, recovery modalities, training tips, and different types of workouts. And oh, by the way, make sure your goals are right. And right. I mean, it's just, it's so much. And yet we really, for those of us where time is scarce and we can't, I mean, even for you, where this is your job, in a sense, you can't do everything. So how do you pick the things that matter?
+
+So I think you have to figure out what your strengths and weaknesses are.
+
+And some weaknesses you can leave alone, but I really believe in the training philosophy of training your weaknesses to be your greatest strengths. So for me, it really was for a long time what I ate. So, you know, that's where I put my focus. And again, it's tracking what your strengths and weaknesses are. So, you know, maybe a first step for most people is just sitting down, setting a timer every day for 10 minutes and writing down what they think their strengths and weaknesses are. And then that seventh day, as opposed to writing, look at those two lists, figure out what you wrote down the most in your strengths and your weaknesses category, and then pick one of them in your weakness category, whether it's the one you find most intimidating or the piece of low hanging fruit. And for three weeks, do something to change a habit in your weakness category.
+
+Like one thing.
+
+And like one simple thing. So like for you, I would say for the next three weeks, on one of those nights that you only sleep for five and a half hours, go to bed 15 minutes earlier.
+
+That's it.
+
+When you put it in that context, you're like, that's not overwhelming.
+
+That's achievable. That's simple.
+
+I think we've gotten away from simplicity. And I think along with bad science out there and poor study samples, I think we were rewarding complexity over simplicity. And going back to the simple is where we can make the most gains.
+
+Agree. I think there's also something self-tabitaging about, and maybe not consciously, but about this idea that you can look at the shiny new toy and say, oh, it must be that thing. And then somebody else comes along and says something like, oh, no, no, it's got to be that thing for me. And so you kind of people find themselves bouncing around to these different performance concepts, performance improvement concepts, so that they're not actually focused on the thing they know, consciously or subconsciously. It really matters for them. It almost becomes an excuse to not do the thing you know you really need to do. So for me, it'd be easy to be like, oh, you know, I'm probably having too much dessert, which is probably also true.
+
+There's no such thing as we're all just too much dessert.
+
+And I could come up with a list of... I generally agree with you, but I could come up with a list of things that would distract from this idea that sleep probably is the number one thing that matters for me. I'm the worst at it, and that's been shown to me in a mirror many times over the last four months. But it would be easier for me to get distracted by other things and latch on to them so that I'm not actually having to deal with the thing that really matters. So I think in general, people have an intuitive feel for what is really an opportunity for them. And if they could just focus there on those one or two things, see improvement, and then once that weakness becomes a strength, then move on to something else, that would be powerful. Of course, you also have to engage your coach as well to help sort through that. But it's interesting because when I have these one-on-one conversations with people, especially post a season, and I'll ask them sometimes, what do you think you need to do next time to get better? And I might have some ideas in my head already about what I think for them. But most of the time, when I ask that question, people nail it. They'll give me the two or three things I was already thinking about.
+
+Right.
+
+So Neil Fiore wrote a book, The Now Habit, and he calls those self-rewarding things that we do instead of the things we need to do zombies, which I think is a really fun way to look at it, because who wants a zombie in their house? But we derive satisfaction on the short term, and then we lose out in the long term from doing those things, and we know the things that we really need to be working on, but the zombies get in the way, and we chase after that quick satisfaction as opposed to trying to fix whatever it is. And it's often just because it seems daunting and overwhelming, and the uncertainty of trying to fix it. And so we do these other things to make ourselves feel better in the short term. And you're right, I think we inherently know what those things are, and we don't necessarily need to tell somebody else. But when we do like goal setting, like we've made it, we've communicated that we know that we need to improve this, in a sense, you're now going to be held accountable to that. But when you haven't communicated it to your athlete, and your athlete hasn't communicated it to you, it's veiled in secrecy, so nobody has to fix it.
+
+That fits our world, where no one's responsible for anything. It does, though, reinforce this point that athletes do need to take ownership, even if they have a coach. Ultimately, the athlete has to take ownership of their work, their goals, their habits. Use your resources and your tools, but ultimately it falls on you.
+
+Yeah, I mean, no one can fix it for you, and you have to be willing to want to fix it yourself. I mean, we know that from the studies of addiction, which is really swinging the pendulum another way, but we have to be our own agents of change.
+
+So that's a good thought. As we wrap this thing up, what would be your big takeaways for those who might be listening?
+
+Number one is simplicity. Don't try and do all the things all at once, and don't try and set massive goals, but set small goals along the way so that you can achieve the big goals, and try and achieve those little goals incrementally. Again, don't try and chase after all these little things all at once. And then number two is be kind to yourself. So be kind to yourself, be kind to others. And when you make mistakes, and let's say you fall off the pattern of a habit, don't get angry or frustrated with yourself. Give yourself permission to say, I made a mistake. I'm going to try to do better, and do better. And I think to do that, number three is you really need to journal things. And so write stuff down, track it, track your mileage, track how you're feeling, track your sleep, track your eating. And again, do it incrementally if you're not doing any of it right now. And just by starting with what you think are your greatest weaknesses so that you can sort of grab that low-hanging fruit and improve your life in a dramatic way.
+
+I'm glad we got the low-hanging fruit analogy in there, just under the buzzer. But it's true. It's true. But yeah, so all of those are good things, simple. I really want to emphasize this be kind to yourself point, because we're not, I think, most of the time. I mean, even yesterday, I didn't run. It was a Monday. I usually run on Mondays. And I didn't run. Long story, life got in the way. Just didn't run. And I was beating myself up over it. I mean, this is, come on, Chris. You're training for this 50-miler. You've got to be consistent now. You can't afford to miss Monday runs. And I was just beating myself up over it. And then finally, I got to this place. I'm like, why? Why am I doing this? This is stupid. It's one run, right? And I'll still run whatever, 50, 60, who knows how many miles this week. I'll still get plenty of mileage in this week, even though I missed this one run. And yet I was beating myself up for just dumb reasons. We love to whip ourselves.
+
+Totally. It's so much easier to be kinder to someone else than yourself, which is bananas.
+
+So just, yes, be kind. Be kind. To others and to yourself. I like it. So with that as a final note, we will say goodbye to Sasha. Thanks so much for joining me again. This was awesome. Thanks for caring enough about our community and my audience to want to jump back on with me and talk about these things. And you're welcome anytime.
+
+Well, I hope people reach out because I'd love to develop tools and see what's going on in other people's lives and just see how we can help.
+
+So if people wanted to reach out to you, how would they?
+
+Twitter, Instagram, Facebook, and I'm easy to find, just S. Gollish runs. And there are two Ls in my last name. So G-O-L-L-I-S-H.
+
+Perfect. So there you go. There you go. Open invitation. Interact with Sasha.
+
+Thanks, Chris.
+
+Thank you.
+
+There you go, Sasha Gollish, everyone. Hopefully you learned something and have at least one thing you can apply practically in your own training world. Also, as I mentioned, go check her out on episode 118, which was also a fun conversation. Thanks to Sasha for joining me. Thanks to you for listening. As always, you can check us out at roguerunning.com or follow us on Instagram, Twitter or Facebook at Rogue Running. Until next time, we'll talk to you soon.

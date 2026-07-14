@@ -14,7 +14,9 @@ export function estimateReadingMinutes(content: ContentBlock[]): number {
       return total + wordCount(block.text);
     }
     if (block.type === "callout") {
-      return total + wordCount(block.text);
+      const textWords = block.text ? wordCount(block.text) : 0;
+      const itemWords = block.items?.reduce((sum, item) => sum + wordCount(item), 0) ?? 0;
+      return total + textWords + itemWords;
     }
     if (block.type === "list") {
       return total + block.items.reduce((sum, item) => sum + wordCount(item), 0);

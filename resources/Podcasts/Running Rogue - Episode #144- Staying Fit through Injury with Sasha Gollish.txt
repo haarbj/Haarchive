@@ -1,0 +1,385 @@
+Hey everybody, welcome to episode 144 of the Running Rogue podcast. This is Chris coming at you from Austin, Texas. I am excited about my returning guest today. We've got Sasha Gollish back on the show. She was most recently on episode 131 where we talked about performance engineering and how to put practical application behind some of the performance concepts that we talked about in our Human Performance Project mini-series. She was also on episode 118, the infamous float pod episode where we not only got to know Sasha, but also she and I talked about our very first float pod experience as we tried out that recovery modality. She is back for this episode, although under slightly unfortunate circumstances as she's been injured through the summer with a couple of different, just unfortunate injuries, one, a random ankle sprain due to a pothole on the road, and another due to a broken foot that she got while receiving some other treatment. So unfortunately, because of that injury, she's been on the mend this summer, but we get to learn from her experiences. So we're gonna catch up with Sasha both personally and professionally and also talk about what she has coming up next as she was recently announced within the New York Marathon Elite field. So that's pretty cool. I always love talking to Sasha, and I think this episode, this interview, adds a really interesting perspective to not only recovering from injury and dealing with all of the physical and mental sides of that, but also how to stay fit while injured and then build back gradually in a way so that you don't compromise fitness while still making sure you don't re-injure yourself on that comeback trail. Really fascinating discussion. I think there's a lot of innovative things that Sasha has kind of stumbled upon here through her last injury cycle that I think we'll all be able to benefit from. So I'm really excited for this discussion. Incidentally, and we'll talk a little bit about this at the end, Sasha's actually going to be on our next two episodes as she's going to be interviewing me for the episode released next week, episode 145, where we talk about my first 50-mile trail race experience, which is happening as basically this thing gets published, or at least will have happened as this gets published. I'll be running 50 miles at the Squamish 50-Miler on August 17th. This should go up on the 18th, so you can go back and check and see how I did. And then on the next episode 145, Sasha will interview me on that experience and hopefully I can convey some of my lessons from not only training, but hopefully also completing my first Ultra. So with that as an intro, let's bring Sasha on. Welcome Dr. Sasha Gollish to the show. How are you doing today, Sasha? I'm good. I'm good. So you're now a doctor, so congrats on securing the Ph.D. How does that feel?
+
+I finally kind of feel recovered from it. It was, as my boyfriend, Raul, said, he said I looked more exhausted than when I ran a marathon.
+
+Was that just on the day of your dissertation defense, or was that just in general during that time?
+
+I mean, I got pretty smashingly drunk the night of my dissertation defense. So I think the next day, the combo of the like, I didn't have a massive hangover, but like the drinking and the fatigue, I think that really did me in.
+
+So did it go smoothly? I mean, was it everything you expected, or was it a rocky road? How did it go?
+
+So it was actually, it was pretty awful in the moment, unfortunately. My internal defense had gone really well, and I had thought this one would go similarly. And basically your dissertation defense is the person that's the external examiner gets to ask the hardest questions, and he goes first, or they go first. It could be a guy or a girl, whoops. Anyways, it comes to my supervisor, who's the last person in the questioning, and he says, oh, maybe we should have considered this at the beginning of the project. And I was like, and I'm sunk. Like they're gonna send me back to do all this research. So when the chair came out and said, congratulations, Dr. Gollish, I almost fainted, because I really didn't think that was gonna happen.
+
+So you got it.
+
+I got it.
+
+Well done. Thanks. How does it feel?
+
+Still surreal. I just actually submitted all my corrections and got an email from the university today, saying, congratulations, you're finished. But it still doesn't feel real at all. I think it's kind of like running your first marathon or having a big success. It doesn't feel real in the moment. And I will probably at some random time, like Wednesday night, be like, oh my gosh, I'm a doctor.
+
+You have appropriately changed your social media handle.
+
+No, I haven't. I haven't done anything. No, I talked to Big Game, and then I know, and then I did nothing.
+
+Come on.
+
+Thank you. I think it was, I needed to hold myself accountable to submitting my corrections for it to be complete complete before I was willing to call myself a doctor.
+
+Fair enough. So what now for you, what does it mean? What do you do with it?
+
+So when I entered my program, I swore I would never teach, and now I desperately want to teach engineering. I really miss coaching, so my background in alpine ski coaching and the kids, and I don't know that I really want to go back to that lifestyle. And I really love engineering, and so I'd love to blend this idea of coaching in an engineering classroom. So they're sort of trying to figure out at the University of Toronto, how to bring me in to teach the first year design course, which I'm really excited about.
+
+Where will you teach?
+
+The University of Toronto.
+
+When does that start?
+
+Well, I interviewed last week, so hopefully the second week of September.
+
+It's coming. It's coming.
+
+Big life change. I actually realized I don't want to be a full-time athlete. It's not enough for me, which sounds ridiculous, but I wasn't finding joy in running without having the balance of the other stuff in my life.
+
+Okay. Well, that's interesting. Let's talk about that more. I really want to frankly analyze you. So teaching plus the running, why? Tell us more about that decision.
+
+I don't want to have a full-time 40, 50, 60 hour a week job, but I also am not good at sitting still. I could sit still and do research and read and be involved, but if my brain isn't engaged sort of on that engineering side, then I have a really tough time getting my brain engaged on the running side. And through this process, I really learned that about myself, like through the injury process and through finishing up my dissertation and having these pockets of nothing to do. So I started seeking out what to do next.
+
+And teaching makes sense with the PhD?
+
+Yeah. And just being around the younger generation, you know, being around the younger generation of runners, I find so much joy in. And I think being around a younger generation of engineers, I'll also really enjoy in a very different way.
+
+How do you think this will affect your running?
+
+I think it's going to make me a better runner. I think striving for balance in terms of, you know, maintaining training and, you know, maintaining my professional career, you know, is going to have its own host of challenges. But I think at the end of the day, it's actually going to make me a better runner again.
+
+Interesting. So do you think perhaps this has something to do with the doldrums you face in the spring around motivation?
+
+Yeah. And I think I didn't recognize it at the time. I think I was really nervous about my PhD ending. I mean, I was nervous like, oh my gosh, what if they don't grant me this doctoral degree? And that was part of it. But this whole, you know, what's next? What do I do? What do I want to do? And I definitely still want to keep competing and competing at the highest level, but knowing that I need that balance to be my best self.
+
+Cool.
+
+Yeah.
+
+Speaking of the future, you were just announced as a part of the New York Marathon field coming up on November 3rd. I think that's only like 12 weeks away, which seems crazy at this point.
+
+I don't want to think about November. It's cold.
+
+So you have three months to prepare. Why New York?
+
+Oh, man. David Monte, number one. I mean, that man cares more about running and track than any other race director I've ever met and just in such a loving way. So I really wanted to go.
+
+He's the elite athlete coordinator for New York.
+
+Yeah. I mean, you'll see him at a lot of the other events just cheering. And I mean, I'm sure he's there recruiting people as well to run his events, but he's just such an awesome part of running. So that was a big part of it. The course itself is challenging, and yeah, sure, why not? Let's throw a big challenge at a marathon. And the crowds are incredible.
+
+Oh, yeah. But New York, the field is stacked.
+
+When is the field not stacked?
+
+As usual.
+
+Yeah.
+
+You've got the Boston champion, Dejay Fah. You've got, of course, Ketani defending champion. Des Linden, Ali Kiefer, Kellan Taylor on the US side. How does this or what would be your goals for New York?
+
+Well, I mean, we joked about this. My goal with a marathon is always to cross the finish line. Given my previous non-singles, I'm at 50. I only have 50-50 right now, right? So obviously, to cross the finish line, I'd like to see, I'd like to put myself in the mix. So, you know, I've made it to the finish line of a marathon now back in Houston. And I'd really like to see what happens when I go out. You know, New York tends to go out a bit slower. So I'd love to see what happens, you know, at that halfway mark when, you know, excuse my explicit language, shit blows up. Let's go.
+
+Does that change your goals for trying to make a Tokyo team for the marathon?
+
+Those are still the same, but, you know, one of the pieces of reflection that I had in the last sort of four months is, you know, if I become an Olympian, great. If I don't, I don't really think it changes the trajectory of my life. I think I'm still going to want to run the big marathons and be competitive. And I mean, I know you don't really like talking about this. I don't like talking about it. Like, I don't think the sport is particularly clean right now. I think that the way that the IOC, or not the IOC, sorry, the IAAF set up this point system and the way with the standards, like, I think it's just right for more people trying to use drugs. And, you know, I loved what Miranda Carefree had to say, like, I want to see what the limits of human performance are without drugs. And I think, unfortunately, in the Olympic context, it's just it's been set up not to inspire that. It's been set up to inspire those to do whatever they have to do to get there, unfortunately.
+
+It is unfortunate. I don't know if you saw Deslinden say something similar last week after it was announced that she was doing New York. At this point, she hasn't even committed to officially doing the US trials in February, which is interesting. She kind of said, look, I've been to two Olympics, don't need to do that again necessarily. And I'm not necessarily convinced that it's a fair race on the start line there. So it's not as interesting to me anymore. I'm, of course, paraphrasing, but I can totally see that. Not to mention the fact that if you do the Olympics, then you might be sacrificing what you could do at some of the big majors, like turning around to do New York or having to miss Boston because you're saving yourself for a summer marathon in Tokyo.
+
+And this is actually kind of what I thought about in terms of like, do I want to stay as a pro runner? And the answer is yes. And so if I want to stay as a pro runner, as selfish as it sounds, I am better off financially to put myself into races that are going to offer me a financial incentive to go. And that shouldn't be why you race. But if you're doing this as a professional and you a little bit have to make some money at it, then that is part of your decision-making framework. And so, you know, there's nothing in it for me if I go to Tokyo other than to say I'm an Olympian. And again, I just don't know that that does enough for me in my life to really make me want to throw everything at it. And so, I don't know if it's fate or karma or whatever, like if it's meant to be, it'll happen and great. But there's so much other fantastic racing out there to do that I'm okay if it just doesn't happen.
+
+So what's the path for you at this point to make it happen? You know, obviously there's this Olympic standard that you have to get that could also be gotten by getting a top ten place at New York. But the Canadian rules about choosing an Olympic team are a little bit different. So what would it have to look like for you?
+
+Well, I probably need to know what the rules are to get to the Olympics with Athletics Canada. And, you know, the rules change all the time, and so I don't really know what they are or what they're going to be. So my goal is to put myself out there, to have success at the majors, to try and get that top ten. And then there's some point system, which I have done no research into and don't understand at all. But I think if you go to these big races, that there's more points that you could get so that you could get in, not an invite, but something else to get you to the start line. So I'm still going to do everything that I can, but I'm going to do it in a way that just sets me up to love what I'm still doing as opposed to chasing times, maybe in a way that doesn't bring me joy.
+
+That makes sense.
+
+Right? Like I want you to come to New York and go to the press conference and do a press interview with you and just be a total goof.
+
+Sure, for sure. For sure that's in the works.
+
+I mean, like, what am I going to be running for in New York? New York pizza!
+
+Speaking of which, I need to actually apply for my press press again. But that's an aside. Last time we talked, you had just started a new coaching situation in Toronto. Yeah. How is that going?
+
+It's been great, and it's been really awesome to be surrounded by teammates again. When I got injured, I totally was recipe testing on these people, so they were fantastic that way. They were really disappointed when their snacks stopped coming to practice because I was injured. But it also reminded me how important it is to have a team, because the number of people that are always reaching out be like, hey, how's it going? I just had an awesome session, and I really miss you, and I can't wait for you to be back, and we're sending you our best. It really has been a great change for me.
+
+So that's been going well, but the tournament has had some ups and downs because of what we plan to talk about today, which is injury and really fluke injury at that. You've had a couple of different things happen, totally flukey, not involved with the running really at all, or at least the first injury was an accident on the run, completely unrelated to the typical running injury causes, and then you get hurt by a physiotherapist. So tell us a little bit about just what happened with your two injury situations.
+
+Sure. So right before, so the Thursday before the United Airlines New York half marathon, I stepped in a massive pothole and rolled my ankle. And it was like one of those rolls where you're like, oh, I can't walk this off. And so I cross-trained for a couple of days, and I was warming up for New York. They basically looked at me and they're like, you're not running this half marathon. You won't put any weight on your foot doing strides. I was like, okay, this sucks. So I had a really bad ankle sprain. I think that was March. Yeah, it was just after I left Austin. So back in March, and then, you know, training was going really well, healed up, you know, fantastically nice and strong. And then I go to the 10K championships up in Ottawa, the Canadian 10K championships, right? And, you know, my ankle still gets really tight because it's, you know, I sprained my ankle not that long ago before that. And I had this chiropractor treating me, and I asked her to release my ankle. And, you know, I should have spoken up, and I maybe shouldn't have asked her to release my ankle. So she basically gave me skin abrasions on my SI joint when I asked her to help loosen up my back, and that maybe should have been warning number one. But when I asked her to help with my ankle, she basically put so much pressure down my metatarsal that she kind of bone bruised me, but sort of put a little bit of stress on the bone. And so when I started warming up, I can't even describe the feeling, and I can still think about it. Like, it was this, like, it felt like someone shoved cotton in my shoe, and then it was like all of a sudden, oh, my gosh, I'm in so much pain, I can't walk. And it was, I broke my foot.
+
+Frustrating.
+
+Frustrating, for sure. So actually, to add to that frustration, so I warmed up on the course, and Ottawa, our nation's capital, is under, like, massive reconstruction, road reconstruction. So I unfortunately happened to be at the furthest point on the closed course, because it was too close to starting the race. They couldn't send a vehicle out to get me, and all the roads surrounding me were also closed due to construction. So I had to walk 6.5k back to get into a cab. Four miles, that would be four miles.
+
+That's actually what they mean when they talk about adding insult to injury. Right? Just... Oh, that's terrible.
+
+Okay, in that time, I booked myself a flight home so that I could literally get my friend who normally treats me to treat me, and I went for this epic bike ride back home. So, you know, I found a way to make that four-mile walk really positive.
+
+So, let's talk about kind of full conduct. So, now you're back to running, fortunately, post that injury. When did that one happen?
+
+That was May 25th. So, we're just over 11 weeks now.
+
+Okay. So, how long did it take before you got back to running again?
+
+So, I was super conservative. And so, at four weeks, I was pain free. And I... They sort of said, well, you could start running, but it's maybe not a good idea. And I was like, well, just tell me when. And so, we went with seven weeks. So, at the seven-week mark, where I was three weeks then, totally pain free, I started running again. But not... I wouldn't call it training, but I started running. I was still... And I'm still cross-training as part of my training. I'm still not back to running at 100% yet.
+
+Got it.
+
+Yeah.
+
+So then, what I want to do, what we want to do is talk through the sort of lifecycle of the injury, talk through both the physical and mental elements you dealt with at each phase. And then now, as you come out of it, we'll also get to some of the cross-training workouts that you did to maintain fitness while injured, and then what you did coming back to ease back in. But let's start with the beginning. And I want to start with the mental side of that initial recognition of injury. How did that feel, and how did you cope?
+
+So I remember getting out of bed on Sunday morning, and I was like, okay, if my foot's broken, I will stand up and fall down. And I did. And I actually started laughing. I was like, yep, that's really broken. And very interesting. It's the first time I've ever been... This is terrible to say. I was excited. I was actually excited. I was like, I'm going for a four-hour bike ride in the woods by myself today. I'm going to go explore my city in the ravines, and I'm just going to have as much fun as I can on my bike. And I had a blast out there. And I actually managed to stay positive up until a week ago, which I find really interesting. So I really enjoyed, I thrived on the cross-training. So cycling gives you the greatest butt ever. Like, just get those glutes strong. And I know from running, like, my glutes just get super weak. And so I was like, great, going into my next marathon, I'm not going to have issues with my glute strength because I'm going to work as hard as I can on the bike to improve my glute strength. And I guess, kind of knowing that my summer track season was more for fun, I was a little bit, I was able to let go of it and just say, okay, I don't have FOMO, like, I'm totally missing out. But instead of having FOMO, I am going to take this time and take all of those little muscles that are totally my weaknesses. Like, my hamstrings have been weak and tight and sore, and my ankle's been, you know, tight and sore. I am going to make all of those so strong so that when I come back, they're no longer my weaknesses. And it's really helped me, it really helped me stay positive through the whole process.
+
+Until a week ago.
+
+Until a week ago.
+
+What happened then?
+
+Doing workouts alone is just boring and crap. And I just didn't enjoy it. And I think that was why, I think that's making me struggle.
+
+Yeah, it's interesting. I remember when I had, I think back to my last major injury, I had a stress fracture in my foot. And there's initial frustration around the recognition that you're hurt, but you get through that fairly quickly. And then I remember having a similar, maybe acceptance would be the right word, as I was going through the process of not running initially for that injury, where it was kind of nice to have a break, to be able to do other things, to not be so rigid with my schedule as I typically am in running training. But then it got hard for me really mentally when I was coming back, because there was a frustration around wanting to be back to full steam, but not there yet and having to patiently build, but feeling like you didn't really know when it was going to feel completely normal again or when your fitness was going to be kind of coming around again to the point where you could kind of feel like you're back in the rhythm. And that period, that patience period where I was transitioning back in was also the most mentally difficult.
+
+Right. Yeah, you know, part of it is like, I actually have a little bit of FOMO other ways. So I just have this incredible group of women up here who ride bikes and play tennis. And, you know, I hate, oh, you're going for a mountain bike ride. I can't go today because I have a workout. And so, you know, my coaches basically said, don't do that to yourself. Like, let's balance this so that you don't feel like you're, you know, having to sacrifice the things that really bring you joy so that you can sort of take that mental strength where you're having fun with, you know, all your girlfriends riding and bring it into your workouts. And so that shift in the last couple days has made a big difference for me. And then you don't, like, as you're coming back, like, I don't know about you, like, this is a horrible way to describe it, but I feel like a bomb. So I've got all of this potential energy that I built up from this cross training that will come out. The question is when. And, you know, putting those time in on your feet to get back to, like, the rhythm and the sharpness and that, like, it will come. And so that that's keeping me going.
+
+Waiting to explode.
+
+Waiting to explode. Just want to go fast.
+
+For a second there, I thought you said that you were like a bong.
+
+Because it is legal here now in Canada to do that.
+
+So that would be a different analogy. So let's go back there. There was a period, I remember, where it seemed like you were not 100% certain that it was fully broken. You said you fell over that one morning. And I thought, oh, that's a sign. But then at the same time, you were still going to doctors. I assume confirmed that. So talk about that period of getting diagnosed and then making the decision to just completely stop.
+
+So with the way the injury happened, my chiropractor, the one I see in the city, was like, yeah, it might be broken, but I'm not sure. So let's do like the hop test. And I tried to, I was like, I can't even like, no. So we were like, okay, that's not a good sign. So but I had all this tightness around it. So it was just really hard to decipher if it was bone or muscle at the time. So I, finishing my PhD, I was like, okay, what am I, I wanted to buy myself a Porsche because I love fast cars as a reward, but you don't make any money during a PhD. So I don't quite know why I thought I'd buy myself a fast car. So then I decided to buy myself a new bike. And so I love like the CycleCross gravel style bike, and mine's about 10 years old and the frame is about to crack. And I was like, okay, and I went online and there was this bike that was on sale. And I was like, oh my god, her name is the Duchess. She's this beautiful silver Cannondale. I can't wait to get her. And when they were fitting me, the guy grabbed my foot to center me on the bike, and I kicked him in the face. And I was like, oh my god, I'm so sorry. I just kicked you in the face. I was like, your foot's broken. I'm not touching it that hard. Your foot is for sure broken. And so leaving the bike store, I called my dad up and I was like, and my dad's an orthopedic surgeon. I was like, yeah, it's been two weeks. I think it's time that we get an x-ray. And he just, you know, he's like, listen, if it's broken, it's going to show healing. So yeah, let's go get an x-ray. And so, you know, the next day I went in and I got an x-ray and the radiologist came out and he was like, you need to go to the fracture clinic. Like your foot's broken. And I was like, oh good, packed my own boot. I'm going to put it on, go home. I won't wait bare for another week. You know, I got this. He's like, awesome. Thanks for not jamming up the clinic. I was like, no problem. Have a great day. And so he just said, he's like, you know, you have this tiny little crack on the side of your foot. So if you can do stuff pain free, do it. So he's like, you can do any cross training you want to do as long as whatever you do causes no pain. And so pool running was fine. Ellipticaling was fine. And biking was fine. Given that it was summer and I wanted to be outside, pool running and biking, like, that was my jam. And so I got that new bike, and the Duchess and I have had a wonderful time training together.
+
+Which also seems like a decent way to celebrate injury. You used to celebrate your PhD, but in some ways, getting a new bike, getting some toy outside of running is probably a good way to kickstart an injury recovery process.
+
+Yeah, and I got new shoes with it and new outfits. It was a whole process of finding joy in what you do. It's been awesome.
+
+How did you decide how long to take completely off?
+
+Totally by feel. So at four weeks, there was a knot in my stomach that just said, not yet, and it just said, I could have gone in and got it in another x-ray, and it probably would have shown even more healing. But I really went by what my gut told me, so like listening to myself and then listening to my dad, who was my doctor around this whole thing, my chiropractor, Dr. Bill Wells, and then my coaches. We all just sort of went, you're 37, you're not a 20-year-old, things heal. They still heal well, not quite as quickly. So if you can, take a couple more weeks, and you can really still push yourself on the bike. It's not a bad thing to do. And so we decided that seven weeks was kind of, we were going to try running at seven weeks, and if there really was no pain, that I would keep going. But I had in my head, if there's any pain, I'll just stop and I'll wait another two weeks. No pain at seven, and I've had no pain since. I mean, actually, the bigger challenge in coming back from this foot break has been my ankle injury from the March incident. And I can't tell if it's, you know, tightening up to try and protect where the break was in my foot, or if it's part of its own injury. And so I'm doing, you know, all the little physio exercises and rolling it out and trying to keep it loose, and just not running in shoes that upset it. So I can't run in any fast shoes right now. Like I just, I run in cushy shoes. And so, you know, even though I've come back to doing workouts, like take your cushiest, slow, long run shoe. And like, that's what I'm wearing, but that brings me success. So, and no pain. So it's the shoe to stick with. And if I have to race in a shoe like that, I have to race in a shoe like that. I'd rather know that I can get to the finish line and carry a couple extra ounces. Like we're not talking about a lot of weight here, but know that I'm gonna be able to get to that finish line.
+
+So let's talk about what you were doing. You mentioned obviously the bike riding, but let's talk about some of the workouts you were using as cross training during the injury. And I've got a blog coming out on this as well, but let's specifically just talk about cycling first, and then we can talk about some other modalities that you either did or considered doing. So what were you doing from a cycling perspective other than just going out on four-hour rides in the woods?
+
+I did a lot of hill repeats, which kind of sounds funny for Toronto. So sure, they're short. You get like, it's like one minute up and 30 seconds down, but you can turn yourself pretty inside out going up and down a hill. And it's kind of the same on a bike in terms of like how you feel sort of doing whatever the equivalent distance is at that kind of time. But your legs don't take quite the same pounding. So you can actually put more time in and recover in the same amount of time. So, you know, let's say you're doing 10 by 400, you can kind of do 15 times a hill and recover in the same way, but you're getting that little bit more volume in, and your lungs are getting like that super hit. So that was, I think that was my number one bike workout. And then I am actually on the board of directors of the Morning Glory Cycling Club. And so I'd every so often jump in a ride at 5.40 a.m. in Toronto and just try and hang with the guys as long as I could until I got dropped.
+
+The faster guys.
+
+Yeah, the guys who race full time, like as masters athletes, but they're pretty strong on the bike.
+
+So hill repeats, just hard up, coast down basically.
+
+Yeah.
+
+That was your stable. 10 to 20 of those, perhaps.
+
+Yeah, and just always make sure you look at the speed limit because I almost got a speeding ticket going down a hill one day because it was a 40 and you could get up to 60. So you may have to break going down the hill.
+
+Cycling problems.
+
+Cycling problems.
+
+And then just kind of sort of the hard effort hanging on with somebody who's faster than you for as long as you can. Any other workouts that you mixed in?
+
+Couple on the long rides, like just a little bit like you kind of would with some marathon training in terms of a progression run. So going out for a ride with a bunch of people up here, and then my boyfriend Raul is a really strong cyclist. And so we would go QOM chasing on Strava for about an hour and an hour and a half, where he would just put me in the hurt locker so that basically when we got home, he would have to roll me inside because I was so tired. But sort of that idea like a progression run, and it's really good.
+
+Queen of the mountain.
+
+Queen of the mountain. It's good to go with someone who's a little bit stronger than you, just to get them to help you kind of pull you along. Because just like a group run and a progression run, like when you're surrounded by people, you're willing to let yourself go just a little bit deeper.
+
+Yeah. Well, yeah, especially on a bike. If you have to chase, always easier to push yourself. So cycling, obviously a staple. I know you were doing some pool running as well. I think I saw some Instagram videos of that. Which is always hilarious. So before we talk about the workouts you might have done in the pool, what were your pool running logistics? I know some people use a belt, a flotation belt, some people don't. How were you executing those runs in the pool?
+
+So I went sans belt, mostly because in my very bratty lifestyle, I went to my parents' country club not being allowed to go, but allowed to go, and they didn't have any belts, so all of a sudden I had to run without a belt. There is some debate with, do you do more of an A or a B? And at the end of the day, I think all that matters is getting your heart rate up. To me, it was the A, because I like thinking about pushing your foot into the ground so that you get the Newton's, every action has an equal and opposite reaction. So I'm a push your foot into the ground to propel you forward kind of person. So I'm an A style runner in the pool.
+
+What do you mean by A and B?
+
+So like when you do running A's on the ground, and running B's. Yeah, yeah. So bringing those drills into the pool with you. Yeah.
+
+Got it, got it. And are you actually touching the bottom of the pool, or are you just like floating using your motion to keep you afloat?
+
+Floating to use my motion to keep me afloat. So there is like a school of thought of running, like touching the ground, but that hurt my foot. So as the doctor said, if that hurts your foot, don't do it. So I didn't do it.
+
+But it's hard to do that, what you're doing, you know, run fast enough to keep yourself afloat. So you are getting a pretty intense workout. So without a belt, especially. So what does that look like? What were the variations of things you did in the pool?
+
+Like anything from sort of like an 800 style workout to a marathon style workout. Like the idea was, I mean, it's lonely in the pool, right? Like you're often there by yourself, and sometimes you can have music, and sometimes you can't. So you have to figure out what excites you. So my workouts basically varied just to get me excited to be in the pool. So sometimes I do 12 minute sections with one minute rest, and then sometimes I do 30 seconds, like 20 times 30 seconds with 30 seconds rest, and do like two sets of that.
+
+Like hard for 30, rest for 30, back and forth.
+
+Yeah, so like the thing with the rest, particularly in the pool is almost like marathon workouts, like don't stand around, like kind of move around a bit, so you get a little bit more volume in. So just easy, easy pool running in between sets. And some of that, as I was sort of testing my foot and building up strength, that actually go and hop in the shallow end of the pool just to see if it hurt. And once it stopped hurting, I spent a lot of time bouncing around in the shallow end, looking like an absolute fool. But hey, had fun.
+
+That was your recovery.
+
+Yeah. Now, if you haven't done a lot of pool running, I mean, I definitely recommend starting with a pool noodle or not a pool noodle or a belt just to get yourself moving properly before you take the belt away. Cause you know, also like running, like you wanna make sure that you have like reasonable form so that you don't actually hurt yourself in the pool.
+
+Yes. I've never really done pool running because it's always sounded so miserable. So how did you, I mean, obviously cycling is more fun for you. So how did you make pool running interesting?
+
+So also in my very bratty lifestyle, up here at the cottage, one of my friends' grandparents have a pool and they must have a video camera on me because the second I get in the pool, someone's out there talking with me. Like it's hilarious. Like, I don't know how it happened. I had, when I can, I play a lot of music. And I think being out, doing these workouts and being able to be outside is what's really made a difference to make it enjoyable. Cause you, yeah, fine. You don't get to see the same scenery as if you were going for a run, but just the endorphin hit from being outside actually made it pleasurable. I don't think I would have been able to do these workouts the same way if they had been indoors.
+
+And then, okay, so that's pool running cycling. We talked about what other modalities were you using for cross-training workouts?
+
+Did a little bit of the elliptical. And I mean, they're kind of similar to the pool workouts, but I really just kind of stuck to biking and the pool cause I could be outside.
+
+So, then how did you think about your overall weekly structure? I mean, I'm assuming you're not doing workouts every day. So, you know, what did your easy days look like? How many of these types of workouts were you doing? You know, how did you put together your weeks to mimic a running week?
+
+So I kind of stuck to what my team does. So they do workouts Monday, Thursday, Saturday, Saturday morning, so sorry, Monday, Thursday night, Saturday morning. And instead of doing them at Monday and Thursday night, I do them Monday, Thursday afternoon. I mean, I really, this is horrible, worked on my tan in the swimming pool. I got a fabulous tan. I have no shorts tan for the first time in a long time. So I stuck to structuring my workouts in the Monday, Thursday night. So I do a shakeout Monday, Thursday morning. And that kind of time and distance varied depending on who was riding up at the cottage and who I could go with. And then Tuesdays after my Monday work is usually a little bit easier. So I'll do sort of like a, not quite a tempo style run, but a little bit of a harder run Tuesday afternoon. So I just jump on my bike in the afternoons and kind of go by heart rate and just kind of push myself for that 45 minutes to an hour. Wednesday, Friday are my like super chill, super easy days. And I would jump on my mountain bike because you like mountain biking, like I don't want to fall. I don't really want to hurt myself. So I kind of ride slow and you just, I just kind of want to look at the trees. So it totally forces me to go really nice and easy. And then Saturday mornings, like which are typically like the big long run marathon style workouts, you know, raw was really awesome just about, you know, like going out, you know, and sort of doing those progression runs on the bike with me. And then those afternoons, you know, I'd either get in the pool and do something easy or go to the elliptical if I was like in town because I finally had to go grocery shopping. And then Sundays, I'd kind of do a mix of like bike and pool just to get some distance in.
+
+And how were you thinking about total volume in comparison to your normal running volume? You know, were you kind of looking at minutes, aerobic minutes, or were you thinking about it differently versus Ks per week?
+
+Yeah, so I went, I used two things. I went by minutes and I kind of added. So like some people say like you add, you need to add a lot more when you're cross training. And I don't know that I agree with that philosophy. I think you need to add a little bit more. And I think you should add a little bit more because it's a great time to increase your aerobic capacity without kind of straining your body. So I kind of increased my mileage by minutes by about 10 to 20% depending on the week. And then I would use the, I use Strava for tracking my training. And I used what was once called the suffer score, which I think is now called your total effort or something. I can't remember, but just kind of using that as a metric to see how, like where I wasn't in the well or not in the well.
+
+And were there any points, whether it be pool running or doing these other things where you just missed the running, where you just got kind of sick of cross training?
+
+Fortunately, no. I just, I think because I've had, I think I own seven bikes, right? Every runner needs seven bicycles. I do have a problem. I think because I had such a mix of training, I fortunately did not get bored. And I definitely like that's a lesson learned. Like, okay, you know, injuries happen. What's the best way to stay positive through it? Make sure you have a mix of different things that you're doing so that you don't get bored while you're cross training.
+
+Well, it sounds like you also have people that you're connecting with that you may not normally connect with when you're in heavy running training. So that also adds a degree of interest and novelty, which keeps you excited about it.
+
+Yeah. I mean, one of my girlfriends up here just got a road bike this summer, and she's already going to do her first triathlon because she, you know, she was watching me come back from running and she's like, I can do that. And so she's going to go do a triathlon, although she hasn't practiced the swim. So I hope she doesn't drown. And then another one of my girlfriends just bought a mountain bike because she came out on one ride with us and had so much fun. So it's been really awesome to like inspire all these other women to also try new activities.
+
+So seven weeks of that, then you say, OK, now it's time to test the foot out. What did that first, I'll put it in air quotes, what did that first run look like to test the foot?
+
+She was an intense one. She was one minute of easy running with one minute of walking for a total of 10 minutes. So I got to run for five whole minutes. Super easy. And it was, I mean, I raw was with me because I just was like, OK, I got this is 10 minutes. I don't want to do this alone. I was like, I want to go be hilarious. And so he came out and he's like, you are like, I haven't seen you smile like this in a while. And I was like, yeah, I really do love this.
+
+But it went it went OK. Day one success.
+
+Yeah.
+
+Once you got that thumbs up, then then what did you do? What was your progression in building back?
+
+So we actually waited two days. So I ran day one and then I ran again day four. And on day four, I did one minute run, one minute walk for 15 minutes total. And then so five, six off day seven, I did the same one minute on one minute walk. I did that for 20, 22 minutes, I think. So we were really conservative. And so, I mean, I basically just added that on to my training for that week. There's no necessarily physiological benefit there, but the mental benefit there was massive.
+
+So you kept all the other cross-training stuff you were doing, started adding in these short run walks to just gradually build back the load on the foot.
+
+Yeah, and even in the second week, it was very much, you know, I think we went three minutes on one minute walk, and then five minutes on 30 second walk, five minutes on 30 second walk, building up from, you know, we went from 25 minutes to 40 minutes, 40 minutes, and then I think I did 50 minutes on the Sunday of that week. And that I counted, I think I did that as a shakeout style run, or I guess it was on Sunday. No, I did it as part of my long run. And then went for, you know, did the rest on the bike that day.
+
+So how long before you were actually running continuously for any length of time?
+
+So in week three, after I did that second five minutes, 30 seconds I ran continuously, and I think I only went 20 minutes that first day. I probably should have looked up my Strava for you. Sorry.
+
+It's okay. I think in your email you said day 10, you did that 20 minute run.
+
+Oh, no, that's what I would recommend for other people. That was like, if I had to do this again, this is how I would do it.
+
+You would have pulled it forward a little bit more.
+
+No, not pulled it forward. I would balance more of the on-off further out.
+
+Really?
+
+So, yeah.
+
+Why?
+
+So very... Partly because you're craving it so badly, and it's only 20 minutes. And so, you're not really going to do any damage in 20 minutes. And the mental benefit from that first 20-minute run that I went for was worth so much more than the physiological stuff.
+
+But how did... So how did you not get antsy? I mean, because I remember when I was coming back from my Stress Factory, as I alluded to, I was... I mean, I was so eager to just jump right in and go from zero to maybe not 100. I knew that would have been stupid, but go from zero to 50% in week one. How did you stay patient?
+
+I mean, it's not that I'm still not antsy. I just think the downside of not running again, the upside of going patiently, is worth it.
+
+Well, and I think the fact that you're still doing all this other aerobic work in parallel to the running rebuild is important to note, because I think a lot of people think, okay, injury phase is over, cross-training phase ends with that, so now I'm going to switch to running phase, and then they kind of go completely back to the running. And obviously, I think most people are smart. They're not going to jump all in on the running, but they're going to then start building the running gradually, but then while they're doing that, they kind of abandon all the other stuff as almost a binary situation. And so with the way you're prescribing or talking about it, kind of continuing to do both as you ramp back the running is really different than I've considered before and I think really. Interesting. If 100% of your time is, for allocating 100% of your time, how have you thought about that ramp down of the cross training and the ramp up of the running over time?
+
+I guess I haven't thought about it in terms of ramp down. That's naturally happening as I ramp up. Like this morning, I did a workout this morning before we chatted, and I did warm up, drills, strides, and then I did the first part of my workout in the pool, and then I got out and finished. I'm still not doing three workouts a week on my feet. So two of the workouts are still a blend of cross training and running, and only one workout is pure running. And I think if you can naturally start to slowly blend the running in, you almost run out of time in a sense of continuing with all of the cross training, and so it just kind of naturally starts to tail off in what you're doing. But that comment you said about binary, I think that's where my switch is this time, where I think of it much more on a spectrum. And so what's my end goal? So my end goal is to run really fast at New York. So by then, I have to be, you know, four weeks out at the latest, I have to be running full time. That gives me a lot of time to play with. And I think this sort of long term view, and then doing these micro cycle, micro day to day training session plans and being adaptable are what are allowing me to have success and find fun and blend more running in. And so, I mean, I've kept my journal up and my goal is to try to sort of add five kilometers, so three miles per week to just safely blend the running back in. And I think probably when I get close to 80 miles, it's just going to switch and I'll just go back to running full time, but it'll just be such a like natural process that my body will be totally prepared for it.
+
+But to me, it makes sense as I'm hearing you talk, but it also is kind of nuts to think about the idea that you're really thinking about this like a, well, I mean, from here to New York, it's a 12 week process. So you're thinking about another eight weeks before you get back to full time after already having been four weeks building up. So we're talking about a 12 week, three month build, essentially, where you're kind of getting back into it. I mean, that is a significantly patient process.
+
+Oh, it's not normal.
+
+But to me, but it's actually novel and I think something that we can all learn from because most of us end up ramping back too soon. And one of the regrets I have, even if we think we're being patient, we end up ramping back too soon to the running because it's kind of, as I mentioned, is that binary equation. One of the regrets I have in coming back from a couple of my major recent injuries is you sort of forget about the fact that not only does the injured part of your body have to re-adapt to the load, but your whole body has to re-adapt to the load because you haven't been running for two months, and suddenly you start running, not just that injured area, but everything else needs to re-adapt to the load. And when I came back, even what I thought was patiently, I didn't give enough of respect to the fact that the rest of my body had to build back. And so it ended up, and I ended up a few times in this cycle of injury where the original injury was fine, but then other things became injured because they weren't given enough time to re-adapt to the load, and it became this cycle that repeated itself until I finally just said, no, stop, be patient, you moron. And we build kind of from scratch, really completely from scratch, and that can take time, but few of us really give ourselves enough time to do that because we're always thinking about the next goal or how fast can I get to another race?
+
+Right, and I guess in a sense, one of the things I'm actually hoping is to continue doing some of this cross training alongside my training, which I've talked about with previous injuries, but coming back so patiently this time, I think it's going to stick, is again, you can kind of push your heart and your lungs without sacrificing your legs. I'm like, okay, maybe I can get some physical gains by blending in more cross training along with my running and be an even better runner. And I think that's why I'm being so patient. Just the end goal is I want to be so much faster. I think this is going to help.
+
+You're thinking well beyond New York.
+
+Yeah, to New York and beyond. I mean, I hope that New York is not my last race ever, right? So I'm not wishing New York away or wishing my training away, but I'm not getting younger. I'm going to turn 38 this year. I don't know how many more weeks of 100-mile weeks I can maintain, but I can maintain 80-mile weeks very easily and then do up to then, in minutes wise, the equivalent of 120 to 130-mile weeks and get a benefit and not feel so sore and so wrecked all the time. And I actually think then my workouts will be even better because sometimes with marathon, right? Like you just go into workouts feeling banged up, and I've really found coming back to workouts this time with more cross training that I go into the workouts feeling strong and not banged up. And I'm like, there's something in that then.
+
+Well, there's a lot in that. There's a lot in that. And a couple of things that I think are interesting about this. One initial thing to me that's awesome is the fact that obviously you wanted to do well in New York. We talked about that at the beginning. But at the same time, you don't seem to have expectations for it that are debilitating you or that are causing you to do dumb things. And that's a hard place to get to, right?
+
+I guess it is and it isn't. So if the other side is, okay, so am I going to start running 100-mile, 120-mile weeks and have these other little niggles pop up that then I have to like step back and maybe not even be able to cross-train as I let something else heal up, where I think with kind of this different mindset of going in where I want to go in and be my best and my strongest. And maybe that is through this sort of ideal of cross-training. So that like one of the challenges with the marathon is like getting to the start line, not sore, not banged up and not injured. Like that's 50% of the battle. The next 50% of the battle is getting to mile 20. And then, you know, if you have 5% to get through that last 10K, like you're smiling. But I think there's this idea of that there's only one path to run a marathon really well. And I just don't think that's the only way to do it.
+
+Well, and one of the ways you're innovating here is by these combo workouts. I think that's also fascinating, the idea that you might do something in the pool, jump out and then finish the workout on the road, or do something on the road and then jump and finish on the bike. So give us some examples of what that has looked like for you.
+
+Sure, so I've also been using a light speed lift, so like an Alter G style machine in Toronto, so that lets you get a little bit more run time in. So often I try and do my warm up as a run, and I've been extending them a little bit just to try and get a little bit more mileage on my feet, so sort of up to 30 minutes, however far you get in 30 minutes, and then slowly decreasing the amount that I'm doing in the pool. So like this morning, I did 14 times 2 minutes in the pool, and then I got out. And then it's actually a little bit like having triathlon legs when you get out of the pool. Like you get out and you're like, oh, they don't work at all. So you have to kind of run for sort of 5 to 10 minutes to like get the feel underneath you again before you can actually jump into the second part of your workout. And then I usually finish up on my feet, or like some tempo days. I've done it where, you know, I do a much shorter warm up than I normally would do on a tempo day and then do, you know, up to two thirds of my tempo on my feet. And then I'll finish up in the pool. And then, you know, sometimes I'll run the five minutes home just because I'm lazy and I don't want to walk home in a wet bathing suit. So I've also comboed almost like a triathlon where you'll warm up and then get on your bike and do part of it in the bike and then finish up in the pool. So just almost comboing anything and everything sort of with whatever works on that day.
+
+And how do you feel fitness wise? Do you feel fit?
+
+Yeah, I feel really strong. Like Saturday was a really good test. So Saturday I was up at the cottage alone. There was a lot of massive parties Friday night that I did not go to. So I went cycling on my own, and I did this sort of big two hour and 20 minute tempo on my bike. And I, you know, Raul got up here and it was like, Oh my gosh, like you're strong right now. We've had some really amazing storms, and we just sort of had these like 30 mile an hour headwinds as I was coming up, you know, to finish my bike ride and I was doing it on this loose gravel. And I just like my goal is just to stay mentally strong through it and like push through. So I know that the fitness is there. It's just a matter of getting sharp again and just being really smart about getting sharp. We actually had our... We're part of like this community up here called the Thunder Beach Community Association, and every year the Thunder Beach, there's a thunder run. And I'm a four-year champion running. Beat all the boys every year. And I went to do it as part of a workout. And I started, and I hadn't run faster than four-minute pace. And I didn't look at my watch at all, and I thought I was running four-minute pace, and I was running close to 330s and feeling really good. So I know the fitness is there.
+
+That's four minutes per K for the Americans that are thinking you're going world record pace. So that's awesome. I mean, so that has to be really validating, right?
+
+Yeah. I mean, on the mental side, I've had a lot of fun, but there's still part of me that goes, I don't know that I'm fit, but I know I'm fit. And so you still play those mind games with yourself. And it felt so great to run strong like that after all that cross-training. And this time, the big difference I did this time with the cross-training was watching what my heart rate did. And just learning to push myself in ways in the pool and on the bike that you do on your feet, where I was devastatingly tired, where I was like, oh, I want to watch the sunset tonight, but I can't because I'm asleep and it's 8.15.
+
+So where do you go from here? Do you have prep races planned? Because I think one of the things I would worry about is getting some real indicators of fitness beyond winning your neighborhood race that would tell me, hey, I'm on the path to be able to run with that front group in New York. So what are you planning between now and then?
+
+So I don't have total planned out yet. So I have the next couple weeks planned out. And I hate that I am going to be talking about September is the next couple weeks planned out. So I'm actually racing in Toronto on Saturday, August 17th. There's a 15K, 15K and 30K. So I'm going to do the 15K run. And I don't actually know if it's on roads or trails, which is I do need to figure out, but be like bike trail. And then September 8th, I'm actually going to do the Great North Half Marathon, which I'm so excited about.
+
+That'll be awesome. That's the one in the UK.
+
+Yeah, up in Newcastle. And it's fast, point to point.
+
+Net downhill, point to point, fast race.
+
+Yeah.
+
+So that'll be a good checkpoint.
+
+Yeah. And I think that's like, I'm not planning past that point because I'm going to need to do a check-in and a reflection at that point as to, you know, where I'm at fitness-wise, like do I need to do a big block of training or like is it now a matter of maintaining fitness and just not getting injured going into New York?
+
+Well, that's exciting. Talk a little bit about as we wrap up this discussion about the role of your coach through this process. It seems like a lot of this has been you kind of figuring things out on your own and listening to your body and adapting as it lets you do things. What has your coach provided as a part of the equation?
+
+So he tries to come out and meet me as much as possible. He checks in with me on text message every day. So he writes the workout. So all of the workouts that I talk about doing are all from him. And so he knows that I know my body best. And so he gives me blocks of what I need to do and has been encouraging me to add more and more running in as it makes sense, but lets me basically go put myself in the hurt locker, if you will, with the workouts that he gives me. And so I'm often exhausted afterwards and don't check in. And I get these messages of, okay, tell me how it went. And I mean, I really wish he would just go on Strava because it's there. So I'm working on him to get on Strava, and he's working at me to be a better communicator. But he's been instrumental in writing those workouts to really make sure that they're getting me fit and ready.
+
+So that's good. So you've had that support.
+
+Yeah, he's been awesome. And you know, like asking all the right questions. It's not like, hey, how did the work echo? The first question is, hey, how's your foot doing? How's your ankle? Which I think is what you need to be thinking about as you're transitioning. So the secondary thing is actually how did the workout go? But first and foremost, when you're doing a workout, coming back from injury is, hey, how does that injury and or anything else actually feel so that you become much more in tune with your own body? And then reflecting upon how well the workout actually went. I mean, there was, I think our funniest moment was a couple weeks ago, I went to get in the pool to do a workout, and I did my first interval, and I couldn't get my heart rate up over 90. And I was like, I think I need a break. Like, I'm done. And he's like, I knew you'd hit a breaking point. He's like, yeah, we're gonna take a couple easy days. He's like, but I was just, you know, I wanted to push you and push you until you were ready to say to me, I think I've done. And I had a really good laugh. I was like, why can't I get my heart rate over 96? And I was like, oh, that's why. I'm a little bit over trained. Time to let that like overcompensation kind of set in. And then we took like kind of the rest of that week easy. And when I went to do a workout the next Monday, holy fitness, was it awesome?
+
+Holy fitness. I like that.
+
+Yeah. Holy fitness, Batman.
+
+So that's awesome. I mean, but I do think this is all a good reminder that you can get fit other ways. And I think oftentimes as well, you just get so siloed into thinking, unless I'm running, I'm not getting fitter when, as you've proven, that's not necessarily the case. And as you also mentioned and alluded to, this has allowed you to work on some weaknesses, build those glute muscles, get those nice and activated, that should only help you as you shift further on the spectrum back to the running.
+
+Yeah, and I think that's a really great way to stay motivated, is to say, okay, so what are the weaknesses that I'm going to train? Because it actually gets you excited about your training, even though it's something really different. And even moving forward, I think blending this idea of cross-training to keep up those areas that I've just worked so hard to strengthen. I just think it's so important. And in the last couple of weeks, I started blending in some really big gym sessions, again, just to keep working on the strength and also because I love it. But I think injured or not, when you're injured, use that as motivation to keep you fit and strong and mentally happy. And then post-injury, doing those things like blending into your training so that you don't give up on all that stuff that you just worked so hard to build.
+
+Yeah, it's a good perspective because it's not lost time. I think oftentimes when we're hurt, we think, Oh, I'm losing three months of training or fitness opportunity. And really, you're gaining the opportunity to work on weaknesses. You're gaining the opportunity to build fitness in different ways. You're gaining the opportunity to shift perspective that will hopefully help you when you come back to the running. And so that's the glass half full side of the view on injury, but it's really true.
+
+And maybe if enough of us talk about an injury that way, and it's okay to post and have those moments where injuries really suck. But if you let that drive the time you're away, then yeah, you know what? It's probably a lost opportunity. But if you can re-shift and re-frame and figure out how to have a lot of fun during that time, there's just so much to be gained.
+
+Truth. So as we wrap this discussion, Sasha, I wanted to let the audience know that you'll be back on the next episode as well. Which I'm really excited about. We're going to flip the script literally, and you're going to interview me on our next episode talking about my 50-mile trail race, which as we're publishing this episode will be happening basically the day before this episode comes out. Then we'll recap it a week after. You're going to be interviewing me. And so for those that are listening to this who want to go look up how I did in the Squamish 50-mile, that was August 17th, which would be yesterday as this episode is posted. But before we get to that interview, which we'll be recording sometime next week, what do you want to know from me beforehand, before I show up? And it'll be funny to reflect on that, perhaps.
+
+Oh my gosh, I'm so looking forward to you running this. Now, are they calling it an 80K or a 50 miler? Like, I really was curious. It's in Canada.
+
+So it's called a 50 miler. Yep. And because they have the big thing in the Squamish 50 miler is the 5050, where some people do the 50 miler on Saturday and then the 50K on Sunday. And you earn a special trucker hat for that. I am not doing the 5050, but that is a thing.
+
+Wow. Oh, my gosh. I have no words. My jaw is on the floor.
+
+It's like water running in two days. It's not easy running either. We're talking about significant elevation change.
+
+Yeah, I've been to that part of the world. It's rocky and mountainy. You're in for some spectacular beauty, but you're also in for some sweet bitches.
+
+What do you want to know before I do it? What do you want to know?
+
+Are you ready? Are you ready to actually go do this? I know you've had your share of ankle injuries this year. You went to France to watch the World Cup of soccer. Are you ready to go run 50 miles in the mountains?
+
+The answer is yes, absolutely. I am ready. I do feel like I did have a little bit of a fall start to training with that ankle injury that you alluded to, but got back on it and have felt really good about my preparation. Not only have I had to prepare for the trail, but also prepare for the up and down, which I've been doing a lot of hill repeats here where I'll run up and down the same hill way more times than you would ever want to think about to get ready for that incline both up and downhill. Then I did the trail race in France, which really helped me see that the prep I was doing was going to help get me there. And so, yes, physically, I do feel like I'm ready. Now, it is a different kind of fitness feeling that I've never really had before, because I'm used to knowing what it's like to run 6, 15 miles for 26.2 miles, and now I'm training to run 12-plus minute miles for 50 miles. And so the fitness feeling is definitely different. And wrapping your head around that is something I'm kind of learning and embracing. But I do have evidence in my training that show me that I'm definitely stronger, especially for the climbing that I'm going to be doing. So physically, I do feel ready. Mentally, I think I'm still putting on the finishing touches of wrapping my head around being out there for 12 hours. And I know why I'm doing this, and I know I've got all the pieces of the mental stuff in front of me. I just need to crystallize a little bit in these final days just to get ready to be out there and focused for 12 hours. So I've got a little bit of work to do there. Nothing that worries me because I feel like I've done all the little homework I need to do, and now I just need to sit down and kind of crystallize it into a purpose and plan and mental vision for the day and then go do it. So yeah, so I do feel like I will be ready.
+
+Okay, well, you've already sort of alluded to it, so I'm taking a part two to this question. What do you think is your projected finishing time?
+
+Ooh, this is a tough one to answer because it's hard to, you know, it's hard to write out a pace plan for 50-mile trailways, which I've never done, and for, you know, 11, 000 feet of climbing. So, but I have been doing some homework over the last few days, looking at last year's Strava outcomes from various people and what they were doing per mile and how that might translate to what I can do. And by the way, the goal truly is just to finish, so I'm not trying to set any land speed records. I really just want to get across the finish line. And so I'm going to be conservative with my plan so that I can make sure that happens and not do anything stupid like fall and break an elbow or sprain an ankle or something like that, knock on wood. So it's a conservative plan. I think I'll finish somewhere between 11 and 12 hours, which would put me kind of right at the back of the top third of the field. So nothing super crazy, but I think I can conservatively finish within that time frame and feel good about it. So there you go.
+
+I'm really excited for you. I will be following along as you race next weekend.
+
+Yeah, I need to see if they have tracking for this thing. I'm not sure if that's true or not, but by the time people are listening to this, they can just go look up the results at the Squama 50 Mile website and see how I did. And then we'll break it all down next episode. I'm excited to be in the hot seat for once, which will be fun. So there you go, Sasha. We'll wrap it here. Thanks as always for joining me. This has been really fascinating. And now, you know, I don't ever like getting injured, but I almost kind of want to, I want to test out all of these new things I just learned.
+
+But after you're 50, Mylar, you can totally start testing them out as you like transition back to training. And I think that, I think this was the number one lesson for me is that don't just think that I have to cross train only when I'm injured. It's that blend cross training into your training because it's just going to make you a better runner.
+
+That is too wise, too wise. But we will... That's right. We will wrap it there. Thanks, as always, for joining us, Sasha. I really appreciate the time. So there you go, Sasha Gollish, everyone. Hopefully, you learned something from that discussion, and hopefully, the next time you go through injury, you'll have a few more arrows for your quiver, or perhaps if you're going through injury, you've got some encouragement from that episode. We will wrap it here. Thanks to Sasha again for joining me. Thanks to you all for listening. Stay tuned for episode 145, where Sasha actually flips the script and interviews me on my 50-mile ultra experience. Otherwise, you can check us out at roguerunning.com or follow us on Instagram, Twitter, or Facebook at Rogue Running. Until next time, we'll talk to you soon.
