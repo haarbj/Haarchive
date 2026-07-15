@@ -99,67 +99,25 @@ export const sections: Section[] = [
     slug: "training-philosophy",
     title: "Training Philosophy",
     mission:
-      "Core beliefs about endurance development through patience, consistency, and first-principles thinking.",
+      "Every workout is built on a belief about how the body adapts. Before prescribing training, it's important to understand those beliefs.",
     topics: [
       "Individualization",
       "Long-term development",
       "Decision frameworks",
     ],
     category: "foundations",
-    lastUpdated: "2026-07-12",
-    content: [
-      { type: "heading", text: "Five Principles, Not a Formula" },
-      {
-        type: "paragraph",
-        text: "Good training isn't a set of numbers copy-pasted from one athlete to the next — it's principles applied to a specific person. Five matter most:",
-      },
-      {
-        type: "list",
-        items: [
-          "Miles in the bank — build the aerobic base before anything else, since every other system trains on top of it.",
-          "Feeling-based effort — train by what an effort actually costs your body, not just by the watch.",
-          "Response-regulated recovery — let how you're adapting dictate the next session, not a fixed schedule.",
-          "Sequential development — speed sits on top of intervals, which sits on top of strength, which sits on top of endurance.",
-          "Correct timing — build the whole plan backward from the goal race, not forward from today.",
-        ],
-      },
-      { type: "heading", text: "Why Response-Regulated Recovery Actually Works" },
-      {
-        type: "paragraph",
-        text: "The mechanism behind \"let how you're adapting dictate the next session\" has a name: super-compensation. A hard session doesn't build fitness by itself — it temporarily drops it, breaking the body down just enough to trigger a rebuild. During the recovery that follows, the body doesn't just repair back to where it started; it overshoots slightly, landing at a marginally higher fitness level than before the session. Training success is really just moderate stress plus adequate rest, repeated: stress, dip, overshoot, stress again from the new higher baseline. Skip the rest and the next stress lands on a body still in the dip, not the overshoot — which is the actual mechanical reason overtraining costs fitness rather than building it, and why an elevated morning heart rate, poor sleep, or persistent soreness are real signals to swap a workout for a recovery run rather than pushing through on schedule. Shigeharu Watanabe, who coached Yoko Shibui to a 2:19 marathon after training under Lydiard himself, put the whole philosophy in one line: \"We do only that which is necessary to do, we do not follow any numbers\" (Moller, \"Principles, Not Formulas,\" Runner's World, 2009).",
-      },
-      { type: "heading", text: "Breath, Blood, and Brain" },
-      {
-        type: "paragraph",
-        text: "I coach three things: the breath, the blood, and the brain — not the muscles. Most coaching in the U.S. trains until the muscles fail. I'd rather build the aerobic engine (breath, blood) and the mental game (brain) than chase muscular fatigue for its own sake. That takes longer to show results — usually 7 to 10 years for it to fully show up in a runner — which is exactly why patience is part of the philosophy, not separate from it.",
-      },
-      { type: "heading", text: "Footwear and Technique Aren't an Afterthought" },
-      {
-        type: "paragraph",
-        text: "Lydiard treated running form as a skill to be taught, not something everyone arrives with. Even his most gifted athletes worked on technique — running tall, relaxed arms, a quick leg turnover — before layering on volume. He wanted shoes that interfered with the foot as little as possible: flexible enough to function \"like a second layer of skin,\" with no built-up heel, because an elevated heel creates instability a flat sole doesn't. He was skeptical of orthotics (\"the orthotics are for the shoes, not the feet\") and dead set against running with hand weights, since anything that adds tension undercuts the relaxation that makes a stride efficient. None of this is really about barefoot running as a trend — minimalist footwear and hard-surface training predate that label by decades. It's a belief that the foot should be left to do its job, and that good form has to be practiced deliberately, not assumed.",
-      },
-      { type: "heading", text: "Form Cues Lydiard Actually Used" },
-      {
-        type: "paragraph",
-        text: "Beyond the general principle, Lydiard's cues were concrete. \"Try to make yourself six inches taller when you're running\" was his shorthand for the tall, upright posture he wanted, since a lot of runners never fully straighten the driving leg and lose power on every stride as a result. He'd check footfall by having athletes run across sand or a dewy lawn — a straight, efficient stride leaves footprints that form almost a single line, not a wide, wandering one. And his combination drill for both leg speed and posture at once was three cues layered together while running fast: high knees, hard ankle drive, and running tall — practiced separately first, then combined.",
-      },
-      { type: "heading", text: "Applying This: Using Five Principles as a Decision Filter" },
-      {
-        type: "paragraph",
-        text: "The real value of the five principles above isn't reciting them — it's running every training decision through them before making it. Tempted to add a hard session because a race is coming up? Check it against sequential development first: is the aerobic base and the strength layer underneath it actually built, or would this session be borrowing against a foundation that isn't there yet. Feeling behind on mileage compared to a teammate or a training plan found online? Check it against feeling-based effort: a number copied from someone else's plan isn't a target if it doesn't match what your own body is signaling. The five principles aren't a checklist to complete once — they're the filter every other page on this site's coaching advice should pass through before it gets applied to a specific athlete.",
-      },
-      {
-        type: "callout",
-        variant: "takeaway",
-        title: "Key Takeaways",
-        items: [
-          "Before copying any specific number from a plan, book, or teammate, run it through the five principles first — a session that violates sequential development or ignores feeling-based effort is a bad fit regardless of who it worked for.",
-          "An elevated morning heart rate, poor sleep, or persistent soreness are real signals to swap a hard session for recovery, not obstacles to push through on schedule.",
-          "Technique is a skill to practice deliberately, not something every runner already arrives with — even a naturally talented athlete benefits from concrete form cues, not just added volume.",
-          "This philosophy is explicitly patient — real results from an aerobic-first approach can take 7 to 10 years to fully show up. Judge a training approach by its trajectory, not by how fast it produces results in month one.",
-        ],
-      },
-    ],
+    lastUpdated: "2026-07-20",
+    // Rendered by its own ToolComponent (see TrainingPhilosophyPage in
+    // sectionTools, [slug]/page.tsx) rather than generic content blocks --
+    // this is meant to read as a flagship essay with custom diagrams, not
+    // reference documentation, so it intentionally has no `content` of its
+    // own anymore. The material this replaced (miles in the bank,
+    // response-regulated recovery/super-compensation, footwear and form
+    // cues) is still true and still worth having somewhere -- it was
+    // workout/technique-level detail rather than top-level philosophy,
+    // closer in kind to Exercise Physiology or the Workout Library than to
+    // what this page is now scoped to. Folding it into one of those is a
+    // good follow-up; it wasn't duplicated there as part of this redesign.
   },
   {
     slug: "the-philosophy-of-running",
@@ -770,246 +728,40 @@ export const sections: Section[] = [
     slug: "coaching-library",
     title: "Coaching Library",
     mission:
-      "Comparative study of influential coaching systems and shared principles across eras.",
+      "An encyclopedia of major coaching philosophies -- not which coach is right, but how each one thinks.",
     topics: ["Lydiard", "Daniels", "Canova and modern systems"],
     category: "coaching-and-training",
-    lastUpdated: "2026-07-13",
-    content: [
-      { type: "heading", text: "The Lydiard System" },
-      {
-        type: "paragraph",
-        text: "Arthur Lydiard's system came out of Auckland, New Zealand, and produced Olympic medalists Peter Snell and John Davies. The core premise: most runners lack endurance, not speed, and the aerobic base has to be built before anything else is layered on top of it — a structural bet that shows up clearly against Daniels' more VO2max-and-pace-zone-driven system and Canova's higher-intensity marathon-specific blocks. All three systems agree endurance matters; they disagree on how much of training should be spent building it versus sharpening it.",
-      },
-      { type: "heading", text: "The Pyramid" },
-      {
-        type: "paragraph",
-        text: "Lydiard structured training as a pyramid: three to six months of aerobic conditioning at the base, then four-week blocks of hill strength, interval training, and speed and skills work, finishing with a three-to-four-week taper into the goal race. The wider the base, the higher the peak it can support.",
-      },
-      { type: "heading", text: "Building Toward the Track Season" },
-      {
-        type: "paragraph",
-        text: "That pyramid's final third — hill strength, intervals, speed and skills — breaks down further into three phases in Lydiard's own scheduling. The first four weeks focus on anaerobic and speed development — hard running totaling around three miles per session (whether that's 12x400m, 6x600m, or similar), always with at least a day of recovery between hard efforts, alternating with dedicated sprint-technique days. The next four and a half weeks shift to coordination: a weekly sharpening session of short, fast accelerations, a time trial near race distance to diagnose weaknesses, and a development race or two. The final ten days are for freshening up — small volume, short efforts, legs kept fresh rather than fatigued going into the goal race.",
-      },
-      { type: "heading", text: "Non-Race Week" },
-      {
-        type: "list",
-        items: [
-          "Repetitions early in the week to develop anaerobic capacity.",
-          "Aerobic running mid-week to hold the base.",
-          "A time trial near race pace to check fitness and pacing.",
-          "Fast relaxed striding to keep leg speed sharp.",
-          "A second time trial later in the week.",
-          "An aerobic run to close out the week and recover into the next cycle.",
-        ],
-      },
-      { type: "heading", text: "Race Week" },
-      {
-        type: "list",
-        items: [
-          "Monday: windsprints.",
-          "Tuesday: easy fartlek.",
-          "Wednesday: a short time trial.",
-          "Thursday: fast relaxed striding.",
-          "Friday: an easy jog.",
-          "Saturday: the race.",
-          "Sunday: a long aerobic run.",
-        ],
-      },
-      { type: "heading", text: "Best Prepared, Not Best Talented" },
-      {
-        type: "paragraph",
-        text: "Lydiard's own summary of why his system worked across so many events and eras: it is not the best athletes who succeed in important competitions, but the best prepared. Many of the medal winners at the 1992 Olympics, in his assessment, weren't the most talented athletes in their fields — they were simply the ones whose preparation held together. Champions, in his view, are developed, not born, even though some start with more natural ability than others (Lydiard, Running to the Top).",
-      },
-      { type: "heading", text: "Why Poorer Coaches Get Early Results, Then Stall" },
-      {
-        type: "paragraph",
-        text: "Lydiard's read on why so many promising young runners flame out: poorer coaches can produce fast early results by loading on anaerobic work before an athlete's aerobic base is ready for it, but that early success comes at the cost of the athlete's long-term ceiling. The best coaches take longer to produce results precisely because they're building the base first. In Lydiard's blunter framing, anaerobic training is what destroys young runners — and he pointed specifically at the American high school and college system, where a runner who shows early talent typically gets put straight onto the track and loaded with anaerobic work, instead of being allowed to build an aerobic foundation first (Lydiard, Running to the Top).",
-      },
-      { type: "heading", text: "Identical Workouts, Different Outcomes" },
-      {
-        type: "paragraph",
-        text: "At the '64 Tokyo Olympics, Lydiard's athletes ran a hard session of 20 quarter-miles. The next day, a rival Canadian runner watched them, then ran the exact same session himself. Asked what he thought of it, Lydiard said, \"I think it was the last nail in his coffin.\" His own athletes had needed that session; the Canadian didn't — he missed his event's final while Snell and Davies medaled. Good training and bad training can look identical on paper. What matters is whether that specific athlete needed it.",
-      },
-      { type: "heading", text: "How Peter Snell Trained for a World Record" },
-      {
-        type: "paragraph",
-        text: "In 1962, Peter Snell — coached by Lydiard — built up to a 100-mile training week, ran hill circuits, and logged long aerobic runs up to 22 miles, all in the months before he broke the world mile record (3:54.4) and, weeks later, the 880-yard world record. He wasn't doing marathon-specific training; he was an 800/1500m runner. But the aerobic capacity built through that volume is what let him hold his speed deep into a race when it mattered most.",
-      },
-      { type: "heading", text: "Marathon Training for a Miler, Explained by the Miler" },
-      {
-        type: "paragraph",
-        text: "Snell went on to earn a doctorate in exercise physiology, which makes his own later explanation of why marathon-length training worked for him worth taking seriously as more than a coach's hunch. Two mechanisms, in his own account: long, moderate-pace running appears to protect against the overtraining that heavy high-intensity work invites on its own, which in practice means an athlete can absorb more total race-specific training than they otherwise could. And fast-twitch fibers — normally recruited mainly by hard interval running — also get activated during a long moderate-pace run, once the slow-twitch fibers doing most of the work in the first one to two hours become glycogen-depleted and fast-twitch fibers have to pick up the load. Long runs aren't just building an aerobic base in that account; they're training fast-twitch fibers through a side door most interval-only programs never open.",
-      },
-      { type: "heading", text: "Same Ingredients, Different Distances" },
-      {
-        type: "paragraph",
-        text: "Lydiard's own explanation for why he had milers run marathon-length long runs rather than piling on track intervals: speed is common — plenty of runners can manage a single fast quarter-mile — but almost none can hold that pace for four in a row. His view was that stamina, not raw speed, was the real limiter for most runners, and that endurance built through volume translated directly into the ability to finally use the speed they already had, right when the race demanded it.",
-      },
-      { type: "heading", text: "Applying This: Should You Actually Run Lydiard's Exact Schedule?", level: 3 },
-      {
-        type: "paragraph",
-        text: "The Non-Race Week and Race Week templates above were built for Olympic-caliber milers and marathoners at the peak of years of aerobic development — copying them verbatim onto an athlete without that foundation underneath them is the single most common way this system gets misapplied. What actually transfers is the pattern, not the exact numbers: a hard anaerobic/speed phase happens only after the aerobic base is genuinely built, a time trial mid-cycle checks fitness honestly rather than guessing at it, and the final days before a goal race freshen the legs rather than adding anything new. A high school coach can use that pattern with a 25-mile-a-week runner exactly as legitimately as with a 100-mile-a-week one — the phase order stays the same even though the volume inside each phase has to scale down.",
-      },
-      {
-        type: "callout",
-        variant: "takeaway",
-        title: "Key Takeaways",
-        items: [
-          "The best-prepared athlete usually beats the most talented one — a program that gets an athlete durably and consistently to the start line beats a \"perfect\" one that breaks down first.",
-          "Loading anaerobic work onto a talented young runner before their aerobic base is ready produces fast early results and a lower long-term ceiling. Resist the temptation, especially with your most gifted athletes.",
-          "A workout that's right for one athlete can be wrong for another even if it looks identical on paper — judge a session by what a specific athlete needs that day, not by whether it worked for someone else.",
-          "Don't copy Lydiard's exact weekly schedule wholesale — copy the phase order (base, then anaerobic/speed, then freshen) and scale the volume inside each phase to what your athlete has actually built toward.",
-        ],
-      },
-      { type: "heading", text: "Comparing the Major Systems" },
-      {
-        type: "paragraph",
-        text: "Lydiard, Jack Daniels, Renato Canova, Joe Vigil, Steve Magness, Phil Maffetone, and the Norwegian national systems all produced genuinely fast athletes, and none of them trained the same way. Some of that is personality — Lydiard trusted feel, Daniels trusted a formula — but most of it is a real disagreement about which adaptation matters most and how directly a session should target it. What follows is where they converge, where they don't, and what each one is actually training for.",
-      },
-      { type: "heading", text: "Polarized Training (80/20): The One I Lean On Most", level: 3 },
-      {
-        type: "paragraph",
-        text: "Of everything on this page, this is the one I lean on most — and it's worth being precise about where it actually comes from. The research is Stephen Seiler's, not any single coach's: across a huge range of endurance athletes, roughly 80% of total training time sits at low intensity and 20% at moderate-to-high, and drifting far from that ratio in either direction tends to cost fitness rather than add it. I first ran into the idea through Matt Fitzgerald's book 80/20 Running, which popularized Seiler's research for a general audience — Fitzgerald didn't originate the concept, he wrote the book that taught it to me. It isn't prescriptive about pace to the degree Daniels is, and it isn't purely feel-based the way Lydiard is — it sits in between, with a real ratio to check yourself against but enough flexibility to apply it by RPE, heart rate, or pace depending on the workout (see the Five Training Zones in the Workout Library). What actually sold me wasn't the ratio itself so much as the mechanism underneath it — the IL-6 and brain-fatigue research covered in the Research Library gives a real reason why \"mostly easy, genuinely hard when it counts\" works, rather than it just being a rule that happens to hold up statistically.",
-      },
-      { type: "heading", text: "Jack Daniels: Precision Through Pace Zones", level: 3 },
-      {
-        type: "paragraph",
-        text: "Daniels built his system around VDOT — a single number derived from a recent race result that maps onto five training paces: Easy, Marathon, Threshold, Interval, and Repetition. Where Lydiard asks an athlete to run by feel, Daniels prescribes a literal pace band for every session, recalculated as fitness changes. Periodization follows a similar logic to Lydiard's pyramid — an aerobic phase before a sharpening phase — but the boundaries between phases are set by VDOT math rather than a fixed number of weeks (Daniels, Daniels' Running Formula).",
-      },
-      { type: "heading", text: "Renato Canova: Marathon-Specific Density", level: 3 },
-      {
-        type: "paragraph",
-        text: "Canova, who has coached a long list of world-class Kenyan and Ethiopian marathoners, periodizes almost in reverse of the classic base-then-sharpen model. Rather than building a wide aerobic base and tapering into speed, his marathon buildups load in \"special blocks\" — sustained stretches of running at or near marathon race pace, sometimes 20-plus kilometers long, that get denser and more frequent as the race approaches. The aerobic base still has to be there; it just isn't the visible structure of the plan the way it is for Lydiard.",
-      },
-      {
-        type: "heading",
-        text: "Joe Vigil: Altitude, Biomechanics, and the Whole Athlete",
-        level: 3,
-      },
-      {
-        type: "paragraph",
-        text: "Vigil coached at altitude in Alamosa, Colorado, and built his system on a similar aerobic-first premise to Lydiard's, layered with an unusually heavy emphasis on running mechanics and psychology — he treated economical form and mental composure as trainable skills, not fixed traits. His best-known result, Deena Kastor's American record and Olympic bronze in the marathon, came from exactly that combination: high-altitude aerobic volume paired with deliberate technical and mental work most programs treat as secondary.",
-      },
-      {
-        type: "paragraph",
-        text: "The practical sequencing behind altitude training is straightforward, even if the payoff isn't instant: do the aerobic conditioning at sea level first, then move up. The body needs roughly six to twelve weeks to complete its blood adaptation to altitude, and pace and volume both have to come down during that window — an athlete simply can't sustain sea-level pace or sea-level mileage continuously at elevation. Speed work and race-specific sessions fit into that same six-to-twelve-week window once the initial adaptation is underway, not before it.",
-      },
-      { type: "heading", text: "Phil Maffetone: The MAF Method", level: 3 },
-      {
-        type: "paragraph",
-        text: "Maffetone runs the strictest aerobic-only system on this list: build the base almost exclusively below a hard heart-rate ceiling — his rule-of-thumb formula is 180 minus age, adjusted a few beats for training history and health — for months before adding any faster work at all. Critics point out that a flat age-based formula ignores real differences in individual aerobic fitness the way lactate testing or VDOT don't — but the underlying instinct, that most runners run their easy days too hard, is the same one driving Lydiard's pyramid, Norwegian threshold work, and 80/20 Running alike.",
-      },
-      { type: "heading", text: "Steve Magness: Testing the Folklore", level: 3 },
-      {
-        type: "paragraph",
-        text: "Magness approaches coaching less like a system and more like an audit — a coach and physiologist who spends most of his writing (Peak Performance, Do Hard Things) testing inherited assumptions against actual research. Where a lot of American coaching still runs on the idea that suffering builds toughness, Magness's read of the evidence is closer to the opposite: performance under pressure is built by managed stress and real recovery, not by seeing how much punishment an athlete can absorb.",
-      },
-      {
-        type: "heading",
-        text: "Norwegian Threshold Training: Living at the Edge of the Threshold",
-        level: 3,
-      },
-      {
-        type: "paragraph",
-        text: "Popularized by the Ingebrigtsen family and later adopted in triathlon by Kristian Blummenfelt and Gustav Iden, the Norwegian model runs two controlled threshold sessions in a single day, several days a week — a morning and an evening session, both held just below the point where lactate starts accumulating faster than the body can clear it, tracked with frequent blood-lactate testing rather than feel or heart rate alone. See Advanced Periodization in Training Plans for how a week built around that structure is actually laid out, and Double Threshold Sessions in Workout Library for concrete session formats.",
-      },
-      {
-        type: "paragraph",
-        text: "The system's own history runs through one man more directly than most: Marius Bakken, a Norwegian 5000m runner who finished 9th at the 2001 World Championships. Bakken's first exposure to double sessions came from Peter Coe — Sebastian Coe's father and coach — during a winter training with him in 1995–96, and he spent the following decade testing and refining the format on himself, backed by more than 5,500 of his own lactate tests, including a 1998–99 Norwegian Athletics Federation project alongside sports scientists Espen Tønnessen and Frank Evertsen that first put systematic lactate testing behind Norwegian distance training. Bakken advised Henrik and Jakob Ingebrigtsens' father and coach Gjert Ingebrigtsen directly by phone from 2009 to 2013, and the coaching lineage runs further still: Eric Toogood, who coached Henrik Ingebrigtsen early on, had already carried a Peter Coe–style short-hill session over from steeplechaser Bjørnar Kristensen, whom Bakken trained alongside directly in the mid-2000s. The version of the model used by Norwegian triathlon (Arild Tveiten, coaching Blummenfelt and Iden) grew out of the same lineage. None of this makes the model correct on its own — but it does mean \"the Norwegian model\" is really one well-tested individual system that spread through direct mentorship, not several coaches independently discovering the same thing (Bakken, mariusbakken.com, 2022, 2025, 2026).",
-      },
-      {
-        type: "paragraph",
-        text: "The physiological case for why it works centers on a distinction covered in full in Exercise Physiology: running's real ceiling on training load is usually muscular, not cardiovascular, and a controlled threshold session costs comparatively little of it. Two sessions placed six to eight hours apart, before the next day's structural soreness response has had time to set in, let a large volume of high-value work accumulate at a muscular cost closer to one long session than two full hard days (see Muscle Tone, Elasticity, and Stiffness, Defined and Soreness Arrives Late, Tone Moves Fast in Exercise Physiology).",
-      },
-      {
-        type: "paragraph",
-        text: "It's worth being precise about how much this actually contradicts the polarized-training research in the Where They Disagree section below, because the honest answer is: less than the surface-level framing suggests. Seiler's polarized research warns runners away from training near the classic 4 mmol/L lactate threshold — a zone that's productive-feeling but fatiguing relative to what it builds. Norwegian threshold sessions are typically held closer to 2.3–3.0 mmol/L, a meaningfully easier intensity than that 4.0 benchmark (see How Precise Does Threshold Intensity Actually Need to Be? in Data & Analytics). Some of the apparent disagreement between the two systems is a genuine difference in philosophy — how much quality time to spend near threshold at all — but some of it is a definitional mismatch: the Norwegian model's \"threshold\" work sits lower in absolute terms than the zone Seiler's research is actually cautioning against.",
-      },
-      {
-        type: "heading",
-        text: "The Complex Alternative: Never Stop Racing Fit",
-        level: 3,
-      },
-      {
-        type: "paragraph",
-        text: "Not every successful system uses discrete base-then-sharpen phases at all. Australian coach Pat Clohessy built what became known as the \"complex\" system around a weekly template that mixes long aerobic running with small, recurring doses of faster work year-round, rather than saving all speed for a distinct anaerobic block — a structure that let miler Simon Doyle move up to 5000m mid-career and set an Australian 3000m record largely on the strength of increased endurance work layered onto speed he already had. Ron Clarke, who broke 16 world records, ran a similar philosophy his whole career and said flatly that he \"didn't believe in peaking\": if aerobic efficiency keeps being pushed higher year after year, an athlete's peak is simply wherever their current fitness happens to sit, and there's no separate taper-and-sharpen event required to reach it. Frank Shorter trained the same way — brutally hard interval days alternated with genuinely easy long runs, no periodized build toward one target race. None of this contradicts the base-then-sharpen systems above so much as it removes the phase boundaries between them; the aerobic volume and the intensity work are still both there, just distributed across the whole year instead of sequenced into blocks (Livingstone, Healthy Intelligent Training).",
-      },
-      { type: "heading", text: "What Each System Is Actually Training For", level: 3 },
-      {
-        type: "paragraph",
-        text: "Strip away the branding and each system is chasing a specific adaptation. Lydiard's base phase, Vigil's altitude volume, and Maffetone's heart-rate-capped base phase are all after the same capillary density and mitochondrial growth — see The Aerobic Base for the mechanism — just enforced by feel, altitude, or a strict intensity ceiling respectively. Norwegian threshold work targets lactate clearance and buffering capacity directly, at the exact intensity where that system is normally the limiter. Canova's marathon-specific blocks target glycogen-sparing efficiency at goal race pace specifically, rather than fitness in general. Daniels' interval and repetition paces target VO2max and running economy respectively. None of it is mysterious once you ask what's actually being trained instead of what the workout is called.",
-      },
-      {
-        type: "callout",
-        variant: "advanced",
-        title: "🧠 Decision Framework",
-        text: "None of these systems are mutually exclusive, and most good coaches borrow across several. As a starting point for which to lean on:",
-        items: [
-          "Aerobically underdeveloped, or coming off a talent-driven early push with no real base? Start with Lydiard, Vigil, or Maffetone's aerobic-first approach — the specific enforcement mechanism (feel, altitude, heart-rate cap) matters less than committing to months of genuine base first.",
-          "Have a solid base and want precise, individualized pace prescriptions? Daniels' VDOT system gives you exact zones recalculated as fitness changes.",
-          "Training specifically for a marathon with real volume already in place? Canova's marathon-pace \"special blocks\" target the exact adaptation a marathon needs most — sustained effort, not short reps.",
-          "Racing 1500m through 10K and have access to frequent lactate testing? The Norwegian double-threshold model rewards that precision; without lactate testing, it's easy to drift into training too hard by feel alone.",
-          "Self-coached, or unsure which of the above fits? Start with the 80/20 ratio as a simple self-audit — it requires no special equipment and catches the most common mistake (too much time near threshold) on its own.",
-        ],
-      },
-      { type: "heading", text: "A Week, Compared", level: 3 },
-      {
-        type: "list",
-        items: [
-          "Lydiard base week — daily aerobic running at a conversational effort, no interval work at all, one longer run on the weekend. Volume is the entire session.",
-          "Daniels formula week — one quality day each for a long run at Marathon pace, a Threshold session, and an Interval or Repetition session, each dosed in minutes or meters calculated from current VDOT.",
-          "Canova marathon-specific week (late buildup) — two \"special block\" sessions at or near marathon pace, aerobic mileage filling the rest of the week, minimal easy junk volume.",
-          "Norwegian threshold week — two or three double-threshold days (a controlled morning and evening session each), one hill or short-interval \"X element\" day, easy running otherwise, intensity controlled by lactate testing rather than pace or feel, often totaling around 180 km.",
-          "Maffetone MAF week — every run held under a hard heart-rate ceiling (180 minus age, adjusted), often for months at a stretch, with no speed work until an aerobic time trial at that heart rate stops improving.",
-          "Elite Kenyan week — daily mileage varies widely rather than staying constant (10, 15, 12, 18, 10, 15, then a 24-mile long run), aerobic-effort-dominant, built around one very long day rather than a fixed weekly template.",
-          "80/20 week — not a fixed shape at all, just a ratio checked against whatever week you're already running: tally low-intensity time against total time and see how close it lands to 80%.",
-        ],
-      },
-      { type: "heading", text: "Same Fundamentals, Thirty Years Apart", level: 3 },
-      {
-        type: "paragraph",
-        text: "John Walker set the mile world record in 1975 training as a semi-amateur in Auckland under coach Arch Jelley; Hicham El Guerrouj won Olympic 1500m and 5000m gold in 2004 as a fully professional athlete inside Morocco's national sports program, with a paid support staff and altitude camps Walker never had access to. On paper, three decades of professionalization and sports science should separate their preparation completely. Comparing the actual training logs says otherwise: both ran double periodization (two peaks a year rather than one), both built their week around daily aerobic running with only one or two harder sessions, both kept the bulk of their faster work at roughly 5000m race pace rather than sprinting in training, and neither spent much time on an actual track outside of racing (Johnston, \"The Times They Are A-Changin',\" in Livingstone, Healthy Intelligent Training). The gap between their performances is real — El Guerrouj's times were meaningfully faster — but a side-by-side of the training itself suggests that gap is explained far more by professionalism, altitude access, and pacing support than by any change in what the training actually was. It's a real-world data point for the same claim the rest of this page keeps making from different angles: the fundamentals travel across eras better than the surrounding infrastructure does.",
-      },
-      { type: "heading", text: "Where They Agree", level: 3 },
-      {
-        type: "list",
-        items: [
-          "Aerobic volume is the foundation, even in the systems that don't advertise it that way — Canova's marathon-specific blocks and Norwegian threshold work both sit on top of large aerobic mileage, not instead of it. 80/20 Running is just the most literal statement of the same rule, spelled out as a ratio.",
-          "Recovery is trainable and has to be managed deliberately, not treated as time off from the real work.",
-          "Progression has to move toward race specificity — general fitness eventually has to convert into the exact demand of the goal race.",
-        ],
-      },
-      { type: "heading", text: "Where They Disagree", level: 3 },
-      {
-        type: "list",
-        items: [
-          "How much quality work should sit near threshold. Norwegian training spends heavily there; Seiler's polarized-training research (see Research Library) argues that's exactly the zone to minimize — though the two systems partly disagree about where \"threshold\" even sits (see the note on this above), which softens the contradiction somewhat without erasing it.",
-          "How prescriptive training should be. Daniels calculates paces to the second and Maffetone locks a heart-rate ceiling to a formula; Lydiard and Magness lean on feel and context over a fixed number.",
-          "How much technical and mental coaching matters. Vigil and Lydiard treat form and psychology as core training; Daniels' formula is largely agnostic to either.",
-        ],
-      },
-      {
-        type: "quote",
-        text: "There have been many examples of top high schoolboys who, on natural ability, could beat everyone... but then, at twenty or so, were no longer champions... the boys they had been beating, who didn't have the natural talent but had worked harder and more sensibly at developing their running, and maintained a high oxygen uptake capability as a consequence, went on to be the champions.",
-        attribution: "Arthur Lydiard",
-      },
-      { type: "heading", text: "How Much Volume Is Actually Required" },
-      {
-        type: "paragraph",
-        text: "Numbers vary by event and level, but the pattern holds across nearly every system above: more volume, applied consistently, is the most reliable long-term lever available. Most elite 5K runners train in the 70–100-plus mile-per-week range; maximizing performance from 1500m up typically takes something in the 80–90-mile range, with many elite milers well over 100. It's possible to compete on 50 miles a week and run reasonably well — plenty of runners do — but that volume caps how much of the aerobic adaptation is actually available. The load itself is what builds resilience and the ability to recover faster between sessions, which is exactly why \"add more consistent volume\" remains the simplest lever in every system above, disagreements about pacing and intensity aside.",
-      },
-      {
-        type: "callout",
-        variant: "takeaway",
-        title: "Key Takeaways",
-        items: [
-          "Every credible system agrees on two fundamentals: aerobic volume is the foundation, and recovery has to be managed deliberately. The real disagreements are about intensity distribution and how prescriptive training should be, not about whether the basics matter.",
-          "Match the system to what's actually true about your context — current aerobic base, event distance, access to lactate testing, appetite for precise pace prescriptions — rather than picking one by reputation or which elite currently uses it.",
-          "More consistent volume, applied over years, is the single most reliable lever across every system here. Pick the structure whose demands you'll actually sustain, not the one that looks most impressive on paper.",
-          "Don't copy a system's exact numbers wholesale — a 100-mile week built for an Olympic miler, or a strict 180-minus-age heart-rate cap — without checking it against your own training history first.",
-        ],
-      },
-    ],
+    lastUpdated: "2026-07-20",
+    // Rendered by its own ToolComponent (see CoachingLibraryHome in
+    // sectionTools, [slug]/page.tsx) rather than generic content blocks --
+    // this is now a directory + comparison table + timeline + genome
+    // feature, not a single long essay, so it intentionally has no
+    // `content` of its own anymore. The seven individual coach pages live
+    // at /coaching-library/[coach] (src/app/coaching-library/[coach]/
+    // page.tsx), driven by src/lib/coaches/data.ts -- a distinct,
+    // structured content type from Foundations sections, not more entries
+    // in this file. The original comparative essay this replaced is still
+    // a good source of real material (Lydiard/Daniels/Canova/Vigil/
+    // Norwegian System quotes and specifics were drawn from it into their
+    // own coach pages); Tom Schwartz and Pete Pfitzinger were net-new.
+  },
+  {
+    slug: "athlete-library",
+    title: "Athlete Library",
+    mission:
+      "How coaching philosophies actually showed up in real athletes' training -- not biographies, applications.",
+    topics: ["Peter Snell", "Deena Kastor", "Jakob Ingebrigtsen"],
+    category: "coaching-and-training",
+    lastUpdated: "2026-07-15",
+    // Rendered by its own ToolComponent (see AthleteLibraryHome in
+    // sectionTools, [slug]/page.tsx), mirroring "coaching-library" exactly
+    // -- a directory grouped by coach, not a single essay, so it
+    // intentionally has no `content` of its own. The individual athlete
+    // pages live at /athlete-library/[athlete] (src/app/athlete-library/
+    // [athlete]/page.tsx), driven by src/lib/athletes/data.ts. Every
+    // athlete here was chosen because their coach already has a Coaching
+    // Library page, so the coach-history link on their page resolves
+    // somewhere real rather than dead-ending.
   },
   {
     slug: "marathon-training",
@@ -2863,36 +2615,17 @@ export const sections: Section[] = [
     slug: "contact",
     title: "Contact",
     mission:
-      "Reach out for coaching questions, collaborations, speaking, and long-term development support.",
-    topics: ["Coaching inquiries", "Collaborations", "Speaking"],
+      "Reach out for coaching questions, contributing to the library, collaborations, or speaking.",
+    topics: ["Coaching inquiries", "Contributing", "Collaborations", "Speaking"],
     category: "writing-and-resources",
-    // A utility page (coaching-inquiry contact info), not educational
-    // content -- reachable at /contact and linked from the footer, but
-    // doesn't clutter the category grid or the Learn menu.
+    // A utility page (coaching-inquiry contact info, a contact form, and
+    // social/email links), not educational content -- reachable at /contact
+    // and linked from the footer, but doesn't clutter the category grid or
+    // the Learn menu. Rendered by its own ToolComponent (see ContactPage in
+    // sectionTools, [slug]/page.tsx) rather than generic content blocks,
+    // since a form and social links aren't expressible as ContentBlock[] --
+    // this section intentionally has no `content` of its own anymore.
     hiddenFromCategory: true,
-    content: [
-      {
-        type: "paragraph",
-        text: "I coach the Vanderbilt Run Club through full and half marathon training, and I've coached Run22 members one-on-one since I first built that community during COVID lockdowns. If you're looking for structured coaching, a second opinion on a plan you're already following, or just want to talk through where your training has stalled, I'd like to hear from you.",
-      },
-      { type: "heading", text: "What to Reach Out About" },
-      {
-        type: "list",
-        items: [
-          "Coaching inquiries — one-on-one coaching, a race buildup, or a review of a plan you're already running.",
-          "Collaborations — guest writing, research discussions, or joint projects with other coaches and physiologists.",
-          "Speaking — talks or workshops on training philosophy, aerobic development, or coaching methodology.",
-          "Long-term development — ongoing support for a runner or team, beyond a single race.",
-        ],
-      },
-      { type: "heading", text: "Get in Touch" },
-      {
-        type: "paragraph",
-        text: "The fastest way to reach me is email, at",
-        linkHref: "mailto:hello@brodyhaar.com",
-        linkText: "hello@brodyhaar.com",
-      },
-    ],
   },
   {
     slug: "heat-tracker",

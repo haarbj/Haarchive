@@ -28,16 +28,17 @@ describe("retrieveRelevantContent", () => {
   });
 
   it("retrieves a single list item, not the whole list it came from", () => {
-    // "windsprints" alone, rather than diluted with common tokens like
-    // "race"/"week" that also score highly all over the site -- this test
-    // is about excerpt granularity, not ranking, so keep the query specific
-    // enough that a windsprints mention reliably surfaces at all.
-    const results = retrieveRelevantContent("windsprints", sections, 10);
-    const hits = results.filter((r) => /windsprint/i.test(r.text));
+    // "flavoring" alone, rather than diluted with common tokens that also
+    // score highly all over the site -- this test is about excerpt
+    // granularity, not ranking, so keep the query specific enough that a
+    // flavoring mention (Nutrition & Fueling's dental-health checklist)
+    // reliably surfaces at all.
+    const results = retrieveRelevantContent("flavoring", sections, 10);
+    const hits = results.filter((r) => /flavoring/i.test(r.text));
     expect(hits.length).toBeGreaterThan(0);
-    // The Race Week list has 7 items (one per day); a real hit on that list
-    // should be one short line ("Monday: windsprints."), not all seven
-    // concatenated together.
+    // That checklist has several items; a real hit on it should be one
+    // short line ("Choose a less acidic flavoring when the option
+    // exists."), not the whole list concatenated together.
     expect(hits.some((r) => r.text.length < 100)).toBe(true);
   });
 

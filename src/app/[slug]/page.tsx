@@ -15,10 +15,15 @@ import { createClient } from "@/lib/db/server";
 import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
 import { buildArticleAttribution } from "@/lib/articles/attribution";
 import type { Article } from "@/lib/articles/types";
+import { formatDate } from "@/lib/format";
+import { ContactPage } from "@/components/contact-page";
+import { CoachingLibraryHome } from "@/components/coaches/coaching-library-home";
+import { AthleteLibraryHome } from "@/components/athletes/athlete-library-home";
 import { EnvironmentalCalculator } from "@/components/environmental-calculator";
 import { GapCalculator } from "@/components/gap-calculator";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
+import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
 import { ArticleLayout } from "@/components/article-layout";
 import type { ArticleAttribution } from "@/components/article-byline";
 import { BackLink } from "@/components/ui/back-link";
@@ -34,6 +39,10 @@ const sectionTools: Record<string, ComponentType> = {
   "pace-calculator": PaceCalculator,
   "environmental-calculator": EnvironmentalCalculator,
   "gap-calculator": GapCalculator,
+  contact: ContactPage,
+  "training-philosophy": TrainingPhilosophyPage,
+  "coaching-library": CoachingLibraryHome,
+  "athlete-library": AthleteLibraryHome,
 };
 
 type SectionPageProps = {
@@ -66,15 +75,22 @@ async function loadPublishedArticle(slug: string): Promise<Article | null> {
   return mapArticleRow(data);
 }
 
-async function loadPublishedArticleList(): Promise<{ slug: string; title: string; subtitle: string | null }[]> {
+async function loadPublishedArticleList(): Promise<
+  { slug: string; title: string; subtitle: string | null; publishedAt: string | null }[]
+> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("articles")
-    .select("slug, title, subtitle")
+    .select("slug, title, subtitle, published_at")
     .eq("status", "published")
     .order("published_at", { ascending: false })
-    .returns<{ slug: string; title: string; subtitle: string | null }[]>();
-  return data ?? [];
+    .returns<{ slug: string; title: string; subtitle: string | null; published_at: string | null }[]>();
+  return (data ?? []).map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle,
+    publishedAt: row.published_at,
+  }));
 }
 
 async function loadArticleAttribution(article: Article): Promise<ArticleAttribution> {
@@ -240,6 +256,11 @@ export default async function SectionPage({ params }: SectionPageProps) {
             {publishedArticles.map((article) => (
               <CardLink key={article.slug} href={`/${article.slug}`}>
                 <h2 className="text-xl font-semibold tracking-tight">{article.title}</h2>
+                {article.publishedAt ? (
+                  <p className="mt-1 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                    {formatDate(article.publishedAt.slice(0, 10))}
+                  </p>
+                ) : null}
                 <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{article.subtitle ?? ""}</p>
                 <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
                   Read the essay →

@@ -1,5 +1,7 @@
 import { categories, categoryMap, sections } from "@/lib/sections";
 import { headingId } from "@/lib/heading-id";
+import { coaches } from "@/lib/coaches/data";
+import { athletes } from "@/lib/athletes/data";
 
 export type SearchEntry = {
   title: string;
@@ -49,6 +51,31 @@ function buildIndex(): IndexedEntry[] {
         keywords: "",
       });
     }
+  }
+
+  // Individual coaches and athletes live in their own structured data files
+  // (lib/coaches/data.ts, lib/athletes/data.ts), not in `sections` -- so
+  // without these two loops a search for "Lydiard" or "Ingebrigtsen" would
+  // only ever surface the library's own overview page, never the specific
+  // person a reader is actually looking for.
+  for (const coach of coaches) {
+    entries.push({
+      title: coach.name,
+      subtitle: coach.oneLiner,
+      href: `/coaching-library/${coach.slug}`,
+      group: "Coaching Library",
+      keywords: [coach.shortName, coach.compare.primaryIdea].filter(Boolean).join(" "),
+    });
+  }
+
+  for (const athlete of athletes) {
+    entries.push({
+      title: athlete.name,
+      subtitle: athlete.oneLiner,
+      href: `/athlete-library/${athlete.slug}`,
+      group: "Athlete Library",
+      keywords: [athlete.country, athlete.primaryEvents].join(" "),
+    });
   }
 
   return entries;

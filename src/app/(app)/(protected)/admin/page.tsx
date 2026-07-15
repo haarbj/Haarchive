@@ -91,6 +91,32 @@ export default async function AdminPage() {
           </span>
         </CardLink>
 
+        <CardLink href="/admin/contributor-applications" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+              Contributor Applications
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Review and approve requests to write, answer questions, or review submissions.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
+        <CardLink href="/admin/messages" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Messages</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Read messages sent through the /contact form.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
         <CreateInviteForm />
 
         <div>
