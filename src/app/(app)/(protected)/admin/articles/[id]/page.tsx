@@ -10,6 +10,7 @@ import type { ContentBlock } from "@/lib/sections";
 import { ALLOWED_ARTICLE_TRANSITIONS } from "@/lib/articles/constants";
 import { StatusPanel } from "./status-panel";
 import { ContributorsPanel, type ContributorRow } from "./contributors-panel";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
@@ -82,6 +83,7 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/admin/articles">Back to Articles</BackLink>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Heading>{article.title}</Heading>

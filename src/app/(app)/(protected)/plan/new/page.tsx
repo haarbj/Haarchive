@@ -18,7 +18,7 @@ export default async function NewPlanPage() {
   // group plan (and there's nothing for it to attach to: no season/group
   // context to associate it with).
   const session = await getAppSession();
-  if (session?.teamId) redirect("/plan");
+  if (session?.athleteTeamId) redirect("/plan");
 
   const supabase = await createClient();
 

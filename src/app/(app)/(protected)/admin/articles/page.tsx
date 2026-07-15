@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
 import { formatRelativeTime } from "@/lib/format";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -29,6 +30,7 @@ export default async function AdminArticlesPage() {
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Articles</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Every contributor-authored article, across every stage of the workflow.

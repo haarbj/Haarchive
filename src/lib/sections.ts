@@ -2819,125 +2819,14 @@ export const sections: Section[] = [
       "Educational writing that connects physiology, psychology, and philosophy to practical training.",
     topics: ["Deep dives", "Practical lessons", "Applied theory"],
     category: "writing-and-resources",
-    articleSlugs: ["why-running-is-valuable-for-everyone", "the-onus-to-quit"],
-  },
-  {
-    slug: "why-running-is-valuable-for-everyone",
-    title: "Why Running Is Valuable for Everyone",
-    mission:
-      "Running is one of the few pursuits that scales perfectly across ambition -- the physiology of why it works for anyone who starts.",
-    topics: ["Aerobic metabolism", "Universal accessibility", "Mind and body"],
-    category: "writing-and-resources",
-    hiddenFromCategory: true,
-    content: [
-      {
-        type: "paragraph",
-        text: "Let's consider a simple question: who is running for? Is it for the potential Olympic champion chasing marginal gains and podium finishes, or is it for the man or woman, the girl or boy, who simply wants to feel a little more alive and experience the quiet satisfaction that comes from physical and mental well-being? The answer is both. Running is one of the few pursuits that scales perfectly across ambition. It meets you where you are and grows with you, offering the same fundamental benefits whether you are chasing excellence or simply seeking clarity.",
-      },
-      {
-        type: "paragraph",
-        text: "It is possible to be healthy without being fit, and it is equally possible to be fit without being truly healthy. What we should aim for is both, and at the center of that balance is oxygen. Nearly every metabolic process in the human body depends, directly or indirectly, on oxygen, which means that improving our ability to take in, transport, and use oxygen has far-reaching effects on how we function. The key is not simply to exercise harder, but to train in a way that steadily improves oxygen uptake over time. That process requires consistency, patience, and a level of effort that can be sustained day after day.",
-      },
-      {
-        type: "paragraph",
-        text: "There are two primary ways the body produces energy: aerobic and anaerobic metabolism. Aerobic metabolism depends on oxygen and allows for efficient, long-duration energy production, while anaerobic metabolism operates without oxygen and is inherently limited in both duration and efficiency. This distinction is not trivial. When energy is produced aerobically, the body is able to extract far more usable energy from a given amount of fuel, making it possible to sustain effort over long periods. Anaerobic energy, by contrast, is short-lived and accumulates byproducts that quickly limit performance. For anyone interested in building lasting fitness rather than temporary strain, the aerobic system must be the priority.",
-      },
-      {
-        type: "paragraph",
-        text: "The heart plays a central role in this process. It is the muscle responsible for delivering oxygen-rich blood throughout the body, and like any muscle, it adapts to the demands placed upon it. To strengthen the heart and improve its capacity, it must be trained through sustained, controlled effort. Effort that is too easy will not stimulate adaptation, but effort that is too intense cannot be maintained long enough to produce meaningful change. The most effective training lies in the space between these extremes, where the body is challenged but not overwhelmed.",
-      },
-      {
-        type: "paragraph",
-        text: "Few activities create this kind of sustained aerobic demand as effectively as running. Each stride requires lifting and propelling the body against gravity, engaging the large muscles of the legs in a continuous and demanding rhythm. This places a consistent pressure on the cardiovascular system, forcing it to adapt in ways that improve overall efficiency. Other forms of exercise have their place, but many fall short in this specific regard. Cycling reduces the load by supporting body weight, swimming removes the effect of gravity altogether, and walking often lacks the intensity required to significantly challenge the system. Cross-country skiing may rival running in its total-body engagement, but it is limited by geography and season. Running, by contrast, is almost universally accessible and requires little more than the willingness to begin.",
-      },
-      {
-        type: "paragraph",
-        text: "Using running as the cornerstone of fitness requires an understanding of how to maintain effort at an aerobic level for extended periods. This is where many runners go wrong, mistaking constant intensity for progress. The body does not adapt best under relentless strain. It adapts when stress is applied intelligently and consistently. Building a strong aerobic foundation is essential, much like building a house on solid ground. Without it, any gains in speed or strength are fragile and short-lived.",
-      },
-      {
-        type: "paragraph",
-        text: "At a deeper level, these adaptations are driven by changes within the body itself. The development of capillary networks improves the delivery of oxygen to working muscles, while an increase in mitochondria enhances the body's ability to convert fuel into usable energy. These changes allow for greater endurance, more efficient movement, and improved resistance to fatigue. The body becomes not just stronger, but more capable of sustaining effort over time.",
-      },
-      {
-        type: "paragraph",
-        text: "Energy production lies at the core of this transformation. The body relies on adenosine triphosphate, or ATP, as its primary source of energy, but stores of ATP are limited and quickly depleted during intense activity. Aerobic metabolism solves this problem by continuously regenerating ATP through the use of oxygen, allowing for sustained performance over long durations. This is why a trained runner can maintain a steady effort for hours, while untrained efforts are often short-lived and exhausting.",
-      },
-      {
-        type: "paragraph",
-        text: "The benefits of this system extend beyond physical performance. As oxygen delivery improves, so too does the function of other systems, including the brain. Many runners notice greater mental clarity, improved focus, and a higher resistance to fatigue in their daily lives. Running becomes more than a physical activity; it becomes a way to sharpen the mind and stabilize the body as a whole.",
-      },
-      {
-        type: "paragraph",
-        text: "Running is valuable not because it is difficult, but because it is effective. It develops the systems that matter most, creating a foundation that supports both health and performance. It does not require elite talent or specialized conditions, only consistency and an understanding of how to train in a way that aligns with the body's natural processes. That is what makes it universal. Not everyone will become fast, but everyone can become better.",
-      },
-    ],
-  },
-  {
-    slug: "the-onus-to-quit",
-    title: "The Onus to Quit",
-    mission:
-      "On walking away from a Division I program, and why quitting the team didn't mean quitting the sport.",
-    topics: ["Burnout", "Walking away", "Reclaiming the sport"],
-    category: "writing-and-resources",
-    hiddenFromCategory: true,
-    content: [
-      {
-        type: "quote",
-        text: "Sometimes quitting is the right answer.",
-      },
-      {
-        type: "paragraph",
-        text: "For most of my life, quitting was not in my vocabulary. I was the kid who signed up for every sport, every season, every chance to test myself. Tennis in the summer, basketball in the winter, soccer and football whenever I could squeeze them in. I thrived on activity, on the sweat and effort that proved I had given my all.",
-      },
-      {
-        type: "paragraph",
-        text: "Then, in seventh grade, my middle school soccer coach who was also the P.E. teacher and cross-country coach pulled me aside after practice. He told me he thought I would make a great distance runner. At the time, I did not even know what cross country was. I thought it meant road trips across state lines, not an endurance sport. Still, his suggestion stayed with me.",
-      },
-      {
-        type: "paragraph",
-        text: "That fall, I lined up for my first race having never run more than a mile straight. The course was a mile and a half. I finished 14th overall, second on my team, and something clicked. By the end of the season, I was hooked. Running had found me, and it quickly became the sport where I could shine.",
-      },
-      {
-        type: "paragraph",
-        text: "In high school, I gave myself fully to the discipline. I ran for Brophy College Prep, where by sophomore year I was the only underclassman on the varsity state team. By junior year, I helped lead us to a state championship. Senior year, I was our top runner, finishing a full minute ahead of my teammates. Running was not just an activity anymore. It was an identity, a purpose.",
-      },
-      {
-        type: "paragraph",
-        text: "So when it came time for college, I asked myself: Do I want to keep doing this? Do I want running to dictate where I go and who I become? After much thought, I decided the answer was yes. I could not imagine myself without it. When Vanderbilt offered me a guaranteed roster spot, I jumped at it. It felt like the natural next step in a story that had been writing itself since seventh grade.",
-      },
-      {
-        type: "paragraph",
-        text: "It turned out to be one of the hardest decisions of my life.",
-      },
-      {
-        type: "paragraph",
-        text: "The warning signs came quickly. Our coach, Michael Porter, did not send out summer training until late June, weeks after I had graduated. His plan called for \"mileage runs\" that were nearly two minutes faster than what I had considered recovery in high school. Every day was a test, and if I failed to hit the right pace, I was told to make it up later in the week. The logic was rigid. The joy was gone.",
-      },
-      {
-        type: "paragraph",
-        text: "Over the next two years, the things I once loved about running began to fade. My personal records stagnated. Practices felt suffocating. Anxiety spread through the team as we pushed ourselves to exhaustion. The stopwatch and clipboard became symbols of pressure rather than progress.",
-      },
-      {
-        type: "paragraph",
-        text: "Even worse, I realized the training was not just failing me physically. It was stripping me of why I had started running in the first place. Running had been my way of connecting: to teammates, to other schools' athletes, to the outdoors, even to God. Now it was reduced to numbers, intervals, and survival.",
-      },
-      {
-        type: "paragraph",
-        text: "By the end of my sophomore year, I knew I could not keep going. So I did the unthinkable: I quit.",
-      },
-      {
-        type: "paragraph",
-        text: "Walking away was not easy. But quitting the team did not mean quitting the sport. It meant reclaiming it. It meant returning to the Lydiard way of training, which focused on running smarter rather than harder. Long aerobic runs, time spent in nature, and building endurance and joy replaced hammering myself into the ground. It meant asking not, \"How fast must I go today?\" but \"How far can I go?\"",
-      },
-      {
-        type: "paragraph",
-        text: "I realized quitting was not about weakness. It was about strength, the strength to step away from something that was breaking me, to trust my instincts, and to redefine what running meant in my life.",
-      },
-      {
-        type: "paragraph",
-        text: "Now, when I lace up, I do it with gratitude. Running is once again a place where I find connection, peace, and possibility. Sometimes quitting is the only way to start again.",
-      },
-    ],
+    // Both former hardcoded members (Why Running Is Valuable for Everyone,
+    // The Onus to Quit) were migrated into the database-backed articles
+    // table with real author/published-date attribution -- see
+    // /contribute/articles. This stays a non-empty-typed array (not the
+    // field removed entirely) so [slug]/page.tsx keeps rendering the
+    // card-grid branch instead of falling through to "Planned Topics";
+    // published DB articles are appended to that grid automatically.
+    articleSlugs: [],
   },
   {
     slug: "resources",

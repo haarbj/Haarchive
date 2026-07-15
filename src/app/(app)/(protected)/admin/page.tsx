@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { formatRelativeTime } from "@/lib/format";
 import { CreateInviteForm } from "./create-invite-form";
+import { BackLink } from "@/components/ui/back-link";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -31,6 +32,7 @@ export default async function AdminPage() {
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/dashboard">Back to Dashboard</BackLink>
       <Heading>Admin</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Invite coaches. Athletes with an @brophybroncos.org email join automatically, no invite needed.

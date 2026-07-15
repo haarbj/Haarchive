@@ -30,9 +30,9 @@ export default async function GroupDetailPage({ params }: GroupDetailPageProps) 
   if (!group) notFound();
 
   const [{ data: teamMemberships }, { data: groupMemberships }, { data: otherGroups }] = await Promise.all([
-    supabase.from("team_memberships").select("user_id").eq("team_id", session!.teamId!).eq("role", "athlete").returns<Membership[]>(),
+    supabase.from("team_memberships").select("user_id").eq("team_id", session!.coachTeamId!).eq("role", "athlete").returns<Membership[]>(),
     supabase.from("group_memberships").select("user_id").eq("group_id", groupId).returns<Membership[]>(),
-    supabase.from("groups").select("id, name").eq("team_id", session!.teamId!).neq("id", groupId).returns<Group[]>(),
+    supabase.from("groups").select("id, name").eq("team_id", session!.coachTeamId!).neq("id", groupId).returns<Group[]>(),
   ]);
 
   const athleteIds = teamMemberships?.map((m) => m.user_id) ?? [];

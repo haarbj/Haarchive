@@ -8,6 +8,7 @@ import { CITATION_STATUS_LABELS, type CitationStatus } from "@/lib/articles/cons
 import { sectionMap } from "@/lib/sections";
 import { SuggestionForm } from "./suggestion-form";
 import { CitationForm } from "./citation-form";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
@@ -43,6 +44,7 @@ export default async function SuggestionsPage() {
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/contribute">Back to Contribute</BackLink>
       <Heading>Suggestions & Citations</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Foundations pages stay hand-curated, but you can flag what should change and why — an admin reviews

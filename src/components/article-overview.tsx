@@ -1,10 +1,13 @@
 import Link from "next/link";
 
-import type { Category } from "@/lib/sections";
 import { Card } from "@/components/ui/card";
 
 type ArticleOverviewProps = {
-  category: Category;
+  // Structural, not the full Category type -- ArticleLayout sometimes
+  // passes a synthetic breadcrumb target (e.g. "Articles" instead of the
+  // broader "Writing & Resources" category), and mission was never used
+  // here anyway.
+  category: { slug: string; title: string };
   title: string;
   readingMinutes: number;
   sectionCount: number;

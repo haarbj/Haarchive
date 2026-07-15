@@ -67,7 +67,7 @@ export default async function GroupSchedulePage({ params }: PageProps) {
       .eq("group_plan_id", groupPlanId)
       .order("scheduled_date", { ascending: true })
       .returns<Workout[]>(),
-    supabase.from("groups").select("id, name").eq("team_id", session!.teamId!).order("name", { ascending: true }).returns<Group[]>(),
+    supabase.from("groups").select("id, name").eq("team_id", session!.coachTeamId!).order("name", { ascending: true }).returns<Group[]>(),
   ]);
 
   // Weeks within a phase are contiguous 7-day blocks starting at the

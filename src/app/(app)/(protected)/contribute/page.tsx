@@ -2,20 +2,16 @@ import type { Metadata } from "next";
 
 import { getAppSession } from "@/lib/auth/session";
 import { hasContentPermission } from "@/lib/auth/permissions";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
-import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 
 export const metadata: Metadata = {
   title: "Contribute",
 };
 
-// The contributor home base -- gated by contribute/layout.tsx. Phase 1 only
-// ships permissions + this landing page; the cards below become real
-// features (drafts, review queue, assigned questions, suggestions) in later
-// phases, but the entry point exists now since contributor experience was
-// explicitly prioritized over further admin tooling.
+// The contributor home base -- gated by contribute/layout.tsx.
 export default async function ContributePage() {
   const session = await getAppSession();
   const isContributor = hasContentPermission(session?.permissions ?? [], "content_contributor");
@@ -23,6 +19,7 @@ export default async function ContributePage() {
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/dashboard">Back to Dashboard</BackLink>
       <Heading>Contribute</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         This is where trusted athletes, coaches, and researchers help improve Haarchive&rsquo;s content.
@@ -85,12 +82,19 @@ export default async function ContributePage() {
             </span>
           </CardLink>
         ) : null}
-        <Card padding="md">
-          <p className="font-semibold text-zinc-900 dark:text-white">Assigned Questions</p>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-            Help answer reader questions assigned to you. Coming soon.
-          </p>
-        </Card>
+        <CardLink href="/contribute/questions" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+              Assigned Questions
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Help answer or review reader questions assigned to you.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
         <CardLink href="/contribute/suggestions" className="flex items-center justify-between">
           <div>
             <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">

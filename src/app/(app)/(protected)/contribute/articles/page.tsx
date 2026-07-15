@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
@@ -28,6 +29,7 @@ export default async function MyArticlesPage() {
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/contribute">Back to Contribute</BackLink>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Heading>My Drafts</Heading>
         <Button href="/contribute/articles/new">New draft</Button>

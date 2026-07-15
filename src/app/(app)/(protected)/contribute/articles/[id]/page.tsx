@@ -8,6 +8,7 @@ import type { ContentBlock } from "@/lib/sections";
 import { ArticleEditorForm } from "@/app/(app)/(protected)/contribute/articles/article-editor-form";
 import { SubmitForReviewButton } from "./submit-for-review-button";
 import type { CitationDraft } from "@/app/(app)/(protected)/contribute/articles/citations-editor";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -84,6 +85,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
 
   return (
     <Container variant="narrow">
+      <BackLink href="/contribute/articles">Back to My Drafts</BackLink>
       <Heading variant="compact">{article.title}</Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{ARTICLE_STATUS_LABELS[article.status]}</p>
 

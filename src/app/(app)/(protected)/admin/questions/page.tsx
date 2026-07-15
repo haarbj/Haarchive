@@ -7,6 +7,7 @@ import { formatRelativeTime } from "@/lib/format";
 import { computeKnowledgeGaps } from "@/lib/questions/knowledge-gaps";
 import { mapQuestionRow } from "@/lib/questions/map-row";
 import { StatusBadge } from "@/components/questions/status-badge";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { ListRow } from "@/components/ui/list-row";
 import { Heading } from "@/components/ui/heading";
@@ -57,15 +58,8 @@ export default async function AdminQuestionsPage({ searchParams }: AdminQuestion
 
   return (
     <Container variant="dashboard">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <Heading>Questions</Heading>
-        <Link
-          href="/admin"
-          className="text-sm font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black/60 dark:text-zinc-400 dark:decoration-white/30"
-        >
-          ← Admin home
-        </Link>
-      </div>
+      <BackLink href="/admin">Back to Admin</BackLink>
+      <Heading>Questions</Heading>
       <p className="mt-4 text-zinc-600 dark:text-zinc-300">
         {questions.length} question{questions.length === 1 ? "" : "s"} total.
       </p>

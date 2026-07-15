@@ -44,7 +44,7 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
   const { data: groups } = await supabase
     .from("groups")
     .select("id, name")
-    .eq("team_id", session!.teamId!)
+    .eq("team_id", session!.coachTeamId!)
     .order("name", { ascending: true })
     .returns<{ id: string; name: string }[]>();
 

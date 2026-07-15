@@ -22,7 +22,7 @@ export default async function GroupsPage() {
   const { data: groups } = await supabase
     .from("groups")
     .select("id, name")
-    .eq("team_id", session!.teamId!)
+    .eq("team_id", session!.coachTeamId!)
     .order("name", { ascending: true })
     .returns<Group[]>();
 

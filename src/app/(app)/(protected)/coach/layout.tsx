@@ -4,7 +4,7 @@ import { getAppSession } from "@/lib/auth/session";
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
   const session = await getAppSession();
-  if (session?.role !== "coach") redirect("/dashboard");
+  if (!session?.isCoach) redirect("/dashboard");
 
   return children;
 }

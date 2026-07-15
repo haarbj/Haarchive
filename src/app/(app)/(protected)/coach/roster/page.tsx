@@ -21,7 +21,7 @@ export default async function RosterPage() {
   const { data: memberships } = await supabase
     .from("team_memberships")
     .select("user_id")
-    .eq("team_id", session!.teamId!)
+    .eq("team_id", session!.coachTeamId!)
     .eq("role", "athlete")
     .returns<Membership[]>();
 

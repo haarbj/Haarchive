@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
@@ -7,6 +8,7 @@ import { Heading } from "@/components/ui/heading";
 
 type ProfileRow = { display_name: string; avatar_url: string | null };
 type ContributorRow = { title: string | null; bio: string | null; expertise: string[] };
+type PublishedArticleRow = { slug: string; title: string; subtitle: string | null };
 
 async function loadContributor(id: string) {
   const supabase = await createClient();
@@ -25,6 +27,33 @@ async function loadContributor(id: string) {
   return { profile, contributor };
 }
 
+// article_contributors_select_published (RLS) already restricts this to
+// rows belonging to a published article, so there's no need for the
+// service-role client here -- same public-read boundary as the article
+// bylines themselves.
+async function loadPublishedArticlesByAuthor(userId: string): Promise<PublishedArticleRow[]> {
+  const supabase = await createClient();
+  const { data: contributorRows } = await supabase
+    .from("article_contributors")
+    .select("article_id")
+    .eq("user_id", userId)
+    .eq("contributor_role", "author")
+    .returns<{ article_id: string }[]>();
+
+  const articleIds = (contributorRows ?? []).map((row) => row.article_id);
+  if (articleIds.length === 0) return [];
+
+  const { data: articles } = await supabase
+    .from("articles")
+    .select("slug, title, subtitle, published_at")
+    .in("id", articleIds)
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .returns<(PublishedArticleRow & { published_at: string | null })[]>();
+
+  return articles ?? [];
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const result = await loadContributor(id);
@@ -36,6 +65,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ id
   const result = await loadContributor(id);
   if (!result) notFound();
   const { profile, contributor } = result;
+  const articles = await loadPublishedArticlesByAuthor(id);
 
   return (
     <Container variant="content">
@@ -84,7 +114,24 @@ export default async function ContributorPage({ params }: { params: Promise<{ id
         <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
           Articles
         </p>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">No published articles yet.</p>
+        {articles.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            {articles.map((article) => (
+              <Link
+                key={article.slug}
+                href={`/${article.slug}`}
+                className="block rounded-lg border border-black/10 px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-card-hover dark:border-white/10"
+              >
+                <p className="font-semibold text-zinc-900 dark:text-white">{article.title}</p>
+                {article.subtitle ? (
+                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{article.subtitle}</p>
+                ) : null}
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">No published articles yet.</p>
+        )}
       </div>
     </Container>
   );

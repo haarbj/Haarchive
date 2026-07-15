@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { loadAllUsers } from "@/lib/admin/users";
 import { UserPermissionsRow } from "./user-permissions-row";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { fieldClass } from "@/lib/form-styles";
@@ -79,6 +80,7 @@ export default async function UsersPermissionsPage({
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Users & Permissions</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Grant or remove Content Contributor, Reviewer, and Training Dashboard access. These are independent

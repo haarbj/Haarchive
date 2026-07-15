@@ -27,7 +27,7 @@ export default async function CoachPage() {
   const { data: seasons } = await supabase
     .from("season_plans")
     .select("id, name, goal_race_name, goal_race_date, status")
-    .eq("team_id", session!.teamId!)
+    .eq("team_id", session!.coachTeamId!)
     .order("created_at", { ascending: false })
     .returns<SeasonPlan[]>();
 

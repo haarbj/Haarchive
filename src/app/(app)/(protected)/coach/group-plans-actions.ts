@@ -16,7 +16,7 @@ export type ActionState = { error?: string };
 // requiring a separate explicit "set up this group" step.
 export async function ensureGroupPlan(seasonId: string, groupId: string): Promise<{ groupPlanId?: string; error?: string }> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { data: existing } = await supabase
@@ -29,7 +29,7 @@ export async function ensureGroupPlan(seasonId: string, groupId: string): Promis
 
   const { data: created, error } = await supabase
     .from("group_plans")
-    .insert({ team_id: session.teamId, season_plan_id: seasonId, group_id: groupId })
+    .insert({ team_id: session.coachTeamId, season_plan_id: seasonId, group_id: groupId })
     .select("id")
     .single();
   if (error || !created) return { error: error?.message ?? "Couldn't set up this group's schedule." };
@@ -52,7 +52,7 @@ async function allGroupPlanIdsForSeason(supabase: Awaited<ReturnType<typeof crea
 // other group's entries for that same date range too.
 export async function publishWeek(seasonId: string, weekStartDate: string, weekEndDate: string): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const groupPlanIds = await allGroupPlanIdsForSeason(supabase, seasonId);
@@ -72,7 +72,7 @@ export async function publishWeek(seasonId: string, weekStartDate: string, weekE
 
 export async function unpublishWeek(seasonId: string, weekStartDate: string, weekEndDate: string): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const groupPlanIds = await allGroupPlanIdsForSeason(supabase, seasonId);
@@ -95,7 +95,7 @@ export async function unpublishWeek(seasonId: string, weekStartDate: string, wee
 // week, matching publishWeek/unpublishWeek's season-wide scope.
 export async function publishAllWeeks(seasonId: string): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const groupPlanIds = await allGroupPlanIdsForSeason(supabase, seasonId);
@@ -133,12 +133,12 @@ export type WorkoutInput = {
 
 export async function upsertGroupPlanWorkout(input: WorkoutInput): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
   if (!input.description.trim()) return { error: "Enter a description for this session." };
 
   const supabase = await createClient();
   const row = {
-    team_id: session.teamId,
+    team_id: session.coachTeamId,
     group_plan_id: input.groupPlanId,
     season_phase_id: input.seasonPhaseId,
     scheduled_date: input.scheduledDate,
@@ -174,7 +174,7 @@ export async function generateWorkoutExplanation(
   seasonPhaseId: string | null,
 ): Promise<{ explanation?: string; error?: string }> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
   if (!description.trim()) return { error: "Add a description first." };
 
   const supabase = await createClient();
@@ -217,12 +217,12 @@ export async function createWorkoutForGroups(
   additionalGroupIds: string[],
 ): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
   if (!input.description.trim()) return { error: "Enter a description for this session." };
 
   const supabase = await createClient();
   const baseRow = {
-    team_id: session.teamId,
+    team_id: session.coachTeamId,
     season_phase_id: input.seasonPhaseId,
     scheduled_date: input.scheduledDate,
     time_of_day: input.timeOfDay,
@@ -269,12 +269,12 @@ export async function createRepeatingWorkout(
   additionalDates: string[],
 ): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
   if (!input.description.trim()) return { error: "Enter a description for this session." };
 
   const supabase = await createClient();
   const baseRow = {
-    team_id: session.teamId,
+    team_id: session.coachTeamId,
     group_plan_id: input.groupPlanId,
     season_phase_id: input.seasonPhaseId,
     time_of_day: input.timeOfDay,
@@ -302,7 +302,7 @@ export async function createRepeatingWorkout(
 
 export async function deleteGroupPlanWorkout(workoutId: string): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.from("group_plan_workouts").delete().eq("id", workoutId);
@@ -321,7 +321,7 @@ export async function copyWorkoutToGroups(
   targetGroupIds: string[],
 ): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
   if (targetGroupIds.length === 0) return { error: "Pick at least one group to copy to." };
 
   const supabase = await createClient();
@@ -337,7 +337,7 @@ export async function copyWorkoutToGroups(
     if (ensureError || !groupPlanId) return { error: ensureError ?? "Couldn't set up the target group." };
 
     const { error: insertError } = await supabase.from("group_plan_workouts").insert({
-      team_id: session.teamId,
+      team_id: session.coachTeamId,
       group_plan_id: groupPlanId,
       season_phase_id: source.season_phase_id,
       scheduled_date: source.scheduled_date,
@@ -372,7 +372,7 @@ export async function duplicateWeekToGroup(
   targetGroupId: string,
 ): Promise<ActionState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { data: sourceWorkouts, error: sourceError } = await supabase
@@ -389,7 +389,7 @@ export async function duplicateWeekToGroup(
 
   const { error: insertError } = await supabase.from("group_plan_workouts").insert(
     sourceWorkouts.map((source) => ({
-      team_id: session.teamId,
+      team_id: session.coachTeamId,
       group_plan_id: groupPlanId,
       season_phase_id: source.season_phase_id,
       scheduled_date: source.scheduled_date,

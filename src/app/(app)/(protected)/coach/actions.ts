@@ -53,7 +53,7 @@ export type SeasonPreviewInput = {
 // real thing before anything is saved, not a draft they clean up after.
 export async function previewSeasonBlueprint(input: SeasonPreviewInput): Promise<SeasonPreviewResult> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { ok: false, error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { ok: false, error: "Not authorized." };
 
   if (!input.seasonStartDate) return { ok: false, error: "Choose when the season starts." };
   if (!input.goalRaceName.trim()) return { ok: false, error: "Enter a goal race name." };
@@ -100,7 +100,7 @@ export type CreateSeasonState = { error?: string };
 // rather than reusing the original preview's week list.
 export async function createSeason(input: CreateSeasonInput): Promise<CreateSeasonState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
 
   if (!input.name.trim()) return { error: "Enter a season name." };
   if (input.phases.length === 0) return { error: "No phases to save -- generate a preview first." };
@@ -110,7 +110,7 @@ export async function createSeason(input: CreateSeasonInput): Promise<CreateSeas
   const { data: insertedSeason, error: seasonError } = await supabase
     .from("season_plans")
     .insert({
-      team_id: session.teamId,
+      team_id: session.coachTeamId,
       created_by: session.userId,
       name: input.name,
       goal_race_name: input.goalRaceName,
@@ -131,7 +131,7 @@ export async function createSeason(input: CreateSeasonInput): Promise<CreateSeas
   const { error: phasesError } = await supabase.from("season_phases").insert(
     input.phases.map((phase, i) => ({
       id: phaseIds[i],
-      team_id: session.teamId,
+      team_id: session.coachTeamId,
       season_plan_id: insertedSeason.id,
       phase: phase.phase,
       display_name: phase.displayName,
@@ -162,7 +162,7 @@ export async function createSeason(input: CreateSeasonInput): Promise<CreateSeas
     const weekCount = Math.max(1, Math.round(spanDays / 7));
     for (let w = 0; w < weekCount; w++) {
       weekRows.push({
-        team_id: session.teamId,
+        team_id: session.coachTeamId,
         season_plan_id: insertedSeason.id,
         season_phase_id: phaseIds[i],
         week_index: globalWeekIndex,
@@ -177,7 +177,7 @@ export async function createSeason(input: CreateSeasonInput): Promise<CreateSeas
   if (input.races.length > 0) {
     const { error: racesError } = await supabase.from("season_races").insert(
       input.races.map((race) => ({
-        team_id: session.teamId,
+        team_id: session.coachTeamId,
         season_plan_id: insertedSeason.id,
         name: race.name,
         date: race.date,
@@ -194,7 +194,7 @@ export type UpdatePhaseState = { error?: string; success?: boolean };
 
 export async function updatePhase(_prevState: UpdatePhaseState, formData: FormData): Promise<UpdatePhaseState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const phaseId = formData.get("phaseId");
   const seasonId = formData.get("seasonId");
@@ -248,7 +248,7 @@ export async function reorderPhase(
   direction: "up" | "down",
 ): Promise<ReorderPhaseState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { data: phases, error: loadError } = await supabase
@@ -282,7 +282,7 @@ export type UpdateWeekState = { error?: string; success?: boolean };
 
 export async function updateWeek(_prevState: UpdateWeekState, formData: FormData): Promise<UpdateWeekState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const weekId = formData.get("weekId");
   const seasonId = formData.get("seasonId");

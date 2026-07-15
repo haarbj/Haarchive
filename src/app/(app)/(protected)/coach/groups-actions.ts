@@ -9,7 +9,7 @@ export type CreateGroupState = { error?: string };
 
 export async function createGroup(_prevState: CreateGroupState, formData: FormData): Promise<CreateGroupState> {
   const session = await getAppSession();
-  if (session?.role !== "coach" || !session.teamId) return { error: "Not authorized." };
+  if (!session?.isCoach || !session.coachTeamId) return { error: "Not authorized." };
 
   const name = formData.get("name");
   if (typeof name !== "string" || !name.trim()) return { error: "Enter a group name." };
@@ -17,7 +17,7 @@ export async function createGroup(_prevState: CreateGroupState, formData: FormDa
   const supabase = await createClient();
   const { error } = await supabase
     .from("groups")
-    .insert({ team_id: session.teamId, name: name.trim(), created_by: session.userId });
+    .insert({ team_id: session.coachTeamId, name: name.trim(), created_by: session.userId });
   if (error) {
     if (error.code === "23505") return { error: "A group with this name already exists." };
     return { error: error.message };
@@ -31,7 +31,7 @@ export type RenameGroupState = { error?: string; success?: boolean };
 
 export async function renameGroup(_prevState: RenameGroupState, formData: FormData): Promise<RenameGroupState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const groupId = formData.get("groupId");
   const name = formData.get("name");
@@ -54,7 +54,7 @@ export type DeleteGroupState = { error?: string };
 
 export async function deleteGroup(groupId: string): Promise<DeleteGroupState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.from("groups").delete().eq("id", groupId);
@@ -68,7 +68,7 @@ export type GroupMembershipState = { error?: string };
 
 export async function addAthleteToGroup(groupId: string, athleteId: string): Promise<GroupMembershipState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.from("group_memberships").insert({ group_id: groupId, user_id: athleteId });
@@ -83,7 +83,7 @@ export async function addAthleteToGroup(groupId: string, athleteId: string): Pro
 
 export async function removeAthleteFromGroup(groupId: string, athleteId: string): Promise<GroupMembershipState> {
   const session = await getAppSession();
-  if (session?.role !== "coach") return { error: "Not authorized." };
+  if (!session?.isCoach) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase

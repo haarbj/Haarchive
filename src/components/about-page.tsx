@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import { categories } from "@/lib/sections";
+import { FeatureAnnouncementLoader as FeatureAnnouncement } from "@/components/feature-announcement-loader";
+import { FeaturedEssay } from "@/components/featured-essay";
 import { PullQuote } from "@/components/pull-quote";
-import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -73,51 +74,45 @@ const influences: { name: string; note: string }[] = [
 
 export function AboutPage() {
   return (
-    <Container variant="content">
-      <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-        Distance Running Knowledge Hub
-      </p>
-      <Heading className="mt-3">
-        For runners who want to understand the sport at the deepest level.
-      </Heading>
-      <p className="mt-6 max-w-[66ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
-        The Haarchive is a long-term resource dedicated to the physiology,
-        psychology, philosophy, and practice of distance running — helping
-        athletes learn not only how to train, but how to think about
-        training.
-      </p>
+    <>
+      {/* Full-width, so it renders outside Container (which caps width) --
+          the one thing on this page not scoped to the reading column. */}
+      <FeatureAnnouncement
+        badge="New Tool"
+        title="Environmental Performance Calculator"
+        cta="Launch"
+        href="/environmental-calculator"
+      />
 
-      <CardLink
-        href="/why-running-is-valuable-for-everyone"
-        className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <div>
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-            Featured essay
-          </p>
-          <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-            Why Running Is Valuable for Everyone
-          </h3>
-          <p className="mt-2 max-w-xl text-zinc-600 dark:text-zinc-300">
-            Running scales perfectly across ambition — the same physiology
-            that produces an Olympic champion is what makes an easy run
-            worth doing at all. A good place to start if you&rsquo;re new
-            here.
-          </p>
-        </div>
-        <span className="shrink-0 text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white">
-          Read the essay →
-        </span>
-      </CardLink>
+      <Container variant="content">
+        <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+          Distance Running Knowledge Hub
+        </p>
+        <Heading className="mt-3">
+          For runners who want to understand the sport at the deepest level.
+        </Heading>
+        <p className="mt-6 max-w-[66ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
+          The Haarchive is a long-term resource dedicated to the physiology,
+          psychology, philosophy, and practice of distance running — helping
+          athletes learn not only how to train, but how to think about
+          training.
+        </p>
 
-      <a
-        href="#what-youll-find-here"
-        className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 transition hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white"
-      >
-        See what&rsquo;s here <span aria-hidden="true">↓</span>
-      </a>
+        <FeaturedEssay
+          href="/why-running-is-valuable-for-everyone"
+          title="Why Running Is Valuable for Everyone"
+          description="Running scales perfectly across ambition — the same physiology that produces an Olympic champion is what makes an easy run worth doing at all. A good place to start if you’re new here."
+          ctaLabel="Read the essay →"
+        />
 
-      {/* Tools & Accounts */}
+        <a
+          href="#what-youll-find-here"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 transition hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white"
+        >
+          See what&rsquo;s here <span aria-hidden="true">↓</span>
+        </a>
+
+        {/* Tools & Accounts */}
       <section className="mt-16 border-t border-black/5 pt-14 dark:border-white/10">
         <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
           Tools &amp; accounts
@@ -413,6 +408,7 @@ export function AboutPage() {
           </p>
         </div>
       </section>
-    </Container>
+      </Container>
+    </>
   );
 }

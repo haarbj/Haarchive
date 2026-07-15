@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { getAdjacentSections, type Category, type ContentBlock, type Section } from "@/lib/sections";
+import { getAdjacentSections, sectionMap, type Category, type ContentBlock, type Section } from "@/lib/sections";
 import { headingId } from "@/lib/heading-id";
 import { countTopLevelSections, estimateReadingMinutes } from "@/lib/reading-time";
 import { linkifyContent } from "@/lib/linkify";
@@ -39,6 +39,26 @@ export function ArticleLayout({ section, category, content, attribution }: Artic
       level: block.level ?? 2,
     }));
 
+  // "Articles" (the writing-and-resources category -- both the hand-written
+  // essays and contributor-authored pieces from /contribute/articles) read
+  // as personal, essay-style writing, not structured technical reference --
+  // no in-page jump-to-section nav, no matter how many headings they have.
+  // Foundations pages keep it.
+  const showToc = headings.length > 0 && category.slug !== "writing-and-resources";
+
+  // An essay/article is reached by drilling into the "Articles" index page
+  // (sections.ts' own articleSlugs list, or -- for a DB-backed article,
+  // signaled by `attribution` being set -- the published-article fallback
+  // in [slug]/page.tsx), never directly off the raw "Writing & Resources"
+  // category landing page. That landing page also lists unrelated peer
+  // pages (Resources, Contact) that must keep their real category
+  // breadcrumb, so this only overrides for actual Articles-index members.
+  const isArticleIndexMember = !!sectionMap.get("articles")?.articleSlugs?.includes(section.slug);
+  const breadcrumbCategory =
+    category.slug === "writing-and-resources" && (isArticleIndexMember || !!attribution)
+      ? { slug: "articles", title: sectionMap.get("articles")?.title ?? "Articles" }
+      : category;
+
   const { prev, next } = getAdjacentSections(section.slug);
 
   // Threaded through every block on this render so a glossary term only
@@ -51,7 +71,7 @@ export function ArticleLayout({ section, category, content, attribution }: Artic
       <ReadingProgressBar targetId="article-content" />
 
       <ArticleOverview
-        category={category}
+        category={breadcrumbCategory}
         title={section.title}
         readingMinutes={estimateReadingMinutes(content)}
         sectionCount={countTopLevelSections(content)}
@@ -60,8 +80,8 @@ export function ArticleLayout({ section, category, content, attribution }: Artic
 
       {attribution ? <ArticleByline {...attribution} /> : null}
 
-      <div className={headings.length > 0 ? "mt-10 lg:grid lg:grid-cols-[220px_1fr] lg:gap-12" : "mt-10"}>
-        {headings.length > 0 ? <TableOfContents headings={headings} /> : null}
+      <div className={showToc ? "mt-10 lg:grid lg:grid-cols-[220px_1fr] lg:gap-12" : "mt-10"}>
+        {showToc ? <TableOfContents headings={headings} /> : null}
 
         <div
           id="article-content"

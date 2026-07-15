@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { describePrescription, workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { getAppSession } from "@/lib/auth/session";
@@ -82,7 +81,6 @@ type DashboardPageProps = {
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const session = await getAppSession();
-  if (session?.role === "coach") redirect("/coach");
 
   const { strava_connected: stravaConnectedParam, strava_error: stravaErrorParam } =
     await searchParams;
@@ -255,7 +253,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       )}
 
       <div className="mt-10 space-y-8">
-        {!primaryGoal && <OnboardingForm teamConnected={!!session?.teamId} />}
+        {!primaryGoal && <OnboardingForm teamConnected={!!session?.athleteTeamId} />}
 
         {hasTrainingPlan && (
           <Card padding="md" emphasis>
@@ -309,7 +307,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {primaryGoal && <GoalCard goal={primaryGoal} estimate={fitnessEstimate} />}
 
-        {!session?.teamId && primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
+        {!session?.athleteTeamId && primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
           <CardLink href="/plan/new">
             <p className="text-lg font-semibold text-zinc-900 dark:text-white">
               Generate your training plan →
@@ -320,13 +318,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </CardLink>
         )}
 
-        {!session?.teamId && primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
+        {!session?.athleteTeamId && primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
             Add a goal time and date above to unlock your training plan.
           </p>
         )}
 
-        {session?.teamId && !hasTrainingPlan && (
+        {session?.athleteTeamId && !hasTrainingPlan && (
           <CardLink href="/plan">
             <p className="text-lg font-semibold text-zinc-900 dark:text-white">
               View your training schedule →

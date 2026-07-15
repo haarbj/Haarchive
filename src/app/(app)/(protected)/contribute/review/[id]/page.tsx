@@ -7,6 +7,7 @@ import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/consta
 import { blockPreviewText } from "@/lib/articles/block-preview";
 import type { ContentBlock } from "@/lib/sections";
 import { CommentThread, type CommentWithAuthor } from "@/app/(app)/(protected)/contribute/review/comment-thread";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
@@ -68,6 +69,7 @@ export default async function ReviewArticlePage({ params }: { params: Promise<{ 
 
   return (
     <Container variant="content">
+      <BackLink href="/contribute/review">Back to Review Queue</BackLink>
       <Heading>{article.title}</Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{ARTICLE_STATUS_LABELS[article.status]}</p>
 

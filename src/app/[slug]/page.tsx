@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 
 import {
   categories,
@@ -22,6 +21,7 @@ import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { ArticleLayout } from "@/components/article-layout";
 import type { ArticleAttribution } from "@/components/article-byline";
+import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
@@ -150,18 +150,13 @@ export default async function SectionPage({ params }: SectionPageProps) {
   const section = sectionMap.get(slug);
   const category = categoryMap.get(slug);
 
-  const backLinkClass =
-    "mb-6 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-zinc-500 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white";
-
   // Category landing page
   if (category) {
     const members = sectionsInCategory(category.slug);
 
     return (
       <Container variant="content">
-        <Link href="/" className={backLinkClass}>
-          <span aria-hidden="true">←</span> Back to home
-        </Link>
+        <BackLink href="/">Back to home</BackLink>
         <Heading>
           {category.title}
         </Heading>
@@ -200,14 +195,20 @@ export default async function SectionPage({ params }: SectionPageProps) {
     // pipeline's actual output (see /contribute/articles).
     const publishedArticles = section.articleSlugs ? await loadPublishedArticleList() : [];
 
+    // An essay reached via the Articles index (sections.ts' articleSlugs)
+    // should link back to Articles, not the broader Writing & Resources
+    // category it happens to share with unrelated pages like Resources and
+    // Contact -- matches the breadcrumb override in article-layout.tsx.
+    const articlesSection = sectionMap.get("articles");
+    const isArticleIndexMember = !!articlesSection?.articleSlugs?.includes(section.slug);
+    const backLinkTarget = isArticleIndexMember && articlesSection ? articlesSection : parentCategory;
+
     // Same width as a category landing -- including for articles, which have
     // plenty of room for their sticky TOC + prose grid (see article-layout.tsx)
     // well under this width.
     return (
       <Container variant="content">
-        <Link href={`/${parentCategory.slug}`} className={backLinkClass}>
-          <span aria-hidden="true">←</span> Back to {parentCategory.title}
-        </Link>
+        <BackLink href={`/${backLinkTarget.slug}`}>Back to {backLinkTarget.title}</BackLink>
         <Heading>
           {section.title}
         </Heading>
@@ -271,6 +272,12 @@ export default async function SectionPage({ params }: SectionPageProps) {
 
   const attribution = await loadArticleAttribution(article);
   const parentCategory = categoryMap.get("writing-and-resources")!;
+  // Every DB-backed article belongs to the Articles pipeline (see
+  // /contribute/articles), never to the broader Writing & Resources
+  // category directly -- the back link and breadcrumb should say what the
+  // reader actually clicked through (see article-layout.tsx's own
+  // breadcrumbCategory override for the in-page byline breadcrumb).
+  const articlesSection = sectionMap.get("articles")!;
   const dbSection: Section = {
     slug: article.slug,
     title: article.title,
@@ -282,9 +289,7 @@ export default async function SectionPage({ params }: SectionPageProps) {
 
   return (
     <Container variant="content">
-      <Link href={`/${parentCategory.slug}`} className={backLinkClass}>
-        <span aria-hidden="true">←</span> Back to {parentCategory.title}
-      </Link>
+      <BackLink href={`/${articlesSection.slug}`}>Back to {articlesSection.title}</BackLink>
       <Heading>{dbSection.title}</Heading>
       {dbSection.mission ? (
         <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{dbSection.mission}</p>

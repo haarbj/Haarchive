@@ -7,6 +7,7 @@ import { SUGGESTION_STATUS_LABELS, type SuggestionStatus } from "@/lib/content-s
 import { CITATION_STATUS_LABELS, type CitationStatus } from "@/lib/articles/constants";
 import { ReviewSuggestionForm } from "./review-suggestion-form";
 import { ReviewCitationForm } from "./review-citation-form";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
@@ -57,6 +58,7 @@ export default async function AdminSuggestionsPage() {
 
   return (
     <Container variant="dashboard">
+      <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Suggestions & Citations</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Nothing here changes a Foundations page automatically — accepting a suggestion or citation just marks

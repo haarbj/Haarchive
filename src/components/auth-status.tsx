@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { signOut } from "@/app/(app)/auth-actions";
 import { useAuthStatus } from "@/lib/use-auth-status";
-import { useSessionRole } from "@/lib/use-session-role";
+import { useAccountWorkspaces } from "@/lib/use-account-workspaces";
 
 type AuthStatusProps = {
   className?: string;
@@ -48,7 +48,7 @@ function AccountMenu({
 }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const role = useSessionRole();
+  const workspaces = useAccountWorkspaces();
 
   useEffect(() => {
     if (!open) return;
@@ -93,21 +93,25 @@ function AccountMenu({
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-[var(--z-dropdown)] mt-2 w-44 rounded-xl border border-black/10 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-zinc-900">
-          {role === "coach" ? (
-            <Link href="/coach" onClick={closeAndNavigate} className={menuItemClass}>
-              Coach
-            </Link>
-          ) : (
-            <>
-              <Link href="/dashboard" onClick={closeAndNavigate} className={menuItemClass}>
-                Dashboard
+        <div className="absolute right-0 top-full z-[var(--z-dropdown)] mt-2 w-52 rounded-xl border border-black/10 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-zinc-900">
+          {/* Every workspace this account actually has access to -- a user
+              can be an athlete, a coach, a contributor/reviewer, and an
+              admin all at once, so this lists all of them rather than
+              picking one "primary" role to show. Training Plan rides along
+              right after Dashboard since it's really a sub-page of the
+              athlete workspace, not its own top-level destination. */}
+          {workspaces.map((workspace) => (
+            <div key={workspace.href}>
+              <Link href={workspace.href} onClick={closeAndNavigate} className={menuItemClass}>
+                {workspace.label}
               </Link>
-              <Link href="/plan" onClick={closeAndNavigate} className={menuItemClass}>
-                Training Plan
-              </Link>
-            </>
-          )}
+              {workspace.href === "/dashboard" ? (
+                <Link href="/plan" onClick={closeAndNavigate} className={menuItemClass}>
+                  Training Plan
+                </Link>
+              ) : null}
+            </div>
+          ))}
           <Link href="/settings" onClick={closeAndNavigate} className={menuItemClass}>
             Settings
           </Link>
