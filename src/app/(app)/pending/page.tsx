@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { signOut } from "@/app/(app)/auth-actions";
 import { getAppSession } from "@/lib/auth/session";
+import { hasAnyContentPermission } from "@/lib/auth/permissions";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -17,6 +18,10 @@ export default async function PendingPage() {
   const session = await getAppSession();
   if (!session) redirect("/login");
   if (session.approved || session.isAdmin) redirect("/dashboard"); // stale bookmark, now approved
+  // A content-only contributor (no team_memberships row, not admin) never
+  // needs this page's coach/athlete-specific messaging -- send them to their
+  // own dashboard instead of showing it.
+  if (hasAnyContentPermission(session.permissions)) redirect("/contribute");
 
   return (
     <Container variant="auth">

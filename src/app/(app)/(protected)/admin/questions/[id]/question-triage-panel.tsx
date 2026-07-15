@@ -13,6 +13,8 @@ import {
 } from "@/app/(app)/(protected)/admin/questions/actions";
 import { searchExistingQuestions, type QuestionSearchResult } from "@/app/questions/actions";
 import { LinkedSectionPicker } from "@/app/(app)/(protected)/admin/questions/[id]/linked-section-picker";
+import { AssignmentPanel } from "@/app/(app)/(protected)/admin/questions/[id]/assignment-panel";
+import type { BasicUser } from "@/lib/admin/users";
 import { categories } from "@/lib/sections";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { STATUS_LABELS, STATUS_ORDER, type Question } from "@/lib/questions/types";
@@ -23,10 +25,21 @@ function isContentSuggestion(value: unknown): value is ContentSuggestion {
   return !!value && typeof value === "object" && "draftBody" in (value as object);
 }
 
-export function QuestionTriagePanel({ question }: { question: Question }) {
+export function QuestionTriagePanel({ question, users }: { question: Question; users: BasicUser[] }) {
   return (
     <div className="mt-10 space-y-10">
-      <EditForm question={question} />
+      {/* Keyed on updatedAt so a write from a sibling panel (e.g.
+          "Use as public response") remounts this form with the fresh row
+          instead of leaving its already-initialized controlled state
+          stale -- see assignment-panel.tsx's promoteDraftAnswer call. */}
+      <EditForm question={question} key={question.updatedAt} />
+      <AssignmentPanel
+        questionId={question.id}
+        assignedTo={question.assignedTo}
+        assignedReviewer={question.assignedReviewer}
+        draftAnswer={question.draftAnswer}
+        users={users}
+      />
       <AiAssistPanel questionId={question.id} initialSuggestion={question.aiSuggestion} />
       <MergePanel questionId={question.id} />
       <DangerZone questionId={question.id} />

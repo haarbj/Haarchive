@@ -27,6 +27,21 @@ export type Question = {
   visible: boolean;
   createdAt: string;
   updatedAt: string;
+  // Contributor collaboration (see /contribute/questions and the
+  // question-triage-panel's AssignmentPanel) -- additive to the existing
+  // triage workflow above, not a replacement for adminResponse/status.
+  assignedTo: string | null;
+  assignedReviewer: string | null;
+  draftAnswer: string | null;
+};
+
+export type QuestionComment = {
+  id: string;
+  questionId: string;
+  userId: string | null;
+  comment: string;
+  resolved: boolean;
+  createdAt: string;
 };
 
 export const STATUS_LABELS: Record<QuestionStatus, string> = {

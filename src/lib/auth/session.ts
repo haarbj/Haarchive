@@ -1,6 +1,7 @@
 import { cache } from "react";
 
 import { createClient } from "@/lib/db/server";
+import type { ContentPermission } from "@/lib/auth/permissions";
 
 export type AppSession = {
   userId: string;
@@ -9,6 +10,7 @@ export type AppSession = {
   teamId: string | null;
   approved: boolean;
   isAdmin: boolean;
+  permissions: ContentPermission[];
 } | null;
 
 export function isAdminEmail(email: string | null): boolean {
@@ -41,6 +43,15 @@ export const getAppSession = cache(async (): Promise<AppSession> => {
     .eq("user_id", userId)
     .maybeSingle();
 
+  // Content permissions (content_contributor/reviewer) are additive to, and
+  // never grant, admin -- admin stays exclusively the ADMIN_EMAILS allowlist
+  // below, by deliberate choice (see the content_permissions migration).
+  const { data: permissionRows } = await supabase
+    .from("user_permissions")
+    .select("permission")
+    .eq("user_id", userId)
+    .returns<{ permission: ContentPermission }[]>();
+
   return {
     userId,
     email,
@@ -48,5 +59,6 @@ export const getAppSession = cache(async (): Promise<AppSession> => {
     teamId: membership?.team_id ?? null,
     approved: !!membership,
     isAdmin: isAdminEmail(email),
+    permissions: (permissionRows ?? []).map((row) => row.permission),
   };
 });

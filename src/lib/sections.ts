@@ -70,7 +70,8 @@ export type ContentBlock =
       // Only meaningful for "advanced" -- other variants always render open.
       // Defaults to true for "advanced" and is ignored otherwise.
       collapsed?: boolean;
-    };
+    }
+  | { type: "image"; url: string; alt?: string; caption?: string };
 
 export type Section = {
   slug: string;

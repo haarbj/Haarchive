@@ -49,6 +49,46 @@ export default async function AdminPage() {
           </span>
         </CardLink>
 
+        <CardLink href="/admin/users" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+              Users & Permissions
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Grant Content Contributor, Reviewer, and Training Dashboard access.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
+        <CardLink href="/admin/articles" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Articles</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Manage contributors, review status, and publish drafts.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
+        <CardLink href="/admin/suggestions" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+              Suggestions & Citations
+            </p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Review Foundations page suggestions and research citation submissions.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
         <CreateInviteForm />
 
         <div>

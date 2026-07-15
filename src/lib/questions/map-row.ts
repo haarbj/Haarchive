@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/questions/types";
+import type { Question, QuestionComment } from "@/lib/questions/types";
 
 // Supabase rows come back snake_case; every page/component in this feature
 // works with the camelCase Question type instead, so this is the one place
@@ -23,5 +23,19 @@ export function mapQuestionRow(row: Record<string, unknown>): Question {
     visible: (row.visible as boolean | null) ?? true,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
+    assignedTo: (row.assigned_to as string | null) ?? null,
+    assignedReviewer: (row.assigned_reviewer as string | null) ?? null,
+    draftAnswer: (row.draft_answer as string | null) ?? null,
+  };
+}
+
+export function mapQuestionCommentRow(row: Record<string, unknown>): QuestionComment {
+  return {
+    id: row.id as string,
+    questionId: row.question_id as string,
+    userId: (row.user_id as string | null) ?? null,
+    comment: row.comment as string,
+    resolved: (row.resolved as boolean | null) ?? false,
+    createdAt: row.created_at as string,
   };
 }

@@ -4,6 +4,7 @@ import { getAdjacentSections, type Category, type ContentBlock, type Section } f
 import { headingId } from "@/lib/heading-id";
 import { countTopLevelSections, estimateReadingMinutes } from "@/lib/reading-time";
 import { linkifyContent } from "@/lib/linkify";
+import { ArticleByline, type ArticleAttribution } from "@/components/article-byline";
 import { ArticleOverview } from "@/components/article-overview";
 import { ChapterNav } from "@/components/chapter-nav";
 import { ContentCallout } from "@/components/content-callout";
@@ -16,6 +17,9 @@ type ArticleLayoutProps = {
   section: Section;
   category: Category;
   content: ContentBlock[];
+  // Only set for database-backed articles (see [slug]/page.tsx) -- undefined
+  // for every Foundations page, which renders identically to before.
+  attribution?: ArticleAttribution;
 };
 
 // Extracted from the isArticle branch of [slug]/page.tsx -- the sticky
@@ -26,7 +30,7 @@ type ArticleLayoutProps = {
 // at the article's bottom edge instead of overflowing into the footer --
 // see table-of-contents.tsx's own comment. Don't add a wrapping div around
 // either grid child.
-export function ArticleLayout({ section, category, content }: ArticleLayoutProps) {
+export function ArticleLayout({ section, category, content, attribution }: ArticleLayoutProps) {
   const headings: TocHeading[] = content
     .filter((block) => block.type === "heading")
     .map((block) => ({
@@ -53,6 +57,8 @@ export function ArticleLayout({ section, category, content }: ArticleLayoutProps
         sectionCount={countTopLevelSections(content)}
         lastUpdated={section.lastUpdated}
       />
+
+      {attribution ? <ArticleByline {...attribution} /> : null}
 
       <div className={headings.length > 0 ? "mt-10 lg:grid lg:grid-cols-[220px_1fr] lg:gap-12" : "mt-10"}>
         {headings.length > 0 ? <TableOfContents headings={headings} /> : null}
@@ -93,6 +99,24 @@ export function ArticleLayout({ section, category, content }: ArticleLayoutProps
             }
             if (block.type === "quote") {
               return <PullQuote key={index} text={block.text} attribution={block.attribution} />;
+            }
+            if (block.type === "image") {
+              return (
+                <figure key={index}>
+                  {/* Arbitrary contributor-pasted URL, not a local/optimized asset -- see contributor-profile-form.tsx */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={block.url}
+                    alt={block.alt ?? ""}
+                    className="w-full rounded-card border border-black/10 dark:border-white/10"
+                  />
+                  {block.caption ? (
+                    <figcaption className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                      {block.caption}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              );
             }
             if (block.type === "callout") {
               return (

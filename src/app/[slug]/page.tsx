@@ -12,11 +12,16 @@ import {
   type Category,
   type Section,
 } from "@/lib/sections";
+import { createClient } from "@/lib/db/server";
+import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
+import { buildArticleAttribution } from "@/lib/articles/attribution";
+import type { Article } from "@/lib/articles/types";
 import { EnvironmentalCalculator } from "@/components/environmental-calculator";
 import { GapCalculator } from "@/components/gap-calculator";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { ArticleLayout } from "@/components/article-layout";
+import type { ArticleAttribution } from "@/components/article-byline";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
@@ -45,13 +50,80 @@ export function generateStaticParams() {
   return [...sectionSlugs, ...categorySlugs];
 }
 
+// A published, database-backed contributor article -- the counterpart to
+// Foundations' sectionMap/categoryMap, for any slug that isn't one of
+// those. Uses the RLS-scoped client (not service-role): articles_select_
+// published is a public policy, exactly like questions_select_visible.
+async function loadPublishedArticle(slug: string): Promise<Article | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle<ArticleRow>();
+  if (!data) return null;
+  return mapArticleRow(data);
+}
+
+async function loadPublishedArticleList(): Promise<{ slug: string; title: string; subtitle: string | null }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("articles")
+    .select("slug, title, subtitle")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .returns<{ slug: string; title: string; subtitle: string | null }[]>();
+  return data ?? [];
+}
+
+async function loadArticleAttribution(article: Article): Promise<ArticleAttribution> {
+  const supabase = await createClient();
+  const { data: contributors } = await supabase
+    .from("article_contributors")
+    .select("user_id, contributor_role, title_override")
+    .eq("article_id", article.id)
+    .returns<{ user_id: string; contributor_role: string; title_override: string | null }[]>();
+
+  const userIds = (contributors ?? []).map((c) => c.user_id);
+  if (userIds.length === 0) {
+    return buildArticleAttribution([], [], [], article.publishedAt, article.evidenceCategory);
+  }
+
+  const [{ data: profiles }, { data: contributorProfiles }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url")
+      .in("id", userIds)
+      .returns<{ id: string; display_name: string; avatar_url: string | null }[]>(),
+    supabase
+      .from("contributor_profiles")
+      .select("user_id, title")
+      .in("user_id", userIds)
+      .returns<{ user_id: string; title: string | null }[]>(),
+  ]);
+
+  return buildArticleAttribution(
+    contributors ?? [],
+    profiles ?? [],
+    contributorProfiles ?? [],
+    article.publishedAt,
+    article.evidenceCategory,
+  );
+}
+
 export async function generateMetadata({
   params,
 }: SectionPageProps): Promise<Metadata> {
   const { slug } = await params;
   const section = sectionMap.get(slug);
   const category = categoryMap.get(slug);
-  const entry = section ?? category;
+  let entry: { title: string; mission: string } | undefined = section ?? category;
+
+  if (!entry) {
+    const article = await loadPublishedArticle(slug);
+    if (article) entry = { title: article.title, mission: article.subtitle ?? "" };
+  }
 
   if (!entry) {
     return {};
@@ -77,10 +149,6 @@ export default async function SectionPage({ params }: SectionPageProps) {
   const { slug } = await params;
   const section = sectionMap.get(slug);
   const category = categoryMap.get(slug);
-
-  if (!section && !category) {
-    notFound();
-  }
 
   const backLinkClass =
     "mb-6 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-zinc-500 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white";
@@ -120,62 +188,108 @@ export default async function SectionPage({ params }: SectionPageProps) {
     );
   }
 
-  // Individual section page
-  const currentSection = section!;
-  const parentCategory = categoryMap.get(currentSection.category)!;
-  const ToolComponent = sectionTools[currentSection.slug];
-  const content = currentSection.content;
-  const isArticle = !!content && content.length > 0;
+  // Individual Foundations section page
+  if (section) {
+    const parentCategory = categoryMap.get(section.category)!;
+    const ToolComponent = sectionTools[section.slug];
+    const content = section.content;
+    const isArticle = !!content && content.length > 0;
 
-  // Same width as a category landing -- including for articles, which have
-  // plenty of room for their sticky TOC + prose grid (see article-layout.tsx)
-  // well under this width.
+    // Only the "articles" index section needs this -- the DB articles it
+    // lists alongside the hand-authored essays are the contributor
+    // pipeline's actual output (see /contribute/articles).
+    const publishedArticles = section.articleSlugs ? await loadPublishedArticleList() : [];
+
+    // Same width as a category landing -- including for articles, which have
+    // plenty of room for their sticky TOC + prose grid (see article-layout.tsx)
+    // well under this width.
+    return (
+      <Container variant="content">
+        <Link href={`/${parentCategory.slug}`} className={backLinkClass}>
+          <span aria-hidden="true">←</span> Back to {parentCategory.title}
+        </Link>
+        <Heading>
+          {section.title}
+        </Heading>
+        <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+          {section.mission}
+        </p>
+
+        {ToolComponent ? (
+          <ToolComponent />
+        ) : section.articleSlugs ? (
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            {section.articleSlugs.map((articleSlug) => {
+              const article = sectionMap.get(articleSlug);
+              if (!article) return null;
+              return (
+                <CardLink key={article.slug} href={`/${article.slug}`}>
+                  <h2 className="text-xl font-semibold tracking-tight">
+                    {article.title}
+                  </h2>
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                    {article.mission}
+                  </p>
+                  <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+                    Read the essay →
+                  </span>
+                </CardLink>
+              );
+            })}
+            {publishedArticles.map((article) => (
+              <CardLink key={article.slug} href={`/${article.slug}`}>
+                <h2 className="text-xl font-semibold tracking-tight">{article.title}</h2>
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{article.subtitle ?? ""}</p>
+                <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+                  Read the essay →
+                </span>
+              </CardLink>
+            ))}
+          </div>
+        ) : isArticle ? (
+          <ArticleLayout section={section} category={parentCategory} content={content} />
+        ) : (
+          <Card padding="lg" className="mt-10">
+            <h2 className="text-lg font-semibold">Planned Topics</h2>
+            <ul className="mt-4 space-y-2 text-zinc-600 dark:text-zinc-300">
+              {section.topics.map((topic: string) => (
+                <li key={topic}>• {topic}</li>
+              ))}
+            </ul>
+          </Card>
+        )}
+      </Container>
+    );
+  }
+
+  // Neither a Foundations section nor a category -- try a published,
+  // database-backed contributor article (see /contribute) before giving up.
+  const article = await loadPublishedArticle(slug);
+  if (!article) {
+    notFound();
+  }
+
+  const attribution = await loadArticleAttribution(article);
+  const parentCategory = categoryMap.get("writing-and-resources")!;
+  const dbSection: Section = {
+    slug: article.slug,
+    title: article.title,
+    mission: article.subtitle ?? "",
+    topics: [],
+    category: "writing-and-resources",
+    content: article.content,
+  };
+
   return (
     <Container variant="content">
       <Link href={`/${parentCategory.slug}`} className={backLinkClass}>
         <span aria-hidden="true">←</span> Back to {parentCategory.title}
       </Link>
-      <Heading>
-        {currentSection.title}
-      </Heading>
-      <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        {currentSection.mission}
-      </p>
-
-      {ToolComponent ? (
-        <ToolComponent />
-      ) : currentSection.articleSlugs ? (
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {currentSection.articleSlugs.map((articleSlug) => {
-            const article = sectionMap.get(articleSlug);
-            if (!article) return null;
-            return (
-              <CardLink key={article.slug} href={`/${article.slug}`}>
-                <h2 className="text-xl font-semibold tracking-tight">
-                  {article.title}
-                </h2>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  {article.mission}
-                </p>
-                <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
-                  Read the essay →
-                </span>
-              </CardLink>
-            );
-          })}
-        </div>
-      ) : isArticle ? (
-        <ArticleLayout section={currentSection} category={parentCategory} content={content} />
-      ) : (
-        <Card padding="lg" className="mt-10">
-          <h2 className="text-lg font-semibold">Planned Topics</h2>
-          <ul className="mt-4 space-y-2 text-zinc-600 dark:text-zinc-300">
-            {currentSection.topics.map((topic: string) => (
-              <li key={topic}>• {topic}</li>
-            ))}
-          </ul>
-        </Card>
-      )}
+      <Heading>{dbSection.title}</Heading>
+      {dbSection.mission ? (
+        <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{dbSection.mission}</p>
+      ) : null}
+      <ArticleLayout section={dbSection} category={parentCategory} content={dbSection.content!} attribution={attribution} />
     </Container>
   );
 }
