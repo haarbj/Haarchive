@@ -19,11 +19,13 @@ import {
   type WorkoutType,
 } from "@/lib/coaching-engine";
 import { formatClock, formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
+import { buildPerformanceTrend } from "@/lib/performance-trend";
 import { createClient } from "@/lib/db/server";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { PerformanceTrendChart } from "@/components/performance-trend-chart";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -106,7 +108,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .from("race_results")
       .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
       .order("race_date", { ascending: false })
-      .limit(5)
       .returns<RaceResult[]>(),
     supabase
       .from("saved_calculations")
@@ -137,6 +138,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const goalReadyForPlan = !!(primaryGoal?.goal_time_s && primaryGoal?.goal_date);
 
   const mostRecentRace = raceResults?.[0] ?? null;
+  const recentRaceResults = raceResults?.slice(0, 5) ?? null;
+  const raceTrend = raceResults
+    ? buildPerformanceTrend(
+        raceResults.map((r) => ({ id: r.id, raceName: r.race_name, raceDate: r.race_date, distanceM: r.distance_m, finishTimeS: r.finish_time_s })),
+      )
+    : [];
   const fitnessEstimate: FitnessEstimate | null =
     primaryGoal && mostRecentRace
       ? {
@@ -355,9 +362,21 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </Card>
           )}
 
-          {raceResults && raceResults.length > 0 && (
+          {raceTrend.length >= 2 && (
+            <Card padding="sm" shadow={false} className="mt-3">
+              <p className="text-sm font-semibold text-zinc-900 dark:text-white">Equivalent 5K time over time</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                Every race projected to a 5K distance (Riegel) so different distances share one trend line — lower is faster.
+              </p>
+              <div className="mt-3">
+                <PerformanceTrendChart points={raceTrend} targetLabel="5K" />
+              </div>
+            </Card>
+          )}
+
+          {recentRaceResults && recentRaceResults.length > 0 && (
             <div className="mt-3 space-y-2">
-              {raceResults.map((result) => (
+              {recentRaceResults.map((result) => (
                 <Card key={result.id} padding="sm" shadow={false} className="flex items-center justify-between text-sm">
                   <span className="font-medium text-zinc-900 dark:text-white">
                     {result.race_name}
