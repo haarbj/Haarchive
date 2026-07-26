@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { fieldClass, labelClass } from "@/lib/form-styles";
+import { metersFor } from "@/lib/race-distances";
 import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
 import {
@@ -47,18 +48,22 @@ type DistanceOption = {
   core?: boolean;
 };
 
+// meters values are sourced from the shared race-distances.ts catalog
+// (also used by the Race Pace Calculator) rather than hand-copied here --
+// group/displayGroup/core stay local since they're this tool's own
+// presentation concerns, not facts about the distances themselves.
 const DISTANCES: DistanceOption[] = [
   {
     key: "1500m",
     label: "1500m",
-    meters: 1500,
+    meters: metersFor("1500m"),
     group: "Track",
     displayGroup: "Middle Distance",
   },
   {
     key: "1600m",
     label: "1600m",
-    meters: 1600,
+    meters: metersFor("1600m"),
     group: "Track",
     displayGroup: "Middle Distance",
     core: true,
@@ -66,21 +71,21 @@ const DISTANCES: DistanceOption[] = [
   {
     key: "mile",
     label: "Mile",
-    meters: 1609.34,
+    meters: metersFor("mile"),
     group: "Track",
     displayGroup: "Middle Distance",
   },
   {
     key: "3000m",
     label: "3000m",
-    meters: 3000,
+    meters: metersFor("3000m"),
     group: "Track",
     displayGroup: "Track & Cross Country",
   },
   {
     key: "3200m",
     label: "3200m",
-    meters: 3200,
+    meters: metersFor("3200m"),
     group: "Track",
     displayGroup: "Track & Cross Country",
     core: true,
@@ -88,14 +93,14 @@ const DISTANCES: DistanceOption[] = [
   {
     key: "2mile",
     label: "2 Mile",
-    meters: 3218.69,
+    meters: metersFor("2mile"),
     group: "Track",
     displayGroup: "Track & Cross Country",
   },
   {
     key: "5k",
     label: "5K",
-    meters: 5000,
+    meters: metersFor("5k"),
     group: "Cross Country & Road",
     displayGroup: "Track & Cross Country",
     core: true,
@@ -103,21 +108,21 @@ const DISTANCES: DistanceOption[] = [
   {
     key: "6k",
     label: "6K",
-    meters: 6000,
+    meters: metersFor("6k"),
     group: "Cross Country & Road",
     displayGroup: "Track & Cross Country",
   },
   {
     key: "8k",
     label: "8K",
-    meters: 8000,
+    meters: metersFor("8k"),
     group: "Cross Country & Road",
     displayGroup: "Track & Cross Country",
   },
   {
     key: "10k",
     label: "10K",
-    meters: 10000,
+    meters: metersFor("10k"),
     group: "Cross Country & Road",
     displayGroup: "Road",
     core: true,
@@ -125,14 +130,14 @@ const DISTANCES: DistanceOption[] = [
   {
     key: "10mile",
     label: "10 Mile",
-    meters: 16093.4,
+    meters: metersFor("10mile"),
     group: "Cross Country & Road",
     displayGroup: "Road",
   },
   {
     key: "half",
     label: "Half Marathon",
-    meters: 21097.5,
+    meters: metersFor("half"),
     group: "Cross Country & Road",
     displayGroup: "Road",
     core: true,
@@ -140,7 +145,7 @@ const DISTANCES: DistanceOption[] = [
   {
     key: "marathon",
     label: "Marathon",
-    meters: 42195,
+    meters: metersFor("marathon"),
     group: "Cross Country & Road",
     displayGroup: "Road",
     core: true,
@@ -152,9 +157,9 @@ const DISPLAY_GROUPS: DisplayGroup[] = [
   "Track & Cross Country",
   "Road",
 ];
-const MARATHON_METERS = 42195;
+const MARATHON_METERS = metersFor("marathon");
 
-const MILE_METERS = 1609.34;
+const MILE_METERS = metersFor("mile");
 const SPLIT_METERS = [200, 300, 400, 600, 800, 1000, 1200, 1600];
 const STORAGE_KEY = "haarchive-pace-calculator-state";
 
@@ -1309,6 +1314,41 @@ export function PaceCalculator() {
           GAP Calculator
         </Link>{" "}
         finds the flat-ground effort a grade was really worth.
+      </p>
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Following a percentage-based plan (Canova-style special blocks, or a percent-of-threshold prescription)?
+        The{" "}
+        <Link
+          href="/pace-percent-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Pace Percent Calculator
+        </Link>{" "}
+        turns a reference pace and a percentage into the actual workout pace.
+      </p>
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Just need a straight pace-to-time conversion for a specific race? The{" "}
+        <Link
+          href="/race-pace-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Race Pace Calculator
+        </Link>{" "}
+        converts between a goal race time and the pace required to run it, for any standard or custom distance.
+      </p>
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Curious where LT1 and LT2 actually fall on a heart rate monitor, based on real population data rather
+        than a fixed rule of thumb? See the{" "}
+        <Link
+          href="/hr-threshold-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          LT1 &amp; LT2 Heart Rate Reference Ranges
+        </Link>
+        .
       </p>
 
       <p className="border-t border-black/10 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-zinc-300">
