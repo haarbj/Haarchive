@@ -2,6 +2,20 @@ import { describe, expect, it } from "vitest";
 
 import { generatePacingPlan } from "@/lib/marathon-pacing/split-generator";
 import type { CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
+import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
+
+function hotWeather(): WeatherConditions {
+  return {
+    tempC: 32,
+    relativeHumidityPct: 80,
+    dewPointC: 27,
+    cloudCoverPct: 10,
+    pressureHPa: 1013,
+    windSpeedMS: 0,
+    windFromBearingDeg: 0,
+    windGustsMS: 0,
+  };
+}
 
 const METERS_PER_MILE = 1609.344;
 
@@ -50,6 +64,94 @@ describe("generatePacingPlan", () => {
     // equivalence solvers' own bisection tolerance compounding across miles,
     // not a modeling error.
     expect(plan.totalTimeSeconds).toBeCloseTo(goalTimeSeconds, 0);
+  });
+
+  it("hits the goal time on a meaningfully net-downhill course too, not just a flat one", () => {
+    // Reproduces a real user report: a 2:38:00 Boston goal (net downhill,
+    // ~650ft of descent) was projecting a 2:34:35 finish -- entirely
+    // explained by computing target effort as if the course were flat, then
+    // applying that same effort to the real, net-downhill terrain, which
+    // runs faster than the flat-equivalent pace for the same effort. Every
+    // mile here descends 3%, so naively this would run substantially faster
+    // than goal; the solved effort should compensate so the total still
+    // lands on the goal almost exactly.
+    const course = buildCourse(new Array(20).fill(-0.03));
+    const goalTimeSeconds = GOAL_TIME_SECONDS * (20 / 26.2);
+    const plan = generatePacingPlan({
+      course,
+      goalTimeSeconds,
+      criticalSpeedMS: CRITICAL_SPEED_MS,
+      vo2maxSpeedMS: VO2MAX_SPEED_MS,
+      strategyId: "even-effort",
+      risk: "moderate",
+    });
+
+    expect(plan.totalTimeSeconds).toBeCloseTo(goalTimeSeconds, 0);
+  });
+
+  it("hits the goal time on a meaningfully net-uphill course too", () => {
+    const course = buildCourse(new Array(20).fill(0.03));
+    const goalTimeSeconds = GOAL_TIME_SECONDS * (20 / 26.2);
+    const plan = generatePacingPlan({
+      course,
+      goalTimeSeconds,
+      criticalSpeedMS: CRITICAL_SPEED_MS,
+      vo2maxSpeedMS: VO2MAX_SPEED_MS,
+      strategyId: "even-effort",
+      risk: "moderate",
+    });
+
+    expect(plan.totalTimeSeconds).toBeCloseTo(goalTimeSeconds, 0);
+  });
+
+  it("projects a slower finish than goal in hot/humid conditions, rather than silently absorbing the penalty into more effort", () => {
+    // Reproduces a real user report: setting conditions appeared to do
+    // nothing, because the goal-time solve was including weather inside
+    // the bisection -- it just demanded more effort until the clock still
+    // read the original goal, which is bad advice (you can't out-effort
+    // heat stress to hit an unchanged time) as well as an invisible UI.
+    const course = buildCourse(new Array(20).fill(0));
+    const goalTimeSeconds = GOAL_TIME_SECONDS * (20 / 26.2);
+
+    const calm = generatePacingPlan({
+      course,
+      goalTimeSeconds,
+      criticalSpeedMS: CRITICAL_SPEED_MS,
+      vo2maxSpeedMS: VO2MAX_SPEED_MS,
+      strategyId: "even-effort",
+      risk: "moderate",
+    });
+    const hot = generatePacingPlan({
+      course,
+      goalTimeSeconds,
+      criticalSpeedMS: CRITICAL_SPEED_MS,
+      vo2maxSpeedMS: VO2MAX_SPEED_MS,
+      strategyId: "even-effort",
+      risk: "moderate",
+      weatherConditions: hotWeather(),
+    });
+
+    expect(calm.totalTimeSeconds).toBeCloseTo(goalTimeSeconds, 0);
+    expect(hot.totalTimeSeconds).toBeGreaterThan(goalTimeSeconds + 30); // a real, visible penalty, not absorbed away
+  });
+
+  it("still solves the correct terrain-adjusted effort even when conditions are set, so heat doesn't distort the terrain fix", () => {
+    const course = buildCourse(new Array(20).fill(-0.03)); // meaningfully net downhill
+    const goalTimeSeconds = GOAL_TIME_SECONDS * (20 / 26.2);
+
+    const plan = generatePacingPlan({
+      course,
+      goalTimeSeconds,
+      criticalSpeedMS: CRITICAL_SPEED_MS,
+      vo2maxSpeedMS: VO2MAX_SPEED_MS,
+      strategyId: "even-effort",
+      risk: "moderate",
+      weatherConditions: hotWeather(),
+    });
+
+    // Should be slower than goal (heat penalty), not faster (which the old
+    // downhill-course bug, combined with weather never applying, would have produced).
+    expect(plan.totalTimeSeconds).toBeGreaterThan(goalTimeSeconds);
   });
 
   it("paces uphill miles slower and downhill miles faster than a flat mile at the same effort", () => {
