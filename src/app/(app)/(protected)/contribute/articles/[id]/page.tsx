@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
@@ -111,7 +112,15 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
     <Container variant="narrow">
       <BackLink href="/contribute/articles">Back to My Drafts</BackLink>
       <Heading variant="compact">{article.title}</Heading>
-      <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">{ARTICLE_STATUS_LABELS[article.status]}</p>
+      <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+        {ARTICLE_STATUS_LABELS[article.status]} ·{" "}
+        <Link
+          href={`/contribute/articles/${article.id}/preview`}
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Preview
+        </Link>
+      </p>
 
       {comments.length > 0 ? (
         <div className="mt-8">

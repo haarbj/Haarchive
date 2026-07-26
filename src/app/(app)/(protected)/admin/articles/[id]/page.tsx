@@ -98,7 +98,14 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
           >
             View live →
           </Link>
-        ) : null}
+        ) : (
+          <Link
+            href={`/contribute/articles/${article.id}/preview`}
+            className="text-sm font-semibold text-zinc-700 underline dark:text-zinc-200"
+          >
+            Preview →
+          </Link>
+        )}
       </div>
 
       <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">
