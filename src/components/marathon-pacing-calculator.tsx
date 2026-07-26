@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { RouteImportPanel } from "@/components/route-import-panel";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { Button } from "@/components/ui/button";
+import { LabeledInput } from "@/components/ui/labeled-input";
 import { WindCompass } from "@/components/wind-compass";
 import {
   isWithinModelDomain,
@@ -23,7 +25,9 @@ import type { Durability } from "@/lib/marathon-pacing/physiology-engine";
 import type { ParsedRoute } from "@/lib/route-import/types";
 import type { RouteSummary } from "@/lib/route-import/route-summary";
 import { fieldClass, labelClass } from "@/lib/form-styles";
+import { loadProfileFitnessSnapshot } from "@/lib/profile-fitness-source";
 import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
+import { useAuthStatus } from "@/lib/use-auth-status";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
 import {
   detailsBodyClass,
@@ -57,6 +61,23 @@ const FITNESS_DISTANCE_OPTIONS: { key: FitnessDistanceKey; label: string; meters
   { key: "10k", label: "10K", meters: 10000 },
 ];
 
+// A saved race result can be any distance (a half or full marathon, most
+// often), but the fitness model above only covers 800m-10K -- silently
+// treating a marathon PR as if it were a 10K time would badly misfeed
+// predictSpeeds. Only match a race within 8% of one of these distances
+// (course-measurement variance is real; a "5K" is rarely exactly 5000m).
+function matchFitnessDistanceKey(distanceM: number): FitnessDistanceKey | null {
+  const TOLERANCE = 0.08;
+  let best: { key: FitnessDistanceKey; diff: number } | null = null;
+  for (const option of FITNESS_DISTANCE_OPTIONS) {
+    const diff = Math.abs(option.meters - distanceM) / option.meters;
+    if (diff <= TOLERANCE && (!best || diff < best.diff)) {
+      best = { key: option.key, diff };
+    }
+  }
+  return best?.key ?? null;
+}
+
 const DURABILITY_OPTIONS: { key: Durability; label: string }[] = [
   { key: "poor", label: "Poor" },
   { key: "average", label: "Average" },
@@ -67,6 +88,15 @@ const RISK_OPTIONS: { key: RiskLevel; label: string }[] = [
   { key: "low", label: "Low" },
   { key: "moderate", label: "Moderate" },
   { key: "high", label: "High" },
+];
+
+type ScenarioType = "temperature" | "humidity" | "wind" | "strategy" | "risk";
+const SCENARIO_TYPE_OPTIONS: { key: ScenarioType; label: string }[] = [
+  { key: "temperature", label: "Temperature" },
+  { key: "humidity", label: "Humidity" },
+  { key: "wind", label: "Headwind" },
+  { key: "strategy", label: "Strategy" },
+  { key: "risk", label: "Risk" },
 ];
 
 type PersistedState = {
@@ -86,6 +116,13 @@ type PersistedState = {
   windMphInput: string;
   windFromDeg: number;
   showMethodology: boolean;
+  compareEnabled: boolean;
+  scenarioType: ScenarioType;
+  scenarioTempDeltaFInput: string;
+  scenarioHumidityDeltaInput: string;
+  scenarioWindMphInput: string;
+  scenarioStrategyId: StrategyId;
+  scenarioRisk: RiskLevel;
 };
 
 // Same module-scope fetch-once cache pattern as cv-threshold-calculator.tsx
@@ -126,7 +163,13 @@ function buildFlatCourse(): CourseAnalysis {
     rollingIndex: 0,
     downhillSeverityScore: 0,
     perMileGrade: new Array(mileCount).fill(0),
-    perMileHeadingDeg: new Array(mileCount).fill(null),
+    // A null heading makes split-generator.ts's wind math skip the mile
+    // entirely -- without a real/preset course loaded, every mile would
+    // get one, silently making wind conditions a no-op for most users by
+    // default. An arbitrary fixed heading (due north) at least lets wind
+    // apply -- there's no real direction to be more accurate about on a
+    // synthetic flat course anyway.
+    perMileHeadingDeg: new Array(mileCount).fill(0),
   };
 }
 
@@ -146,12 +189,62 @@ function clamp(value: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, value));
 }
 
+/**
+ * A single representative heading for a course, for the "what if there's a
+ * headwind" scenario -- a real course turns throughout, so there's no one
+ * true heading, but a circular mean (averaging unit vectors, not raw
+ * degrees, so e.g. 350deg and 10deg average to 0deg instead of 180deg)
+ * gives a reasonable "which way does this course net travel" answer. Falls
+ * back to due north if no mile has a known heading.
+ */
+function prevailingHeadingDeg(perMileHeadingDeg: (number | null)[]): number {
+  let sin = 0;
+  let cos = 0;
+  let count = 0;
+  for (const heading of perMileHeadingDeg) {
+    if (heading === null) continue;
+    const rad = (heading * Math.PI) / 180;
+    sin += Math.sin(rad);
+    cos += Math.cos(rad);
+    count++;
+  }
+  if (count === 0) return 0;
+  return ((Math.atan2(sin, cos) * 180) / Math.PI + 360) % 360;
+}
+
 // Bounds the underlying heat/humidity model's grid actually covers (0-45C /
 // 32-113F) -- typed input beyond this degrades gracefully to the model's
 // real edge rather than silently extrapolating into a nonsense result.
 const TEMP_F_MIN = -20;
 const TEMP_F_MAX = 130;
 const WIND_MPH_MAX = 80;
+
+// A fixed reference for "Ideal" conditions -- calm, dry, near the heat
+// model's own thermoneutral point. Deliberately NOT the same variables the
+// Conditions inputs use: those persist whatever was last typed even after
+// switching back to Ideal, so reading them here would describe "Ideal" as
+// some arbitrary leftover temperature from the last time Set Conditions was
+// active, rather than an actual, fixed, well-defined baseline.
+const IDEAL_BASELINE_TEMP_F = 55;
+const IDEAL_BASELINE_HUMIDITY_PCT = 50;
+const IDEAL_BASELINE_WIND_MPH = 0;
+
+/** Builds a full WeatherConditions object from the plain-English fields the UI collects, clamped to sane bounds. Shared by the live conditions and the what-if scenario comparison, which both need the same construction. */
+function buildWeatherConditions(tempF: number, humidityPct: number, windMph: number, windFromBearingDeg: number): WeatherConditions {
+  const clampedTempF = clamp(tempF, TEMP_F_MIN, TEMP_F_MAX);
+  const clampedHumidityPct = clamp(humidityPct, 0, 100);
+  const clampedWindMph = clamp(windMph, 0, WIND_MPH_MAX);
+  return {
+    tempC: fToC(clampedTempF),
+    relativeHumidityPct: clampedHumidityPct,
+    dewPointC: fToC(clampedTempF) - 5,
+    cloudCoverPct: 50,
+    pressureHPa: 1013,
+    windSpeedMS: mphToMS(clampedWindMph),
+    windFromBearingDeg,
+    windGustsMS: mphToMS(clampedWindMph),
+  };
+}
 
 // A small, dependency-free multi-line chart: each series is normalized
 // independently to fill the chart's own height, so e.g. pace (seconds) and
@@ -228,11 +321,53 @@ export function MarathonPacingCalculator() {
   const [windMphInput, setWindMphInput] = usePersistedField(persisted?.windMphInput, "0");
   const [windFromDeg, setWindFromDeg] = usePersistedField(persisted?.windFromDeg, 0);
   const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
+  const [compareEnabled, setCompareEnabled] = usePersistedField(persisted?.compareEnabled, false);
+  const [scenarioType, setScenarioType] = usePersistedField<ScenarioType>(persisted?.scenarioType, "temperature");
+  const [scenarioTempDeltaFInput, setScenarioTempDeltaFInput] = usePersistedField(persisted?.scenarioTempDeltaFInput, "15");
+  const [scenarioHumidityDeltaInput, setScenarioHumidityDeltaInput] = usePersistedField(persisted?.scenarioHumidityDeltaInput, "20");
+  const [scenarioWindMphInput, setScenarioWindMphInput] = usePersistedField(persisted?.scenarioWindMphInput, "10");
+  const [scenarioStrategyId, setScenarioStrategyId] = usePersistedField<StrategyId>(persisted?.scenarioStrategyId, "negative-split");
+  const [scenarioRisk, setScenarioRisk] = usePersistedField<RiskLevel>(persisted?.scenarioRisk, "high");
 
   const [courseSource, setCourseSource] = usePersistedField<"upload" | "preset">(persisted?.courseSource, "upload");
   const [presetCourseId, setPresetCourseId] = usePersistedField<PresetCourseId | "">(persisted?.presetCourseId, "");
   const [route, setRoute] = useState<ParsedRoute | null>(null);
   const [routeLabel, setRouteLabel] = useState<string | null>(null);
+
+  const authStatus = useAuthStatus();
+  const [profileLoadState, setProfileLoadState] = useState<"idle" | "loading" | "loaded" | "no-data" | "error">("idle");
+
+  async function handleLoadFromProfile() {
+    setProfileLoadState("loading");
+    try {
+      const snapshot = await loadProfileFitnessSnapshot();
+      if (!snapshot) {
+        setProfileLoadState("no-data");
+        return;
+      }
+      let appliedAnything = false;
+      if (snapshot.age !== null && snapshot.age > 0) {
+        setAgeInput(String(Math.round(snapshot.age)));
+        appliedAnything = true;
+      }
+      if (snapshot.weightLb !== null) {
+        setWeightLbInput(String(Math.round(snapshot.weightLb)));
+        appliedAnything = true;
+      }
+      if (snapshot.recentRace) {
+        const matchedKey = matchFitnessDistanceKey(snapshot.recentRace.distanceM);
+        if (matchedKey) {
+          setFitnessDistanceKey(matchedKey);
+          setFitnessTimeInput(formatClock(snapshot.recentRace.timeSeconds));
+          appliedAnything = true;
+        }
+      }
+      persistState();
+      setProfileLoadState(appliedAnything ? "loaded" : "no-data");
+    } catch {
+      setProfileLoadState("error");
+    }
+  }
 
   function handleRouteLoaded(_summary: RouteSummary, label: string, loadedRoute: ParsedRoute) {
     setPresetCourseId(""); // uploading a route and picking a preset are mutually exclusive
@@ -284,19 +419,7 @@ export function MarathonPacingCalculator() {
     const humidityRaw = Number(humidityInput);
     const windMphRaw = Number(windMphInput);
     if (!Number.isFinite(tempFRaw) || !Number.isFinite(humidityRaw) || !Number.isFinite(windMphRaw)) return undefined;
-    const tempF = clamp(tempFRaw, TEMP_F_MIN, TEMP_F_MAX);
-    const humidityPct = clamp(humidityRaw, 0, 100);
-    const windMph = clamp(windMphRaw, 0, WIND_MPH_MAX);
-    return {
-      tempC: fToC(tempF),
-      relativeHumidityPct: humidityPct,
-      dewPointC: fToC(tempF) - 5,
-      cloudCoverPct: 50,
-      pressureHPa: 1013,
-      windSpeedMS: mphToMS(windMph),
-      windFromBearingDeg: windFromDeg,
-      windGustsMS: mphToMS(windMph),
-    };
+    return buildWeatherConditions(tempFRaw, humidityRaw, windMphRaw, windFromDeg);
   }, [useConditions, tempFInput, humidityInput, windMphInput, windFromDeg]);
 
   const canGeneratePlan = fitnessPaces !== null && goalTimeSeconds !== null && goalTimeSeconds > 0;
@@ -323,6 +446,122 @@ export function MarathonPacingCalculator() {
   // elapsed time, so the table stays internally self-consistent.
   const displaySplits = useMemo(() => (plan ? buildDisplaySplits(plan.splits) : []), [plan]);
   const displayTotalSeconds = displaySplits.length > 0 ? displaySplits[displaySplits.length - 1].displayElapsedSeconds : null;
+
+  // What-if scenario: reruns the exact same engine with one thing changed,
+  // so the comparison is apples-to-apples against the plan above. Resolved
+  // outside the memo below so the UI can also show these numbers -- "+15F"
+  // is meaningless on its own if the reader can't see what it's 15 more
+  // than. When Set Conditions is active, that baseline is the real,
+  // currently-displayed temperature/humidity/wind; in Ideal mode it's the
+  // fixed IDEAL_BASELINE_* constants, never the (possibly stale, hidden)
+  // input fields -- otherwise "Ideal" could describe itself using whatever
+  // was last typed into Set Conditions before switching back.
+  const scenarioBaselineTempFRaw = Number(tempFInput);
+  const scenarioBaselineHumidityRaw = Number(humidityInput);
+  const scenarioBaselineWindMphRaw = Number(windMphInput);
+  const scenarioBaselineTempF = useConditions
+    ? Number.isFinite(scenarioBaselineTempFRaw)
+      ? scenarioBaselineTempFRaw
+      : IDEAL_BASELINE_TEMP_F
+    : IDEAL_BASELINE_TEMP_F;
+  const scenarioBaselineHumidity = useConditions
+    ? Number.isFinite(scenarioBaselineHumidityRaw)
+      ? scenarioBaselineHumidityRaw
+      : IDEAL_BASELINE_HUMIDITY_PCT
+    : IDEAL_BASELINE_HUMIDITY_PCT;
+  const scenarioBaselineWindMph = useConditions
+    ? Number.isFinite(scenarioBaselineWindMphRaw)
+      ? scenarioBaselineWindMphRaw
+      : IDEAL_BASELINE_WIND_MPH
+    : IDEAL_BASELINE_WIND_MPH;
+
+  const scenarioWeatherConditions: WeatherConditions | undefined = useMemo(() => {
+    if (!compareEnabled) return undefined;
+
+    if (scenarioType === "temperature") {
+      const deltaFRaw = Number(scenarioTempDeltaFInput);
+      const deltaF = Number.isFinite(deltaFRaw) ? deltaFRaw : 0;
+      return buildWeatherConditions(scenarioBaselineTempF + deltaF, scenarioBaselineHumidity, scenarioBaselineWindMph, windFromDeg);
+    }
+    if (scenarioType === "humidity") {
+      const deltaPctRaw = Number(scenarioHumidityDeltaInput);
+      const deltaPct = Number.isFinite(deltaPctRaw) ? deltaPctRaw : 0;
+      return buildWeatherConditions(scenarioBaselineTempF, scenarioBaselineHumidity + deltaPct, scenarioBaselineWindMph, windFromDeg);
+    }
+    if (scenarioType === "wind") {
+      const headwindMphRaw = Number(scenarioWindMphInput);
+      const headwindMph = Number.isFinite(headwindMphRaw) ? headwindMphRaw : 0;
+      // Aligning the wind's FROM bearing with the course's own prevailing
+      // heading is what makes this a headwind rather than an arbitrary angle.
+      const headingDeg = prevailingHeadingDeg(course.perMileHeadingDeg);
+      return buildWeatherConditions(scenarioBaselineTempF, scenarioBaselineHumidity, headwindMph, headingDeg);
+    }
+    // Strategy/risk scenarios compare against the SAME conditions as the base plan.
+    return weatherConditions;
+  }, [
+    compareEnabled,
+    scenarioType,
+    scenarioTempDeltaFInput,
+    scenarioHumidityDeltaInput,
+    scenarioWindMphInput,
+    scenarioBaselineTempF,
+    scenarioBaselineHumidity,
+    scenarioBaselineWindMph,
+    windFromDeg,
+    course,
+    weatherConditions,
+  ]);
+
+  const scenarioPlan = useMemo(() => {
+    if (!compareEnabled || !canGeneratePlan || !fitnessPaces) return null;
+    return generatePacingPlan({
+      course,
+      goalTimeSeconds: goalTimeSeconds!,
+      criticalSpeedMS: fitnessPaces.cvSpeedMS,
+      vo2maxSpeedMS: fitnessPaces.vo2maxSpeedMS,
+      strategyId: scenarioType === "strategy" ? scenarioStrategyId : strategyId,
+      risk: scenarioType === "risk" ? scenarioRisk : risk,
+      weightKg,
+      durability,
+      weatherConditions: scenarioWeatherConditions,
+    });
+  }, [
+    compareEnabled,
+    canGeneratePlan,
+    course,
+    goalTimeSeconds,
+    fitnessPaces,
+    scenarioType,
+    scenarioStrategyId,
+    strategyId,
+    scenarioRisk,
+    risk,
+    weightKg,
+    durability,
+    scenarioWeatherConditions,
+  ]);
+
+  const scenarioDisplaySplits = useMemo(() => (scenarioPlan ? buildDisplaySplits(scenarioPlan.splits) : []), [scenarioPlan]);
+  const scenarioDisplayTotalSeconds =
+    scenarioDisplaySplits.length > 0 ? scenarioDisplaySplits[scenarioDisplaySplits.length - 1].displayElapsedSeconds : null;
+  const scenarioDeltaSeconds =
+    scenarioDisplayTotalSeconds !== null && displayTotalSeconds !== null ? scenarioDisplayTotalSeconds - displayTotalSeconds : null;
+
+  // Strategy and risk scenarios always hit the SAME total finish time as
+  // the current plan -- every strategy is normalized to preserve the goal
+  // time by construction, that's the entire point of a "strategy" versus a
+  // pace-time forecast. Comparing finish time there would always read "no
+  // difference," which is trivially true and not the interesting question.
+  // What actually differs is the pace SHAPE and the fatigue it produces, so
+  // those scenarios compare first/last mile pace and ending glycogen instead.
+  const firstMilePace = displaySplits[0]?.displayPaceSecPerMile ?? null;
+  const lastMilePace = displaySplits[displaySplits.length - 1]?.displayPaceSecPerMile ?? null;
+  const scenarioFirstMilePace = scenarioDisplaySplits[0]?.displayPaceSecPerMile ?? null;
+  const scenarioLastMilePace = scenarioDisplaySplits[scenarioDisplaySplits.length - 1]?.displayPaceSecPerMile ?? null;
+  const endingGlycogenPct = plan ? Math.round(plan.splits[plan.splits.length - 1].fatigueState.glycogenRemainingFraction * 100) : null;
+  const scenarioEndingGlycogenPct = scenarioPlan
+    ? Math.round(scenarioPlan.splits[scenarioPlan.splits.length - 1].fatigueState.glycogenRemainingFraction * 100)
+    : null;
 
   const fuelingTargets = goalTimeSeconds ? computeFuelingTargets({ goalTimeSeconds, weightKg, tempC: weatherConditions?.tempC }) : null;
   const fuelingSchedule =
@@ -353,6 +592,13 @@ export function MarathonPacingCalculator() {
         windMphInput,
         windFromDeg,
         showMethodology,
+        compareEnabled,
+        scenarioType,
+        scenarioTempDeltaFInput,
+        scenarioHumidityDeltaInput,
+        scenarioWindMphInput,
+        scenarioStrategyId,
+        scenarioRisk,
       };
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
@@ -369,6 +615,32 @@ export function MarathonPacingCalculator() {
       <div>
         <p className={sectionLabelClass}>Your fitness</p>
         <div className={`${statCardClass} space-y-4`}>
+          {authStatus === "authenticated" && (
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleLoadFromProfile}
+                disabled={profileLoadState === "loading"}
+              >
+                {profileLoadState === "loading" ? "Loading…" : "Load from my profile"}
+              </Button>
+              {profileLoadState === "loaded" && (
+                <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                  Loaded age/weight from your profile and your most recent matching race result, where available.
+                </p>
+              )}
+              {profileLoadState === "no-data" && (
+                <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                  No saved profile or comparable recent race result found yet -- nothing changed below.
+                </p>
+              )}
+              {profileLoadState === "error" && (
+                <p className="text-xs font-semibold text-red-700 dark:text-red-400">Couldn&rsquo;t load your profile -- try again.</p>
+              )}
+            </div>
+          )}
           <div>
             <p className={labelClass}>Recent race distance</p>
             <div className="flex flex-wrap gap-2">
@@ -389,56 +661,44 @@ export function MarathonPacingCalculator() {
             </div>
           </div>
           <div className="flex flex-wrap gap-6">
-            <div>
-              <label htmlFor={`${baseId}-fitness-time`} className={labelClass}>
-                Finish time
-              </label>
-              <input
-                id={`${baseId}-fitness-time`}
-                type="text"
-                value={fitnessTimeInput}
-                onChange={(event) => {
-                  setFitnessTimeInput(event.target.value);
-                  persistState();
-                }}
-                placeholder="mm:ss"
-                autoComplete="off"
-                className={`w-28 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-age`} className={labelClass}>
-                Age
-              </label>
-              <input
-                id={`${baseId}-age`}
-                type="number"
-                min={10}
-                max={90}
-                value={ageInput}
-                onChange={(event) => {
-                  setAgeInput(event.target.value);
-                  persistState();
-                }}
-                className={`w-20 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-weight`} className={labelClass}>
-                Weight (lb, optional)
-              </label>
-              <input
-                id={`${baseId}-weight`}
-                type="number"
-                min={0}
-                value={weightLbInput}
-                onChange={(event) => {
-                  setWeightLbInput(event.target.value);
-                  persistState();
-                }}
-                className={`w-24 ${fieldClass}`}
-              />
-            </div>
+            <LabeledInput
+              id={`${baseId}-fitness-time`}
+              label="Finish time"
+              type="text"
+              value={fitnessTimeInput}
+              onChange={(event) => {
+                setFitnessTimeInput(event.target.value);
+                persistState();
+              }}
+              placeholder="mm:ss"
+              autoComplete="off"
+              className="w-28"
+            />
+            <LabeledInput
+              id={`${baseId}-age`}
+              label="Age"
+              type="number"
+              min={10}
+              max={90}
+              value={ageInput}
+              onChange={(event) => {
+                setAgeInput(event.target.value);
+                persistState();
+              }}
+              className="w-20"
+            />
+            <LabeledInput
+              id={`${baseId}-weight`}
+              label="Weight (lb, optional)"
+              type="number"
+              min={0}
+              value={weightLbInput}
+              onChange={(event) => {
+                setWeightLbInput(event.target.value);
+                persistState();
+              }}
+              className="w-24"
+            />
           </div>
           <div>
             <p className={labelClass}>Durability (fatigue resistance)</p>
@@ -472,11 +732,9 @@ export function MarathonPacingCalculator() {
       <div>
         <p className={sectionLabelClass}>Goal</p>
         <div className={`${statCardClass}`}>
-          <label htmlFor={`${baseId}-goal-time`} className={labelClass}>
-            Marathon goal time
-          </label>
-          <input
+          <LabeledInput
             id={`${baseId}-goal-time`}
+            label="Marathon goal time"
             type="text"
             value={goalTimeInput}
             onChange={(event) => {
@@ -485,7 +743,7 @@ export function MarathonPacingCalculator() {
             }}
             placeholder="h:mm:ss"
             autoComplete="off"
-            className={`w-32 ${fieldClass}`}
+            className="w-32"
           />
           {goalTimeSeconds === null && <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">Enter as h:mm:ss, e.g. 3:45:00.</p>}
         </div>
@@ -614,57 +872,45 @@ export function MarathonPacingCalculator() {
               the heat, expect to run slower.
             </p>
             <div className="flex flex-wrap items-start gap-6">
-              <div>
-                <label htmlFor={`${baseId}-temp`} className={labelClass}>
-                  Temperature (°F)
-                </label>
-                <input
-                  id={`${baseId}-temp`}
-                  type="number"
-                  min={-20}
-                  max={130}
-                  value={tempFInput}
-                  onChange={(event) => {
-                    setTempFInput(event.target.value);
-                    persistState();
-                  }}
-                  className={`w-20 ${fieldClass}`}
-                />
-              </div>
-              <div>
-                <label htmlFor={`${baseId}-humidity`} className={labelClass}>
-                  Humidity (%)
-                </label>
-                <input
-                  id={`${baseId}-humidity`}
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={humidityInput}
-                  onChange={(event) => {
-                    setHumidityInput(event.target.value);
-                    persistState();
-                  }}
-                  className={`w-20 ${fieldClass}`}
-                />
-              </div>
-              <div>
-                <label htmlFor={`${baseId}-wind`} className={labelClass}>
-                  Wind speed (mph)
-                </label>
-                <input
-                  id={`${baseId}-wind`}
-                  type="number"
-                  min={0}
-                  max={80}
-                  value={windMphInput}
-                  onChange={(event) => {
-                    setWindMphInput(event.target.value);
-                    persistState();
-                  }}
-                  className={`w-20 ${fieldClass}`}
-                />
-              </div>
+              <LabeledInput
+                id={`${baseId}-temp`}
+                label="Temperature (°F)"
+                type="number"
+                min={-20}
+                max={130}
+                value={tempFInput}
+                onChange={(event) => {
+                  setTempFInput(event.target.value);
+                  persistState();
+                }}
+                className="w-20"
+              />
+              <LabeledInput
+                id={`${baseId}-humidity`}
+                label="Humidity (%)"
+                type="number"
+                min={0}
+                max={100}
+                value={humidityInput}
+                onChange={(event) => {
+                  setHumidityInput(event.target.value);
+                  persistState();
+                }}
+                className="w-20"
+              />
+              <LabeledInput
+                id={`${baseId}-wind`}
+                label="Wind speed (mph)"
+                type="number"
+                min={0}
+                max={80}
+                value={windMphInput}
+                onChange={(event) => {
+                  setWindMphInput(event.target.value);
+                  persistState();
+                }}
+                className="w-20"
+              />
               <div>
                 <p className={labelClass}>Wind from</p>
                 <WindCompass
@@ -724,6 +970,251 @@ export function MarathonPacingCalculator() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between gap-4">
+          <p className={sectionLabelClass}>Compare a scenario (optional)</p>
+          <div className="mb-3 flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setCompareEnabled(false);
+                persistState();
+              }}
+              aria-pressed={!compareEnabled}
+              className={segmentedButtonClass(!compareEnabled)}
+            >
+              Off
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCompareEnabled(true);
+                persistState();
+              }}
+              aria-pressed={compareEnabled}
+              className={segmentedButtonClass(compareEnabled)}
+            >
+              Compare
+            </button>
+          </div>
+        </div>
+        {compareEnabled && (
+          <div className={`${statCardClass} space-y-4`}>
+            <p className="text-xs text-zinc-600 dark:text-zinc-300">
+              Runs the exact same plan a second time with one thing changed, so you can see what it actually costs
+              or saves -- &ldquo;what if it&rsquo;s 15°F hotter,&rdquo; &ldquo;what if I run into a headwind,&rdquo;
+              &ldquo;what if I went with Negative Split instead.&rdquo;
+            </p>
+            <div>
+              <p className={labelClass}>What changes</p>
+              <div className="flex flex-wrap gap-2">
+                {SCENARIO_TYPE_OPTIONS.map((s) => (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => {
+                      setScenarioType(s.key);
+                      persistState();
+                    }}
+                    aria-pressed={scenarioType === s.key}
+                    className={segmentedButtonClass(scenarioType === s.key)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {scenarioType === "temperature" && (
+              <div>
+                <LabeledInput
+                  id={`${baseId}-scenario-temp-delta`}
+                  label="Temperature change (°F, negative for colder)"
+                  type="number"
+                  value={scenarioTempDeltaFInput}
+                  onChange={(event) => {
+                    setScenarioTempDeltaFInput(event.target.value);
+                    persistState();
+                  }}
+                  className="w-24"
+                />
+                <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  {useConditions ? (
+                    <>
+                      Your plan is set to {Math.round(scenarioBaselineTempF)}°F -- this scenario simulates{" "}
+                      {Math.round(scenarioBaselineTempF + (Number(scenarioTempDeltaFInput) || 0))}°F instead.
+                    </>
+                  ) : (
+                    <>
+                      Your plan is Ideal conditions, which assumes calm, dry air around{" "}
+                      {Math.round(scenarioBaselineTempF)}°F (no heat/humidity/wind cost at all) -- this scenario
+                      simulates {Math.round(scenarioBaselineTempF + (Number(scenarioTempDeltaFInput) || 0))}°F instead.
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
+            {scenarioType === "humidity" && (
+              <div>
+                <LabeledInput
+                  id={`${baseId}-scenario-humidity-delta`}
+                  label="Humidity change (percentage points, negative for drier)"
+                  type="number"
+                  value={scenarioHumidityDeltaInput}
+                  onChange={(event) => {
+                    setScenarioHumidityDeltaInput(event.target.value);
+                    persistState();
+                  }}
+                  className="w-24"
+                />
+                <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  {useConditions ? (
+                    <>
+                      Your plan is set to {Math.round(scenarioBaselineHumidity)}% humidity -- this scenario
+                      simulates {Math.round(clamp(scenarioBaselineHumidity + (Number(scenarioHumidityDeltaInput) || 0), 0, 100))}%
+                      instead.
+                    </>
+                  ) : (
+                    <>
+                      Your plan is Ideal conditions, which assumes calm, dry air around{" "}
+                      {Math.round(scenarioBaselineHumidity)}% humidity (no heat/humidity/wind cost at all) -- this
+                      scenario simulates{" "}
+                      {Math.round(clamp(scenarioBaselineHumidity + (Number(scenarioHumidityDeltaInput) || 0), 0, 100))}%
+                      instead.
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
+            {scenarioType === "wind" && (
+              <div>
+                <LabeledInput
+                  id={`${baseId}-scenario-wind`}
+                  label="Headwind speed (mph)"
+                  type="number"
+                  min={0}
+                  max={WIND_MPH_MAX}
+                  value={scenarioWindMphInput}
+                  onChange={(event) => {
+                    setScenarioWindMphInput(event.target.value);
+                    persistState();
+                  }}
+                  className="w-24"
+                />
+                <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  Applied as a headwind for the whole course (aligned with its overall direction of travel), not
+                  today&rsquo;s wind direction -- this scenario isolates how much a headwind of this strength would cost.
+                </p>
+              </div>
+            )}
+            {scenarioType === "strategy" && (
+              <div>
+                <p className={labelClass}>Compare against</p>
+                <div className="flex flex-wrap gap-2">
+                  {Object.values(PACING_STRATEGIES)
+                    .filter((s) => s.id !== strategyId)
+                    .map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          setScenarioStrategyId(s.id);
+                          persistState();
+                        }}
+                        aria-pressed={scenarioStrategyId === s.id}
+                        className={segmentedButtonClass(scenarioStrategyId === s.id)}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+            {scenarioType === "risk" && (
+              <div>
+                <p className={labelClass}>Compare against</p>
+                <div className="flex flex-wrap gap-2">
+                  {RISK_OPTIONS.filter((r) => r.key !== risk).map((r) => (
+                    <button
+                      key={r.key}
+                      type="button"
+                      onClick={() => {
+                        setScenarioRisk(r.key);
+                        persistState();
+                      }}
+                      aria-pressed={scenarioRisk === r.key}
+                      className={segmentedButtonClass(scenarioRisk === r.key)}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+                {strategyId === "even-effort" && (
+                  <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                    Risk tolerance only changes the shape of Negative Split, Positive Split, and Boston Strategy --
+                    Even Effort holds one flat effort regardless of risk, so this comparison won&rsquo;t show a
+                    difference. Switch your pacing strategy above to see risk actually change something.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {scenarioPlan && scenarioDisplayTotalSeconds !== null && displayTotalSeconds !== null && (
+              <>
+                {scenarioType === "temperature" || scenarioType === "humidity" || scenarioType === "wind" ? (
+                  <div className={`${statCardClass} flex flex-wrap items-center gap-6`}>
+                    <div>
+                      <p className={statLabelClass}>Scenario finish</p>
+                      <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+                        {formatClock(scenarioDisplayTotalSeconds)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={statLabelClass}>Vs. your current plan</p>
+                      <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
+                        {scenarioDeltaSeconds !== null && Math.abs(scenarioDeltaSeconds) >= 5
+                          ? `${scenarioDeltaSeconds > 0 ? "+" : "-"}${formatClock(Math.abs(scenarioDeltaSeconds))}`
+                          : "No real difference"}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`${statCardClass} space-y-3`}>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                      Both plans finish at the same time by design -- a strategy only redistributes pace across the
+                      race, it doesn&rsquo;t change your goal. What actually differs is the shape and how much it
+                      costs you physiologically.
+                    </p>
+                    <div className="flex flex-wrap gap-6">
+                      <div>
+                        <p className={statLabelClass}>First mile</p>
+                        <p className="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">
+                          {firstMilePace !== null ? formatClock(firstMilePace) : "--"} →{" "}
+                          {scenarioFirstMilePace !== null ? formatClock(scenarioFirstMilePace) : "--"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className={statLabelClass}>Last mile</p>
+                        <p className="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">
+                          {lastMilePace !== null ? formatClock(lastMilePace) : "--"} →{" "}
+                          {scenarioLastMilePace !== null ? formatClock(scenarioLastMilePace) : "--"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className={statLabelClass}>Glycogen at the finish</p>
+                        <p className="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">
+                          {endingGlycogenPct ?? "--"}% → {scenarioEndingGlycogenPct ?? "--"}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {!canGeneratePlan && (
