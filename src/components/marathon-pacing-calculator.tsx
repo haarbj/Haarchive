@@ -23,7 +23,7 @@ import { buildDisplaySplits } from "@/lib/marathon-pacing/pace-rounding";
 import { PRESET_COURSES, buildPresetRoute, presetCourseMap, type PresetCourseId } from "@/lib/marathon-pacing/preset-courses";
 import { generatePacingPlan, type MileSplit } from "@/lib/marathon-pacing/split-generator";
 import { PACING_STRATEGIES, type RiskLevel, type StrategyId } from "@/lib/marathon-pacing/strategy-engine";
-import type { Durability } from "@/lib/marathon-pacing/physiology-engine";
+import type { Durability } from "@/lib/physiology-engine";
 import type { ParsedRoute } from "@/lib/route-import/types";
 import type { RouteSummary } from "@/lib/route-import/route-summary";
 import { fieldClass, labelClass } from "@/lib/form-styles";

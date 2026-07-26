@@ -18,14 +18,18 @@ import {
   type MesocyclePhase,
   type WorkoutType,
 } from "@/lib/coaching-engine";
+import { predictSpeeds, selectTrainingPaces } from "@/lib/cv-threshold-math";
+import { cvThresholdModel } from "@/lib/cv-threshold-model-server";
 import { formatClock, formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
 import { buildPerformanceTrend } from "@/lib/performance-trend";
+import { buildTrainingLoadSeries } from "@/lib/training-load";
 import { createClient } from "@/lib/db/server";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { PerformanceTrendChart } from "@/components/performance-trend-chart";
+import { TrainingLoadChart } from "@/components/training-load-chart";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -63,6 +67,18 @@ type SavedCalculation = {
   input_json: unknown;
 };
 
+type AthleteProfile = {
+  birth_year: number | null;
+  weight_kg: number | null;
+};
+
+type CompletionForLoad = {
+  id: string;
+  completed_at: string;
+  actual_distance_m: number;
+  actual_time_s: number;
+};
+
 type Mesocycle = {
   phase: MesocyclePhase;
   start_date: string;
@@ -96,6 +112,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     { data: stravaAccount },
     { data: trainingPlan },
     { data: latestStravaCompletion },
+    { data: athleteProfile },
+    { data: completionsForLoad },
   ] = await Promise.all([
     supabase
       .from("goals")
@@ -130,6 +148,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order("completed_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase.from("athlete_profiles").select("birth_year, weight_kg").maybeSingle().returns<AthleteProfile | null>(),
+    supabase
+      .from("workout_completions")
+      .select("id, completed_at, actual_distance_m, actual_time_s")
+      .not("actual_distance_m", "is", null)
+      .not("actual_time_s", "is", null)
+      .order("completed_at", { ascending: false })
+      .limit(15)
+      .returns<CompletionForLoad[]>(),
   ]);
 
   const primaryGoal = goals?.[0] ?? null;
@@ -144,6 +171,31 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         raceResults.map((r) => ({ id: r.id, raceName: r.race_name, raceDate: r.race_date, distanceM: r.distance_m, finishTimeS: r.finish_time_s })),
       )
     : [];
+  // Training load needs a fitness profile (critical speed, vVO2max) to run
+  // physiology-engine.ts's per-workout fatigue math -- reuses the same
+  // most-recent-race-plus-age approach Marathon Pacing Calculator's manual
+  // entry produces, just automatic here since the dashboard already has
+  // both pieces server-side. Durability has no real source anywhere in the
+  // app (see physiology-engine.ts), so it defaults to "average" like every
+  // other caller. Skipped entirely -- not shown with a placeholder -- when
+  // age or a race result isn't on file, rather than guessing either one.
+  const age = athleteProfile?.birth_year ? new Date().getFullYear() - athleteProfile.birth_year : null;
+  const trainingLoad =
+    mostRecentRace && age && completionsForLoad && completionsForLoad.length > 0
+      ? (() => {
+          const paces = selectTrainingPaces(predictSpeeds(cvThresholdModel, mostRecentRace.distance_m, mostRecentRace.finish_time_s, age), "median");
+          return buildTrainingLoadSeries(
+            {
+              criticalSpeedMS: paces.cvSpeedMS,
+              vo2maxSpeedMS: paces.vo2maxSpeedMS,
+              weightKg: athleteProfile?.weight_kg ?? undefined,
+              durability: "average",
+            },
+            completionsForLoad.map((c) => ({ id: c.id, completedAt: c.completed_at, distanceM: c.actual_distance_m, timeSeconds: c.actual_time_s })),
+          );
+        })()
+      : [];
+
   const fitnessEstimate: FitnessEstimate | null =
     primaryGoal && mostRecentRace
       ? {
@@ -421,6 +473,23 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             )}
           </div>
         </div>
+
+        {trainingLoad.length >= 2 && (
+          <div>
+            <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+              Training load
+            </p>
+            <Card padding="sm" shadow={false} className="mt-3">
+              <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                Estimated from your current fitness applied to each run&rsquo;s actual distance and time (no per-mile
+                data is logged, so this treats each run as one steady effort, not a real mile-by-mile simulation).
+              </p>
+              <div className="mt-3">
+                <TrainingLoadChart points={trainingLoad} />
+              </div>
+            </Card>
+          </div>
+        )}
 
         <StravaConnection
           connected={stravaConnected}

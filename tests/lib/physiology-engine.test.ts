@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { initialFatigueState, stepFatigueState, type PhysiologyProfile } from "@/lib/marathon-pacing/physiology-engine";
+import { initialFatigueState, stepFatigueState, type PhysiologyProfile } from "@/lib/physiology-engine";
 
 const PROFILE: PhysiologyProfile = {
   criticalSpeedMS: 4.0, // ~6:42/mi

@@ -62,7 +62,7 @@ import type { WeatherConditions } from "@/lib/environmental/fetch-weather-condit
 import type { CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { computeMileCosts, type MileCost } from "@/lib/marathon-pacing/mile-cost-model";
 import { effortAtRaceFraction, PACING_STRATEGIES, type RiskLevel, type StrategyId } from "@/lib/marathon-pacing/strategy-engine";
-import { initialFatigueState, stepFatigueState, type Durability, type FatigueState, type PhysiologyProfile } from "@/lib/marathon-pacing/physiology-engine";
+import { initialFatigueState, stepFatigueState, type Durability, type FatigueState, type PhysiologyProfile } from "@/lib/physiology-engine";
 
 const METERS_PER_MILE = 1609.344;
 const DEFAULT_WEIGHT_KG = 70;

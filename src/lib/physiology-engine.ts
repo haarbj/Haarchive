@@ -1,7 +1,11 @@
-// Tracks four independent, mile-by-mile fatigue states over a race, so the
-// split generator (a later milestone) can constrain pacing by what's
-// physiologically sustainable rather than a preset percentage table -- the
-// core ambition of this whole feature versus FindMyMarathon's approach.
+// Tracks four independent, mile-by-mile fatigue states over a continuous
+// run, so a caller can constrain pacing by what's physiologically
+// sustainable rather than a preset percentage table -- the core ambition
+// behind Marathon Pacing Calculator's split generator (its original
+// consumer) versus FindMyMarathon's approach. Race-agnostic by design: it
+// takes a fitness profile and per-step (grade, speed, distance) inputs and
+// returns nothing but state, so any caller stepping through a continuous
+// effort -- a race plan, or a single logged training run -- can reuse it.
 //
 // Each state is its own small, literature-grounded model, explicit about
 // which parts are an established model versus a documented heuristic:
