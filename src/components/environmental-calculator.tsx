@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { ConfidenceRangeBar } from "@/components/confidence-range-bar";
@@ -27,8 +27,10 @@ import { heatEngine, type HeatEngineInput } from "@/lib/environmental/heat-engin
 import { humidityEngine, type HumidityEngineInput } from "@/lib/environmental/humidity-engine";
 import { inferWorkoutType, type WorkoutTypeGuess } from "@/lib/environmental/infer-workout-type";
 import { buildConfidenceReasons, overallConfidenceLevel } from "@/lib/environmental/confidence-explanation";
+import { preciseElevationEngine, type PreciseElevationEngineInput } from "@/lib/environmental/precise-elevation-engine";
 import { buildSavedAnalysis } from "@/lib/environmental/saved-analysis";
 import { buildCoachingSummary, buildCoachNotes } from "@/lib/environmental/coaching-summary";
+import { analyzeCourse } from "@/lib/marathon-pacing/course-analysis";
 import { routeWindEngine, type RouteWindEngineInput } from "@/lib/environmental/route-wind-engine";
 import { trackWindEngine, type TrackWindEngineInput } from "@/lib/environmental/track-wind-engine";
 import type { EngineResult, PerformanceContext } from "@/lib/environmental/types";
@@ -44,6 +46,7 @@ import {
 import { WORKOUT_TYPE_CONFIG, WORKOUT_TYPE_ORDER, type WorkoutType } from "@/lib/environmental/workout-types";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import type { RouteSummary } from "@/lib/route-import/route-summary";
+import type { ParsedRoute } from "@/lib/route-import/types";
 import { formatClock, formatTrackTime, parseTimeToSeconds, parseTrackTime } from "@/lib/running-format";
 import {
   ALT_PAIR,
@@ -258,6 +261,8 @@ type ComputeResultsParams = {
   repType: RepType;
   speedOrEffort: SpeedOrEffort;
   routeSummary: RouteSummary | null;
+  /** Route only -- a route's own real mile-by-mile grades, when analyzeCourse succeeded. */
+  perMileGrade: number[] | null;
   context: PerformanceContext;
 };
 
@@ -265,12 +270,13 @@ type ComputeResultsParams = {
 // regardless of course type) but need different Wind models -- a runner's
 // heading is constant on the road, rotates continuously through a track's
 // curves (track-wind-engine.ts), or follows a real GPS-derived path
-// (route-wind-engine.ts). Elevation uses either a manually-entered
-// gain/loss total (road) or the real total measured from an imported
-// route's own elevation samples (route) -- a standard track is flat by
-// construction, so there's nothing for ElevationEngine to do there.
+// (route-wind-engine.ts). Elevation uses a manually-entered gain/loss total
+// (road) or, for a route, the real per-mile grade profile when available
+// (falling back to the route's aggregate gain/loss, same as road, if
+// analyzeCourse couldn't run) -- a standard track is flat by construction,
+// so there's nothing for either elevation engine to do there.
 function computeResults(params: ComputeResultsParams): EngineResult[] {
-  const { conditions, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, context } = params;
+  const { conditions, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade, context } = params;
   const results: EngineResult[] = [];
 
   if (conditions) {
@@ -324,11 +330,16 @@ function computeResults(params: ComputeResultsParams): EngineResult[] {
     const elevationInput: ElevationEngineInput = { elevationGainM, elevationLossM };
     if (elevationEngine.isApplicable(elevationInput)) results.push(elevationEngine.compute(elevationInput, context));
   } else if (courseType === "route" && routeSummary) {
-    const elevationInput: ElevationEngineInput = {
-      elevationGainM: routeSummary.elevationGainM,
-      elevationLossM: routeSummary.elevationLossM,
-    };
-    if (elevationEngine.isApplicable(elevationInput)) results.push(elevationEngine.compute(elevationInput, context));
+    if (perMileGrade && perMileGrade.length > 0) {
+      const preciseInput: PreciseElevationEngineInput = { perMileGrade };
+      if (preciseElevationEngine.isApplicable(preciseInput)) results.push(preciseElevationEngine.compute(preciseInput, context));
+    } else {
+      const elevationInput: ElevationEngineInput = {
+        elevationGainM: routeSummary.elevationGainM,
+        elevationLossM: routeSummary.elevationLossM,
+      };
+      if (elevationEngine.isApplicable(elevationInput)) results.push(elevationEngine.compute(elevationInput, context));
+    }
   }
 
   return results;
@@ -513,6 +524,11 @@ export function EnvironmentalCalculator() {
   // thousands of points) -- re-importing a file or picking a Strava
   // activity again is quick, so this deliberately resets on reload.
   const [routeSummary, setRouteSummary] = useState<RouteSummary | null>(null);
+  // The raw ParsedRoute, kept alongside the aggregate RouteSummary so
+  // elevation can use the route's own real per-mile grade (via
+  // analyzeCourse below) instead of elevation-engine.ts's coarse
+  // assumed-grade fallback -- see precise-elevation-engine.ts.
+  const [route, setRoute] = useState<ParsedRoute | null>(null);
   const [timeInput, setTimeInput] = usePersistedField(persisted?.timeInput, "20:00");
   const [goalMode, setGoalMode] = usePersistedField<GoalMode>(persisted?.goalMode, "analyze");
 
@@ -773,10 +789,9 @@ export function EnvironmentalCalculator() {
       : parseTimeToSeconds(timeInput);
   const formatTime = courseType === "track" ? formatTrackTime : formatClock;
 
-  function handleRouteLoaded(summary: RouteSummary, label: string) {
-    // The raw ParsedRoute (this callback's third argument) isn't needed
-    // here -- this calculator only ever uses the aggregate RouteSummary.
+  function handleRouteLoaded(summary: RouteSummary, label: string, loadedRoute: ParsedRoute) {
     setRouteSummary(summary);
+    setRoute(loadedRoute);
     setTimeInput(formatClock(summary.totalTimeSeconds));
     // Treat the imported activity as the source of truth for weather too --
     // no separate location/date lookup required (see the calculator's
@@ -797,6 +812,19 @@ export function EnvironmentalCalculator() {
     setWorkoutTypeGuess(guess);
     setShowWorkoutTypeOverride(false);
   }
+
+  // Real per-mile grades for the precise elevation engine below, when a
+  // route is loaded -- analyzeCourse throws on too few GPS points (e.g. an
+  // indoor/very short activity), in which case elevation falls back to
+  // elevationEngine's coarse assumed-grade model, same as no route at all.
+  const courseAnalysis = useMemo(() => {
+    if (!route) return null;
+    try {
+      return analyzeCourse(route);
+    } catch {
+      return null;
+    }
+  }, [route]);
 
   const context: PerformanceContext | null =
     distanceValid && timeSeconds && timeSeconds > 0
@@ -839,13 +867,13 @@ export function EnvironmentalCalculator() {
       : null;
 
   const resultsA = context
-    ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, context })
+    ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
     : [];
   const combinedA = combineAdjustments(resultsA);
 
   const resultsB =
     context && goalMode === "convert"
-      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, context })
+      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
       : [];
   const combinedB = combineAdjustments(resultsB);
 
@@ -871,13 +899,13 @@ export function EnvironmentalCalculator() {
 
   const altResultsA =
     context && altRepType
-      ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, context })
+      ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
       : [];
   const altCombinedA = combineAdjustments(altResultsA);
 
   const altResultsB =
     context && altRepType && goalMode === "convert"
-      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, context })
+      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
       : [];
   const altCombinedB = combineAdjustments(altResultsB);
 
