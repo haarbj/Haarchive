@@ -30,11 +30,14 @@ export function CommentThread({
   content,
   comments,
   canModerate,
+  canReply = true,
 }: {
   articleId: string;
   content: ContentBlock[];
   comments: CommentWithAuthor[];
   canModerate: boolean;
+  /** Whether to show the "add a comment" form -- addArticleComment only authorizes admins and assigned reviewers, so an article's own author (who isn't either) would just get "Not authorized." back on submit. */
+  canReply?: boolean;
 }) {
   const [state, formAction, isPending] = useActionState<AddCommentState, FormData>(addArticleComment, {});
   const [isToggling, startToggle] = useTransition();
@@ -73,36 +76,38 @@ export function CommentThread({
         )}
       </div>
 
-      <form action={formAction} className="space-y-3">
-        <input type="hidden" name="articleId" value={articleId} />
-        <div>
-          <label htmlFor="comment-block" className={labelClass}>
-            Anchor to
-          </label>
-          <select id="comment-block" name="blockIndex" defaultValue="" className={fieldClass}>
-            <option value="">General comment</option>
-            {content.map((block, index) => (
-              <option key={index} value={index}>
-                {blockLabel(block, index)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <textarea
-          name="comment"
-          rows={3}
-          placeholder="Needs more nuance. During high-volume endurance training, processed carbohydrates can be useful and sometimes necessary."
-          className={fieldClass}
-        />
-        {state.error ? (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </p>
-        ) : null}
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Posting…" : "Add comment"}
-        </Button>
-      </form>
+      {canReply ? (
+        <form action={formAction} className="space-y-3">
+          <input type="hidden" name="articleId" value={articleId} />
+          <div>
+            <label htmlFor="comment-block" className={labelClass}>
+              Anchor to
+            </label>
+            <select id="comment-block" name="blockIndex" defaultValue="" className={fieldClass}>
+              <option value="">General comment</option>
+              {content.map((block, index) => (
+                <option key={index} value={index}>
+                  {blockLabel(block, index)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <textarea
+            name="comment"
+            rows={3}
+            placeholder="Needs more nuance. During high-volume endurance training, processed carbohydrates can be useful and sometimes necessary."
+            className={fieldClass}
+          />
+          {state.error ? (
+            <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
+              {state.error}
+            </p>
+          ) : null}
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Posting…" : "Add comment"}
+          </Button>
+        </form>
+      ) : null}
     </div>
   );
 }
