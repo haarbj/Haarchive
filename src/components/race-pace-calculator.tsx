@@ -408,6 +408,13 @@ export function RacePaceCalculator() {
         >
           Pace &amp; Heart Rate Calculator
         </Link>
+        . For a performance rating and every training zone at once from a single race, see the{" "}
+        <Link
+          href="/tinman-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Tinman Running Calculator
+        </Link>
         .
       </p>
     </div>

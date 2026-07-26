@@ -614,6 +614,18 @@ export function CvThresholdCalculator() {
         </Link>{" "}
         library.
       </p>
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Want a second set of training paces built on a different model, plus a performance rating and equivalent
+        times across 30 distances? Try the{" "}
+        <Link
+          href="/tinman-calculator"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Tinman Running Calculator
+        </Link>
+        .
+      </p>
     </div>
   );
 }
