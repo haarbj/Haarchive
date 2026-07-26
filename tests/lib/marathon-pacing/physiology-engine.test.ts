@@ -88,6 +88,25 @@ describe("stepFatigueState -- glycogen", () => {
     const fueled = stepFatigueState(state, PROFILE, { grade: 0, speedMS: 4.0, distanceM: 1609.344, carbIntakeGramsPerHour: 60 });
     expect(fueled.glycogenRemainingGrams).toBeGreaterThan(unfueled.glycogenRemainingGrams);
   });
+
+  it("gives a more durable runner a larger glycogen store, so they deplete more slowly at an identical sub-threshold pace", () => {
+    // speedMS is well below criticalSpeedMS (4.0) -- the common case for a
+    // sane marathon goal, where W'-balance never depletes for anyone. This
+    // is the exact scenario where durability previously had no visible
+    // effect on anything at all.
+    const poor = initialFatigueState({ ...PROFILE, durability: "poor" });
+    const excellent = initialFatigueState({ ...PROFILE, durability: "excellent" });
+    expect(excellent.glycogenRemainingGrams).toBeGreaterThan(poor.glycogenRemainingGrams);
+
+    const mile = { grade: 0, speedMS: 3.5, distanceM: 1609.344 };
+    let poorState = poor;
+    let excellentState = excellent;
+    for (let i = 0; i < 20; i++) {
+      poorState = stepFatigueState(poorState, { ...PROFILE, durability: "poor" }, mile);
+      excellentState = stepFatigueState(excellentState, { ...PROFILE, durability: "excellent" }, mile);
+    }
+    expect(excellentState.glycogenRemainingFraction).toBeGreaterThan(poorState.glycogenRemainingFraction);
+  });
 });
 
 describe("stepFatigueState -- cardiac drift", () => {
@@ -117,6 +136,16 @@ describe("stepFatigueState -- cardiac drift", () => {
       state = stepFatigueState(state, PROFILE, { grade: 0, speedMS: 3.0, distanceM: 10000, tempC: 35 });
     }
     expect(state.cardiacDriftFraction).toBeLessThanOrEqual(0.2);
+  });
+
+  it("drifts less for a more durable runner at the same sub-threshold pace and duration", () => {
+    const poorProfile: PhysiologyProfile = { ...PROFILE, durability: "poor" };
+    const excellentProfile: PhysiologyProfile = { ...PROFILE, durability: "excellent" };
+    const mile = { grade: 0, speedMS: 3.5, distanceM: 10000 };
+
+    const poor = stepFatigueState(initialFatigueState(poorProfile), poorProfile, mile);
+    const excellent = stepFatigueState(initialFatigueState(excellentProfile), excellentProfile, mile);
+    expect(excellent.cardiacDriftFraction).toBeLessThan(poor.cardiacDriftFraction);
   });
 });
 

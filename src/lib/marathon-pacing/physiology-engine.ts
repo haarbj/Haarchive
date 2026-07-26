@@ -30,6 +30,19 @@
 //      literature (Millet et al.) is clear on direction, not on how much it
 //      should discount capacity mile-by-mile, and fabricating that number
 //      would corrupt the other, better-grounded states with false precision.
+//
+// The `durability` tier deliberately touches THREE of these four states, not
+// just W'-balance -- it originally only sized the W'-balance reserve, which
+// only ever depletes when running above critical speed. Most marathon goal
+// efforts never go above critical speed at all (that's roughly what "goal
+// pace is sustainable" means), so for the common case durability changed
+// nothing a runner could actually see. Trained/durable runners genuinely do
+// carry more utilizable glycogen (denser muscle glycogen storage from
+// training adaptation) and show measurably less cardiovascular drift at a
+// given relative intensity (Coyle et al.) than untrained runners -- both
+// well-documented directions, if not precisely fit dose-response curves --
+// so durability now also scales glycogen store size and drift rate, which
+// actually show up in every race, not just ones with above-CS surges.
 
 import { STEEP_DOWNHILL_GRADE_THRESHOLD, totalCostJPerKgM } from "@/lib/grade-pace-physics";
 
@@ -41,7 +54,7 @@ export type PhysiologyProfile = {
   /** vVO2max speed, m/s -- e.g. cv-threshold-math.ts's vo2maxSpeedMS. Used only as the substrate-curve's relative-intensity reference. */
   vo2maxSpeedMS: number;
   weightKg?: number;
-  /** Sets the W'-balance reserve size (D'). Informed by training volume/longest run when available; "average" if unknown. */
+  /** Sets the W'-balance reserve size (D'), glycogen store size, and cardiac drift rate. Informed by training volume/longest run when available; "average" if unknown. */
   durability?: Durability;
   /** Overrides the default trained-runner glycogen store size (g of glycogen per kg bodyweight). */
   glycogenStoreGramsPerKg?: number;
@@ -96,9 +109,26 @@ const TAU_DECAY_PER_WATT = -0.01;
 const TAU_OFFSET_SECONDS = 316;
 
 const CARB_J_PER_GRAM = 16700; // ~4 kcal/g
-const GLYCOGEN_STORE_G_PER_KG_DEFAULT = 8; // trained, carb-loaded runner; literature range roughly 6-10 g/kg
 
-const DRIFT_RATE_PER_HOUR = 0.03; // documented heuristic: ~3%/hr HR elevation at constant pace in neutral conditions
+// Literature range for trained-runner glycogen storage is roughly 6-10 g/kg
+// bodyweight -- durability spans that range directly rather than applying a
+// single default and scaling it separately, since it's the same underlying
+// training-adaptation story the D' tiers above are already telling.
+const DURABILITY_GLYCOGEN_G_PER_KG: Record<Durability, number> = {
+  poor: 6.5,
+  average: 8,
+  excellent: 10,
+};
+
+const DRIFT_RATE_PER_HOUR = 0.03; // documented heuristic: ~3%/hr HR elevation at constant pace in neutral conditions, "average" durability
+// Trained endurance athletes show measurably less cardiovascular drift at a
+// given relative intensity than untrained ones (Coyle et al.) -- a
+// documented heuristic multiplier on the base drift rate, not a fit curve.
+const DURABILITY_DRIFT_MULTIPLIER: Record<Durability, number> = {
+  poor: 1.25,
+  average: 1,
+  excellent: 0.75,
+};
 const DRIFT_REFERENCE_TEMP_C = 15;
 const HEAT_DRIFT_MULTIPLIER_PER_DEGREE_C = 0.04; // each degree above the reference compounds drift ~4%
 const MAX_DRIFT_FRACTION = 0.2;
@@ -112,7 +142,8 @@ function dPrimeMetersFor(profile: PhysiologyProfile): number {
 }
 
 function glycogenStoreGramsFor(profile: PhysiologyProfile, weightKg: number): number {
-  return (profile.glycogenStoreGramsPerKg ?? GLYCOGEN_STORE_G_PER_KG_DEFAULT) * weightKg;
+  const gPerKg = profile.glycogenStoreGramsPerKg ?? DURABILITY_GLYCOGEN_G_PER_KG[profile.durability ?? "average"];
+  return gPerKg * weightKg;
 }
 
 export function initialFatigueState(profile: PhysiologyProfile): FatigueState {
@@ -186,7 +217,11 @@ export function stepFatigueState(state: FatigueState, profile: PhysiologyProfile
 
   const heatMultiplier =
     mile.tempC !== undefined ? 1 + Math.max(0, mile.tempC - DRIFT_REFERENCE_TEMP_C) * HEAT_DRIFT_MULTIPLIER_PER_DEGREE_C : 1;
-  const cardiacDriftFraction = Math.min(MAX_DRIFT_FRACTION, DRIFT_RATE_PER_HOUR * (elapsedSeconds / 3600) * heatMultiplier);
+  const durabilityDriftMultiplier = DURABILITY_DRIFT_MULTIPLIER[profile.durability ?? "average"];
+  const cardiacDriftFraction = Math.min(
+    MAX_DRIFT_FRACTION,
+    DRIFT_RATE_PER_HOUR * durabilityDriftMultiplier * (elapsedSeconds / 3600) * heatMultiplier,
+  );
 
   const cumulativeEccentricDamageScore = state.cumulativeEccentricDamageScore + eccentricLoadForMile(mile.grade, mile.distanceM);
 
