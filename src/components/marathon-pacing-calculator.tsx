@@ -15,6 +15,8 @@ import {
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
 import { buildFuelingSchedule, computeFuelingTargets } from "@/lib/marathon-pacing/fueling-engine";
 import { analyzeCourse, type CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
+import { buildDisplaySplits } from "@/lib/marathon-pacing/pace-rounding";
+import { PRESET_COURSES, buildPresetRoute, presetCourseMap, type PresetCourseId } from "@/lib/marathon-pacing/preset-courses";
 import { generatePacingPlan, type MileSplit } from "@/lib/marathon-pacing/split-generator";
 import { PACING_STRATEGIES, type RiskLevel, type StrategyId } from "@/lib/marathon-pacing/strategy-engine";
 import type { Durability } from "@/lib/marathon-pacing/physiology-engine";
@@ -76,6 +78,8 @@ type PersistedState = {
   durability: Durability;
   strategyId: StrategyId;
   risk: RiskLevel;
+  courseSource: "upload" | "preset";
+  presetCourseId: PresetCourseId | "";
   useConditions: boolean;
   tempFInput: string;
   humidityInput: string;
@@ -96,6 +100,13 @@ function loadModel(): Promise<CvThresholdModel> {
     });
   }
   return modelPromise;
+}
+
+const PRESET_COURSES_BY_REGION = new Map<string, typeof PRESET_COURSES>();
+for (const course of PRESET_COURSES) {
+  const list = PRESET_COURSES_BY_REGION.get(course.region) ?? [];
+  list.push(course);
+  PRESET_COURSES_BY_REGION.set(course.region, list);
 }
 
 function buildFlatCourse(): CourseAnalysis {
@@ -218,12 +229,23 @@ export function MarathonPacingCalculator() {
   const [windFromDeg, setWindFromDeg] = usePersistedField(persisted?.windFromDeg, 0);
   const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
 
+  const [courseSource, setCourseSource] = usePersistedField<"upload" | "preset">(persisted?.courseSource, "upload");
+  const [presetCourseId, setPresetCourseId] = usePersistedField<PresetCourseId | "">(persisted?.presetCourseId, "");
   const [route, setRoute] = useState<ParsedRoute | null>(null);
   const [routeLabel, setRouteLabel] = useState<string | null>(null);
 
   function handleRouteLoaded(_summary: RouteSummary, label: string, loadedRoute: ParsedRoute) {
+    setPresetCourseId(""); // uploading a route and picking a preset are mutually exclusive
     setRoute(loadedRoute);
     setRouteLabel(label);
+    persistState();
+  }
+
+  function handleSelectPreset(id: PresetCourseId | "") {
+    setPresetCourseId(id);
+    setRoute(null);
+    setRouteLabel(null);
+    persistState();
   }
 
   const fitnessDistance = FITNESS_DISTANCE_OPTIONS.find((d) => d.key === fitnessDistanceKey);
@@ -244,16 +266,17 @@ export function MarathonPacingCalculator() {
   const weightKg = weightValid ? lbsToKg(weightLbRaw) : undefined;
 
   const { course, courseError } = useMemo(() => {
-    if (!route) return { course: buildFlatCourse(), courseError: null as string | null };
+    const sourceRoute = presetCourseId ? buildPresetRoute(presetCourseMap.get(presetCourseId)!) : route;
+    if (!sourceRoute) return { course: buildFlatCourse(), courseError: null as string | null };
     try {
-      return { course: analyzeCourse(route), courseError: null as string | null };
+      return { course: analyzeCourse(sourceRoute), courseError: null as string | null };
     } catch (error) {
       return {
         course: buildFlatCourse(),
         courseError: error instanceof Error ? error.message : "Couldn't analyze that route.",
       };
     }
-  }, [route]);
+  }, [route, presetCourseId]);
 
   const weatherConditions: WeatherConditions | undefined = useMemo(() => {
     if (!useConditions) return undefined;
@@ -293,6 +316,14 @@ export function MarathonPacingCalculator() {
     });
   }, [canGeneratePlan, course, goalTimeSeconds, fitnessPaces, strategyId, risk, weightKg, durability, weatherConditions]);
 
+  // Displayed paces are rounded to the nearest 5s -- easier to hold in your
+  // head on race day ("start at 6:20, pick it up 5s/mi") than false
+  // precision no road marathon lets you actually hit anyway. Elapsed times
+  // are the running sum of these rounded paces, not the engine's precise
+  // elapsed time, so the table stays internally self-consistent.
+  const displaySplits = useMemo(() => (plan ? buildDisplaySplits(plan.splits) : []), [plan]);
+  const displayTotalSeconds = displaySplits.length > 0 ? displaySplits[displaySplits.length - 1].displayElapsedSeconds : null;
+
   const fuelingTargets = goalTimeSeconds ? computeFuelingTargets({ goalTimeSeconds, weightKg, tempC: weatherConditions?.tempC }) : null;
   const fuelingSchedule =
     plan && fuelingTargets && goalTimeSeconds
@@ -314,6 +345,8 @@ export function MarathonPacingCalculator() {
         durability,
         strategyId,
         risk,
+        courseSource,
+        presetCourseId,
         useConditions,
         tempFInput,
         humidityInput,
@@ -328,7 +361,8 @@ export function MarathonPacingCalculator() {
   }
 
   const totalMiles = plan?.splits.length ?? 0;
-  const avgPaceSeconds = plan && totalMiles > 0 ? plan.totalTimeSeconds / totalMiles : null;
+  const avgPaceSeconds = displayTotalSeconds !== null && totalMiles > 0 ? displayTotalSeconds / totalMiles : null;
+  const finishDeltaSeconds = displayTotalSeconds !== null && goalTimeSeconds !== null ? displayTotalSeconds - goalTimeSeconds : null;
 
   return (
     <div className="mt-10 space-y-10">
@@ -460,24 +494,84 @@ export function MarathonPacingCalculator() {
       <div>
         <p className={sectionLabelClass}>Course</p>
         <div className={`${statCardClass} space-y-4`}>
-          <RouteImportPanel onRouteLoaded={handleRouteLoaded} />
-          {route && (
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => {
-                setRoute(null);
-                setRouteLabel(null);
+                setCourseSource("upload");
+                persistState();
               }}
-              className="text-xs font-semibold text-zinc-700 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-zinc-200 dark:decoration-white/30 dark:hover:decoration-white"
+              aria-pressed={courseSource === "upload"}
+              className={segmentedButtonClass(courseSource === "upload")}
             >
-              Clear &ldquo;{routeLabel}&rdquo; and use a flat course instead
+              Upload a file
             </button>
-          )}
-          {!route && (
-            <p className="text-xs text-zinc-600 dark:text-zinc-300">
-              No course loaded -- pacing below assumes a flat marathon. Upload a GPX/TCX/FIT file or import from
-              Strava above for real terrain-aware pacing.
-            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setCourseSource("preset");
+                persistState();
+              }}
+              aria-pressed={courseSource === "preset"}
+              className={segmentedButtonClass(courseSource === "preset")}
+            >
+              Choose a real race
+            </button>
+          </div>
+
+          {courseSource === "upload" ? (
+            <>
+              <RouteImportPanel onRouteLoaded={handleRouteLoaded} />
+              {route && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRoute(null);
+                    setRouteLabel(null);
+                  }}
+                  className="text-xs font-semibold text-zinc-700 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-zinc-200 dark:decoration-white/30 dark:hover:decoration-white"
+                >
+                  Clear &ldquo;{routeLabel}&rdquo; and use a flat course instead
+                </button>
+              )}
+              {!route && (
+                <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                  No course loaded -- pacing below assumes a flat marathon. Upload a GPX/TCX/FIT file or import from
+                  Strava above for real terrain-aware pacing.
+                </p>
+              )}
+            </>
+          ) : (
+            <div>
+              <label htmlFor={`${baseId}-preset-course`} className={labelClass}>
+                Race
+              </label>
+              <select
+                id={`${baseId}-preset-course`}
+                value={presetCourseId}
+                onChange={(event) => handleSelectPreset(event.target.value as PresetCourseId | "")}
+                className={fieldClass}
+              >
+                <option value="">Select a course…</option>
+                {Array.from(PRESET_COURSES_BY_REGION.entries()).map(([region, courses]) => (
+                  <optgroup key={region} label={region}>
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              {presetCourseId ? (
+                <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">{presetCourseMap.get(presetCourseId)!.sourceNote}</p>
+              ) : (
+                <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+                  These are approximate profiles built from each course&rsquo;s published elevation landmarks, not
+                  surveyed GPS data -- close enough for pacing, not a replacement for the official course map.
+                </p>
+              )}
+            </div>
           )}
           {courseError && <p className="text-xs font-semibold text-red-700 dark:text-red-400">{courseError}</p>}
         </div>
@@ -512,68 +606,76 @@ export function MarathonPacingCalculator() {
           </div>
         </div>
         {useConditions && (
-          <div className={`${statCardClass} flex flex-wrap items-start gap-6`}>
-            <div>
-              <label htmlFor={`${baseId}-temp`} className={labelClass}>
-                Temperature (°F)
-              </label>
-              <input
-                id={`${baseId}-temp`}
-                type="number"
-                min={-20}
-                max={130}
-                value={tempFInput}
-                onChange={(event) => {
-                  setTempFInput(event.target.value);
-                  persistState();
-                }}
-                className={`w-20 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-humidity`} className={labelClass}>
-                Humidity (%)
-              </label>
-              <input
-                id={`${baseId}-humidity`}
-                type="number"
-                min={0}
-                max={100}
-                value={humidityInput}
-                onChange={(event) => {
-                  setHumidityInput(event.target.value);
-                  persistState();
-                }}
-                className={`w-20 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-wind`} className={labelClass}>
-                Wind speed (mph)
-              </label>
-              <input
-                id={`${baseId}-wind`}
-                type="number"
-                min={0}
-                max={80}
-                value={windMphInput}
-                onChange={(event) => {
-                  setWindMphInput(event.target.value);
-                  persistState();
-                }}
-                className={`w-20 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <p className={labelClass}>Wind from</p>
-              <WindCompass
-                angleDeg={windFromDeg}
-                onChange={(deg) => {
-                  setWindFromDeg(deg);
-                  persistState();
-                }}
-                variant="wind"
-              />
+          <div className={`${statCardClass} space-y-4`}>
+            <p className="text-xs text-zinc-600 dark:text-zinc-300">
+              Your goal time is your target effort under ideal conditions. These settings don&rsquo;t change that
+              effort or try to force the clock back to your goal -- they show the realistic finish time that effort
+              actually produces given the weather, same as a coach would tell you: don&rsquo;t push harder to fight
+              the heat, expect to run slower.
+            </p>
+            <div className="flex flex-wrap items-start gap-6">
+              <div>
+                <label htmlFor={`${baseId}-temp`} className={labelClass}>
+                  Temperature (°F)
+                </label>
+                <input
+                  id={`${baseId}-temp`}
+                  type="number"
+                  min={-20}
+                  max={130}
+                  value={tempFInput}
+                  onChange={(event) => {
+                    setTempFInput(event.target.value);
+                    persistState();
+                  }}
+                  className={`w-20 ${fieldClass}`}
+                />
+              </div>
+              <div>
+                <label htmlFor={`${baseId}-humidity`} className={labelClass}>
+                  Humidity (%)
+                </label>
+                <input
+                  id={`${baseId}-humidity`}
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={humidityInput}
+                  onChange={(event) => {
+                    setHumidityInput(event.target.value);
+                    persistState();
+                  }}
+                  className={`w-20 ${fieldClass}`}
+                />
+              </div>
+              <div>
+                <label htmlFor={`${baseId}-wind`} className={labelClass}>
+                  Wind speed (mph)
+                </label>
+                <input
+                  id={`${baseId}-wind`}
+                  type="number"
+                  min={0}
+                  max={80}
+                  value={windMphInput}
+                  onChange={(event) => {
+                    setWindMphInput(event.target.value);
+                    persistState();
+                  }}
+                  className={`w-20 ${fieldClass}`}
+                />
+              </div>
+              <div>
+                <p className={labelClass}>Wind from</p>
+                <WindCompass
+                  angleDeg={windFromDeg}
+                  onChange={(deg) => {
+                    setWindFromDeg(deg);
+                    persistState();
+                  }}
+                  variant="wind"
+                />
+              </div>
             </div>
           </div>
         )}
@@ -636,11 +738,22 @@ export function MarathonPacingCalculator() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className={heroCardClass}>
               <p className={statLabelClass}>Projected finish (full miles)</p>
-              <p className="mt-1 text-3xl font-bold text-zinc-900 dark:text-white">{formatClock(plan.totalTimeSeconds)}</p>
-              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-                Goal: {formatClock(goalTimeSeconds ?? 0)} -- the difference is the strategy&rsquo;s terrain/weather
-                response plus the final partial mile, not yet included.
-              </p>
+              <p className="mt-1 text-3xl font-bold text-zinc-900 dark:text-white">{formatClock(displayTotalSeconds ?? plan.totalTimeSeconds)}</p>
+              {useConditions && finishDeltaSeconds !== null && Math.abs(finishDeltaSeconds) >= 5 ? (
+                <p className="mt-1 text-xs font-semibold text-zinc-700 dark:text-zinc-200">
+                  {formatClock(Math.abs(finishDeltaSeconds))} {finishDeltaSeconds > 0 ? "slower" : "faster"} than your{" "}
+                  {formatClock(goalTimeSeconds ?? 0)}{" "}
+                  ideal-conditions goal, because of the conditions you set -- your target effort hasn&rsquo;t
+                  changed, just what it produces today.
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
+                  Goal: {formatClock(goalTimeSeconds ?? 0)}{" "}
+                  -- effort is solved to match this on this course&rsquo;s own terrain, not just computed as if the
+                  course were flat. The splits below cover only the full miles shown; the last partial mile beyond
+                  that isn&rsquo;t split out separately.
+                </p>
+              )}
             </div>
             <div className={statCardClass}>
               <p className={statLabelClass}>Average pace</p>
@@ -649,6 +762,7 @@ export function MarathonPacingCalculator() {
             <div className={statCardClass}>
               <p className={statLabelClass}>Course</p>
               <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">
+                {presetCourseId ? `${presetCourseMap.get(presetCourseId)!.name} -- ` : ""}
                 {course.totalClimbM > 0 || course.totalDescentM > 0
                   ? `${Math.round(course.totalClimbM * 3.28084)}ft climb / ${Math.round(course.totalDescentM * 3.28084)}ft descent, rolling index ${course.rollingIndex.toFixed(1)}`
                   : "Flat (no course loaded)"}
@@ -670,11 +784,11 @@ export function MarathonPacingCalculator() {
                 </tr>
               </thead>
               <tbody>
-                {plan.splits.map((split: MileSplit) => (
+                {plan.splits.map((split: MileSplit, index) => (
                   <tr key={split.mile} className="border-b border-black/5 last:border-0 dark:border-white/5" title={split.explanation}>
                     <td className="py-1.5 pr-3 font-semibold text-zinc-900 dark:text-white">{split.mile}</td>
-                    <td className="py-1.5 pr-3">{formatClock(split.paceSecPerMile)}</td>
-                    <td className="py-1.5 pr-3">{formatClock(split.elapsedSeconds)}</td>
+                    <td className="py-1.5 pr-3">{formatClock(displaySplits[index].displayPaceSecPerMile)}</td>
+                    <td className="py-1.5 pr-3">{formatClock(displaySplits[index].displayElapsedSeconds)}</td>
                     <td className="py-1.5 pr-3">{(split.grade * 100).toFixed(1)}%</td>
                     <td className="py-1.5 pr-3">{(split.targetEffortFraction * 100).toFixed(0)}%</td>
                     <td className="py-1.5 pr-3">{(split.fatigueState.glycogenRemainingFraction * 100).toFixed(0)}%</td>
@@ -684,7 +798,10 @@ export function MarathonPacingCalculator() {
               </tbody>
             </table>
           </div>
-          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">Hover any row for why that mile is paced the way it is.</p>
+          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+            Paces are rounded to the nearest 5 seconds -- easier to hold in your head than false precision no road
+            marathon lets you actually hit anyway. Hover any row for why that mile is paced the way it is.
+          </p>
 
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div>
@@ -730,7 +847,7 @@ export function MarathonPacingCalculator() {
           <SaveCalculationButton
             calculatorType="marathon-pacing-calculator"
             input={{ fitnessDistanceKey, fitnessTimeInput, ageInput, goalTimeInput, strategyId, risk, durability }}
-            output={{ projectedTime: formatClock(plan.totalTimeSeconds), avgPace: `${formatClock(avgPaceSeconds)}/mi` }}
+            output={{ projectedTime: formatClock(displayTotalSeconds ?? plan.totalTimeSeconds), avgPace: `${formatClock(avgPaceSeconds)}/mi` }}
             label={`${goalTimeInput} marathon, ${PACING_STRATEGIES[strategyId].label}`}
           />
         </div>
@@ -765,9 +882,17 @@ export function MarathonPacingCalculator() {
                   Every strategy here is a target <em>effort</em> curve (a fraction of your critical speed, over the
                   course of the race) rather than a table of preset pace deltas. That effort is converted into an
                   actual pace mile by mile using the real energy cost of that mile&rsquo;s grade (Minetti et al.
-                  2002) and, if you set conditions, wind and heat/humidity too -- so two runners on the same
-                  strategy get genuinely different splits on different courses, rather than the same canned shape
-                  stretched to fit any race.
+                  2002) -- so two runners on the same strategy get genuinely different splits on different courses,
+                  rather than the same canned shape stretched to fit any race. The target effort itself is solved
+                  for terrain, not assumed: on a course with meaningful net elevation change (Boston&rsquo;s
+                  net-downhill course is a good example), running the effort that would hit your goal time on a flat
+                  course actually finishes faster or slower than goal, so the effort is adjusted until the
+                  terrain-adjusted total genuinely matches your goal time -- terrain is a fixed property of the
+                  course, so it&rsquo;s fair to fold into what hitting your goal on this course even means. Wind and
+                  heat/humidity are handled differently, deliberately: they&rsquo;re layered on top of that
+                  already-solved effort rather than solved for, so setting hot or windy conditions shows you a
+                  realistic finish time that can be slower (or faster) than your goal, instead of quietly demanding
+                  more effort to force the clock back to an unchanged number.
                 </p>
               </div>
             </details>
