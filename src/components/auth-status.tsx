@@ -99,13 +99,15 @@ function AccountMenu({
               admin all at once, so this lists all of them rather than
               picking one "primary" role to show. Training Plan rides along
               right after Dashboard since it's really a sub-page of the
-              athlete workspace, not its own top-level destination. */}
+              athlete workspace, not its own top-level destination -- shown
+              only for real team members (showTrainingPlanLink), since
+              self-serve plan generation is disabled for everyone else. */}
           {workspaces.map((workspace) => (
             <div key={workspace.href}>
               <Link href={workspace.href} onClick={closeAndNavigate} className={menuItemClass}>
                 {workspace.label}
               </Link>
-              {workspace.href === "/dashboard" ? (
+              {workspace.showTrainingPlanLink ? (
                 <Link href="/plan" onClick={closeAndNavigate} className={menuItemClass}>
                   Training Plan
                 </Link>

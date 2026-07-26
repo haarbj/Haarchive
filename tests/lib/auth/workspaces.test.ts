@@ -24,41 +24,59 @@ describe("buildAccountWorkspaces", () => {
     expect(buildAccountWorkspaces(null)).toEqual([]);
   });
 
-  it("shows only Dashboard for an athlete-only user", () => {
+  it("shows Dashboard (without the Training Plan sub-link) for a plain signed-in user with no other capabilities", () => {
+    // The site is open to any signed-in community member -- Dashboard is
+    // no longer gated on team membership, only the Training Plan sub-link is.
+    expect(buildAccountWorkspaces(baseSession())).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
+    ]);
+  });
+
+  it("shows Dashboard with the Training Plan sub-link enabled for a real team athlete", () => {
     const workspaces = buildAccountWorkspaces(baseSession({ isAthlete: true, approved: true }));
-    expect(workspaces).toEqual([{ label: "Dashboard", href: "/dashboard" }]);
+    expect(workspaces).toEqual([{ label: "Dashboard", href: "/dashboard", showTrainingPlanLink: true }]);
   });
 
-  it("shows only Coach Dashboard for a coach-only user", () => {
+  it("shows Dashboard and Coach Dashboard for a coach-only user, with the Training Plan sub-link disabled", () => {
     const workspaces = buildAccountWorkspaces(baseSession({ isCoach: true, approved: true }));
-    expect(workspaces).toEqual([{ label: "Coach Dashboard", href: "/coach" }]);
-  });
-
-  it("shows both Dashboard and Coach Dashboard for an athlete+coach user, in that order", () => {
-    const workspaces = buildAccountWorkspaces(
-      baseSession({ isAthlete: true, isCoach: true, approved: true }),
-    );
     expect(workspaces).toEqual([
-      { label: "Dashboard", href: "/dashboard" },
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
       { label: "Coach Dashboard", href: "/coach" },
     ]);
   });
 
-  it("shows Contributor Workspace for a content_contributor", () => {
+  it("shows both Dashboard (with Training Plan) and Coach Dashboard for an athlete+coach user, in that order", () => {
+    const workspaces = buildAccountWorkspaces(
+      baseSession({ isAthlete: true, isCoach: true, approved: true }),
+    );
+    expect(workspaces).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: true },
+      { label: "Coach Dashboard", href: "/coach" },
+    ]);
+  });
+
+  it("shows Dashboard and Contributor Workspace for a content_contributor", () => {
     const workspaces = buildAccountWorkspaces(baseSession({ permissions: ["content_contributor"] }));
-    expect(workspaces).toEqual([{ label: "Contributor Workspace", href: "/contribute" }]);
+    expect(workspaces).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
+      { label: "Contributor Workspace", href: "/contribute" },
+    ]);
   });
 
-  it("shows Contributor Workspace for a reviewer", () => {
+  it("shows Dashboard and Contributor Workspace for a reviewer", () => {
     const workspaces = buildAccountWorkspaces(baseSession({ permissions: ["reviewer"] }));
-    expect(workspaces).toEqual([{ label: "Contributor Workspace", href: "/contribute" }]);
+    expect(workspaces).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
+      { label: "Contributor Workspace", href: "/contribute" },
+    ]);
   });
 
-  it("shows Contributor Workspace and Admin for an admin with no content permission", () => {
+  it("shows Dashboard, Contributor Workspace, and Admin for an admin with no content permission", () => {
     // Admins can always reach /contribute (see contribute/layout.tsx), even
     // without holding content_contributor/reviewer themselves.
     const workspaces = buildAccountWorkspaces(baseSession({ isAdmin: true }));
     expect(workspaces).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
       { label: "Contributor Workspace", href: "/contribute" },
       { label: "Admin", href: "/admin" },
     ]);
@@ -82,14 +100,10 @@ describe("buildAccountWorkspaces", () => {
       }),
     );
     expect(workspaces).toEqual([
-      { label: "Dashboard", href: "/dashboard" },
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: true },
       { label: "Coach Dashboard", href: "/coach" },
       { label: "Contributor Workspace", href: "/contribute" },
       { label: "Admin", href: "/admin" },
     ]);
-  });
-
-  it("returns nothing for a session with no capabilities at all", () => {
-    expect(buildAccountWorkspaces(baseSession())).toEqual([]);
   });
 });

@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/db/server";
 import { athleteProfileSchema } from "@/lib/validation/athlete-profile";
+import { communityProfileSchema } from "@/lib/validation/community-profile";
+import { raceResultSchema } from "@/lib/validation/onboarding";
+import { raceDistanceMap } from "@/lib/race-distances";
+import { parseTimeToSeconds } from "@/lib/running-format";
 
 export type UpdateProfileState = {
   error?: string;
@@ -11,6 +15,16 @@ export type UpdateProfileState = {
 };
 
 export type UpdateAthleteProfileState = {
+  error?: string;
+  success?: boolean;
+};
+
+export type UpdateCommunityProfileState = {
+  error?: string;
+  success?: boolean;
+};
+
+export type AddRaceResultState = {
   error?: string;
   success?: boolean;
 };
@@ -91,4 +105,105 @@ export async function updateAthleteProfile(
   revalidatePath("/dashboard");
   revalidatePath("/plan/new");
   return { success: true };
+}
+
+export async function updateCommunityProfile(
+  _prevState: UpdateCommunityProfileState,
+  formData: FormData,
+): Promise<UpdateCommunityProfileState> {
+  const parsed = communityProfileSchema.safeParse({
+    bio: formData.get("bio"),
+    location: formData.get("location"),
+    favoriteDistances: formData.getAll("favoriteDistances"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Please check the values above." };
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) {
+    return { error: "Your session expired — sign in again." };
+  }
+
+  const { error } = await supabase.from("community_profiles").upsert({
+    user_id: userId,
+    bio: parsed.data.bio,
+    location: parsed.data.location,
+    favorite_distances: parsed.data.favoriteDistances,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/settings");
+  revalidatePath(`/community/${userId}`);
+  return { success: true };
+}
+
+export async function addRaceResult(
+  _prevState: AddRaceResultState,
+  formData: FormData,
+): Promise<AddRaceResultState> {
+  const distanceKey = formData.get("distanceKey");
+  const distance = typeof distanceKey === "string" ? raceDistanceMap.get(distanceKey) : undefined;
+  if (!distance) {
+    return { error: "Pick a valid distance" };
+  }
+
+  const parsed = raceResultSchema.safeParse({
+    raceName: formData.get("raceName"),
+    raceDate: formData.get("raceDate"),
+    distanceM: Math.round(distance.meters),
+    finishTimeInput: formData.get("finishTimeInput"),
+    courseType: formData.get("courseType"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Check your race result details" };
+  }
+
+  const finishTimeS = parseTimeToSeconds(parsed.data.finishTimeInput);
+  if (finishTimeS === null) {
+    return { error: "Enter your finish time as mm:ss or h:mm:ss" };
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) {
+    return { error: "Your session expired — sign in again." };
+  }
+
+  const { error } = await supabase.from("race_results").insert({
+    user_id: userId,
+    race_name: parsed.data.raceName,
+    race_date: parsed.data.raceDate,
+    distance_m: parsed.data.distanceM,
+    finish_time_s: finishTimeS,
+    course_type: parsed.data.courseType,
+  });
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+export async function deleteRaceResult(raceResultId: string): Promise<void> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return;
+
+  // Scoped to both id and user_id -- RLS already enforces owner-only
+  // deletes, but matching it explicitly here means a wrong/stale id can
+  // never silently no-op against someone else's row.
+  await supabase.from("race_results").delete().eq("id", raceResultId).eq("user_id", userId);
+
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
 }
