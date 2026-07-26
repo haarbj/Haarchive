@@ -21,6 +21,7 @@ import { buildFuelingSchedule, computeFuelingTargets } from "@/lib/marathon-paci
 import { analyzeCourse, type CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { buildDisplaySplits } from "@/lib/marathon-pacing/pace-rounding";
 import { PRESET_COURSES, buildPresetRoute, presetCourseMap, type PresetCourseId } from "@/lib/marathon-pacing/preset-courses";
+import { percentileFinishTime, probabilityUnder, simulateFinishTimes } from "@/lib/marathon-pacing/race-simulation";
 import { generatePacingPlan, type MileSplit } from "@/lib/marathon-pacing/split-generator";
 import { PACING_STRATEGIES, type RiskLevel, type StrategyId } from "@/lib/marathon-pacing/strategy-engine";
 import type { Durability } from "@/lib/physiology-engine";
@@ -120,6 +121,7 @@ type PersistedState = {
   windFromDeg: number;
   showMethodology: boolean;
   compareEnabled: boolean;
+  simulationEnabled: boolean;
   scenarioType: ScenarioType;
   scenarioTempDeltaFInput: string;
   scenarioHumidityDeltaInput: string;
@@ -335,6 +337,7 @@ export function MarathonPacingCalculator() {
   const envWeather = useEnvironmentalWeather();
   const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
   const [compareEnabled, setCompareEnabled] = usePersistedField(persisted?.compareEnabled, false);
+  const [simulationEnabled, setSimulationEnabled] = usePersistedField(persisted?.simulationEnabled, false);
   const [scenarioType, setScenarioType] = usePersistedField<ScenarioType>(persisted?.scenarioType, "temperature");
   const [scenarioTempDeltaFInput, setScenarioTempDeltaFInput] = usePersistedField(persisted?.scenarioTempDeltaFInput, "15");
   const [scenarioHumidityDeltaInput, setScenarioHumidityDeltaInput] = usePersistedField(persisted?.scenarioHumidityDeltaInput, "20");
@@ -462,6 +465,30 @@ export function MarathonPacingCalculator() {
       weatherConditions,
     });
   }, [canGeneratePlan, course, goalTimeSeconds, fitnessPaces, strategyId, risk, weightKg, durability, weatherConditions]);
+
+  // Race-day simulation: re-runs the same already-solved plan hundreds of
+  // times with critical speed resampled from the fitness model's own
+  // p10/p50/p90 uncertainty, instead of pretending the single point
+  // estimate above is exact. See race-simulation.ts for why only critical
+  // speed (not vo2max) is worth resampling, and why this holds the planned
+  // effort curve fixed rather than re-solving it per sample.
+  const simulation = useMemo(() => {
+    if (!simulationEnabled || !plan || !fitnessPrediction) return null;
+    return simulateFinishTimes(
+      plan.goalEffortFraction,
+      {
+        course,
+        criticalSpeedMS: fitnessPaces!.cvSpeedMS,
+        strategyId,
+        risk,
+        weightKg: weightKg ?? 70,
+        windProfile: "suburban",
+        weatherConditions,
+        costBreakdown: plan.costBreakdown,
+      },
+      fitnessPrediction.cvSpeedMS,
+    );
+  }, [simulationEnabled, plan, fitnessPrediction, course, fitnessPaces, strategyId, risk, weightKg, weatherConditions]);
 
   // Displayed paces are rounded to the nearest 5s -- easier to hold in your
   // head on race day ("start at 6:20, pick it up 5s/mi") than false
@@ -632,6 +659,7 @@ export function MarathonPacingCalculator() {
         windFromDeg,
         showMethodology,
         compareEnabled,
+        simulationEnabled,
         scenarioType,
         scenarioTempDeltaFInput,
         scenarioHumidityDeltaInput,
@@ -1303,6 +1331,81 @@ export function MarathonPacingCalculator() {
                   </div>
                 )}
               </>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between gap-4">
+          <p className={sectionLabelClass}>Race-day simulation (optional)</p>
+          <div className="mb-3 flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSimulationEnabled(false);
+                persistState();
+              }}
+              aria-pressed={!simulationEnabled}
+              className={segmentedButtonClass(!simulationEnabled)}
+            >
+              Off
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSimulationEnabled(true);
+                persistState();
+              }}
+              aria-pressed={simulationEnabled}
+              className={segmentedButtonClass(simulationEnabled)}
+            >
+              Show simulation
+            </button>
+          </div>
+        </div>
+        {simulationEnabled && (
+          <div className={`${statCardClass} space-y-3`}>
+            <p className="text-xs text-zinc-600 dark:text-zinc-300">
+              Your fitness prediction has real uncertainty (see the p10/p50/p90 range above) -- this runs your exact
+              plan hundreds of times with your critical speed resampled from that same uncertainty, to show a range
+              of plausible outcomes instead of one point estimate.
+            </p>
+            {simulation && goalTimeSeconds ? (
+              <>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <p className={statLabelClass}>Fast day (10th pct.)</p>
+                    <p className="mt-1 text-xl font-bold text-zinc-900 dark:text-white">
+                      {formatClock(percentileFinishTime(simulation, 10))}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={statLabelClass}>Typical (50th pct.)</p>
+                    <p className="mt-1 text-xl font-bold text-zinc-900 dark:text-white">
+                      {formatClock(percentileFinishTime(simulation, 50))}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={statLabelClass}>Slow day (90th pct.)</p>
+                    <p className="mt-1 text-xl font-bold text-zinc-900 dark:text-white">
+                      {formatClock(percentileFinishTime(simulation, 90))}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-sm text-zinc-700 dark:text-zinc-200">
+                  {Math.round(probabilityUnder(simulation, goalTimeSeconds) * 100)}% of simulations beat your{" "}
+                  {formatClock(goalTimeSeconds)} goal, executing this exact plan.
+                </p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                  Based on critical-speed uncertainty only -- not weather variability, pacing execution, or race-day
+                  risk (GI issues, weather surprises, etc.). A directional range, not a precise probability.
+                </p>
+              </>
+            ) : (
+              <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                Enter your fitness and goal time above to run the simulation.
+              </p>
             )}
           </div>
         )}

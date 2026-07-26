@@ -97,12 +97,16 @@ export type PacingPlan = {
   splits: MileSplit[];
   /** Sum of the full miles actually generated -- see course-analysis.ts's perMileGrade docs on why a final partial mile isn't included yet. */
   totalTimeSeconds: number;
+  /** The terrain-solved effort fraction actually used for every mile (see the module doc) -- exposed so a caller (e.g. race-simulation.ts) can re-run computeMileResultsForEffort with a different fitness input without re-solving. */
+  goalEffortFraction: number;
+  /** Per-mile terrain/wind/heat/humidity breakdown, same one computeMileResultsForEffort itself was built against -- exposed for the same reason as goalEffortFraction. */
+  costBreakdown: MileCost[];
 };
 
 const SOLVE_TOLERANCE_SECONDS = 0.5;
 const SOLVE_MAX_ITERATIONS = 40;
 
-type MileDurationInputs = {
+export type MileDurationInputs = {
   course: CourseAnalysis;
   criticalSpeedMS: number;
   strategyId: StrategyId;
@@ -113,7 +117,7 @@ type MileDurationInputs = {
   costBreakdown: MileCost[];
 };
 
-type MileEffortResult = { durationSeconds: number; targetEffortFraction: number };
+export type MileEffortResult = { durationSeconds: number; targetEffortFraction: number };
 
 /**
  * Builds the effort curve for a candidate goal effort fraction and converts
@@ -127,7 +131,7 @@ type MileEffortResult = { durationSeconds: number; targetEffortFraction: number 
  * (see the module doc for why); the final pass always calls it with it on,
  * so the displayed splits reflect real conditions.
  */
-function computeMileResultsForEffort(
+export function computeMileResultsForEffort(
   goalEffortFraction: number,
   inputs: MileDurationInputs,
   includeWeather: boolean,
@@ -280,5 +284,5 @@ export function generatePacingPlan(input: SplitGeneratorInput): PacingPlan {
 
   const totalTimeSeconds = splits.length > 0 ? splits[splits.length - 1].elapsedSeconds : 0;
 
-  return { splits, totalTimeSeconds };
+  return { splits, totalTimeSeconds, goalEffortFraction, costBreakdown };
 }
