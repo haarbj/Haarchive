@@ -18,6 +18,7 @@ import {
   type MesocyclePhase,
   type WorkoutType,
 } from "@/lib/coaching-engine";
+import { computeAcwr } from "@/lib/acwr";
 import { predictSpeeds, selectTrainingPaces } from "@/lib/cv-threshold-math";
 import { cvThresholdModel } from "@/lib/cv-threshold-model-server";
 import { formatClock, formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
@@ -97,6 +98,13 @@ type DashboardPageProps = {
   searchParams: Promise<{ strava_connected?: string; strava_error?: string }>;
 };
 
+const ACWR_ZONE_COPY: Record<string, { label: string; className: string }> = {
+  "sweet-spot": { label: "Sweet spot", className: "text-emerald-700 dark:text-emerald-400" },
+  undertrained: { label: "Below recent load", className: "text-sky-700 dark:text-sky-400" },
+  caution: { label: "Ramping quickly", className: "text-amber-700 dark:text-amber-400" },
+  "high-risk": { label: "Sharp increase", className: "text-red-700 dark:text-red-400" },
+};
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const session = await getAppSession();
 
@@ -104,6 +112,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     await searchParams;
 
   const supabase = await createClient();
+
+  const acwrWindowStart = new Date();
+  acwrWindowStart.setDate(acwrWindowStart.getDate() - 28);
 
   const [
     { data: goals },
@@ -114,6 +125,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     { data: latestStravaCompletion },
     { data: athleteProfile },
     { data: completionsForLoad },
+    { data: completionsForAcwr },
   ] = await Promise.all([
     supabase
       .from("goals")
@@ -157,12 +169,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order("completed_at", { ascending: false })
       .limit(15)
       .returns<CompletionForLoad[]>(),
+    supabase
+      .from("workout_completions")
+      .select("completed_at, actual_distance_m")
+      .not("actual_distance_m", "is", null)
+      .gte("completed_at", acwrWindowStart.toISOString())
+      .returns<{ completed_at: string; actual_distance_m: number }[]>(),
   ]);
 
   const primaryGoal = goals?.[0] ?? null;
   const stravaConnected = !!stravaAccount;
   const hasTrainingPlan = !!trainingPlan;
-  const goalReadyForPlan = !!(primaryGoal?.goal_time_s && primaryGoal?.goal_date);
 
   const mostRecentRace = raceResults?.[0] ?? null;
   const recentRaceResults = raceResults?.slice(0, 5) ?? null;
@@ -195,6 +212,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           );
         })()
       : [];
+
+  // Distance-based, not RPE-based: actual_distance_m is reliably present
+  // from Strava sync, while rpe is optional and often missing -- see
+  // acwr.ts for the rest of the methodology and its known limitations.
+  const acwr = computeAcwr(
+    (completionsForAcwr ?? []).map((c) => ({ completedAt: c.completed_at, distanceM: c.actual_distance_m })),
+  );
 
   const fitnessEstimate: FitnessEstimate | null =
     primaryGoal && mostRecentRace
@@ -366,23 +390,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {primaryGoal && <GoalCard goal={primaryGoal} estimate={fitnessEstimate} />}
 
-        {!session?.athleteTeamId && primaryGoal && !hasTrainingPlan && goalReadyForPlan && (
-          <CardLink href="/plan/new">
-            <p className="text-lg font-semibold text-zinc-900 dark:text-white">
-              Generate your training plan →
-            </p>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              Two questions, and the deterministic coaching engine builds the rest.
-            </p>
-          </CardLink>
-        )}
-
-        {!session?.athleteTeamId && primaryGoal && !hasTrainingPlan && !goalReadyForPlan && (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            Add a goal time and date above to unlock your training plan.
-          </p>
-        )}
-
         {session?.athleteTeamId && !hasTrainingPlan && (
           <CardLink href="/plan">
             <p className="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -487,6 +494,29 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               <div className="mt-3">
                 <TrainingLoadChart points={trainingLoad} />
               </div>
+            </Card>
+          </div>
+        )}
+
+        {acwr.ratio !== null && (
+          <div>
+            <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+              Training ramp rate
+            </p>
+            <Card padding="sm" shadow={false} className="mt-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <p className="text-sm text-zinc-700 dark:text-zinc-200">
+                  {formatMiles(acwr.acuteDailyAvgM * 7)}/week lately vs. {formatMiles(acwr.chronicDailyAvgM * 7)}/week over the last month
+                </p>
+                <p className={`text-sm font-semibold ${ACWR_ZONE_COPY[acwr.zone!].className}`}>
+                  {ACWR_ZONE_COPY[acwr.zone!].label} ({acwr.ratio.toFixed(2)}×)
+                </p>
+              </div>
+              <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+                Ramping mileage up faster than about 1.5x your recent monthly average is when running injuries get
+                more common (Gabbett 2016) — a real, widely-used signal, though not a precise risk score. Based on
+                distance alone, not intensity.
+              </p>
             </Card>
           </div>
         )}
