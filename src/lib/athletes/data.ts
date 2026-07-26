@@ -48,7 +48,7 @@ export const athletes: Athlete[] = [
     famousSessions: [
       {
         name: "The Waiatarua Circuit",
-        description: "A roughly 22-mile hilly loop through Auckland's Waitakere Ranges that Lydiard's squad, Snell included, used as a weekly long-run staple during the base phase — one of the most specifically documented sessions in Lydiard's whole system.",
+        description: "A roughly 22-mile hilly loop through Auckland's Waitakere Ranges that Lydiard's squad, Snell included, used as a weekly long-run staple during the base phase — one of the most specifically documented sessions in Lydiard's whole system. Snell's own account of finishing it is unsentimental: \"Stupid, blind determination forced me on, reeling along the streets until, somehow, I made the Halberg home.\"",
         workoutLibraryHref: "/workout-library#three-ways-lydiard-used-a-hill",
       },
     ],
@@ -56,9 +56,26 @@ export const athletes: Athlete[] = [
     mentalApproachSummary: [
       "Snell's own account of his training (in his autobiography, No Bugles, No Drums) emphasizes trust in the base-building process even when it felt disconnected from his actual races — running marathon-length weeks as a miler required believing in a system before it had proven itself on the track.",
     ],
-    mentalQuotes: [],
+    mentalQuotes: [
+      {
+        quote: "When it's pouring rain and you're bowling along through the wet, there's satisfaction in knowing you're out there and the others aren't.",
+        context: "No Bugles, No Drums (autobiography)",
+        theme: "consistency",
+      },
+      {
+        quote: "You just shut off and focus and I think that's what helps to define those that can do it.",
+        context: "on racing under pressure",
+        theme: "handling pressure",
+      },
+      {
+        quote: "If it wasn't for him giving me the inspiration and sound training, I wouldn't have done it.",
+        context: "on Arthur Lydiard's influence",
+        theme: "motivation",
+      },
+    ],
     recoveryNotes: [
       "Lydiard's system built recovery into the calendar itself rather than treating it as a separate practice — hard hill or track days were followed by genuinely easy aerobic days, with the phase structure (base, then hills, then anaerobic sharpening, then taper) itself acting as the long-range recovery plan.",
+      "There's no record of Snell using anything resembling modern recovery technology (compression, ice baths, monitored sleep) — in the Lydiard system of the early 1960s, getting the aerobic-to-hard-day sequencing right was the recovery plan.",
     ],
     crossLinks: [
       { label: "Arthur Lydiard's Coaching Philosophy", href: "/coaching-library/lydiard" },
@@ -103,9 +120,22 @@ export const athletes: Athlete[] = [
     mentalApproachSummary: [
       "Kastor has spoken publicly (including in her memoir, Let Your Mind Run) about deliberately shifting her facial expression and posture during the hardest, most painful stretches of a marathon — using a relaxed appearance to signal ease back to her own brain rather than waiting for the discomfort to pass on its own.",
     ],
-    mentalQuotes: [],
+    mentalQuotes: [
+      {
+        quote: "Your mindset is your life. It's the lens through which you see through, feel, and act.",
+        theme: "identity",
+      },
+      {
+        quote: "Marathons are extraordinarily difficult, but if you've got the training under your belt, and if you can run smart, the races take care of themselves.",
+        theme: "race mindset",
+      },
+    ],
     recoveryNotes: [
       "Training at altitude in Alamosa required Vigil's program to manage recovery deliberately — altitude adds a real physiological stress on top of training load, so easy days and technical/mental work were used partly to let the aerobic volume absorb without compounding altitude stress and hard training on the same days.",
+      "Kastor has described daily massage and a scheduled afternoon nap as literal line items in her training day, not optional extras: \"Before Piper, my day was eat, run, eat, massage, nap, eat, run, eat, sleep\" — a routine built to absorb roughly 140-mile weeks. On body care generally, she's put it plainly: \"Body care isn't an indulgence, it's necessary. If you only have one hour to get in your morning run before work, run 50 minutes and stretch and self-massage for 10 minutes.\"",
+    ],
+    equipmentNotes: [
+      "Kastor has raced as an ASICS-sponsored athlete for most of her professional career.",
     ],
     crossLinks: [
       { label: "Joe Vigil's Coaching Philosophy", href: "/coaching-library/vigil" },
@@ -155,9 +185,20 @@ export const athletes: Athlete[] = [
     mentalApproachSummary: [
       "Training inside Canova's Kenyan group meant regularly running special-block sessions alongside training partners targeting the same or faster marathon paces — a group-based, competitive daily environment rather than a solitary buildup.",
     ],
-    mentalQuotes: [],
+    mentalQuotes: [
+      {
+        quote: "There is not much symmetry in my training, so there is no real pattern there.",
+        theme: "training mindset",
+      },
+      {
+        quote: "I expected to run 2:06 or 2:07… The training was good, body and mind were strong, but I didn't dream of 2:03 or 2:04.",
+        context: "on his 2:03:06 Boston Marathon debut, 2011",
+        theme: "race mindset",
+      },
+    ],
     recoveryNotes: [
       "Because special blocks are run at genuine race pace rather than a moderate aerobic effort, recovery in Canova's system is managed by controlling how often and how long those blocks are, not by adding extra rest days — the general aerobic running around them is deliberately easy to let the race-pace work absorb.",
+      "Mosop has been candid that even this system doesn't make an off-season free: \"When I take rest, it is hard to come back after off-season, legs feel empty, but soon all goes back to normal\" — recovery within a training block is one thing, but rebuilding from genuine time off is its own, separately difficult process.",
     ],
     crossLinks: [
       { label: "Renato Canova's Coaching Philosophy", href: "/coaching-library/canova" },
@@ -215,9 +256,33 @@ export const athletes: Athlete[] = [
     mentalApproachSummary: [
       "Ingebrigtsen has raced as the pre-race favorite in most major championships since 2021, which puts a specific mental demand on him distinct from a challenger's: controlling a race from the front, or reacting calmly to being outkicked (as happened against Jake Wightman's 1500m upset at the 2022 Worlds), rather than racing with nothing to lose.",
     ],
-    mentalQuotes: [],
+    mentalQuotes: [
+      {
+        quote: "It's very easy to be confident because I can just tell myself, 'I've done this thousand times.'",
+        theme: "handling pressure",
+      },
+      {
+        quote: "You can't pull the carrot from the ground to check if it's growing. You have to believe in the process and wait until it's proper and until it's finished.",
+        theme: "consistency",
+      },
+      {
+        quote: "I've never run faster in training than I do on race day.",
+        context: "interview with David McCarthy",
+        theme: "race mindset",
+      },
+      {
+        quote: "One of the biggest mistakes that a lot of people do, is they go too hard in training. That's basically because of their mentality and what they're struggling with – they don't believe in themselves.",
+        theme: "training mindset",
+      },
+    ],
     recoveryNotes: [
       "Because two threshold sessions in one day is a genuinely demanding structure, the Norwegian System depends on real-time lactate feedback to hold each session at a genuinely sustainable intensity — if measured lactate runs high, the session is adjusted down rather than pushed through, treating the lactate reading itself as a recovery-and-load-management tool, not just a training-intensity gauge.",
+      "\"My tempo training is not that brutal. We always try to find the balance between rest and training, and after a lot of years with the same amount of activity, your body adapts and knows what it can handle,\" Ingebrigtsen has said of how the system avoids digging a fatigue hole despite its volume.",
+      "In a February 2024 interview with NRK, he described his day-to-day recovery habits in concrete terms: sitting rather than standing when possible, eating immediately after training, prioritizing sleep, and staying off his phone for the hour before bed.",
+    ],
+    equipmentNotes: [
+      "Ingebrigtsen races and trains in Nike shoes, one of the sport's most visible Nike-sponsored athletes.",
+      "A portable blood-lactate analyzer is a routine part of his training kit — sessions are monitored with an earlobe or fingertip blood sample between intervals, not just a stopwatch.",
     ],
     crossLinks: [
       { label: "The Norwegian System's Coaching Philosophy", href: "/coaching-library/norwegian-system" },
