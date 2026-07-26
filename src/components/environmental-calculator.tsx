@@ -10,6 +10,7 @@ import { LocationSearchField } from "@/components/location-search-field";
 import { RouteImportPanel } from "@/components/route-import-panel";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { TrackDiagram } from "@/components/track-diagram";
+import { LabeledInput } from "@/components/ui/labeled-input";
 import { compassPointLabel, WindCompass } from "@/components/wind-compass";
 import { WindRelativeIndicator } from "@/components/wind-relative-indicator";
 import {
@@ -1084,36 +1085,30 @@ export function EnvironmentalCalculator() {
                 </div>
 
                 {workoutInputMode === "distance" ? (
-                  <div className="min-w-0">
-                    <label htmlFor={`${baseId}-workout-distance`} className={labelClass}>
-                      Distance ({paceDisplayUnit === "mi" ? "miles" : "km"})
-                    </label>
-                    <input
-                      id={`${baseId}-workout-distance`}
-                      type="number"
-                      inputMode="decimal"
-                      min={0}
-                      step={0.1}
-                      value={workoutDistanceInput}
-                      onChange={(event) => setWorkoutDistanceInput(event.target.value)}
-                      className={`w-24 ${fieldClass}`}
-                    />
-                  </div>
+                  <LabeledInput
+                    id={`${baseId}-workout-distance`}
+                    label={`Distance (${paceDisplayUnit === "mi" ? "miles" : "km"})`}
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    step={0.1}
+                    value={workoutDistanceInput}
+                    onChange={(event) => setWorkoutDistanceInput(event.target.value)}
+                    className="w-24"
+                    wrapperClassName="min-w-0"
+                  />
                 ) : (
-                  <div className="min-w-0">
-                    <label htmlFor={`${baseId}-workout-duration`} className={labelClass}>
-                      Duration
-                    </label>
-                    <input
-                      id={`${baseId}-workout-duration`}
-                      type="text"
-                      value={workoutDurationInput}
-                      onChange={(event) => setWorkoutDurationInput(event.target.value)}
-                      placeholder="mm:ss"
-                      autoComplete="off"
-                      className={`w-28 ${fieldClass}`}
-                    />
-                  </div>
+                  <LabeledInput
+                    id={`${baseId}-workout-duration`}
+                    label="Duration"
+                    type="text"
+                    value={workoutDurationInput}
+                    onChange={(event) => setWorkoutDurationInput(event.target.value)}
+                    placeholder="mm:ss"
+                    autoComplete="off"
+                    className="w-28"
+                    wrapperClassName="min-w-0"
+                  />
                 )}
                 <p className="w-full text-xs text-zinc-600 dark:text-zinc-300">
                   {WORKOUT_TYPE_CONFIG[workoutType].structure === "interval"
@@ -1190,17 +1185,15 @@ export function EnvironmentalCalculator() {
 
             {!isWorkoutRoadInput && (
               <div className="min-w-0">
-                <label htmlFor={`${baseId}-time`} className={labelClass}>
-                  {copy.timeLabel}
-                </label>
-                <input
+                <LabeledInput
                   id={`${baseId}-time`}
+                  label={copy.timeLabel}
                   type="text"
                   value={timeInput}
                   onChange={(event) => setTimeInput(event.target.value)}
                   placeholder={courseType === "track" ? "62.0 or 1:20.0" : "mm:ss"}
                   autoComplete="off"
-                  className={`w-32 ${fieldClass}`}
+                  className="w-32"
                 />
                 {timeSeconds === null && (
                   <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
@@ -1509,34 +1502,26 @@ export function EnvironmentalCalculator() {
           {courseType === "road" && (
             <>
               <div className="flex flex-wrap items-end gap-4">
-                <div>
-                  <label htmlFor={`${baseId}-gain`} className={labelClass}>
-                    Elevation gain
-                  </label>
-                  <input
-                    id={`${baseId}-gain`}
-                    type="number"
-                    inputMode="decimal"
-                    min={0}
-                    value={elevationGainInput}
-                    onChange={(event) => setElevationGainInput(event.target.value)}
-                    className={`w-24 ${fieldClass}`}
-                  />
-                </div>
-                <div>
-                  <label htmlFor={`${baseId}-loss`} className={labelClass}>
-                    Elevation loss
-                  </label>
-                  <input
-                    id={`${baseId}-loss`}
-                    type="number"
-                    inputMode="decimal"
-                    min={0}
-                    value={elevationLossInput}
-                    onChange={(event) => setElevationLossInput(event.target.value)}
-                    className={`w-24 ${fieldClass}`}
-                  />
-                </div>
+                <LabeledInput
+                  id={`${baseId}-gain`}
+                  label="Elevation gain"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={elevationGainInput}
+                  onChange={(event) => setElevationGainInput(event.target.value)}
+                  className="w-24"
+                />
+                <LabeledInput
+                  id={`${baseId}-loss`}
+                  label="Elevation loss"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={elevationLossInput}
+                  onChange={(event) => setElevationLossInput(event.target.value)}
+                  className="w-24"
+                />
                 <div className="flex gap-1">
                   <button
                     type="button"

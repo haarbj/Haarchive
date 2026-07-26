@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { ContentCallout } from "@/components/content-callout";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { LabeledInput } from "@/components/ui/labeled-input";
 import {
   type CvThresholdModel,
   type EstimateMode,
@@ -259,36 +260,30 @@ export function CvThresholdCalculator() {
 
           <div className="flex flex-wrap gap-6">
             <div>
-              <label htmlFor={`${baseId}-time`} className={labelClass}>
-                Finish time
-              </label>
-              <input
+              <LabeledInput
                 id={`${baseId}-time`}
+                label="Finish time"
                 type="text"
                 value={timeInput}
                 onChange={(event) => setTimeInput(event.target.value)}
                 placeholder="mm:ss"
                 autoComplete="off"
-                className={`w-28 ${fieldClass}`}
+                className="w-28"
               />
               {timeSeconds === null && (
                 <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">Enter as mm:ss, e.g. 18:00.</p>
               )}
             </div>
-            <div>
-              <label htmlFor={`${baseId}-age`} className={labelClass}>
-                Age
-              </label>
-              <input
-                id={`${baseId}-age`}
-                type="number"
-                min={10}
-                max={90}
-                value={ageInput}
-                onChange={(event) => setAgeInput(event.target.value)}
-                className={`w-20 ${fieldClass}`}
-              />
-            </div>
+            <LabeledInput
+              id={`${baseId}-age`}
+              label="Age"
+              type="number"
+              min={10}
+              max={90}
+              value={ageInput}
+              onChange={(event) => setAgeInput(event.target.value)}
+              className="w-20"
+            />
           </div>
         </div>
       </div>

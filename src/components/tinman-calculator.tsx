@@ -4,6 +4,7 @@ import { useEffect, useId } from "react";
 import Link from "next/link";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { RACE_DISTANCES, type RaceCategory } from "@/lib/race-distances";
 import { parseTimeToSeconds } from "@/lib/running-format";
@@ -109,20 +110,16 @@ export function TinmanCalculator() {
                 ))}
               </select>
             </div>
-            <div>
-              <label htmlFor={`${baseId}-time`} className={labelClass}>
-                Finish time
-              </label>
-              <input
-                id={`${baseId}-time`}
-                type="text"
-                value={timeInput}
-                onChange={(event) => setTimeInput(event.target.value)}
-                placeholder="mm:ss or h:mm:ss"
-                autoComplete="off"
-                className={`w-32 ${fieldClass}`}
-              />
-            </div>
+            <LabeledInput
+              id={`${baseId}-time`}
+              label="Finish time"
+              type="text"
+              value={timeInput}
+              onChange={(event) => setTimeInput(event.target.value)}
+              placeholder="mm:ss or h:mm:ss"
+              autoComplete="off"
+              className="w-32"
+            />
           </div>
           {timeSeconds === null && (
             <p className="text-xs text-zinc-600 dark:text-zinc-300">Enter your time as mm:ss or h:mm:ss.</p>

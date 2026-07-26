@@ -4,6 +4,7 @@ import { useEffect, useId } from "react";
 import Link from "next/link";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import {
   PACE_UNIT_LABEL,
@@ -253,17 +254,15 @@ export function RacePaceCalculator() {
         <div>
           <p className={sectionLabelClass}>Goal race time</p>
           <div className={statCardClass}>
-            <label htmlFor={`${baseId}-race-time`} className={labelClass}>
-              Finish time for {distanceLabel}
-            </label>
-            <input
+            <LabeledInput
               id={`${baseId}-race-time`}
+              label={`Finish time for ${distanceLabel}`}
               type="text"
               value={raceTimeInput}
               onChange={(event) => setRaceTimeInput(event.target.value)}
               placeholder="mm:ss or h:mm:ss"
               autoComplete="off"
-              className={`w-32 ${fieldClass}`}
+              className="w-32"
             />
             {raceTimeSeconds === null && (
               <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">Enter as mm:ss or h:mm:ss.</p>
@@ -274,20 +273,16 @@ export function RacePaceCalculator() {
         <div>
           <p className={sectionLabelClass}>Goal pace</p>
           <div className={`${statCardClass} space-y-3`}>
-            <div>
-              <label htmlFor={`${baseId}-pace`} className={labelClass}>
-                Pace
-              </label>
-              <input
-                id={`${baseId}-pace`}
-                type="text"
-                value={paceInput}
-                onChange={(event) => setPaceInput(event.target.value)}
-                placeholder={isShortSplitUnit(splitUnit) ? "seconds or mm:ss" : "mm:ss"}
-                autoComplete="off"
-                className={`w-32 ${fieldClass}`}
-              />
-            </div>
+            <LabeledInput
+              id={`${baseId}-pace`}
+              label="Pace"
+              type="text"
+              value={paceInput}
+              onChange={(event) => setPaceInput(event.target.value)}
+              placeholder={isShortSplitUnit(splitUnit) ? "seconds or mm:ss" : "mm:ss"}
+              autoComplete="off"
+              className="w-32"
+            />
             <div className="flex flex-wrap gap-2">
               {SPLIT_UNITS.map((unit) => (
                 <button
