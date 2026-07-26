@@ -801,7 +801,7 @@ export function MarathonPacingCalculator() {
               aria-pressed={courseSource === "upload"}
               className={segmentedButtonClass(courseSource === "upload")}
             >
-              Upload a file
+              Import a route
             </button>
             <button
               type="button"
