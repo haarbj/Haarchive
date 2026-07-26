@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createServiceRoleClient } from "@/lib/db/service-role";
-import { loadAllUsers } from "@/lib/admin/users";
+import { loadAllUsers, loadEligibleContributors } from "@/lib/admin/users";
 import { ARTICLE_STATUS_LABELS, ARTICLE_TYPE_LABELS, type ArticleStatus, type ArticleType } from "@/lib/articles/constants";
 import { blockPreviewText } from "@/lib/articles/block-preview";
 import type { ContentBlock } from "@/lib/sections";
@@ -49,7 +49,7 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
   const { id } = await params;
   const admin = createServiceRoleClient();
 
-  const [{ data: article }, { data: citations }, { data: comments }, { data: contributorRows }, users] =
+  const [{ data: article }, { data: citations }, { data: comments }, { data: contributorRows }, allUsers, eligibleUsers] =
     await Promise.all([
       admin.from("articles").select("*").eq("id", id).maybeSingle<ArticleRow>(),
       admin
@@ -68,12 +68,20 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
         .select("id, user_id, contributor_role")
         .eq("article_id", id)
         .returns<ContributorRawRow[]>(),
+      // Full, unfiltered list -- needed to resolve display names for
+      // contributors already assigned to this article even if their
+      // content_contributor/reviewer permission was later revoked.
       loadAllUsers(),
+      // Filtered to actual content_contributor/reviewer permission holders
+      // -- what the "add a contributor" picker should offer (see
+      // loadEligibleContributors' own comment for why loadAllUsers itself
+      // can't be filtered: /admin/users needs the full list too).
+      loadEligibleContributors(),
     ]);
 
   if (!article) notFound();
 
-  const nameById = new Map(users.map((u) => [u.id, u.displayName]));
+  const nameById = new Map(allUsers.map((u) => [u.id, u.displayName]));
   const contributors: ContributorRow[] = (contributorRows ?? []).map((c) => ({
     id: c.id,
     userId: c.user_id,
@@ -128,7 +136,7 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
         <Card padding="md">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Contributors</h2>
           <div className="mt-3">
-            <ContributorsPanel articleId={article.id} contributors={contributors} users={users} />
+            <ContributorsPanel articleId={article.id} contributors={contributors} users={eligibleUsers} />
           </div>
         </Card>
 

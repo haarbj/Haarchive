@@ -27,3 +27,28 @@ export async function loadAllUsers(): Promise<BasicUser[]> {
       displayName: displayNameById.get(u.id) ?? "Runner",
     }));
 }
+
+// Every signed-up user gets a profiles row unconditionally (see
+// handle_new_user), so loadAllUsers() above is deliberately unfiltered --
+// correct for /admin/users, where an admin needs to see everyone to GRANT
+// a permission in the first place. Assigning someone as an article
+// author/reviewer/contributor is different: they can't do anything with
+// that assignment unless they already hold content_contributor or
+// reviewer (contribute/layout.tsx gates the whole /contribute area on
+// exactly that), so the picker should only ever offer people who already
+// have one of those two permissions -- the same set admin/users/page.tsx
+// already computes and labels as "contributors" elsewhere in this app.
+export async function loadEligibleContributors(): Promise<BasicUser[]> {
+  const admin = createServiceRoleClient();
+  const [users, { data: permissionRows }] = await Promise.all([
+    loadAllUsers(),
+    admin
+      .from("user_permissions")
+      .select("user_id, permission")
+      .in("permission", ["content_contributor", "reviewer"])
+      .returns<{ user_id: string; permission: string }[]>(),
+  ]);
+
+  const eligibleIds = new Set((permissionRows ?? []).map((p) => p.user_id));
+  return users.filter((u) => eligibleIds.has(u.id));
+}
