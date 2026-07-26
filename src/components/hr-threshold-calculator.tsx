@@ -5,7 +5,8 @@ import Link from "next/link";
 
 import { ContentCallout } from "@/components/content-callout";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
-import { fieldClass, labelClass } from "@/lib/form-styles";
+import { LabeledInput } from "@/components/ui/labeled-input";
+import { bpmFromPercent, estimateMaxHr } from "@/lib/hr-model";
 import {
   HR_THRESHOLD_DISTRIBUTIONS,
   VO2MAX_THRESHOLD_ESTIMATE,
@@ -35,12 +36,6 @@ type PersistedState = {
   restingHrInput: string;
   showMethodology: boolean;
 };
-
-function bpmFromPercent(pct: number, basis: HrBasis, maxHr: number, restingHr: number | null): number | null {
-  if (basis === "hrmax") return maxHr * (pct / 100);
-  if (restingHr === null) return null;
-  return restingHr + (pct / 100) * (maxHr - restingHr);
-}
 
 type ThresholdCardProps = {
   label: string;
@@ -125,7 +120,7 @@ export function HrThresholdCalculator() {
   const restingHr = Number(restingHrInput);
   const restingHrValid = restingHrInput.trim() !== "" && Number.isFinite(restingHr) && restingHr > 0;
 
-  const effectiveMaxHr = knownMaxHrValid ? knownMaxHr : ageValid ? 220 - age : null;
+  const effectiveMaxHr = estimateMaxHr(ageValid ? age : null, knownMaxHrValid ? knownMaxHr : null);
   const effectiveRestingHr = basis === "hrreserve" && restingHrValid ? restingHr : null;
   const needsRestingHr = basis === "hrreserve" && !restingHrValid;
   const canShowSave = effectiveMaxHr !== null && (basis === "hrmax" || effectiveRestingHr !== null);
@@ -137,47 +132,35 @@ export function HrThresholdCalculator() {
       <div>
         <p className={sectionLabelClass}>Your heart rate</p>
         <div className={`${statCardClass} flex flex-wrap gap-6`}>
-          <div>
-            <label htmlFor={`${baseId}-age`} className={labelClass}>
-              Age
-            </label>
-            <input
-              id={`${baseId}-age`}
-              type="number"
-              min={1}
-              value={ageInput}
-              onChange={(event) => setAgeInput(event.target.value)}
-              className={`w-20 ${fieldClass}`}
-            />
-          </div>
-          <div>
-            <label htmlFor={`${baseId}-maxhr`} className={labelClass}>
-              Known max HR (optional)
-            </label>
-            <input
-              id={`${baseId}-maxhr`}
-              type="number"
-              min={1}
-              value={knownMaxHrInput}
-              onChange={(event) => setKnownMaxHrInput(event.target.value)}
-              placeholder="e.g. 190"
-              className={`w-28 ${fieldClass}`}
-            />
-          </div>
+          <LabeledInput
+            id={`${baseId}-age`}
+            label="Age"
+            type="number"
+            min={1}
+            value={ageInput}
+            onChange={(event) => setAgeInput(event.target.value)}
+            className="w-20"
+          />
+          <LabeledInput
+            id={`${baseId}-maxhr`}
+            label="Known max HR (optional)"
+            type="number"
+            min={1}
+            value={knownMaxHrInput}
+            onChange={(event) => setKnownMaxHrInput(event.target.value)}
+            placeholder="e.g. 190"
+            className="w-28"
+          />
           {basis === "hrreserve" && (
-            <div>
-              <label htmlFor={`${baseId}-resting`} className={labelClass}>
-                Resting HR
-              </label>
-              <input
-                id={`${baseId}-resting`}
-                type="number"
-                min={1}
-                value={restingHrInput}
-                onChange={(event) => setRestingHrInput(event.target.value)}
-                className={`w-24 ${fieldClass}`}
-              />
-            </div>
+            <LabeledInput
+              id={`${baseId}-resting`}
+              label="Resting HR"
+              type="number"
+              min={1}
+              value={restingHrInput}
+              onChange={(event) => setRestingHrInput(event.target.value)}
+              className="w-24"
+            />
           )}
         </div>
         {knownMaxHrValid && (

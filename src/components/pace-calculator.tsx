@@ -4,7 +4,9 @@ import { useEffect, useId } from "react";
 import Link from "next/link";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
+import { bpmFromPercent, estimateMaxHr } from "@/lib/hr-model";
 import { metersFor } from "@/lib/race-distances";
 import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
@@ -171,7 +173,6 @@ type PersistedState = {
   ageInput: string;
   restingHrInput: string;
   knownMaxHrInput: string;
-  isFemale: boolean;
   mafIndex: number;
   showAdvanced: boolean;
   showMethodology: boolean;
@@ -271,15 +272,6 @@ function formatLapLine(paces: number[], metersList: number[]): string {
     .join(" · ");
 }
 
-function karvonenAt(
-  maxHr: number,
-  restingHr: number,
-  pct: number,
-  femaleAdj: number,
-): number {
-  return Math.round((maxHr - restingHr) * pct + restingHr + femaleAdj);
-}
-
 type ZoneCardProps = {
   label: string;
   paceLabel: string;
@@ -366,7 +358,6 @@ export function PaceCalculator() {
   const [ageInput, setAgeInput] = usePersistedField(persisted?.ageInput, "16");
   const [restingHrInput, setRestingHrInput] = usePersistedField(persisted?.restingHrInput, "60");
   const [knownMaxHrInput, setKnownMaxHrInput] = usePersistedField(persisted?.knownMaxHrInput, "");
-  const [isFemale, setIsFemale] = usePersistedField(persisted?.isFemale, false);
   const safeMafIndex =
     typeof persisted?.mafIndex === "number" && persisted.mafIndex >= 0 && persisted.mafIndex < MAF_ADJUSTMENTS.length
       ? persisted.mafIndex
@@ -383,7 +374,6 @@ export function PaceCalculator() {
         ageInput,
         restingHrInput,
         knownMaxHrInput,
-        isFemale,
         mafIndex,
         showAdvanced,
         showMethodology,
@@ -400,7 +390,6 @@ export function PaceCalculator() {
     ageInput,
     restingHrInput,
     knownMaxHrInput,
-    isFemale,
     mafIndex,
     showAdvanced,
     showMethodology,
@@ -430,7 +419,6 @@ export function PaceCalculator() {
     setAgeInput("16");
     setRestingHrInput("60");
     setKnownMaxHrInput("");
-    setIsFemale(false);
     setMafIndex(2);
     setShowAdvanced(false);
     setShowMethodology(false);
@@ -495,26 +483,17 @@ export function PaceCalculator() {
   const knownMaxHrValid =
     knownMaxHrInput.trim() !== "" && !Number.isNaN(knownMaxHr) && knownMaxHr > 0;
 
-  const effectiveMaxHr = knownMaxHrValid
-    ? knownMaxHr
-    : ageValid
-      ? 220 - age
-      : null;
+  const effectiveMaxHr = estimateMaxHr(ageValid ? age : null, knownMaxHrValid ? knownMaxHr : null);
   const mafCeiling = ageValid
     ? Math.round(180 - age + MAF_ADJUSTMENTS[mafIndex].value)
     : null;
-  const femaleAdj = isFemale ? 3 : 0;
 
   const hrReady = restingHrValid && effectiveMaxHr !== null;
-  const easyHrLabel = hrReady
-    ? `${karvonenAt(effectiveMaxHr!, restingHr, 0.6, femaleAdj)}–${karvonenAt(effectiveMaxHr!, restingHr, 0.7, femaleAdj)} bpm`
-    : undefined;
-  const tempoHrLabel = hrReady
-    ? `~${karvonenAt(effectiveMaxHr!, restingHr, 0.8, femaleAdj)} bpm`
-    : undefined;
-  const marathonHrLabel = hrReady
-    ? `~${karvonenAt(effectiveMaxHr!, restingHr, 0.7, femaleAdj)} bpm`
-    : undefined;
+  const karvonenBpm = (fraction: number): number =>
+    Math.round(bpmFromPercent(fraction * 100, "hrreserve", effectiveMaxHr!, restingHr)!);
+  const easyHrLabel = hrReady ? `${karvonenBpm(0.6)}–${karvonenBpm(0.7)} bpm` : undefined;
+  const tempoHrLabel = hrReady ? `~${karvonenBpm(0.8)} bpm` : undefined;
+  const marathonHrLabel = hrReady ? `~${karvonenBpm(0.7)} bpm` : undefined;
 
   const visibleDistances = showAdvanced
     ? DISTANCES
@@ -549,20 +528,16 @@ export function PaceCalculator() {
                 ))}
               </select>
             </div>
-            <div>
-              <label htmlFor={`${baseId}-time`} className={labelClass}>
-                Finish time
-              </label>
-              <input
-                id={`${baseId}-time`}
-                type="text"
-                value={timeInput}
-                onChange={(event) => setTimeInput(event.target.value)}
-                placeholder="mm:ss or h:mm:ss"
-                autoComplete="off"
-                className={`w-40 ${fieldClass}`}
-              />
-            </div>
+            <LabeledInput
+              id={`${baseId}-time`}
+              label="Finish time"
+              type="text"
+              value={timeInput}
+              onChange={(event) => setTimeInput(event.target.value)}
+              placeholder="mm:ss or h:mm:ss"
+              autoComplete="off"
+              className="w-40"
+            />
             <div>
               <label htmlFor={`${baseId}-course`} className={labelClass}>
                 Course
@@ -701,7 +676,6 @@ export function PaceCalculator() {
                     ageInput,
                     restingHrInput,
                     knownMaxHrInput,
-                    isFemale,
                     mafIndex,
                   }}
                   output={{
@@ -923,62 +897,34 @@ export function PaceCalculator() {
         <p className={sectionLabelClass}>Heart rate calculator</p>
         <div className={statCardClass}>
           <div className="flex flex-wrap gap-4">
-            <div>
-              <label htmlFor={`${baseId}-age`} className={labelClass}>
-                Age
-              </label>
-              <input
-                id={`${baseId}-age`}
-                type="number"
-                min={1}
-                value={ageInput}
-                onChange={(event) => setAgeInput(event.target.value)}
-                className={`w-20 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-resting`} className={labelClass}>
-                Resting HR (optional)
-              </label>
-              <input
-                id={`${baseId}-resting`}
-                type="number"
-                min={1}
-                value={restingHrInput}
-                onChange={(event) => setRestingHrInput(event.target.value)}
-                className={`w-32 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-maxhr`} className={labelClass}>
-                Known max HR (optional)
-              </label>
-              <input
-                id={`${baseId}-maxhr`}
-                type="number"
-                min={1}
-                value={knownMaxHrInput}
-                onChange={(event) => setKnownMaxHrInput(event.target.value)}
-                placeholder="e.g. 198"
-                className={`w-28 ${fieldClass}`}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${baseId}-sex`} className={labelClass}>
-                Sex
-              </label>
-              <select
-                id={`${baseId}-sex`}
-                value={isFemale ? "female" : "male"}
-                onChange={(event) =>
-                  setIsFemale(event.target.value === "female")
-                }
-                className={fieldClass}
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
+            <LabeledInput
+              id={`${baseId}-age`}
+              label="Age"
+              type="number"
+              min={1}
+              value={ageInput}
+              onChange={(event) => setAgeInput(event.target.value)}
+              className="w-20"
+            />
+            <LabeledInput
+              id={`${baseId}-resting`}
+              label="Resting HR (optional)"
+              type="number"
+              min={1}
+              value={restingHrInput}
+              onChange={(event) => setRestingHrInput(event.target.value)}
+              className="w-32"
+            />
+            <LabeledInput
+              id={`${baseId}-maxhr`}
+              label="Known max HR (optional)"
+              type="number"
+              min={1}
+              value={knownMaxHrInput}
+              onChange={(event) => setKnownMaxHrInput(event.target.value)}
+              placeholder="e.g. 198"
+              className="w-28"
+            />
             <div className="min-w-[240px] flex-1">
               <label htmlFor={`${baseId}-maf`} className={labelClass}>
                 Training and health status
@@ -1045,7 +991,7 @@ export function PaceCalculator() {
                     {effort.label} ({Math.round(effort.pct * 100)}% HRR)
                   </p>
                   <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-white">
-                    {karvonenAt(effectiveMaxHr, restingHr, effort.pct, femaleAdj)}{" "}
+                    {karvonenBpm(effort.pct)}{" "}
                     <span className="text-sm font-normal text-zinc-600 dark:text-zinc-300">
                       bpm
                     </span>
