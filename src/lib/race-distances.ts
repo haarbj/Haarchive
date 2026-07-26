@@ -14,7 +14,7 @@ export type RaceDistance = {
   categories: RaceCategory[];
 };
 
-const MILE_METERS = 1609.344;
+export const MILE_METERS = 1609.344;
 const MARATHON_METERS = 42195;
 
 export const RACE_DISTANCES: RaceDistance[] = [

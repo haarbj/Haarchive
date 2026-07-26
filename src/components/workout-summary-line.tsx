@@ -1,5 +1,6 @@
 import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { formatDate } from "@/lib/format";
+import { MILE_METERS } from "@/lib/race-distances";
 import type { WorkoutType } from "@/lib/coaching-engine";
 
 // Previously implemented independently in three files (schedule-builder.tsx,
@@ -60,8 +61,6 @@ type WorkoutLength = {
   pace_slow_sec_per_mile: number | null;
 };
 
-const METERS_PER_MILE = 1609.34;
-
 // The duration/distance/pace line -- null if nothing is set, matching every
 // existing call site's "don't render an empty line" behavior.
 export function WorkoutLengthLine({ workout }: { workout: WorkoutLength }) {
@@ -70,7 +69,7 @@ export function WorkoutLengthLine({ workout }: { workout: WorkoutLength }) {
     <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
       {workout.duration_min && `${workout.duration_min} min`}
       {workout.duration_min && (workout.distance_m || workout.pace_fast_sec_per_mile) && " · "}
-      {workout.distance_m && `${(workout.distance_m / METERS_PER_MILE).toFixed(1)} mi`}
+      {workout.distance_m && `${(workout.distance_m / MILE_METERS).toFixed(1)} mi`}
       {workout.distance_m && workout.pace_fast_sec_per_mile && " · "}
       {workout.pace_fast_sec_per_mile &&
         workout.pace_slow_sec_per_mile &&

@@ -1,10 +1,11 @@
 import { formatClock } from "@/lib/format";
+import { MILE_METERS } from "@/lib/race-distances";
 import type { WorkoutPrescription } from "@/lib/coaching-engine/types";
 
 // Shared between the plan UI (WorkoutCard) and the AI layer (tool results
 // need a clean, correct description to narrate from, not raw JSON) -- one
 // formatter, so a fix or refinement never has to happen twice.
-const METERS_PER_MILE = 1609.34;
+const METERS_PER_MILE = MILE_METERS;
 const METERS_PER_KM = 1000;
 
 function miles(meters: number): string {

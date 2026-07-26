@@ -1,5 +1,6 @@
 import { predictRaceTime } from "@/lib/coaching-engine";
 import { parseTimeToSeconds } from "@/lib/format";
+import { MILE_METERS } from "@/lib/race-distances";
 
 // Mirrors the DistanceKey -> meters mapping in pace-calculator.tsx (that
 // component is out of scope to modify -- see its header comment -- so this
@@ -8,15 +9,15 @@ import { parseTimeToSeconds } from "@/lib/format";
 const DISTANCE_METERS_BY_KEY: Record<string, number> = {
   "1500m": 1500,
   "1600m": 1600,
-  mile: 1609.34,
+  mile: MILE_METERS,
   "3000m": 3000,
   "3200m": 3200,
-  "2mile": 3218.69,
+  "2mile": MILE_METERS * 2,
   "5k": 5000,
   "6k": 6000,
   "8k": 8000,
   "10k": 10000,
-  "10mile": 16093.4,
+  "10mile": MILE_METERS * 10,
   half: 21097.5,
   marathon: 42195,
 };

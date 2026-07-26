@@ -11,9 +11,10 @@ import {
 } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { parseTimeToSeconds } from "@/lib/format";
+import { MILE_METERS } from "@/lib/race-distances";
 import { completeWorkoutSchema, generatePlanSchema } from "@/lib/validation/plan";
 
-const MILES_TO_METERS = 1609.34;
+const MILES_TO_METERS = MILE_METERS;
 
 // Called by ExplainWorkoutButton once it finishes reading the streamed
 // explanation from /api/coach/explain-workout -- persisting the assistant's

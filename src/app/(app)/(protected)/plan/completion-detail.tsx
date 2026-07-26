@@ -1,4 +1,5 @@
 import { formatClock } from "@/lib/format";
+import { MILE_METERS } from "@/lib/race-distances";
 
 // Shared between the self-serve WorkoutCard, the coach's read-only plan
 // view, and the group-schedule athlete view -- every completion, whichever
@@ -14,7 +15,7 @@ export type CompletionDetail = {
   notes: string | null;
 };
 
-const METERS_PER_MILE = 1609.34;
+const METERS_PER_MILE = MILE_METERS;
 
 function formatPace(distanceM: number, timeS: number): string {
   const miles = distanceM / METERS_PER_MILE;

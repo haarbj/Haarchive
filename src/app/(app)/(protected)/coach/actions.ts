@@ -14,8 +14,9 @@ import {
 } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
+import { MILE_METERS } from "@/lib/race-distances";
 
-const MILES_TO_METERS = 1609.34;
+const MILES_TO_METERS = MILE_METERS;
 
 // Phase timing/allocation depends only on (totalWeeks, goalDistanceM) --
 // confirmed by reading allocateMesocycles/buildWeeklyPhaseSequence in full.

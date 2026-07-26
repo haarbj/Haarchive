@@ -1,8 +1,7 @@
 import { distanceBucket, type DistanceBucket } from "@/lib/coaching-engine/distance-buckets";
 import { predictRaceTime } from "@/lib/coaching-engine/race-prediction";
 import type { PaceZoneKey, PaceZones, WorkoutType } from "@/lib/coaching-engine/types";
-
-const METERS_PER_MILE = 1609.34;
+import { MILE_METERS } from "@/lib/race-distances";
 
 // Marathon-bucket zones stay a flat percentage-of-goal-pace table: the
 // marathon guidelines describe structure and effort (durability,
@@ -35,7 +34,7 @@ const XC_EASY_OFFSET_SEC_PER_MILE: [number, number] = [90, 150];
 const MIN_ZONE_GAP_SEC_PER_KM = 5;
 
 function secPerMileOffsetToSecPerKm(secPerMile: number): number {
-  return secPerMile / (METERS_PER_MILE / 1000);
+  return secPerMile / (MILE_METERS / 1000);
 }
 
 function band(centerSecPerKm: number, pct: number): [number, number] {

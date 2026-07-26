@@ -3,6 +3,8 @@
 // avoids touching it. Worth unifying into one shared module whenever that
 // component's math moves into /lib/coaching-engine.
 
+import { MILE_METERS } from "@/lib/race-distances";
+
 export function parseTimeToSeconds(input: string): number | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
@@ -41,7 +43,7 @@ export function formatDistance(meters: number): string {
 // labels above -- e.g. "6.2 mi" for a Strava activity or a manually logged
 // completion.
 export function formatMiles(meters: number): string {
-  return `${(meters / 1609.34).toFixed(1)} mi`;
+  return `${(meters / MILE_METERS).toFixed(1)} mi`;
 }
 
 export function formatDate(dateStr: string): string {

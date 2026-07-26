@@ -1,7 +1,7 @@
 import type { RetrievedExcerpt } from "@/lib/ai/retrieval";
 import type { CoachingContext } from "@/lib/ai/context";
 import type { MesocyclePhase, WorkoutType } from "@/lib/coaching-engine";
-import { formatDate, formatDistance } from "@/lib/format";
+import { formatDate, formatDistance, formatMiles } from "@/lib/format";
 
 // Keywords to seed retrieval from a workout's own attributes -- there's no
 // free-text question yet in this phase (that's Phase 5's conversational
@@ -99,7 +99,7 @@ function serializeContext(context: CoachingContext): string {
   if (context.recentCompletions.length > 0) {
     lines.push("Recently completed workouts (most recent first):");
     for (const c of context.recentCompletions) {
-      const distancePart = c.actualDistanceM ? `${(c.actualDistanceM / 1609.34).toFixed(1)} mi` : "distance not logged";
+      const distancePart = c.actualDistanceM ? formatMiles(c.actualDistanceM) : "distance not logged";
       const rpePart = c.rpe ? `, RPE ${c.rpe}/10` : "";
       lines.push(`- ${formatDate(c.scheduledDate)}: ${c.workoutType}, ${distancePart}${rpePart}`);
     }

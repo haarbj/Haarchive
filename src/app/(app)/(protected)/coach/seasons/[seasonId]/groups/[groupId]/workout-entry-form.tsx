@@ -11,6 +11,7 @@ import {
 } from "@/app/(app)/(protected)/coach/group-plans-actions";
 import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
+import { MILE_METERS } from "@/lib/race-distances";
 import type { WorkoutType } from "@/lib/coaching-engine";
 import type { Workout } from "./schedule-builder";
 
@@ -74,7 +75,7 @@ export function WorkoutEntryForm({
   const [showDistancePace, setShowDistancePace] = useState(
     !!(existing?.distance_m || existing?.pace_fast_sec_per_mile),
   );
-  const [distanceM, setDistanceM] = useState(existing?.distance_m ? (existing.distance_m / 1609.34).toFixed(1) : "");
+  const [distanceM, setDistanceM] = useState(existing?.distance_m ? (existing.distance_m / MILE_METERS).toFixed(1) : "");
   const [paceFast, setPaceFast] = useState(paceToMinSecPerMile(existing?.pace_fast_sec_per_mile ?? null));
   const [paceSlow, setPaceSlow] = useState(paceToMinSecPerMile(existing?.pace_slow_sec_per_mile ?? null));
 
@@ -128,7 +129,7 @@ export function WorkoutEntryForm({
       secondaryActivity: secondaryActivity.trim() || null,
       workoutType: workoutType || null,
       durationMin: durationMin.trim() ? Math.round(Number(durationMin)) : null,
-      distanceM: showDistancePace && distanceM ? Math.round(Number(distanceM) * 1609.34) : null,
+      distanceM: showDistancePace && distanceM ? Math.round(Number(distanceM) * MILE_METERS) : null,
       paceFastSecPerMile: showDistancePace ? minSecPerMileToSecPerMile(paceFast) : null,
       paceSlowSecPerMile: showDistancePace ? minSecPerMileToSecPerMile(paceSlow) : null,
       isRace,
