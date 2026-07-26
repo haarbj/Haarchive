@@ -773,6 +773,8 @@ export function EnvironmentalCalculator() {
   const formatTime = courseType === "track" ? formatTrackTime : formatClock;
 
   function handleRouteLoaded(summary: RouteSummary, label: string) {
+    // The raw ParsedRoute (this callback's third argument) isn't needed
+    // here -- this calculator only ever uses the aggregate RouteSummary.
     setRouteSummary(summary);
     setTimeInput(formatClock(summary.totalTimeSeconds));
     // Treat the imported activity as the source of truth for weather too --

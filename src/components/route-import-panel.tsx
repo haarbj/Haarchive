@@ -34,8 +34,8 @@ async function parseRouteFile(file: File): Promise<ParsedRoute> {
 export function RouteImportPanel({
   onRouteLoaded,
 }: {
-  /** `label` is the Strava activity's own title, or the uploaded file's name -- used for auto-inferring the workout type. */
-  onRouteLoaded: (summary: RouteSummary, label: string) => void;
+  /** `label` is the Strava activity's own title, or the uploaded file's name -- used for auto-inferring the workout type. `route` is the raw parsed points, for callers (e.g. course-analysis.ts) that need more than the aggregate summary. */
+  onRouteLoaded: (summary: RouteSummary, label: string, route: ParsedRoute) => void;
 }) {
   const [source, setSource] = useState<ImportSource>("file");
   const [status, setStatus] = useState<Status>("idle");
@@ -55,7 +55,7 @@ export function RouteImportPanel({
       `Loaded ${label} — ${milesFromMeters(summary.totalDistanceM)} mi, ${formatClock(summary.totalTimeSeconds)}, ` +
         `${feetFromMeters(summary.elevationGainM)}ft gain / ${feetFromMeters(summary.elevationLossM)}ft loss`,
     );
-    onRouteLoaded(summary, label);
+    onRouteLoaded(summary, label, route);
   }
 
   async function handleFile(file: File) {
