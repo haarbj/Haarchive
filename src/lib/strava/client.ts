@@ -55,21 +55,30 @@ export type StravaStreamSet = {
   altitude?: number[];
   /** Seconds elapsed since the start of the activity. */
   time?: number[];
+  /** Cumulative meters from the start of the activity, Strava's own recorded value (not re-derived from latlng). */
+  distance?: number[];
+  /** Beats per minute, only present for activities recorded with a heart-rate monitor. */
+  heartrate?: number[];
 };
 
 type StravaStreamsResponse = {
   latlng?: { data: [number, number][] };
   altitude?: { data: number[] };
   time?: { data: number[] };
+  distance?: { data: number[] };
+  heartrate?: { data: number[] };
 };
 
-// GPS + elevation + time for one specific activity -- unlike
-// fetchRecentActivities, which only ever returns summaries. Needs the same
-// activity:read_all scope already requested during the OAuth connect flow,
-// so no re-authorization is needed for existing connected accounts.
+// GPS + elevation + time (+ distance/heartrate, for the aerobic-decoupling
+// check) for one specific activity -- unlike fetchRecentActivities, which
+// only ever returns summaries. Needs the same activity:read_all scope
+// already requested during the OAuth connect flow, so no re-authorization
+// is needed for existing connected accounts. heartrate is simply absent
+// from the response for activities recorded without a HR monitor -- Strava
+// doesn't error for a requested key it has no data for.
 export async function fetchActivityStreams(accessToken: string, activityId: number): Promise<StravaStreamSet> {
   const res = await fetch(
-    `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=latlng,altitude,time&key_by_type=true`,
+    `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=latlng,altitude,time,distance,heartrate&key_by_type=true`,
     { headers: { Authorization: `Bearer ${accessToken}` } },
   );
   if (!res.ok) {
@@ -80,5 +89,7 @@ export async function fetchActivityStreams(accessToken: string, activityId: numb
     latlng: data.latlng?.data,
     altitude: data.altitude?.data,
     time: data.time?.data,
+    distance: data.distance?.data,
+    heartrate: data.heartrate?.data,
   };
 }

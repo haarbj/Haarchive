@@ -1,5 +1,6 @@
 import { formatClock } from "@/lib/format";
 import { MILE_METERS } from "@/lib/race-distances";
+import { AerobicDecouplingCheck } from "./aerobic-decoupling-check";
 
 // Shared between the self-serve WorkoutCard, the coach's read-only plan
 // view, and the group-schedule athlete view -- every completion, whichever
@@ -13,6 +14,11 @@ export type CompletionDetail = {
   rpe: number | null;
   avg_hr: number | null;
   notes: string | null;
+  // Optional: only the self-serve plan view's query selects this today, so
+  // the aerobic-decoupling check only appears there, not the coach/team
+  // views -- checking someone else's decoupling isn't in scope for v1, and
+  // making this optional means those other query sites don't need updating.
+  strava_activity_id?: number | null;
 };
 
 const METERS_PER_MILE = MILE_METERS;
@@ -39,6 +45,7 @@ export function CompletionSummary({ completion }: { completion: CompletionDetail
     <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
       {parts.length > 0 && <p>{parts.join(" · ")}</p>}
       {completion.notes && <p className="mt-0.5 italic text-zinc-500 dark:text-zinc-400">&ldquo;{completion.notes}&rdquo;</p>}
+      {completion.strava_activity_id && <AerobicDecouplingCheck stravaActivityId={completion.strava_activity_id} />}
     </div>
   );
 }

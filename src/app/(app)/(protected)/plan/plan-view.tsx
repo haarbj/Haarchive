@@ -177,11 +177,20 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
   const workoutIds = workouts?.map((w) => w.id) ?? [];
   const { data: completions } = await supabase
     .from("workout_completions")
-    .select("workout_id, actual_distance_m, actual_time_s, rpe, avg_hr, notes")
+    .select("workout_id, actual_distance_m, actual_time_s, rpe, avg_hr, notes, strava_activity_id")
     .in("workout_id", workoutIds.length > 0 ? workoutIds : ["00000000-0000-0000-0000-000000000000"])
     .returns<(CompletionDetail & { workout_id: string })[]>();
 
-  const completionByWorkoutId = new Map((completions ?? []).map((c) => [c.workout_id, c]));
+  // The aerobic-decoupling check (see completion-detail.tsx) would try to
+  // fetch the *viewer's own* connected Strava account for this activity ID
+  // -- harmless for the athlete themselves, but a guaranteed-to-fail,
+  // confusing button for a coach viewing someone else's plan (coachView),
+  // since it's not the coach's activity. Strip it here rather than in the
+  // shared CompletionSummary component, so the fix applies regardless of
+  // which card renders it.
+  const completionByWorkoutId = new Map(
+    (completions ?? []).map((c) => [c.workout_id, coachView ? { ...c, strava_activity_id: null } : c]),
+  );
 
   return (
     <>

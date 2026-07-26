@@ -1,15 +1,18 @@
 "use server";
 
-// Server actions backing the Environmental Performance Calculator's
-// "import from Strava" course source -- separate from
-// dashboard/strava-actions.ts (which syncs activities into the training
-// plan) since this is a read-only lookup callable from any page, not a
-// dashboard-specific write flow. Shares the same token-refresh pattern:
-// always refresh first rather than tracking expiry separately, since this
-// is a low-frequency, athlete-initiated action either way.
+// Server actions for on-demand, per-activity Strava lookups -- separate
+// from dashboard/strava-actions.ts (which syncs activity summaries into
+// the training plan in bulk) since these are read-only, athlete-initiated
+// lookups callable from any page, not a dashboard-specific write flow.
+// Originally just the Environmental Performance Calculator's "import from
+// Strava" course source; now also backs the aerobic-decoupling check,
+// since both need the same one-activity streams fetch and token-refresh
+// pattern. Always refreshes the token first rather than tracking expiry
+// separately, since either use is low-frequency either way.
 
 import { createClient } from "@/lib/db/server";
 import { decryptToken, encryptToken } from "@/lib/crypto";
+import { computeAerobicDecoupling, type DecouplingResult } from "@/lib/aerobic-decoupling";
 import { fetchActivityStreams, fetchRecentActivities, refreshStravaToken } from "@/lib/strava/client";
 import { activityLocalDate, isRunningActivity } from "@/lib/strava/map-activity";
 import { stravaStreamsToRoute } from "@/lib/route-import/parse-strava";
@@ -95,5 +98,29 @@ export async function fetchActivityRoute(
       return { error: error.message };
     }
     return { error: "Couldn't fetch this activity's route from Strava right now -- try again in a moment." };
+  }
+}
+
+export async function getActivityDecoupling(activityId: number): Promise<ActionResult<{ decoupling: DecouplingResult | null }>> {
+  const tokenResult = await getRefreshedAccessToken();
+  if ("error" in tokenResult) return tokenResult;
+
+  try {
+    const streams = await fetchActivityStreams(tokenResult.accessToken, activityId);
+    if (!streams.time || !streams.distance || !streams.heartrate) {
+      // Most commonly: recorded without a heart-rate monitor -- Strava
+      // simply omits the key rather than erroring, so this isn't a fetch
+      // failure, just "nothing to compute."
+      return { decoupling: null };
+    }
+    return {
+      decoupling: computeAerobicDecoupling({
+        timeS: streams.time,
+        distanceM: streams.distance,
+        heartrateBpm: streams.heartrate,
+      }),
+    };
+  } catch {
+    return { error: "Couldn't fetch this activity's data from Strava right now -- try again in a moment." };
   }
 }
