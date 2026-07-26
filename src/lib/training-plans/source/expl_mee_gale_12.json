@@ -1,0 +1,342 @@
+{
+    "raceType": "Marathon",
+    "raceDistance": 26.2,
+    "workouts": [
+        {
+            "description": "[[ 6 * multiplier|number:0 ]] [[ units ]] Kenyan-style progression run",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "8 × 3 min at 90–92% 5k with 1 min jog",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "9–10 × 2 min at 100% 5k with 1.5 min jog",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 12 * multiplier|number:0 ]]-[[ 13 * multiplier|number:0 ]] [[ units ]] easy through rolling hills",
+            "totalDistance": 12.0
+        },
+        {
+            "description": "[[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 6.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]] [[ units ]] Kenyan-style progression run",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]] [[ units ]] at 85% 5k",
+            "totalDistance": 11.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 12 * multiplier|number:0 ]]-[[ 13 * multiplier|number:0 ]] [[ units ]] at 80% 5k through rolling hills",
+            "totalDistance": 13.0
+        },
+        {
+            "description": "[[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 4.0
+        },
+        {
+            "description": "7 × 4 min at 90–92% 5k with 1 min jog",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 9.0
+        },
+        {
+            "description": "8 × 1 km at 95% 5k with 2 min jog",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate with 5 × 25 sec strides",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 14 * multiplier|number:0 ]]-[[ 15 * multiplier|number:0 ]] [[ units ]] easy through rolling hills",
+            "totalDistance": 14.0
+        },
+        {
+            "description": "[[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 4.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: 4 sets of (3 min at 98% 5k, 1 min jog, 2 min at 100% 5k, 1 min jog, 1 min at 102% 5k, 2 min jog)",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 8 * multiplier|number:0 ]] [[ units ]] at 85% 5k",
+            "totalDistance": 12.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 14 * multiplier|number:0 ]]-[[ 15 * multiplier|number:0 ]] [[ units ]] at 80% 5k through rolling hills",
+            "totalDistance": 17.0
+        },
+        {
+            "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 2.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy",
+            "totalDistance": 11.0
+        },
+        {
+            "description": "6 × (1200m at 90–92% 5k, 400m at 80% 5k)",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "5 × [[ 1 * multiplier|number:0 ]] [[ units ]] at 95% 5k with 3 min jog",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 11.0
+        },
+        {
+            "description": "[[ 16 * multiplier|number:0 ]]-[[ 18 * multiplier|number:0 ]] [[ units ]] easy through rolling hills",
+            "totalDistance": 16.0
+        },
+        {
+            "description": "[[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 4.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 11.0
+        },
+        {
+            "description": "[[ 10 * multiplier|number:0 ]] [[ units ]] at 100% MP",
+            "totalDistance": 13.0
+        },
+        {
+            "description": "[[ 6 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 6.0
+        },
+        {
+            "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 17 * multiplier|number:0 ]]-[[ 18 * multiplier|number:0 ]] [[ units ]] at 90–92% MP",
+            "totalDistance": 18.0
+        },
+        {
+            "description": "[[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 4.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 8 * multiplier|number:0 ]] [[ units ]] easy with 32 min of (30 sec at ~5k effort, 2.5 min easy) in the middle",
+            "totalDistance": 14.0
+        },
+        {
+            "description": "5 × (1600m at 105–107% MP, 400m at 95–98% MP)",
+            "totalDistance": 11.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 9.0
+        },
+        {
+            "description": "[[ 5 * multiplier|number:0 ]] [[ units ]] at 90% MP + [[ 5 * multiplier|number:0 ]] [[ units ]] at 92% MP + [[ 5 * multiplier|number:0 ]] [[ units ]] at 94% MP + [[ 3 * multiplier|number:0 ]]-[[ 4 * multiplier|number:0 ]] [[ units ]] at 96% MP",
+            "totalDistance": 20.0
+        },
+        {
+            "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 0.0
+        },
+        {
+            "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy to easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 32 min of (1 min at ~95% 5k effort, 3 min easy) in the middle",
+            "totalDistance": 12.0
+        },
+        {
+            "description": "4 × 2 km at 108–110% MP with 4 min walk/jog",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 12.0
+        },
+        {
+            "description": "8 × (2 km at 100% MP, 1 km at 90% MP)",
+            "totalDistance": 17.0
+        },
+        {
+            "description": "[[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 5.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "9 × (1 km at 105% MP, 1 km at 90% MP)",
+            "totalDistance": 14.0
+        },
+        {
+            "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 6.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "[[ 20 * multiplier|number:0 ]] [[ units ]] at 95% MP",
+            "totalDistance": 21.0
+        },
+        {
+            "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 0.0
+        },
+        {
+            "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 32 min of (1 min at ~95% 5k effort, 3 min easy) in the middle",
+            "totalDistance": 10.0
+        },
+        {
+            "description": "12 × 500m at 108–110% MP with 30–45 sec walk",
+            "totalDistance": 9.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy",
+            "totalDistance": 11.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "6 × (3 km at 100% MP, 1 km at 90% MP)",
+            "totalDistance": 18.0
+        },
+        {
+            "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 2.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 12.0
+        },
+        {
+            "description": "7–8 × (1 km at 103–105% MP, 1 km at 92–94% MP)",
+            "totalDistance": 14.0
+        },
+        {
+            "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "5–6 × 1200m at 107–110% MP with 2–3 min jog",
+            "totalDistance": 9.0
+        },
+        {
+            "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 2.0
+        },
+        {
+            "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
+            "totalDistance": 7.0
+        },
+        {
+            "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 6.0
+        },
+        {
+            "description": "5–6 × 4 min at 103–106% MP with 1 min jog",
+            "totalDistance": 8.0
+        },
+        {
+            "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 6.0
+        },
+        {
+            "description": "[[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] easy",
+            "totalDistance": 5.0
+        },
+        {
+            "description": "[[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
+            "totalDistance": 4.0
+        },
+        {
+            "description": "Goal marathon 26.2mi",
+            "totalDistance": 26.2
+        }
+    ]
+}
