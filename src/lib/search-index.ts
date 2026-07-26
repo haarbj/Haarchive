@@ -2,6 +2,7 @@ import { categories, categoryMap, sections } from "@/lib/sections";
 import { headingId } from "@/lib/heading-id";
 import { coaches } from "@/lib/coaches/data";
 import { athletes } from "@/lib/athletes/data";
+import { TRAINING_PLANS } from "@/lib/training-plans/data";
 
 export type SearchEntry = {
   title: string;
@@ -75,6 +76,16 @@ function buildIndex(): IndexedEntry[] {
       href: `/athlete-library/${athlete.slug}`,
       group: "Athlete Library",
       keywords: [athlete.country, athlete.primaryEvents].join(" "),
+    });
+  }
+
+  for (const plan of TRAINING_PLANS) {
+    entries.push({
+      title: `${plan.trackLabel} — ${plan.durationWeeks}-Week ${plan.raceType}`,
+      subtitle: `~${Math.round(plan.referenceAvgWeeklyMiles)} mi/week average, peaking around ${Math.round(plan.referencePeakWeeklyMiles)} mi`,
+      href: `/training-plans/${plan.slug}`,
+      group: "Training Plans",
+      keywords: `${plan.track} ${plan.durationWeeks} week marathon plan`,
     });
   }
 

@@ -671,6 +671,7 @@ export const coaches: Coach[] = [
       { label: "Exercise Physiology", href: "/exercise-physiology" },
       { label: "Workout Library", href: "/workout-library" },
       { label: "Training Plans", href: "/training-plans" },
+      { label: "Threshold, CV & VO2max Pace Calculator", href: "/cv-threshold-calculator" },
     ],
   },
 
@@ -979,6 +980,7 @@ export const coaches: Coach[] = [
       { label: "Workout Library", href: "/workout-library" },
       { label: "Nutrition & Fueling", href: "/nutrition-and-fueling" },
       { label: "Training Plans", href: "/training-plans" },
+      { label: "Pace Percent Calculator", href: "/pace-percent-calculator" },
     ],
   },
 
@@ -1683,6 +1685,7 @@ export const coaches: Coach[] = [
       { label: "Workout Library", href: "/workout-library" },
       { label: "Exercise Physiology", href: "/exercise-physiology" },
       { label: "Training Plans", href: "/training-plans" },
+      { label: "Threshold, CV & VO2max Pace Calculator", href: "/cv-threshold-calculator" },
     ],
   },
 
@@ -2287,6 +2290,7 @@ export const coaches: Coach[] = [
       { label: "Workout Library", href: "/workout-library" },
       { label: "Training Plans", href: "/training-plans" },
       { label: "Research Library", href: "/research-library" },
+      { label: "Threshold, CV & VO2max Pace Calculator", href: "/cv-threshold-calculator" },
     ],
   },
 ];

@@ -6,6 +6,12 @@ export type Category = {
 
 export const categories: Category[] = [
   {
+    slug: "getting-started",
+    title: "Getting Started",
+    mission:
+      "The first steps for anyone who hasn't trained seriously before -- how to begin, and how to know it's working.",
+  },
+  {
     slug: "foundations",
     title: "Foundations",
     mission:
@@ -95,6 +101,72 @@ export type Section = {
 };
 
 export const sections: Section[] = [
+  {
+    slug: "how-to-start-running",
+    title: "How to Start Running",
+    mission:
+      "A first-time runner's guide to starting safely, building consistency, and progressing by feel rather than a fixed schedule.",
+    topics: ["Beginner progression", "Training heart rate", "The talk test"],
+    category: "getting-started",
+    lastUpdated: "2026-07-15",
+    content: [
+      { type: "heading", text: "From Zero to 20 Minutes: An 8-Week Start" },
+      {
+        type: "paragraph",
+        text: "The Lydiard Foundation's beginner program is built on walk/jog intervals, three days a week, starting at just 15 minutes total. Each week, the jogging segments get slightly longer and the walking segments get shorter, with one slightly longer session built in on the third training day. By the end of eight weeks, most beginners are running 20 minutes continuously — not because the schedule pushed them there, but because the body adapts faster than most people expect once the stress is applied consistently and recovery days are respected.",
+      },
+      { type: "heading", text: "The Golden Rules" },
+      {
+        type: "list",
+        items: [
+          "Train, don't strain — you genuinely cannot run too slowly.",
+          "It's not the distance that stops you, it's the speed. If in doubt, do less.",
+          "If a week feels too hard, repeat it rather than pushing forward on schedule.",
+          "Listen to your body over the plan on paper — the schedule is a guide, not an order.",
+        ],
+      },
+      { type: "heading", text: "Finding Your Training Heart Rate" },
+      {
+        type: "paragraph",
+        text: "A simple formula for an approximate training range: (220 minus your age, minus your resting heart rate) times 70%, plus your resting heart rate again — add 3 if you're a woman. Give yourself about five beats on either side of that number as your range. Treat it as a rough guideline, not gospel — how an effort feels should always override what a number on a screen says.",
+      },
+      { type: "heading", text: "A More Precise Way to Find Your Zones: The Talk Test" },
+      {
+        type: "paragraph",
+        text: "The heart-rate formula above is a reasonable starting estimate, but it's still a population average. A more individualized alternative: start jogging slowly, and every minute, speed up slightly and try to talk — recite something memorized, or just count out loud. The fastest pace at which you can still speak in full, comfortable sentences, with breathing back to normal within about three breaths of stopping, marks your lactate threshold. Everything below that pace is low intensity; conversation getting noticeably harder to hold is where moderate and high intensity begin. It costs nothing, needs no equipment, and adjusts automatically as fitness changes — which a fixed formula can't do (Fitzgerald, 80/20 Running).",
+      },
+      { type: "heading", text: "Pleasantly Tired: The Only Metric a Beginner Needs" },
+      {
+        type: "paragraph",
+        text: "Lydiard's original instruction for a first-time jogger wasn't a pace or a distance — it was a feeling. Run for 15 minutes, walking whenever the effort stops feeling comfortable, and stop when you're \"pleasantly tired\": worked hard enough to know you've trained, not so hard that tomorrow is compromised. No coach, however experienced, can look at a person and predict how far or fast they should go on day one — that gets discovered by running and paying attention, not assigned from a chart.",
+      },
+      { type: "heading", text: "The Beginner Progression, Stage by Stage" },
+      {
+        type: "list",
+        items: [
+          "Starting out: 15 minutes daily, run/walk, at a pleasantly tired effort — no distance goal at all.",
+          "Second stage (6–8 weeks): alternate 15- and 30-minute days across the week, with one rest or easy day built in.",
+          "Third stage (6–8 weeks): the 30-minute days stretch to a full hour twice a week, still bracketed by easy days.",
+          "Fourth stage: long runs extend to 1.5–2 hours on the longest day of the week, with 30-minute recovery days around it.",
+          "Only once two continuous hours feels genuinely manageable does it make sense to start running to a watch and pace rather than to time and feel.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Once a real aerobic base exists and running to a watch starts to make sense, the natural next step is a structured plan built around a specific goal race — see Training Plans for real, day-by-day marathon builds that scale to your own weekly mileage. An established base is also the prerequisite for the more advanced periodization ideas (double threshold days, clustered quality work) covered in Workout Library — that content solves a different problem than these first eight weeks do, and isn't a shortcut past building this base first.",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "A beginner needs a feeling (\"pleasantly tired\"), not a pace — no chart can predict how far or fast a specific new runner should go on day one.",
+          "Progress by stage, not by calendar — repeat a stage if it still feels too hard rather than advancing just because the schedule says to.",
+          "The talk test costs nothing and adjusts automatically as fitness improves, which makes it a better day-to-day guide than a fixed heart-rate formula.",
+        ],
+      },
+    ],
+  },
   {
     slug: "training-philosophy",
     title: "Training Philosophy",
@@ -342,7 +414,7 @@ export const sections: Section[] = [
       },
       {
         type: "paragraph",
-        text: "This is a different property from the muscle tone described above — tone is baseline resting tension between efforts, while voluntary activation is how much of the muscle a maximal effort can actually recruit in the moment. At the extreme endurance end, exercise physiologist Guillaume Millet found ultramarathon finishers who'd run 100+ hours through the 205-mile Tor des Géants had lost only about 25% of pre-race leg strength — less than runners tested after a single 24-hour run. His summary: \"the brain is able to do more, but it doesn't.\" It's the same conclusion as the rugby sprint-after-failure study above, just measured at the opposite end of the distance spectrum. Two genuinely peripheral limiters are worth naming honestly alongside all this brain-centered evidence, since not every ceiling is soft: about 70% of elite endurance athletes show measurable arterial oxygen desaturation during all-out effort even at sea level, a real hardware constraint on oxygen delivery (Constantini et al., Medicine & Science in Sports & Exercise, 2017); and core temperature has a genuine, fairly consistent circuit-breaker around 104°F past which the brain stops driving muscles regardless of how the effort feels (see Heat Acclimatization in Training Plans for the practical training implications of that threshold).",
+        text: "This is a different property from the muscle tone described above — tone is baseline resting tension between efforts, while voluntary activation is how much of the muscle a maximal effort can actually recruit in the moment. At the extreme endurance end, exercise physiologist Guillaume Millet found ultramarathon finishers who'd run 100+ hours through the 205-mile Tor des Géants had lost only about 25% of pre-race leg strength — less than runners tested after a single 24-hour run. His summary: \"the brain is able to do more, but it doesn't.\" It's the same conclusion as the rugby sprint-after-failure study above, just measured at the opposite end of the distance spectrum. Two genuinely peripheral limiters are worth naming honestly alongside all this brain-centered evidence, since not every ceiling is soft: about 70% of elite endurance athletes show measurable arterial oxygen desaturation during all-out effort even at sea level, a real hardware constraint on oxygen delivery (Constantini et al., Medicine & Science in Sports & Exercise, 2017); and core temperature has a genuine, fairly consistent circuit-breaker around 104°F past which the brain stops driving muscles regardless of how the effort feels (see Heat Acclimatization in Workout Library for the practical training implications of that threshold).",
       },
       { type: "heading", text: "Applying This: Training the Effort Ceiling, Not Just the Legs", level: 3 },
       {
@@ -652,6 +724,12 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Lactate threshold heart rate is the anchor for every zone above it, and there are two practical ways to find it without a lab. The 30-minute time trial: warm up, then run as far as possible in 30 minutes wearing a heart rate monitor — the average heart rate over the final 10 minutes is a reasonable estimate of lactate threshold. It's accurate, but genuinely unpleasant, which is exactly why the second method exists. The talk test: start jogging slowly, and after a minute recite something fixed and memorized — the Pledge of Allegiance works, or simply counting upward — and note the heart rate. Increase pace slightly, wait a minute, repeat, and continue until talking is just slightly uncomfortable. The heart rate recorded at the last pace where speaking still felt comfortable is the estimate. Smaller pace increments between checks produce a more precise result (Fitzgerald, 80/20 Running).",
       },
+      {
+        type: "paragraph",
+        text: "Once you have an estimate, you can compare it to a real meta-analytic population reference range (rather than a single fixed percentage) with the",
+        linkHref: "/hr-threshold-calculator",
+        linkText: "LT1 & LT2 Heart Rate Reference Ranges calculator",
+      },
       { type: "heading", text: "Racing Pace as a Percentage of Threshold Pace" },
       {
         type: "paragraph",
@@ -659,7 +737,9 @@ export const sections: Section[] = [
       },
       {
         type: "paragraph",
-        text: "The same relationship works from the other direction: it's a rough check on a goal race pace before committing hard training to it. An athlete whose honest current threshold pace is 6:30/mile has no business targeting a marathon pace of 6:00/mile (92% of threshold, faster than what threshold-based percentages support) — the gap says the aerobic base needs to grow first, not that the marathon-pace session needs to get harder. See Two DIY Ways to Find Your Threshold above for how to establish the anchor number this table runs off of.",
+        text: "The same relationship works from the other direction: it's a rough check on a goal race pace before committing hard training to it. An athlete whose honest current threshold pace is 6:30/mile has no business targeting a marathon pace of 6:00/mile (92% of threshold, faster than what threshold-based percentages support) — the gap says the aerobic base needs to grow first, not that the marathon-pace session needs to get harder. See Two DIY Ways to Find Your Threshold above for how to establish the anchor number this table runs off of. For turning a percentage like this into an actual workout pace, see the",
+        linkHref: "/pace-percent-calculator",
+        linkText: "Pace Percent Calculator",
       },
       { type: "heading", text: "How Precise Does Threshold Intensity Actually Need to Be?" },
       {
@@ -780,7 +860,7 @@ export const sections: Section[] = [
       { type: "heading", text: "Why Double Threshold Isn't the Marathon's Main Tool" },
       {
         type: "paragraph",
-        text: "Norwegian Threshold Training in Coaching Library and Advanced Periodization in Training Plans cover a double-day interval structure that's genuinely effective — but almost entirely on evidence and athletes racing 1500m through 10K. The reasoning behind that ceiling is specific: intervals beat continuous running for building threshold speed at the least muscular cost (see Soreness Arrives Late, Tone Moves Fast in Exercise Physiology), precisely because short recoveries let tone drop within the session. A marathon doesn't offer that luxury on race day — it's run continuously, for hours, and the specific adaptation a marathon buildup needs most is the ability to hold a hard aerobic effort without a break, not the ability to repeat short controlled reps. That's the same logic already covered in Renato Canova: Marathon-Specific Density in Coaching Library, whose \"special blocks\" are long, continuous efforts at marathon pace rather than interval sets, and it's why a marathon buildup should lean more on sustained tempo work and marathon-pace long runs than on double-threshold interval days, even for an athlete who uses the interval format productively at shorter distances.",
+        text: "Norwegian Threshold Training in Coaching Library and Advanced Periodization in Workout Library cover a double-day interval structure that's genuinely effective — but almost entirely on evidence and athletes racing 1500m through 10K. The reasoning behind that ceiling is specific: intervals beat continuous running for building threshold speed at the least muscular cost (see Soreness Arrives Late, Tone Moves Fast in Exercise Physiology), precisely because short recoveries let tone drop within the session. A marathon doesn't offer that luxury on race day — it's run continuously, for hours, and the specific adaptation a marathon buildup needs most is the ability to hold a hard aerobic effort without a break, not the ability to repeat short controlled reps. That's the same logic already covered in Renato Canova: Marathon-Specific Density in Coaching Library, whose \"special blocks\" are long, continuous efforts at marathon pace rather than interval sets, and it's why a marathon buildup should lean more on sustained tempo work and marathon-pace long runs than on double-threshold interval days, even for an athlete who uses the interval format productively at shorter distances.",
       },
       { type: "heading", text: "The Final Two Weeks: Freshen, Don't Just Rest" },
       {
@@ -1221,7 +1301,7 @@ export const sections: Section[] = [
       { type: "heading", text: "Double Threshold Sessions" },
       {
         type: "paragraph",
-        text: "A double threshold day pairs two controlled interval sessions six to eight hours apart, each held in the 2.3–3.0 mmol/L range described in How Precise Does Threshold Intensity Actually Need to Be? in Data & Analytics — see Advanced Periodization in Training Plans for how a full week gets built around this, and Norwegian Threshold Training in Coaching Library for where the format comes from. The two sessions are usually shaped differently on purpose: a longer, more controlled set in the morning, and a shorter, slightly faster set in the evening.",
+        text: "A double threshold day pairs two controlled interval sessions six to eight hours apart, each held in the 2.3–3.0 mmol/L range described in How Precise Does Threshold Intensity Actually Need to Be? in Data & Analytics — see Advanced Periodization below for how a full week gets built around this, and Norwegian Threshold Training in Coaching Library for where the format comes from. The two sessions are usually shaped differently on purpose: a longer, more controlled set in the morning, and a shorter, slightly faster set in the evening.",
       },
       {
         type: "list",
@@ -1236,6 +1316,62 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A double-threshold week typically includes one additional session at a different, higher intensity — the \"X element\" — most often short hill sprints in the 200–800m range, a format that traces back to Peter Coe's own sprint-training hill work. The point of the X element is deliberate contrast: two threshold days a week train the same muscular pattern at the same intensity repeatedly, and a single different stimulus — genuinely harder, over a shorter distance, on a different surface — is what keeps the week from training only one gear. It plays a similar role to the steep hill running and hill bounding already covered in Three Ways Lydiard Used a Hill above, though the two traditions arrived at short hill work independently.",
       },
+      { type: "heading", text: "Advanced Periodization: Clustering Quality Work Instead of Spreading It Out" },
+      {
+        type: "paragraph",
+        text: "Everything above assumes an athlete who already has a large, well-established aerobic base — a genuinely different problem than a first-time runner's earliest weeks (see How to Start Running in Getting Started for that instead). The question here is different: once that base exists, how do you keep extracting fitness from it without the accumulating fatigue eventually costing more than the extra training buys? One answer, developed over three decades inside the Norwegian system that produced the Ingebrigtsens and the Blummenfelt/Iden triathlon program, is to stop spreading quality work evenly across the week and start clustering it instead — see Norwegian Threshold Training in Coaching Library for the full history of how that system developed.",
+      },
+      {
+        type: "paragraph",
+        text: "The mechanism behind why double threshold beats one long session, or the same total volume spread across two separate days, comes down to timing: the structural soreness response to a hard session is delayed by 24 to 72 hours, while muscle tone — the variable that actually governs how ready a muscle is for its next hard rep — can drop back down within hours (see Soreness Arrives Late, Tone Moves Fast in Exercise Physiology). Run the second session before the delayed damage response has kicked in, and the body absorbs it as one extended stimulus with a long rest built into the middle, rather than as a second full stressor stacked on an already-fatigued system. It's also worth being explicit about who this is for: the evidence and the athletes it was built around are almost entirely 1500m-to-10K runners and triathletes. See Why Double Threshold Isn't the Marathon's Main Tool in Marathon Training for why that distinction matters once the goal race gets longer.",
+      },
+      { type: "heading", text: "A Sample Week", level: 3 },
+      {
+        type: "list",
+        items: [
+          "Monday: easy running only, two shorter sessions rather than one long one if doubling on volume.",
+          "Tuesday: double threshold — longer intervals (6–10 min) in the morning, shorter and slightly faster (200–1000m) in the evening.",
+          "Wednesday: easy running only. This day is doing real work — see Muscle Tone vs. Muscle Soreness in Recovery for why an easy day between hard days isn't optional here.",
+          "Thursday: double threshold again, ideally with a different interval length than Tuesday's session so the week isn't training the exact same rep pattern twice.",
+          "Friday: easy running only.",
+          "Saturday: one higher-intensity \"X element\" session — hill sprints are the traditional choice (see The Norwegian \"X Element\" above) — run at a different, harder intensity than the threshold days.",
+          "Sunday: an easy long run, capped well under race-pace effort.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "That's two double-threshold days and one X-element day — four quality sessions inside three dedicated days, with every other day genuinely easy. Two double-threshold days a week is a common, sustainable starting frequency; some athletes work up to three during a base-building block, but that's a load increase that needs to be earned, not a default.",
+      },
+      { type: "heading", text: "Flat Weeks Beat the Classic Hard-Hard-Easy Cycle, for Some Athletes", level: 3 },
+      {
+        type: "paragraph",
+        text: "The conventional periodization shape — two build weeks followed by one deliberately easier recovery week — isn't the only way to structure a training block, and it isn't automatically the best one for an athlete who's already absorbing a double-threshold week comfortably. An alternative, popularized among distance coaches working with Paula Radcliffe, keeps every week structurally similar rather than cycling load up and down, and lets adaptation happen across the whole training cycle instead of inside each individual week. The appeal is straightforward: a flatter structure removes the temptation to treat the build weeks as license to overreach, since there's no easier week coming to absorb the damage. It isn't a universal upgrade — an athlete who genuinely needs the down week to recover should keep taking it — but it's worth knowing this is a real, tested alternative rather than treating the hard-hard-easy cycle as the only correct shape a block can take.",
+      },
+      { type: "heading", text: "Altitude, in Short Blocks or Long Stays", level: 3 },
+      {
+        type: "paragraph",
+        text: "Altitude training compounds well with a threshold-heavy program, since altitude itself pushes the anaerobic threshold up through the same mechanism a training block does — see Joe Vigil: Altitude, Biomechanics, and the Whole Athlete in Coaching Library for the standard six-to-twelve-week adaptation window a full altitude relocation requires. A different, shorter-duration approach also has real evidence behind it for an athlete who can't be away that long: a concentrated 7-to-8-day trip, with double threshold sessions on alternating days (day 1, 3, 5, 7) rather than every day, followed by a return to sea level and the normal post-altitude cycle. Altitude adaptation isn't instant either way — for most athletes, the best racing tends to land either in the first one to three days after coming down, or ten-plus days later, once the body has fully settled back to sea level; the days in between that window are typically the flattest.",
+      },
+      { type: "heading", text: "Heat Acclimatization", level: 3 },
+      {
+        type: "paragraph",
+        text: "Heat is the other environmental factor worth deliberately training for rather than just enduring on race day, and unlike altitude, most of the adaptation happens fast. Studies going back to WWII-era military research consistently find roughly 60–90 minutes of daily exercise in heat produces measurable acclimatization within days and largely complete adaptation within about two weeks — a South African gold-mine study in the 1930s used exactly this timeline (scaled up from 4 to 14 days depending on a worker's starting tolerance) to cut heatstroke deaths dramatically. The physiological ceiling this is training toward is fairly consistent across individuals: core temperature around 104°F, past which the brain reliably stops driving muscles regardless of how the effort feels or how fit the athlete is. Training doesn't move that ceiling much — what it moves is how efficiently the body manages heat on the way there (earlier sweating, more of it, better skin blood flow), and how much discomfort a given internal temperature produces along the way.",
+      },
+      {
+        type: "paragraph",
+        text: "Two practical tools compound with acclimatization rather than replacing it. Precooling — an ice-slurry drink or a cold towel before a hot session — measurably extends time to exhaustion and is now standard practice for elite championship teams competing in heat. And self-talk trained specifically around heat discomfort (replacing \"it's so hot\" with something like \"keep pushing, you're doing well\") has been shown to push the core temperature at which a trained athlete quits meaningfully higher — direct evidence that perceived heat, not just measured heat, governs how a hot session actually goes (see Self-Talk, Trained Rather Than Improvised in Sports Psychology for the protocol). Neither tool is a substitute for the two-week exposure block itself, but both are legitimate ways to make that block, and the race it's preparing for, more tolerable.",
+      },
+      { type: "heading", text: "Individualizing the Load", level: 3 },
+      {
+        type: "callout",
+        variant: "advanced",
+        title: "Signals that it's time to back off, not push through",
+        text: "Multi-signal intensity control matters more here than in almost any other kind of training week, precisely because the whole approach is built on staying controlled rather than on grinding — see How Precise Does Threshold Intensity Actually Need to Be? in Data & Analytics for the full cross-check method (heart rate, talk test, and perceived effort together, not any one of them alone). As a rough calibration: a warm-up heart rate that's higher than usual, or a session where heart rate won't climb at a pace that normally produces a given lactate reading, are both signals to shorten that session rather than push through it — the method depends on every session actually landing where it's supposed to, and a session that costs too much undoes the benefit of the one after it. In-season, when racing takes priority over building, the volume of double-threshold work typically comes down first — single threshold sessions instead of doubles — while keeping the intensity control itself just as strict.",
+      },
+      {
+        type: "paragraph",
+        text: "One more small, genuinely unresolved detail worth knowing rather than acting on: some athletes report a lower lactate reading in the evening session of a double-threshold day than the morning session at the same effort, possibly related to running the second session in a partially glycogen-reduced state left over from the morning — see How Much Carbohydrate a Session Actually Needs in Nutrition & Fueling for the general fueling picture this fits inside of. Whether that's a real, exploitable training signal or just a curiosity isn't settled, and it isn't a reason to deliberately underfuel — it's mentioned here only because it's the kind of pattern a runner logging their own lactate numbers will eventually notice and wonder about.",
+      },
       {
         type: "callout",
         variant: "takeaway",
@@ -1245,6 +1381,9 @@ export const sections: Section[] = [
           "Run interval pace off your current, honest fitness — not a goal you haven't hit yet. Short, fast reps at an unearned pace mostly accumulate acidosis without the aerobic base to buffer it.",
           "Ease into hill work specifically — it feels moderate in the moment because the bouts are short, which is exactly what makes it easy to overdo before the delayed soreness shows up.",
           "If you're building a double-threshold week, the \"X element\" (a different, harder stimulus) matters as much as the two threshold sessions themselves — without it, the week trains only one gear.",
+          "Advanced periodization (double threshold, clustered quality work) is a tool for an athlete who already has a large, established aerobic base — it solves a different problem than a beginner plan, and isn't a shortcut past building that base first.",
+          "Treat multi-signal intensity control (heart rate, talk test, perceived effort together) as more important than hitting a prescribed number — a session that costs too much undoes the benefit of the one after it.",
+          "Environmental adaptation (heat, altitude) is trainable on its own timeline — heat acclimatizes in about two weeks, altitude takes six to twelve — so build the exposure block into the plan deliberately rather than hoping race-day conditions cooperate.",
         ],
       },
     ],
@@ -1305,7 +1444,7 @@ export const sections: Section[] = [
       { type: "heading", text: "Timing Strength Work Around Threshold Days" },
       {
         type: "paragraph",
-        text: "For an athlete running double threshold days (see Advanced Periodization in Training Plans), where a lifting session lands relative to the running matters, because strength work has its own muscle-tone cost layered on top of the running's (see Muscle Tone, Elasticity, and Stiffness, Defined in Exercise Physiology). Two placements both have a real argument behind them, and coaches who've tested this directly haven't settled on one universal answer. Lifting before the day's running lets the running that follows help bring tone back down again before the next day's session — the running does cleanup duty. Lifting after the day's running instead adds a fresh stimulus on top of tissue that's already primed and warmed up, on the logic that it carries over better into the next hard running day. Both are legitimate; which one works better tends to be individual, which makes this one of the more worthwhile things to actually test on yourself rather than assume.",
+        text: "For an athlete running double threshold days (see Advanced Periodization in Workout Library), where a lifting session lands relative to the running matters, because strength work has its own muscle-tone cost layered on top of the running's (see Muscle Tone, Elasticity, and Stiffness, Defined in Exercise Physiology). Two placements both have a real argument behind them, and coaches who've tested this directly haven't settled on one universal answer. Lifting before the day's running lets the running that follows help bring tone back down again before the next day's session — the running does cleanup duty. Lifting after the day's running instead adds a fresh stimulus on top of tissue that's already primed and warmed up, on the logic that it carries over better into the next hard running day. Both are legitimate; which one works better tends to be individual, which makes this one of the more worthwhile things to actually test on yourself rather than assume.",
       },
       {
         type: "paragraph",
@@ -1480,125 +1619,19 @@ export const sections: Section[] = [
     slug: "training-plans",
     title: "Training Plans",
     mission:
-      "Progressive plans from beginner to elite for cross country, 5K, 10K, half marathon, and marathon.",
-    topics: ["Beginner to elite", "Race-specific plans", "Progression"],
+      "Real, day-by-day marathon training plans -- five volume tracks, each available as a 12- or 18-week build, scaled to your own weekly mileage.",
+    topics: ["12- and 18-week builds", "Five volume tracks", "Scales to your own mileage"],
     category: "coaching-and-training",
-    lastUpdated: "2026-07-13",
-    content: [
-      { type: "heading", text: "From Zero to 20 Minutes: An 8-Week Start" },
-      {
-        type: "paragraph",
-        text: "The Lydiard Foundation's beginner program is built on walk/jog intervals, three days a week, starting at just 15 minutes total. Each week, the jogging segments get slightly longer and the walking segments get shorter, with one slightly longer session built in on the third training day. By the end of eight weeks, most beginners are running 20 minutes continuously — not because the schedule pushed them there, but because the body adapts faster than most people expect once the stress is applied consistently and recovery days are respected.",
-      },
-      { type: "heading", text: "The Golden Rules" },
-      {
-        type: "list",
-        items: [
-          "Train, don't strain — you genuinely cannot run too slowly.",
-          "It's not the distance that stops you, it's the speed. If in doubt, do less.",
-          "If a week feels too hard, repeat it rather than pushing forward on schedule.",
-          "Listen to your body over the plan on paper — the schedule is a guide, not an order.",
-        ],
-      },
-      { type: "heading", text: "Finding Your Training Heart Rate" },
-      {
-        type: "paragraph",
-        text: "A simple formula for an approximate training range: (220 minus your age, minus your resting heart rate) times 70%, plus your resting heart rate again — add 3 if you're a woman. Give yourself about five beats on either side of that number as your range. Treat it as a rough guideline, not gospel — how an effort feels should always override what a number on a screen says.",
-      },
-      { type: "heading", text: "A More Precise Way to Find Your Zones: The Talk Test" },
-      {
-        type: "paragraph",
-        text: "The heart-rate formula above is a reasonable starting estimate, but it's still a population average. A more individualized alternative: start jogging slowly, and every minute, speed up slightly and try to talk — recite something memorized, or just count out loud. The fastest pace at which you can still speak in full, comfortable sentences, with breathing back to normal within about three breaths of stopping, marks your lactate threshold. Everything below that pace is low intensity; conversation getting noticeably harder to hold is where moderate and high intensity begin. It costs nothing, needs no equipment, and adjusts automatically as fitness changes — which a fixed formula can't do (Fitzgerald, 80/20 Running).",
-      },
-      { type: "heading", text: "Pleasantly Tired: The Only Metric a Beginner Needs" },
-      {
-        type: "paragraph",
-        text: "Lydiard's original instruction for a first-time jogger wasn't a pace or a distance — it was a feeling. Run for 15 minutes, walking whenever the effort stops feeling comfortable, and stop when you're \"pleasantly tired\": worked hard enough to know you've trained, not so hard that tomorrow is compromised. No coach, however experienced, can look at a person and predict how far or fast they should go on day one — that gets discovered by running and paying attention, not assigned from a chart.",
-      },
-      { type: "heading", text: "The Beginner Progression, Stage by Stage" },
-      {
-        type: "list",
-        items: [
-          "Starting out: 15 minutes daily, run/walk, at a pleasantly tired effort — no distance goal at all.",
-          "Second stage (6–8 weeks): alternate 15- and 30-minute days across the week, with one rest or easy day built in.",
-          "Third stage (6–8 weeks): the 30-minute days stretch to a full hour twice a week, still bracketed by easy days.",
-          "Fourth stage: long runs extend to 1.5–2 hours on the longest day of the week, with 30-minute recovery days around it.",
-          "Only once two continuous hours feels genuinely manageable does it make sense to start running to a watch and pace rather than to time and feel.",
-        ],
-      },
-      { type: "heading", text: "Advanced Periodization: Clustering Quality Work Instead of Spreading It Out" },
-      {
-        type: "paragraph",
-        text: "Everything above this point in the page is about earning the right to ask more of a body that hasn't trained before. Everything below it is about a different problem entirely: once an athlete already has a large, well-established aerobic base, how do you keep extracting fitness from it without the accumulating fatigue eventually costing more than the extra training buys? One answer, developed over three decades inside the Norwegian system that produced the Ingebrigtsens and the Blummenfelt/Iden triathlon program, is to stop spreading quality work evenly across the week and start clustering it instead — see Norwegian Threshold Training in Coaching Library for the full history of how that system developed.",
-      },
-      { type: "heading", text: "Double Threshold Training: Two Controlled Sessions, One Day", level: 3 },
-      {
-        type: "paragraph",
-        text: "A double threshold day is two separate threshold interval sessions run six to eight hours apart — a morning session and an evening session, each held in the same controlled intensity band described in Two DIY Ways to Find Your Threshold and Racing Pace as a Percentage of Threshold Pace in Data & Analytics. The mechanism behind why this beats one long session, or the same total volume spread across two separate days, comes down to timing: the structural soreness response to a hard session is delayed by 24 to 72 hours, while muscle tone — the variable that actually governs how ready a muscle is for its next hard rep — can drop back down within hours (see Soreness Arrives Late, Tone Moves Fast in Exercise Physiology). Run the second session before the delayed damage response has kicked in, and the body absorbs it as one extended stimulus with a long rest built into the middle, rather than as a second full stressor stacked on an already-fatigued system. In practice this means the morning session tends to run slightly longer and slightly more controlled — 6-to-10-minute intervals is a common format — while the evening session goes shorter and a touch faster, often right at or just above threshold rather than comfortably under it; see Double Threshold Sessions in Workout Library for concrete formats.",
-      },
-      {
-        type: "paragraph",
-        text: "Because the whole approach depends on both sessions actually staying controlled, it's built as intervals with real recovery between reps, not continuous running — the short breaks let lactate be checked and let tone drop slightly within the session itself, which is what makes the pace repeatable rep after rep. It's also worth being explicit about who this is for: the evidence and the athletes it was built around are almost entirely 1500m-to-10K runners and triathletes. See Why Double Threshold Isn't the Marathon's Main Tool in Marathon Training for why that distinction matters once the goal race gets longer.",
-      },
-      { type: "heading", text: "A Sample Week", level: 3 },
-      {
-        type: "list",
-        items: [
-          "Monday: easy running only, two shorter sessions rather than one long one if doubling on volume.",
-          "Tuesday: double threshold — longer intervals (6–10 min) in the morning, shorter and slightly faster (200–1000m) in the evening.",
-          "Wednesday: easy running only. This day is doing real work — see Muscle Tone vs. Muscle Soreness in Recovery for why an easy day between hard days isn't optional here.",
-          "Thursday: double threshold again, ideally with a different interval length than Tuesday's session so the week isn't training the exact same rep pattern twice.",
-          "Friday: easy running only.",
-          "Saturday: one higher-intensity \"X element\" session — hill sprints are the traditional choice (see Double Threshold Sessions in Workout Library) — run at a different, harder intensity than the threshold days.",
-          "Sunday: an easy long run, capped well under race-pace effort.",
-        ],
-      },
-      {
-        type: "paragraph",
-        text: "That's two double-threshold days and one X-element day — four quality sessions inside three dedicated days, with every other day genuinely easy. Two double-threshold days a week is a common, sustainable starting frequency; some athletes work up to three during a base-building block, but that's a load increase that needs to be earned, not a default.",
-      },
-      { type: "heading", text: "Flat Weeks Beat the Classic Hard-Hard-Easy Cycle, for Some Athletes", level: 3 },
-      {
-        type: "paragraph",
-        text: "The conventional periodization shape — two build weeks followed by one deliberately easier recovery week — isn't the only way to structure a training block, and it isn't automatically the best one for an athlete who's already absorbing a double-threshold week comfortably. An alternative, popularized among distance coaches working with Paula Radcliffe, keeps every week structurally similar rather than cycling load up and down, and lets adaptation happen across the whole training cycle instead of inside each individual week. The appeal is straightforward: a flatter structure removes the temptation to treat the build weeks as license to overreach, since there's no easier week coming to absorb the damage. It isn't a universal upgrade — an athlete who genuinely needs the down week to recover should keep taking it — but it's worth knowing this is a real, tested alternative rather than treating the hard-hard-easy cycle as the only correct shape a block can take.",
-      },
-      { type: "heading", text: "Altitude, in Short Blocks or Long Stays", level: 3 },
-      {
-        type: "paragraph",
-        text: "Altitude training compounds well with a threshold-heavy program, since altitude itself pushes the anaerobic threshold up through the same mechanism a training block does — see Joe Vigil: Altitude, Biomechanics, and the Whole Athlete in Coaching Library for the standard six-to-twelve-week adaptation window a full altitude relocation requires. A different, shorter-duration approach also has real evidence behind it for an athlete who can't be away that long: a concentrated 7-to-8-day trip, with double threshold sessions on alternating days (day 1, 3, 5, 7) rather than every day, followed by a return to sea level and the normal post-altitude cycle. Altitude adaptation isn't instant either way — for most athletes, the best racing tends to land either in the first one to three days after coming down, or ten-plus days later, once the body has fully settled back to sea level; the days in between that window are typically the flattest.",
-      },
-      { type: "heading", text: "Heat Acclimatization", level: 3 },
-      {
-        type: "paragraph",
-        text: "Heat is the other environmental factor worth deliberately training for rather than just enduring on race day, and unlike altitude, most of the adaptation happens fast. Studies going back to WWII-era military research consistently find roughly 60–90 minutes of daily exercise in heat produces measurable acclimatization within days and largely complete adaptation within about two weeks — a South African gold-mine study in the 1930s used exactly this timeline (scaled up from 4 to 14 days depending on a worker's starting tolerance) to cut heatstroke deaths dramatically. The physiological ceiling this is training toward is fairly consistent across individuals: core temperature around 104°F, past which the brain reliably stops driving muscles regardless of how the effort feels or how fit the athlete is. Training doesn't move that ceiling much — what it moves is how efficiently the body manages heat on the way there (earlier sweating, more of it, better skin blood flow), and how much discomfort a given internal temperature produces along the way.",
-      },
-      {
-        type: "paragraph",
-        text: "Two practical tools compound with acclimatization rather than replacing it. Precooling — an ice-slurry drink or a cold towel before a hot session — measurably extends time to exhaustion and is now standard practice for elite championship teams competing in heat. And self-talk trained specifically around heat discomfort (replacing \"it's so hot\" with something like \"keep pushing, you're doing well\") has been shown to push the core temperature at which a trained athlete quits meaningfully higher — direct evidence that perceived heat, not just measured heat, governs how a hot session actually goes (see Self-Talk, Trained Rather Than Improvised in Sports Psychology for the protocol). Neither tool is a substitute for the two-week exposure block itself, but both are legitimate ways to make that block, and the race it's preparing for, more tolerable.",
-      },
-      { type: "heading", text: "Individualizing the Load", level: 3 },
-      {
-        type: "callout",
-        variant: "advanced",
-        title: "Signals that it's time to back off, not push through",
-        text: "Multi-signal intensity control matters more here than in almost any other kind of training week, precisely because the whole approach is built on staying controlled rather than on grinding — see How Precise Does Threshold Intensity Actually Need to Be? in Data & Analytics for the full cross-check method (heart rate, talk test, and perceived effort together, not any one of them alone). As a rough calibration: a warm-up heart rate that's higher than usual, or a session where heart rate won't climb at a pace that normally produces a given lactate reading, are both signals to shorten that session rather than push through it — the method depends on every session actually landing where it's supposed to, and a session that costs too much undoes the benefit of the one after it. In-season, when racing takes priority over building, the volume of double-threshold work typically comes down first — single threshold sessions instead of doubles — while keeping the intensity control itself just as strict.",
-      },
-      {
-        type: "paragraph",
-        text: "One more small, genuinely unresolved detail worth knowing rather than acting on: some athletes report a lower lactate reading in the evening session of a double-threshold day than the morning session at the same effort, possibly related to running the second session in a partially glycogen-reduced state left over from the morning — see How Much Carbohydrate a Session Actually Needs in Nutrition & Fueling for the general fueling picture this fits inside of. Whether that's a real, exploitable training signal or just a curiosity isn't settled, and it isn't a reason to deliberately underfuel — it's mentioned here only because it's the kind of pattern a runner logging their own lactate numbers will eventually notice and wonder about.",
-      },
-      {
-        type: "callout",
-        variant: "takeaway",
-        title: "Key Takeaways",
-        items: [
-          "A beginner needs a feeling (\"pleasantly tired\"), not a pace — no chart can predict how far or fast a specific new runner should go on day one.",
-          "Advanced periodization (double threshold, clustered quality work) is a tool for an athlete who already has a large, established aerobic base — it solves a different problem than a beginner plan, and isn't a shortcut past building that base first.",
-          "Whichever plan you're on, treat multi-signal intensity control (heart rate, talk test, perceived effort together) as more important than hitting a prescribed number — a session that costs too much undoes the benefit of the one after it.",
-          "Environmental adaptation (heat, altitude) is trainable on its own timeline — heat acclimatizes in about two weeks, altitude takes six to twelve — so build the exposure block into the plan deliberately rather than hoping race-day conditions cooperate.",
-        ],
-      },
-    ],
+    lastUpdated: "2026-07-15",
+    // Rendered by its own ToolComponent (see TrainingPlansHome in
+    // sectionTools, [slug]/page.tsx) -- intentionally has no `content` of
+    // its own anymore. This used to carry a beginner-program essay and an
+    // advanced-periodization essay, neither of which was really about
+    // training PLANS; the beginner half moved to How to Start Running
+    // (Getting Started), the advanced half moved into Workout Library. The
+    // 10 actual plans live at /training-plans/[plan] (src/app/
+    // training-plans/[plan]/page.tsx), driven by
+    // src/lib/training-plans/data.ts.
   },
   {
     slug: "sports-psychology",
@@ -2657,6 +2690,46 @@ export const sections: Section[] = [
     mission:
       "Find the flat-ground effort a hill pace was really worth, or the pace to target on a grade for an even effort.",
     topics: ["Grade-adjusted pace", "Vertical speed targets", "Uphill/downhill asymmetry"],
+    category: "tools",
+  },
+  {
+    slug: "pace-percent-calculator",
+    title: "Pace Percent Calculator",
+    mission:
+      "Find a workout pace as a percentage of a reference pace, or back-solve the reference pace a workout implies -- the percentage-based method Renato Canova and other coaches use to prescribe intervals.",
+    topics: ["Percent of pace vs. percent of speed", "Forward and reverse calculations", "Unit conversion"],
+    category: "tools",
+  },
+  {
+    slug: "cv-threshold-calculator",
+    title: "Threshold, CV & VO2max Pace Calculator",
+    mission:
+      "Predict threshold, critical velocity, and VO2max training paces (with uncertainty ranges, not just one number) from a single 800m-10K performance.",
+    topics: ["Statistically-grounded pace prediction", "Safe vs. median estimates", "Age-adjusted"],
+    category: "tools",
+  },
+  {
+    slug: "race-pace-calculator",
+    title: "Race Pace Calculator",
+    mission:
+      "Convert between a goal race time and the pace required to run it, for any standard or custom distance and split unit.",
+    topics: ["Race time to pace", "Pace to race time", "Custom distances and splits"],
+    category: "tools",
+  },
+  {
+    slug: "hr-threshold-calculator",
+    title: "LT1 & LT2 Heart Rate Reference Ranges",
+    mission:
+      "See where the aerobic threshold (LT1) and lactate threshold (LT2) typically fall on a heart rate monitor, from a real meta-analysis rather than a fixed rule of thumb.",
+    topics: ["Meta-analytic reference ranges", "% of max HR and HR reserve", "Population variability"],
+    category: "tools",
+  },
+  {
+    slug: "tinman-calculator",
+    title: "Tinman Running Calculator",
+    mission:
+      "Independently reverse-engineered from Tom Schwartz's public running calculator -- a performance rating, 30 equivalent race predictions, and paces for all 13 training zones from one recent race.",
+    topics: ["Performance rating", "Equivalent race times", "13 training zones"],
     category: "tools",
   },
 ];

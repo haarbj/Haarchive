@@ -21,6 +21,12 @@ import { CoachingLibraryHome } from "@/components/coaches/coaching-library-home"
 import { AthleteLibraryHome } from "@/components/athletes/athlete-library-home";
 import { EnvironmentalCalculator } from "@/components/environmental-calculator";
 import { GapCalculator } from "@/components/gap-calculator";
+import { PacePercentCalculator } from "@/components/pace-percent-calculator";
+import { CvThresholdCalculator } from "@/components/cv-threshold-calculator";
+import { RacePaceCalculator } from "@/components/race-pace-calculator";
+import { HrThresholdCalculator } from "@/components/hr-threshold-calculator";
+import { TinmanCalculator } from "@/components/tinman-calculator";
+import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
@@ -39,6 +45,12 @@ const sectionTools: Record<string, ComponentType> = {
   "pace-calculator": PaceCalculator,
   "environmental-calculator": EnvironmentalCalculator,
   "gap-calculator": GapCalculator,
+  "pace-percent-calculator": PacePercentCalculator,
+  "cv-threshold-calculator": CvThresholdCalculator,
+  "race-pace-calculator": RacePaceCalculator,
+  "hr-threshold-calculator": HrThresholdCalculator,
+  "tinman-calculator": TinmanCalculator,
+  "training-plans": TrainingPlansHome,
   contact: ContactPage,
   "training-philosophy": TrainingPhilosophyPage,
   "coaching-library": CoachingLibraryHome,
