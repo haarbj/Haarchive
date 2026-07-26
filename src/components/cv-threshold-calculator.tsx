@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 
 import { ContentCallout } from "@/components/content-callout";
+import { FitnessModelComparisonNote } from "@/components/fitness-model-comparison-note";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import {
@@ -558,6 +559,8 @@ export function CvThresholdCalculator() {
         )}
       </div>
 
+      <FitnessModelComparisonNote current="cv-threshold" />
+
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
         Following a percentage-based plan instead? The{" "}
         <Link
@@ -566,14 +569,7 @@ export function CvThresholdCalculator() {
         >
           Pace Percent Calculator
         </Link>{" "}
-        turns any of these paces into a percentage-based workout target, or the{" "}
-        <Link
-          href="/pace-calculator"
-          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
-        >
-          Pace &amp; Heart Rate Calculator
-        </Link>{" "}
-        covers race-time prediction and Karvonen heart-rate zones.
+        turns any of these paces into a percentage-based workout target.
       </p>
 
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
@@ -610,17 +606,6 @@ export function CvThresholdCalculator() {
         library.
       </p>
 
-      <p className="text-xs text-zinc-600 dark:text-zinc-300">
-        Want a second set of training paces built on a different model, plus a performance rating and equivalent
-        times across 30 distances? Try the{" "}
-        <Link
-          href="/tinman-calculator"
-          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
-        >
-          Tinman Running Calculator
-        </Link>
-        .
-      </p>
     </div>
   );
 }

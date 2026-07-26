@@ -3,6 +3,7 @@
 import { useEffect, useId } from "react";
 import Link from "next/link";
 
+import { FitnessModelComparisonNote } from "@/components/fitness-model-comparison-note";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -1250,6 +1251,8 @@ export function PaceCalculator() {
           .
         </p>
       </div>
+
+      <FitnessModelComparisonNote current="pace" />
 
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
         Training on hills or a treadmill incline? The{" "}

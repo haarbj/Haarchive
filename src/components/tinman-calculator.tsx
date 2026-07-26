@@ -3,6 +3,7 @@
 import { useEffect, useId } from "react";
 import Link from "next/link";
 
+import { FitnessModelComparisonNote } from "@/components/fitness-model-comparison-note";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -321,16 +322,10 @@ export function TinmanCalculator() {
             </div>
           </details>
 
+          <FitnessModelComparisonNote current="tinman" />
+
           <p className="text-xs text-zinc-600 dark:text-zinc-300">
-            Want uncertainty ranges around each pace instead of point estimates, built from a published
-            meta-analysis rather than a single calculator&rsquo;s model? See the{" "}
-            <Link
-              href="/cv-threshold-calculator"
-              className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
-            >
-              Threshold, CV &amp; VO2max Pace Calculator
-            </Link>{" "}
-            or convert any of these paces to a finish time (or back) with the{" "}
+            Convert any of these paces to a finish time (or back) with the{" "}
             <Link
               href="/race-pace-calculator"
               className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
