@@ -2732,6 +2732,14 @@ export const sections: Section[] = [
     topics: ["Performance rating", "Equivalent race times", "13 training zones"],
     category: "tools",
   },
+  {
+    slug: "marathon-pacing-calculator",
+    title: "Marathon Pacing Calculator",
+    mission:
+      "Mile-by-mile marathon pacing built from real terrain, weather, and fatigue physiology -- not a preset pace table. Upload a course, pick a strategy and risk tolerance, and get paces, fueling, and an explanation for every mile.",
+    topics: ["Terrain- and weather-adjusted pacing", "Glycogen and durability tracking", "Course-adaptive strategies"],
+    category: "tools",
+  },
 ];
 
 export const sectionMap = new Map(
