@@ -3,11 +3,12 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
 
+import { LocationSearchField } from "@/components/location-search-field";
 import { RouteImportPanel } from "@/components/route-import-panel";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { Button } from "@/components/ui/button";
 import { LabeledInput } from "@/components/ui/labeled-input";
-import { WindCompass } from "@/components/wind-compass";
+import { compassPointLabel, WindCompass } from "@/components/wind-compass";
 import {
   isWithinModelDomain,
   predictSpeeds,
@@ -15,6 +16,7 @@ import {
   type CvThresholdModel,
 } from "@/lib/cv-threshold-math";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
+import { useEnvironmentalWeather } from "@/lib/environmental/use-environmental-weather";
 import { buildFuelingSchedule, computeFuelingTargets } from "@/lib/marathon-pacing/fueling-engine";
 import { analyzeCourse, type CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { buildDisplaySplits } from "@/lib/marathon-pacing/pace-rounding";
@@ -111,6 +113,7 @@ type PersistedState = {
   courseSource: "upload" | "preset";
   presetCourseId: PresetCourseId | "";
   useConditions: boolean;
+  weatherSource: "manual" | "auto";
   tempFInput: string;
   humidityInput: string;
   windMphInput: string;
@@ -177,8 +180,16 @@ function fToC(f: number): number {
   return ((f - 32) * 5) / 9;
 }
 
+function cToF(c: number): number {
+  return (c * 9) / 5 + 32;
+}
+
 function mphToMS(mph: number): number {
   return mph * 0.44704;
+}
+
+function msToMph(ms: number): number {
+  return ms / 0.44704;
 }
 
 function lbsToKg(lbs: number): number {
@@ -316,10 +327,12 @@ export function MarathonPacingCalculator() {
   const [strategyId, setStrategyId] = usePersistedField<StrategyId>(persisted?.strategyId, "even-effort");
   const [risk, setRisk] = usePersistedField<RiskLevel>(persisted?.risk, "moderate");
   const [useConditions, setUseConditions] = usePersistedField(persisted?.useConditions, false);
+  const [weatherSource, setWeatherSource] = usePersistedField<"manual" | "auto">(persisted?.weatherSource, "manual");
   const [tempFInput, setTempFInput] = usePersistedField(persisted?.tempFInput, "55");
   const [humidityInput, setHumidityInput] = usePersistedField(persisted?.humidityInput, "50");
   const [windMphInput, setWindMphInput] = usePersistedField(persisted?.windMphInput, "0");
   const [windFromDeg, setWindFromDeg] = usePersistedField(persisted?.windFromDeg, 0);
+  const envWeather = useEnvironmentalWeather();
   const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
   const [compareEnabled, setCompareEnabled] = usePersistedField(persisted?.compareEnabled, false);
   const [scenarioType, setScenarioType] = usePersistedField<ScenarioType>(persisted?.scenarioType, "temperature");
@@ -415,12 +428,23 @@ export function MarathonPacingCalculator() {
 
   const weatherConditions: WeatherConditions | undefined = useMemo(() => {
     if (!useConditions) return undefined;
+    if (weatherSource === "auto") {
+      // Before a fetch resolves (or if it fails/the date's too far out for
+      // Open-Meteo's forecast window), fall back to the same ideal baseline
+      // "Ideal" mode uses -- never bare `undefined` here, which would
+      // silently and invisibly behave like "Ideal" while the UI still says
+      // "Set conditions."
+      return (
+        envWeather.fetchedConditions ??
+        buildWeatherConditions(IDEAL_BASELINE_TEMP_F, IDEAL_BASELINE_HUMIDITY_PCT, IDEAL_BASELINE_WIND_MPH, 0)
+      );
+    }
     const tempFRaw = Number(tempFInput);
     const humidityRaw = Number(humidityInput);
     const windMphRaw = Number(windMphInput);
     if (!Number.isFinite(tempFRaw) || !Number.isFinite(humidityRaw) || !Number.isFinite(windMphRaw)) return undefined;
     return buildWeatherConditions(tempFRaw, humidityRaw, windMphRaw, windFromDeg);
-  }, [useConditions, tempFInput, humidityInput, windMphInput, windFromDeg]);
+  }, [useConditions, weatherSource, envWeather.fetchedConditions, tempFInput, humidityInput, windMphInput, windFromDeg]);
 
   const canGeneratePlan = fitnessPaces !== null && goalTimeSeconds !== null && goalTimeSeconds > 0;
 
@@ -456,24 +480,38 @@ export function MarathonPacingCalculator() {
   // fixed IDEAL_BASELINE_* constants, never the (possibly stale, hidden)
   // input fields -- otherwise "Ideal" could describe itself using whatever
   // was last typed into Set Conditions before switching back.
+  // Same "never describe a mode using another mode's hidden state" rule
+  // applies one level deeper here: when Set Conditions is fetching weather
+  // automatically, the baseline must come from the fetched conditions, not
+  // from the manual temp/humidity/wind fields sitting unused underneath it.
   const scenarioBaselineTempFRaw = Number(tempFInput);
   const scenarioBaselineHumidityRaw = Number(humidityInput);
   const scenarioBaselineWindMphRaw = Number(windMphInput);
   const scenarioBaselineTempF = useConditions
-    ? Number.isFinite(scenarioBaselineTempFRaw)
-      ? scenarioBaselineTempFRaw
-      : IDEAL_BASELINE_TEMP_F
+    ? weatherSource === "auto"
+      ? (envWeather.fetchedConditions ? cToF(envWeather.fetchedConditions.tempC) : IDEAL_BASELINE_TEMP_F)
+      : Number.isFinite(scenarioBaselineTempFRaw)
+        ? scenarioBaselineTempFRaw
+        : IDEAL_BASELINE_TEMP_F
     : IDEAL_BASELINE_TEMP_F;
   const scenarioBaselineHumidity = useConditions
-    ? Number.isFinite(scenarioBaselineHumidityRaw)
-      ? scenarioBaselineHumidityRaw
-      : IDEAL_BASELINE_HUMIDITY_PCT
+    ? weatherSource === "auto"
+      ? (envWeather.fetchedConditions?.relativeHumidityPct ?? IDEAL_BASELINE_HUMIDITY_PCT)
+      : Number.isFinite(scenarioBaselineHumidityRaw)
+        ? scenarioBaselineHumidityRaw
+        : IDEAL_BASELINE_HUMIDITY_PCT
     : IDEAL_BASELINE_HUMIDITY_PCT;
   const scenarioBaselineWindMph = useConditions
-    ? Number.isFinite(scenarioBaselineWindMphRaw)
-      ? scenarioBaselineWindMphRaw
-      : IDEAL_BASELINE_WIND_MPH
+    ? weatherSource === "auto"
+      ? (envWeather.fetchedConditions ? msToMph(envWeather.fetchedConditions.windSpeedMS) : IDEAL_BASELINE_WIND_MPH)
+      : Number.isFinite(scenarioBaselineWindMphRaw)
+        ? scenarioBaselineWindMphRaw
+        : IDEAL_BASELINE_WIND_MPH
     : IDEAL_BASELINE_WIND_MPH;
+  const scenarioBaselineWindFromDeg =
+    useConditions && weatherSource === "auto" && envWeather.fetchedConditions
+      ? envWeather.fetchedConditions.windFromBearingDeg
+      : windFromDeg;
 
   const scenarioWeatherConditions: WeatherConditions | undefined = useMemo(() => {
     if (!compareEnabled) return undefined;
@@ -481,12 +519,12 @@ export function MarathonPacingCalculator() {
     if (scenarioType === "temperature") {
       const deltaFRaw = Number(scenarioTempDeltaFInput);
       const deltaF = Number.isFinite(deltaFRaw) ? deltaFRaw : 0;
-      return buildWeatherConditions(scenarioBaselineTempF + deltaF, scenarioBaselineHumidity, scenarioBaselineWindMph, windFromDeg);
+      return buildWeatherConditions(scenarioBaselineTempF + deltaF, scenarioBaselineHumidity, scenarioBaselineWindMph, scenarioBaselineWindFromDeg);
     }
     if (scenarioType === "humidity") {
       const deltaPctRaw = Number(scenarioHumidityDeltaInput);
       const deltaPct = Number.isFinite(deltaPctRaw) ? deltaPctRaw : 0;
-      return buildWeatherConditions(scenarioBaselineTempF, scenarioBaselineHumidity + deltaPct, scenarioBaselineWindMph, windFromDeg);
+      return buildWeatherConditions(scenarioBaselineTempF, scenarioBaselineHumidity + deltaPct, scenarioBaselineWindMph, scenarioBaselineWindFromDeg);
     }
     if (scenarioType === "wind") {
       const headwindMphRaw = Number(scenarioWindMphInput);
@@ -507,7 +545,7 @@ export function MarathonPacingCalculator() {
     scenarioBaselineTempF,
     scenarioBaselineHumidity,
     scenarioBaselineWindMph,
-    windFromDeg,
+    scenarioBaselineWindFromDeg,
     course,
     weatherConditions,
   ]);
@@ -587,6 +625,7 @@ export function MarathonPacingCalculator() {
         courseSource,
         presetCourseId,
         useConditions,
+        weatherSource,
         tempFInput,
         humidityInput,
         windMphInput,
@@ -871,58 +910,110 @@ export function MarathonPacingCalculator() {
               actually produces given the weather, same as a coach would tell you: don&rsquo;t push harder to fight
               the heat, expect to run slower.
             </p>
-            <div className="flex flex-wrap items-start gap-6">
-              <LabeledInput
-                id={`${baseId}-temp`}
-                label="Temperature (°F)"
-                type="number"
-                min={-20}
-                max={130}
-                value={tempFInput}
-                onChange={(event) => {
-                  setTempFInput(event.target.value);
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setWeatherSource("manual");
                   persistState();
                 }}
-                className="w-20"
-              />
-              <LabeledInput
-                id={`${baseId}-humidity`}
-                label="Humidity (%)"
-                type="number"
-                min={0}
-                max={100}
-                value={humidityInput}
-                onChange={(event) => {
-                  setHumidityInput(event.target.value);
+                aria-pressed={weatherSource === "manual"}
+                className={segmentedButtonClass(weatherSource === "manual")}
+              >
+                Enter manually
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setWeatherSource("auto");
+                  envWeather.setWhenMode("specific");
                   persistState();
                 }}
-                className="w-20"
-              />
-              <LabeledInput
-                id={`${baseId}-wind`}
-                label="Wind speed (mph)"
-                type="number"
-                min={0}
-                max={80}
-                value={windMphInput}
-                onChange={(event) => {
-                  setWindMphInput(event.target.value);
-                  persistState();
-                }}
-                className="w-20"
-              />
-              <div>
-                <p className={labelClass}>Wind from</p>
-                <WindCompass
-                  angleDeg={windFromDeg}
-                  onChange={(deg) => {
-                    setWindFromDeg(deg);
+                aria-pressed={weatherSource === "auto"}
+                className={segmentedButtonClass(weatherSource === "auto")}
+              >
+                Fetch for race day
+              </button>
+            </div>
+
+            {weatherSource === "manual" ? (
+              <div className="flex flex-wrap items-start gap-6">
+                <LabeledInput
+                  id={`${baseId}-temp`}
+                  label="Temperature (°F)"
+                  type="number"
+                  min={-20}
+                  max={130}
+                  value={tempFInput}
+                  onChange={(event) => {
+                    setTempFInput(event.target.value);
                     persistState();
                   }}
-                  variant="wind"
+                  className="w-20"
                 />
+                <LabeledInput
+                  id={`${baseId}-humidity`}
+                  label="Humidity (%)"
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={humidityInput}
+                  onChange={(event) => {
+                    setHumidityInput(event.target.value);
+                    persistState();
+                  }}
+                  className="w-20"
+                />
+                <LabeledInput
+                  id={`${baseId}-wind`}
+                  label="Wind speed (mph)"
+                  type="number"
+                  min={0}
+                  max={80}
+                  value={windMphInput}
+                  onChange={(event) => {
+                    setWindMphInput(event.target.value);
+                    persistState();
+                  }}
+                  className="w-20"
+                />
+                <div>
+                  <p className={labelClass}>Wind from</p>
+                  <WindCompass
+                    angleDeg={windFromDeg}
+                    onChange={(deg) => {
+                      setWindFromDeg(deg);
+                      persistState();
+                    }}
+                    variant="wind"
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-3">
+                <LocationSearchField search={envWeather.locationSearch} placeholder="Race city, e.g. Boston, MA" message={envWeather.weatherMessage} />
+                <LabeledInput
+                  id={`${baseId}-race-when`}
+                  label="Race date & time"
+                  type="datetime-local"
+                  value={envWeather.whenInput}
+                  onChange={(event) => envWeather.setWhenInput(event.target.value)}
+                  className="w-56"
+                />
+                <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                  Past dates use historical weather records; future dates (up to ~16 days out) use the forecast --
+                  further out than that, this falls back to the ideal-conditions baseline until closer to race day.
+                </p>
+                {envWeather.fetchedConditions && (
+                  <p className="text-sm text-zinc-700 dark:text-zinc-200">
+                    {Math.round(cToF(envWeather.fetchedConditions.tempC))}°F, {Math.round(envWeather.fetchedConditions.relativeHumidityPct)}% humidity,{" "}
+                    {Math.round(msToMph(envWeather.fetchedConditions.windSpeedMS))} mph wind from{" "}
+                    {compassPointLabel(envWeather.fetchedConditions.windFromBearingDeg)}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
