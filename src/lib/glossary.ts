@@ -101,6 +101,21 @@ export const glossaryTerms: GlossaryTerm[] = [
     href: "/nutrition-and-fueling#gut-training-is-a-real-trainable-skill",
   },
   {
+    id: "gi-distress",
+    aliases: ["GI distress", "gastrointestinal distress"],
+    href: "/nutrition-and-fueling#gut-training-is-a-real-trainable-skill",
+  },
+  {
+    id: "carbohydrate-oxidation",
+    aliases: ["exogenous carbohydrate oxidation", "carbohydrate oxidation", "exogenous carbohydrate"],
+    href: "/nutrition-and-fueling#why-fueling-mixes-glucose-and-fructose",
+  },
+  {
+    id: "bonking",
+    aliases: ["bonking", "bonk"],
+    href: "/the-aerobic-base#training-the-fat-burning-ceiling",
+  },
+  {
     id: "central-governor",
     aliases: ["central governor"],
     href: "/exercise-physiology#what-actually-limits-endurance-two-competing-models",
