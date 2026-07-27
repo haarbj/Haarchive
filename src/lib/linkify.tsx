@@ -94,10 +94,14 @@ export function linkifyText(
 // regexes are used throughout so a fresh `.exec` always reports the
 // *first* occurrence regardless of any previous call -- required for this
 // to recurse safely (see parseInline below).
-const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/;
-const BOLD_RE = /\*\*([^*]+)\*\*/;
-const UNDERLINE_RE = /\+\+([^+]+)\+\+/;
-const ITALIC_RE = /_([^_]+)_/;
+// Exported so src/lib/inline-marks.ts (the editor's DOM-free AST parser)
+// can share the exact same match rules instead of maintaining its own --
+// the editor and the published-page renderer must never disagree about
+// what counts as a mark.
+export const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/;
+export const BOLD_RE = /\*\*([^*]+)\*\*/;
+export const UNDERLINE_RE = /\+\+([^+]+)\+\+/;
+export const ITALIC_RE = /_([^_]+)_/;
 
 const LINK_CLASSNAME =
   "underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70";

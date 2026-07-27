@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState, type DragEvent } from "react";
+import { useState, type DragEvent } from "react";
 
 import type { ContentBlock, ListItem } from "@/lib/sections";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormattableEditable, InlineFormattableField } from "./formattable-editable";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -37,11 +38,16 @@ function defaultBlockFor(type: ContentBlock["type"]): ContentBlock {
   }
 }
 
-// A constrained, form-based block editor -- not a rich-text/WYSIWYG engine
-// on purpose (see the contributor-platform planning discussion): every
-// block type gets a small set of plain fields matching ContentBlock
-// exactly, so what a contributor builds here is guaranteed to render
-// through the same ArticleLayout Foundations pages already use.
+// A constrained, form-based block editor -- every block type gets a small
+// set of fields matching ContentBlock exactly, so what a contributor
+// builds here is guaranteed to render through the same ArticleLayout
+// Foundations pages already use. Free text fields (FormattableEditable /
+// InlineFormattableField, from ./formattable-editable) are a genuine
+// live-formatting contenteditable surface, not plain textareas -- typing
+// or toolbar-applying **bold**/_italic_/++underline++/[link](href) renders
+// the real formatting immediately, with no separate preview needed to
+// check it, while still reading/writing the exact same marker-syntax
+// string the rest of the app already stores and renders.
 //
 // Reordering supports two paths, since contributors asked for something
 // closer to Google Docs: dragging a card's handle to its new spot directly,
@@ -185,7 +191,7 @@ export function ContentBlockEditor({
 
               {block.type === "paragraph" && (
                 <div className="space-y-2">
-                  <FormattableTextarea
+                  <FormattableEditable
                     rows={3}
                     value={block.text}
                     onChange={(text) => update(index, { ...block, text })}
@@ -217,7 +223,7 @@ export function ContentBlockEditor({
 
               {block.type === "quote" && (
                 <div className="space-y-2">
-                  <FormattableTextarea
+                  <FormattableEditable
                     rows={2}
                     value={block.text}
                     onChange={(text) => update(index, { ...block, text })}
@@ -253,7 +259,7 @@ export function ContentBlockEditor({
                     onChange={(e) => update(index, { ...block, title: e.target.value || undefined })}
                     placeholder="Title (optional)"
                   />
-                  <FormattableTextarea
+                  <FormattableEditable
                     rows={2}
                     value={block.text ?? ""}
                     onChange={(text) => update(index, { ...block, text: text || undefined })}
@@ -362,115 +368,6 @@ function InsertDivider({
   );
 }
 
-// Wraps the current selection in `marker` on both sides (e.g. selecting
-// "very" and clicking Bold turns it into "**very**"), matching how a
-// Google Docs-style toolbar button behaves -- select first, then click.
-// Collapsed selections still insert an empty pair with the cursor left
-// in the middle, so typing starts already-marked. Works the same way on
-// a single-line input as a multi-line textarea -- both expose the same
-// selectionStart/selectionEnd/setSelectionRange API.
-function wrapSelection(el: HTMLTextAreaElement | HTMLInputElement, marker: string) {
-  const { value } = el;
-  // HTMLInputElement types these as nullable (some input types don't
-  // support selection at all) even though our text inputs always have
-  // them set at runtime -- default to "cursor at the end" if either is
-  // somehow null.
-  const selectionStart = el.selectionStart ?? value.length;
-  const selectionEnd = el.selectionEnd ?? value.length;
-  const selected = value.slice(selectionStart, selectionEnd);
-  return {
-    value: value.slice(0, selectionStart) + marker + selected + marker + value.slice(selectionEnd),
-    selectionStart: selectionStart + marker.length,
-    selectionEnd: selectionStart + marker.length + selected.length,
-  };
-}
-
-const FORMAT_MARKS = [
-  { marker: "**", label: "B", title: "Bold", className: "font-bold", shortcutKey: "b" },
-  { marker: "_", label: "I", title: "Italic", className: "italic", shortcutKey: "i" },
-  { marker: "++", label: "U", title: "Underline", className: "underline decoration-dotted", shortcutKey: "u" },
-] as const;
-
-// Shared by every field that supports formatting -- the multi-line
-// FormattableTextarea below and each single-line bullet-item input in
-// StringListEditor -- so Cmd/Ctrl+B/I/U behaves identically everywhere
-// text can be typed, not just in the fields with a visible toolbar.
-function matchFormatShortcut(e: { metaKey: boolean; ctrlKey: boolean; key: string }) {
-  if (!(e.metaKey || e.ctrlKey)) return null;
-  return FORMAT_MARKS.find((m) => m.shortcutKey === e.key.toLowerCase()) ?? null;
-}
-
-// A textarea plus a small Bold/Italic/Underline row -- the closest this
-// plain-fields editor gets to a Google Docs toolbar. Cmd/Ctrl+B/I/U work
-// too, wrapping the current selection exactly like clicking the matching
-// button. It doesn't render the formatting live in the box (this stays a
-// plain <textarea>, not a contenteditable surface); it wraps the
-// selection in the same **/_/++ marks linkifyContent renders on the
-// published page, so what a contributor sees here is the source, not a
-// preview.
-function FormattableTextarea({
-  value,
-  onChange,
-  rows,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  rows: number;
-  placeholder?: string;
-}) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  function applyMark(marker: string) {
-    const el = ref.current;
-    if (!el) return;
-    const next = wrapSelection(el, marker);
-    onChange(next.value);
-    // Re-render happens before this fires, so the selection can be
-    // restored on the same element once its value has actually updated.
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(next.selectionStart, next.selectionEnd);
-    });
-  }
-
-  return (
-    <div className="space-y-1">
-      <div className="flex gap-1">
-        {FORMAT_MARKS.map(({ marker, label, title, className }) => (
-          <button
-            key={marker}
-            type="button"
-            title={title}
-            aria-label={title}
-            // Prevents the textarea from blurring (and its selection from
-            // collapsing) before the click handler gets a chance to read it.
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => applyMark(marker)}
-            className={`rounded border border-black/10 px-2 text-xs text-zinc-600 hover:bg-black/5 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/5 ${className}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <textarea
-        ref={ref}
-        className={fieldClass}
-        rows={rows}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          const mark = matchFormatShortcut(e);
-          if (!mark) return;
-          e.preventDefault();
-          applyMark(mark.marker);
-        }}
-        placeholder={placeholder}
-      />
-    </div>
-  );
-}
-
 // Shared by every place an item needs to swap with a neighbor (bullet
 // items here, list items and their sub-items below) -- returns null at
 // either boundary instead of wrapping, matching the block-level Up/Down
@@ -492,21 +389,6 @@ function StringListEditor({
   onChange: (items: string[]) => void;
   label?: string;
 }) {
-  // Keyed by item index rather than one useRef per item -- the list can
-  // grow/shrink/reorder, and hooks can't be called inside `.map`.
-  const inputs = useRef(new Map<number, HTMLInputElement>());
-
-  function applyMarkAt(i: number, marker: string) {
-    const el = inputs.current.get(i);
-    if (!el) return;
-    const next = wrapSelection(el, marker);
-    onChange(items.map((it, idx) => (idx === i ? next.value : it)));
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(next.selectionStart, next.selectionEnd);
-    });
-  }
-
   function move(i: number, direction: -1 | 1) {
     const next = moveInArray(items, i, direction);
     if (next) onChange(next);
@@ -517,20 +399,10 @@ function StringListEditor({
       <p className={labelClass}>{label}</p>
       {items.map((item, i) => (
         <div key={i} className="flex gap-2">
-          <input
-            ref={(el) => {
-              if (el) inputs.current.set(i, el);
-              else inputs.current.delete(i);
-            }}
-            className={`${fieldClass} flex-1`}
+          <InlineFormattableField
+            className="flex-1"
             value={item}
-            onChange={(e) => onChange(items.map((it, idx) => (idx === i ? e.target.value : it)))}
-            onKeyDown={(e) => {
-              const mark = matchFormatShortcut(e);
-              if (!mark) return;
-              e.preventDefault();
-              applyMarkAt(i, mark.marker);
-            }}
+            onChange={(text) => onChange(items.map((it, idx) => (idx === i ? text : it)))}
           />
           <button
             type="button"
@@ -582,29 +454,8 @@ function ListItemsEditor({
   items: ListItem[];
   onChange: (items: ListItem[]) => void;
 }) {
-  // Keyed by a composite string ("3" for a top-level item, "3-1" for its
-  // second sub-item) so both levels can share one ref map and one
-  // applyMark implementation.
-  const inputs = useRef(new Map<string, HTMLInputElement>());
-
-  function setInputRef(key: string, el: HTMLInputElement | null) {
-    if (el) inputs.current.set(key, el);
-    else inputs.current.delete(key);
-  }
-
   function updateItem(i: number, next: ListItem) {
     onChange(items.map((it, idx) => (idx === i ? next : it)));
-  }
-
-  function applyMarkAt(key: string, marker: string, commit: (text: string) => void) {
-    const el = inputs.current.get(key);
-    if (!el) return;
-    const next = wrapSelection(el, marker);
-    commit(next.value);
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(next.selectionStart, next.selectionEnd);
-    });
   }
 
   function setText(i: number, text: string) {
@@ -643,22 +494,10 @@ function ListItemsEditor({
       {items.map((item, i) => {
         const text = textOfListItem(item);
         const subItems = subItemsOfListItem(item);
-        const key = `${i}`;
         return (
           <div key={i} className="space-y-2">
             <div className="flex gap-2">
-              <input
-                ref={(el) => setInputRef(key, el)}
-                className={`${fieldClass} flex-1`}
-                value={text}
-                onChange={(e) => setText(i, e.target.value)}
-                onKeyDown={(e) => {
-                  const mark = matchFormatShortcut(e);
-                  if (!mark) return;
-                  e.preventDefault();
-                  applyMarkAt(key, mark.marker, (next) => setText(i, next));
-                }}
-              />
+              <InlineFormattableField className="flex-1" value={text} onChange={(next) => setText(i, next)} />
               <button
                 type="button"
                 onClick={() => moveItem(i, -1)}
@@ -694,48 +533,38 @@ function ListItemsEditor({
 
             {subItems.length > 0 ? (
               <div className="ml-6 space-y-2 border-l-2 border-black/5 pl-3 dark:border-white/10">
-                {subItems.map((subItem, j) => {
-                  const subKey = `${i}-${j}`;
-                  return (
-                    <div key={j} className="flex gap-2">
-                      <input
-                        ref={(el) => setInputRef(subKey, el)}
-                        className={`${fieldClass} flex-1`}
-                        value={subItem}
-                        onChange={(e) => setSubItem(i, j, e.target.value)}
-                        onKeyDown={(e) => {
-                          const mark = matchFormatShortcut(e);
-                          if (!mark) return;
-                          e.preventDefault();
-                          applyMarkAt(subKey, mark.marker, (next) => setSubItem(i, j, next));
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => moveSubItem(i, j, -1)}
-                        disabled={j === 0}
-                        className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveSubItem(i, j, 1)}
-                        disabled={j === subItems.length - 1}
-                        className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
-                      >
-                        ↓
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeSubItem(i, j)}
-                        className="text-xs font-semibold text-red-700 dark:text-red-400"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  );
-                })}
+                {subItems.map((subItem, j) => (
+                  <div key={j} className="flex gap-2">
+                    <InlineFormattableField
+                      className="flex-1"
+                      value={subItem}
+                      onChange={(next) => setSubItem(i, j, next)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => moveSubItem(i, j, -1)}
+                      disabled={j === 0}
+                      className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveSubItem(i, j, 1)}
+                      disabled={j === subItems.length - 1}
+                      className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeSubItem(i, j)}
+                      className="text-xs font-semibold text-red-700 dark:text-red-400"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
               </div>
             ) : null}
           </div>
