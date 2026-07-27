@@ -471,6 +471,18 @@ function FormattableTextarea({
   );
 }
 
+// Shared by every place an item needs to swap with a neighbor (bullet
+// items here, list items and their sub-items below) -- returns null at
+// either boundary instead of wrapping, matching the block-level Up/Down
+// buttons' behavior.
+function moveInArray<T>(arr: T[], index: number, direction: -1 | 1): T[] | null {
+  const target = index + direction;
+  if (target < 0 || target >= arr.length) return null;
+  const next = [...arr];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+}
+
 function StringListEditor({
   items,
   onChange,
@@ -495,6 +507,11 @@ function StringListEditor({
     });
   }
 
+  function move(i: number, direction: -1 | 1) {
+    const next = moveInArray(items, i, direction);
+    if (next) onChange(next);
+  }
+
   return (
     <div className="space-y-2">
       <p className={labelClass}>{label}</p>
@@ -515,6 +532,22 @@ function StringListEditor({
               applyMarkAt(i, mark.marker);
             }}
           />
+          <button
+            type="button"
+            onClick={() => move(i, -1)}
+            disabled={i === 0}
+            className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+          >
+            ↑
+          </button>
+          <button
+            type="button"
+            onClick={() => move(i, 1)}
+            disabled={i === items.length - 1}
+            className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+          >
+            ↓
+          </button>
           <button
             type="button"
             onClick={() => onChange(items.filter((_, idx) => idx !== i))}
@@ -563,7 +596,7 @@ function ListItemsEditor({
     onChange(items.map((it, idx) => (idx === i ? next : it)));
   }
 
-  function applyMarkAt(key: string, marker: string, currentText: string, commit: (text: string) => void) {
+  function applyMarkAt(key: string, marker: string, commit: (text: string) => void) {
     const el = inputs.current.get(key);
     if (!el) return;
     const next = wrapSelection(el, marker);
@@ -593,6 +626,16 @@ function ListItemsEditor({
     if (typeof item === "string") return;
     updateItem(i, { ...item, items: item.items.filter((_, idx) => idx !== j) });
   }
+  function moveItem(i: number, direction: -1 | 1) {
+    const next = moveInArray(items, i, direction);
+    if (next) onChange(next);
+  }
+  function moveSubItem(i: number, j: number, direction: -1 | 1) {
+    const item = items[i];
+    if (typeof item === "string") return;
+    const nextSubs = moveInArray(item.items, j, direction);
+    if (nextSubs) updateItem(i, { ...item, items: nextSubs });
+  }
 
   return (
     <div className="space-y-2">
@@ -613,9 +656,25 @@ function ListItemsEditor({
                   const mark = matchFormatShortcut(e);
                   if (!mark) return;
                   e.preventDefault();
-                  applyMarkAt(key, mark.marker, text, (next) => setText(i, next));
+                  applyMarkAt(key, mark.marker, (next) => setText(i, next));
                 }}
               />
+              <button
+                type="button"
+                onClick={() => moveItem(i, -1)}
+                disabled={i === 0}
+                className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                onClick={() => moveItem(i, 1)}
+                disabled={i === items.length - 1}
+                className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+              >
+                ↓
+              </button>
               <button
                 type="button"
                 onClick={() => addSubItem(i)}
@@ -648,9 +707,25 @@ function ListItemsEditor({
                           const mark = matchFormatShortcut(e);
                           if (!mark) return;
                           e.preventDefault();
-                          applyMarkAt(subKey, mark.marker, subItem, (next) => setSubItem(i, j, next));
+                          applyMarkAt(subKey, mark.marker, (next) => setSubItem(i, j, next));
                         }}
                       />
+                      <button
+                        type="button"
+                        onClick={() => moveSubItem(i, j, -1)}
+                        disabled={j === 0}
+                        className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveSubItem(i, j, 1)}
+                        disabled={j === subItems.length - 1}
+                        className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
+                      >
+                        ↓
+                      </button>
                       <button
                         type="button"
                         onClick={() => removeSubItem(i, j)}
