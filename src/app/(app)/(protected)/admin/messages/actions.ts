@@ -35,3 +35,13 @@ export async function markContactMessageRead(
   revalidatePath("/admin/messages");
   return { success: true };
 }
+
+export async function deleteContactMessage(messageId: string): Promise<void> {
+  const session = await requireAdmin();
+  if (!session) return;
+
+  const admin = createServiceRoleClient();
+  await admin.from("contact_messages").delete().eq("id", messageId);
+
+  revalidatePath("/admin/messages");
+}

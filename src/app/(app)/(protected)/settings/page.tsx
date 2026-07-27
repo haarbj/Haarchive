@@ -49,7 +49,7 @@ export default async function SettingsPage() {
         .maybeSingle<CommunityProfile>(),
       supabase
         .from("race_results")
-        .select("id, race_name, race_date, distance_m, finish_time_s")
+        .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
         .order("race_date", { ascending: false })
         .returns<RaceResultRow[]>(),
     ]);

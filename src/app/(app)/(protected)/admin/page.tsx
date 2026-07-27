@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { formatRelativeTime } from "@/lib/format";
 import { CreateInviteForm } from "./create-invite-form";
+import { RevokeInviteButton } from "./revoke-invite-button";
 import { BackLink } from "@/components/ui/back-link";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
@@ -131,15 +132,18 @@ export default async function AdminPage() {
                   className="flex items-center justify-between rounded-xl border border-black/10 bg-white px-4 py-3 text-sm dark:border-white/10 dark:bg-zinc-900"
                 >
                   <span className="font-medium text-zinc-900 dark:text-white">{invite.email}</span>
-                  <span className="text-zinc-600 dark:text-zinc-300">
-                    {invite.redeemed_at ? (
-                      <span className="text-emerald-700 dark:text-emerald-400">
-                        Redeemed {formatRelativeTime(invite.redeemed_at)}
-                      </span>
-                    ) : (
-                      <span>Created {formatRelativeTime(invite.created_at)} · pending</span>
-                    )}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-zinc-600 dark:text-zinc-300">
+                      {invite.redeemed_at ? (
+                        <span className="text-emerald-700 dark:text-emerald-400">
+                          Redeemed {formatRelativeTime(invite.redeemed_at)}
+                        </span>
+                      ) : (
+                        <span>Created {formatRelativeTime(invite.created_at)} · pending</span>
+                      )}
+                    </span>
+                    {!invite.redeemed_at && <RevokeInviteButton inviteId={invite.id} />}
+                  </div>
                 </div>
               ))}
             </div>

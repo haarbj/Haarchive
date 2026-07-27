@@ -193,6 +193,73 @@ export async function addRaceResult(
   return { success: true };
 }
 
+export type UpdateRaceResultState = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function updateRaceResult(
+  _prevState: UpdateRaceResultState,
+  formData: FormData,
+): Promise<UpdateRaceResultState> {
+  const raceResultId = formData.get("raceResultId");
+  if (typeof raceResultId !== "string" || !raceResultId) {
+    return { error: "Missing race result" };
+  }
+
+  const distanceKey = formData.get("distanceKey");
+  const distance = typeof distanceKey === "string" ? raceDistanceMap.get(distanceKey) : undefined;
+  if (!distance) {
+    return { error: "Pick a valid distance" };
+  }
+
+  const parsed = raceResultSchema.safeParse({
+    raceName: formData.get("raceName"),
+    raceDate: formData.get("raceDate"),
+    distanceM: Math.round(distance.meters),
+    finishTimeInput: formData.get("finishTimeInput"),
+    courseType: formData.get("courseType"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Check your race result details" };
+  }
+
+  const finishTimeS = parseTimeToSeconds(parsed.data.finishTimeInput);
+  if (finishTimeS === null) {
+    return { error: "Enter your finish time as mm:ss or h:mm:ss" };
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) {
+    return { error: "Your session expired — sign in again." };
+  }
+
+  // Scoped to both id and user_id -- RLS already enforces owner-only
+  // updates, but matching it explicitly here (as deleteRaceResult already
+  // does) means a wrong/stale id can never silently no-op against someone
+  // else's row.
+  const { error } = await supabase
+    .from("race_results")
+    .update({
+      race_name: parsed.data.raceName,
+      race_date: parsed.data.raceDate,
+      distance_m: parsed.data.distanceM,
+      finish_time_s: finishTimeS,
+      course_type: parsed.data.courseType,
+    })
+    .eq("id", raceResultId)
+    .eq("user_id", userId);
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
 export async function deleteRaceResult(raceResultId: string): Promise<void> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();

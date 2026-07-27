@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
+import { deleteGoal } from "./actions";
 import { EditGoalForm } from "./edit-goal-form";
 import { formatClock, formatDate, formatDistance } from "@/lib/format";
 import { Card } from "@/components/ui/card";
@@ -33,6 +34,7 @@ type GoalCardProps = {
 
 export function GoalCard({ goal, estimate }: GoalCardProps) {
   const [editing, setEditing] = useState(false);
+  const [isDeleting, startDeleteTransition] = useTransition();
 
   if (editing) {
     return (
@@ -60,13 +62,27 @@ export function GoalCard({ goal, estimate }: GoalCardProps) {
             {goal.goal_date && ` · ${formatDate(goal.goal_date)}`}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="shrink-0 text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
-        >
-          Edit
-        </button>
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            disabled={isDeleting}
+            onClick={() => {
+              if (window.confirm("Remove this goal? You can set a new one afterward.")) {
+                startDeleteTransition(() => deleteGoal(goal.id));
+              }
+            }}
+            className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black disabled:opacity-50 dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+          >
+            {isDeleting ? "Removing…" : "Remove"}
+          </button>
+        </div>
       </div>
 
       {goal.goal_time_s && (

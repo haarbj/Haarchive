@@ -4,6 +4,7 @@ import { useActionState, useTransition } from "react";
 
 import {
   addQuestionComment,
+  deleteQuestionComment,
   toggleQuestionCommentResolved,
   type QuestionCommentState,
 } from "@/app/(app)/(protected)/contribute/questions/actions";
@@ -44,14 +45,24 @@ export function QuestionCommentThread({
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-zinc-900 dark:text-white">{c.authorName}</p>
                 {c.isOwn || canModerate ? (
-                  <button
-                    type="button"
-                    disabled={isToggling}
-                    onClick={() => startToggle(() => toggleQuestionCommentResolved(c.id, questionId))}
-                    className="text-xs font-semibold text-zinc-600 dark:text-zinc-300"
-                  >
-                    {c.resolved ? "Reopen" : "Mark resolved"}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => startToggle(() => toggleQuestionCommentResolved(c.id, questionId))}
+                      className="text-xs font-semibold text-zinc-600 dark:text-zinc-300"
+                    >
+                      {c.resolved ? "Reopen" : "Mark resolved"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => startToggle(() => deleteQuestionComment(c.id, questionId))}
+                      className="text-xs font-semibold text-red-700 dark:text-red-400"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 ) : null}
               </div>
               <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{c.comment}</p>

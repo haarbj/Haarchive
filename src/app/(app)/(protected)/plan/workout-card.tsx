@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useId, useTransition } from "react";
 
-import { completeWorkout } from "@/app/(app)/(protected)/plan/actions";
+import { completeWorkout, deleteWorkoutCompletion } from "@/app/(app)/(protected)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import {
   estimatedDurationRangeMin,
@@ -18,6 +18,28 @@ import { ExplainWorkoutButton } from "./explain-workout-button";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+// Mirrors UndoGroupCompletionButton (group-workout-complete-form.tsx)
+// exactly, for an individually-generated plan's workout instead of a
+// coach-authored group one.
+function UndoWorkoutCompletionButton({ workoutId }: { workoutId: string }) {
+  const [isPending, startTransition] = useTransition();
+
+  return (
+    <button
+      type="button"
+      disabled={isPending}
+      onClick={() =>
+        startTransition(async () => {
+          await deleteWorkoutCompletion(workoutId);
+        })
+      }
+      className="-ml-2 inline-flex min-h-12 items-center rounded-lg px-2 text-xs font-semibold text-zinc-500 underline decoration-black/10 underline-offset-2 hover:decoration-black disabled:opacity-60 dark:text-zinc-400 dark:decoration-white/10 dark:hover:decoration-white"
+    >
+      {isPending ? "Saving…" : "Undo"}
+    </button>
+  );
+}
 
 type WorkoutCardProps = {
   workout: {
@@ -60,6 +82,11 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
           </span>
         )}
       </div>
+      {completion && (
+        <div className="mt-2">
+          <UndoWorkoutCompletionButton workoutId={workout.id} />
+        </div>
+      )}
 
       {!completion && (
         <form action={formAction} className="mt-4 flex flex-wrap items-end gap-3">

@@ -73,3 +73,20 @@ export async function toggleCommentResolved(commentId: string, articleId: string
   await admin.from("article_comments").update({ resolved: !comment.resolved }).eq("id", commentId);
   revalidatePath(`/contribute/review/${articleId}`);
 }
+
+export async function deleteArticleComment(commentId: string, articleId: string): Promise<void> {
+  const session = await getAppSession();
+  if (!session) return;
+
+  const admin = createServiceRoleClient();
+  const { data: comment } = await admin
+    .from("article_comments")
+    .select("user_id")
+    .eq("id", commentId)
+    .maybeSingle();
+  if (!comment) return;
+  if (!session.isAdmin && comment.user_id !== session.userId) return;
+
+  await admin.from("article_comments").delete().eq("id", commentId);
+  revalidatePath(`/contribute/review/${articleId}`);
+}

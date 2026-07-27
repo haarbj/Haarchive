@@ -138,3 +138,20 @@ export async function updateGoal(
   revalidatePath("/dashboard");
   return { success: true };
 }
+
+export async function deleteGoal(goalId: string): Promise<void> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return;
+
+  // Scoped to both id and user_id -- RLS already enforces owner-only
+  // deletes (goals_delete_own), but matching it explicitly here (as
+  // settings/actions.ts's deleteRaceResult already does) means a wrong/
+  // stale id can never silently no-op against someone else's row. The
+  // dashboard already renders OnboardingForm again whenever a user has
+  // no goal, so deleting one is a safe, fully-supported state.
+  await supabase.from("goals").delete().eq("id", goalId).eq("user_id", userId);
+
+  revalidatePath("/dashboard");
+}

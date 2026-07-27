@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { listFoundationsSuggestionTargets } from "@/lib/content-suggestions/foundations-targets";
-import { SUGGESTION_STATUS_LABELS, type SuggestionStatus } from "@/lib/content-suggestions/constants";
+import type { SuggestionStatus } from "@/lib/content-suggestions/constants";
 import { CITATION_STATUS_LABELS, type CitationStatus } from "@/lib/articles/constants";
 import { sectionMap } from "@/lib/sections";
 import { SuggestionForm } from "./suggestion-form";
 import { CitationForm } from "./citation-form";
+import { MySuggestionCard } from "./my-suggestion-card";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -75,12 +76,11 @@ export default async function SuggestionsPage() {
           <div className="mt-3 space-y-2">
             {(mySuggestions ?? []).length > 0 ? (
               (mySuggestions ?? []).map((s) => (
-                <Card key={s.id} padding="sm">
-                  <p className="text-sm text-zinc-900 dark:text-white">{s.suggestion}</p>
-                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    {sectionMap.get(s.section_slug)?.title ?? s.section_slug} · {SUGGESTION_STATUS_LABELS[s.status]}
-                  </p>
-                </Card>
+                <MySuggestionCard
+                  key={s.id}
+                  suggestion={s}
+                  sectionTitle={sectionMap.get(s.section_slug)?.title ?? s.section_slug}
+                />
               ))
             ) : (
               <p className="text-sm text-zinc-600 dark:text-zinc-300">Nothing submitted yet.</p>

@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
@@ -52,4 +53,17 @@ export async function createCoachInvite(
   const origin = `${protocol}://${host}`;
 
   return { inviteUrl: `${origin}/signup?invite=${data.token}` };
+}
+
+// Only an unredeemed invite can be revoked -- once someone has actually
+// signed up with it, removing the row wouldn't undo the account they
+// already created, it would just orphan the audit trail of how they got it.
+export async function revokeCoachInvite(inviteId: string): Promise<void> {
+  const session = await getAppSession();
+  if (!session?.isAdmin) return;
+
+  const admin = createServiceRoleClient();
+  await admin.from("coach_invites").delete().eq("id", inviteId).is("redeemed_at", null);
+
+  revalidatePath("/admin");
 }

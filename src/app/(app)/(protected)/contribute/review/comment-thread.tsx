@@ -4,7 +4,7 @@ import { useActionState, useTransition } from "react";
 
 import type { ContentBlock } from "@/lib/sections";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
-import { addArticleComment, toggleCommentResolved, type AddCommentState } from "./actions";
+import { addArticleComment, deleteArticleComment, toggleCommentResolved, type AddCommentState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -65,14 +65,24 @@ export function CommentThread({
                   ) : null}
                 </p>
                 {c.isOwn || canModerate ? (
-                  <button
-                    type="button"
-                    disabled={isToggling}
-                    onClick={() => startToggle(() => toggleCommentResolved(c.id, articleId))}
-                    className="text-xs font-semibold text-zinc-600 dark:text-zinc-300"
-                  >
-                    {c.resolved ? "Reopen" : "Mark resolved"}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => startToggle(() => toggleCommentResolved(c.id, articleId))}
+                      className="text-xs font-semibold text-zinc-600 dark:text-zinc-300"
+                    >
+                      {c.resolved ? "Reopen" : "Mark resolved"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isToggling}
+                      onClick={() => startToggle(() => deleteArticleComment(c.id, articleId))}
+                      className="text-xs font-semibold text-red-700 dark:text-red-400"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 ) : null}
               </div>
               <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">{c.comment}</p>

@@ -242,6 +242,27 @@ export async function completeWorkout(
   return { feedback };
 }
 
+// Mirrors deleteGroupWorkoutCompletion's shape exactly, for an
+// individually-generated plan's workout instead of a coach-authored
+// group one -- lets an athlete clear a mis-logged completion the same
+// way completeWorkout let them log it in the first place.
+export async function deleteWorkoutCompletion(workoutId: string): Promise<CompleteWorkoutState> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired -- sign in again." };
+
+  const { error } = await supabase
+    .from("workout_completions")
+    .delete()
+    .eq("workout_id", workoutId)
+    .eq("user_id", userId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/plan");
+  return {};
+}
+
 export type ApplyAdaptationState = { error?: string };
 
 // Called once the athlete confirms a proposed change from the adapt-workout

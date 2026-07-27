@@ -45,6 +45,25 @@ export async function submitContentSuggestion(
   return { success: true };
 }
 
+// Scoped to the submitter's own, still-unreviewed ("open") suggestions --
+// once an admin has accepted or rejected one, it's part of the review
+// record and shouldn't be pulled out from under them.
+export async function deleteContentSuggestion(suggestionId: string): Promise<void> {
+  const session = await getAppSession();
+  if (!canContribute(session)) return;
+
+  const admin = createServiceRoleClient();
+  await admin
+    .from("content_suggestions")
+    .delete()
+    .eq("id", suggestionId)
+    .eq("submitted_by", session!.userId)
+    .eq("status", "open");
+
+  revalidatePath("/contribute/suggestions");
+  revalidatePath("/admin/suggestions");
+}
+
 // A citation not tied to any specific article draft -- article_id is left
 // null (see the content_suggestions migration's own comment on why that
 // column was nullable from the start).

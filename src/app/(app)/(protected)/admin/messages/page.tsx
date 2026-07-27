@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { formatRelativeTime } from "@/lib/format";
 import { MarkReadButton } from "./mark-read-button";
+import { DeleteMessageButton } from "./delete-message-button";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -65,8 +66,9 @@ export default async function AdminMessagesPage() {
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">{formatRelativeTime(m.created_at)}</p>
               </div>
               <p className="mt-3 text-sm whitespace-pre-wrap text-zinc-700 dark:text-zinc-200">{m.message}</p>
-              <div className="mt-4">
+              <div className="mt-4 flex items-center gap-4">
                 <MarkReadButton id={m.id} read={m.read} />
+                <DeleteMessageButton id={m.id} />
               </div>
             </Card>
           ))
