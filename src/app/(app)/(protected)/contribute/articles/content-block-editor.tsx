@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type DragEvent } from "react";
+import { useRef, useState, type DragEvent } from "react";
 
 import type { ContentBlock } from "@/lib/sections";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
@@ -177,11 +177,10 @@ export function ContentBlockEditor({
 
               {block.type === "paragraph" && (
                 <div className="space-y-2">
-                  <textarea
-                    className={fieldClass}
+                  <FormattableTextarea
                     rows={3}
                     value={block.text}
-                    onChange={(e) => update(index, { ...block, text: e.target.value })}
+                    onChange={(text) => update(index, { ...block, text })}
                     placeholder="Paragraph text"
                   />
                   <div className="flex gap-2">
@@ -210,11 +209,10 @@ export function ContentBlockEditor({
 
               {block.type === "quote" && (
                 <div className="space-y-2">
-                  <textarea
-                    className={fieldClass}
+                  <FormattableTextarea
                     rows={2}
                     value={block.text}
-                    onChange={(e) => update(index, { ...block, text: e.target.value })}
+                    onChange={(text) => update(index, { ...block, text })}
                     placeholder="Quote text"
                   />
                   <input
@@ -247,11 +245,10 @@ export function ContentBlockEditor({
                     onChange={(e) => update(index, { ...block, title: e.target.value || undefined })}
                     placeholder="Title (optional)"
                   />
-                  <textarea
-                    className={fieldClass}
+                  <FormattableTextarea
                     rows={2}
                     value={block.text ?? ""}
-                    onChange={(e) => update(index, { ...block, text: e.target.value || undefined })}
+                    onChange={(text) => update(index, { ...block, text: text || undefined })}
                     placeholder="Lead-in text (optional)"
                   />
                   <StringListEditor
@@ -353,6 +350,90 @@ function InsertDivider({
           ))}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+// Wraps the current textarea selection in `marker` on both sides (e.g.
+// selecting "very" and clicking Bold turns it into "**very**"), matching
+// how a Google Docs-style toolbar button behaves -- select first, then
+// click. Collapsed selections still insert an empty pair with the cursor
+// left in the middle, so typing starts already-marked.
+function wrapSelection(el: HTMLTextAreaElement, marker: string) {
+  const { selectionStart, selectionEnd, value } = el;
+  const selected = value.slice(selectionStart, selectionEnd);
+  return {
+    value: value.slice(0, selectionStart) + marker + selected + marker + value.slice(selectionEnd),
+    selectionStart: selectionStart + marker.length,
+    selectionEnd: selectionStart + marker.length + selected.length,
+  };
+}
+
+const FORMAT_MARKS = [
+  { marker: "**", label: "B", title: "Bold", className: "font-bold" },
+  { marker: "_", label: "I", title: "Italic", className: "italic" },
+  { marker: "++", label: "U", title: "Underline", className: "underline decoration-dotted" },
+] as const;
+
+// A textarea plus a small Bold/Italic/Underline row -- the closest this
+// plain-fields editor gets to a Google Docs toolbar. It doesn't render
+// the formatting live in the box (this stays a plain <textarea>, not a
+// contenteditable surface); it wraps the selection in the same **/_/++
+// marks linkifyContent renders on the published page, so what a
+// contributor sees here is the source, not a preview.
+function FormattableTextarea({
+  value,
+  onChange,
+  rows,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  rows: number;
+  placeholder?: string;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  function applyMark(marker: string) {
+    const el = ref.current;
+    if (!el) return;
+    const next = wrapSelection(el, marker);
+    onChange(next.value);
+    // Re-render happens before this fires, so the selection can be
+    // restored on the same element once its value has actually updated.
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(next.selectionStart, next.selectionEnd);
+    });
+  }
+
+  return (
+    <div className="space-y-1">
+      <div className="flex gap-1">
+        {FORMAT_MARKS.map(({ marker, label, title, className }) => (
+          <button
+            key={marker}
+            type="button"
+            title={title}
+            aria-label={title}
+            // Prevents the textarea from blurring (and its selection from
+            // collapsing) before the click handler gets a chance to read it.
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => applyMark(marker)}
+            className={`rounded border border-black/10 px-2 text-xs text-zinc-600 hover:bg-black/5 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/5 ${className}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <textarea
+        ref={ref}
+        className={fieldClass}
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
     </div>
   );
 }

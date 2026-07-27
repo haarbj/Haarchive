@@ -85,44 +85,95 @@ export function linkifyText(
   return nodes;
 }
 
-const explicitLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+// ---- inline markup: explicit links, bold, italic, underline ----
+//
+// A tiny hand-rolled convention, not a markdown parser -- deliberately
+// only these four marks. Each uses a delimiter no other mark uses (`**`,
+// `_`, `++`) so a single first-match-per-pattern scan can never confuse
+// one for another, unlike real markdown's `*`/`**` overlap. Non-global
+// regexes are used throughout so a fresh `.exec` always reports the
+// *first* occurrence regardless of any previous call -- required for this
+// to recurse safely (see parseInline below).
+const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/;
+const BOLD_RE = /\*\*([^*]+)\*\*/;
+const UNDERLINE_RE = /\+\+([^+]+)\+\+/;
+const ITALIC_RE = /_([^_]+)_/;
 
-// Escape hatch for the cases the two automatic conventions below can't
-// reach: linking a bare section by name mid-sentence (the "see X in Y"
-// convention only ever matches a heading followed by its own owning
-// section, never a section referencing itself), or linking a phrase that
-// isn't a real heading or glossary term at all. Runs first and consumes
-// whatever it matches, so the remaining automatic passes only ever see
-// plain text, never look inside an already-authored link.
-function splitExplicitLinks(text: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  let key = 0;
-  explicitLinkPattern.lastIndex = 0;
+const LINK_CLASSNAME =
+  "underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70";
 
-  while ((match = explicitLinkPattern.exec(text))) {
-    nodes.push(text.slice(lastIndex, match.index));
-    nodes.push(
-      <Link
-        key={`explicit-link-${key++}`}
-        href={match[2]}
-        className="underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70"
-      >
-        {match[1]}
-      </Link>,
-    );
-    lastIndex = match.index + match[0].length;
+type InlineMatch = {
+  start: number;
+  end: number;
+  render: (key: number, currentSlug: string, linkedTermIds: Set<string>) => ReactNode;
+};
+
+function findInlineMatch(text: string): InlineMatch | null {
+  const candidates: InlineMatch[] = [];
+
+  const link = LINK_RE.exec(text);
+  if (link) {
+    candidates.push({
+      start: link.index,
+      end: link.index + link[0].length,
+      render: (key, currentSlug, linkedTermIds) => (
+        <Link key={`inline-${key}`} href={link[2]} className={LINK_CLASSNAME}>
+          {parseInline(link[1], currentSlug, linkedTermIds)}
+        </Link>
+      ),
+    });
   }
-  nodes.push(text.slice(lastIndex));
-  return nodes;
+
+  const bold = BOLD_RE.exec(text);
+  if (bold) {
+    candidates.push({
+      start: bold.index,
+      end: bold.index + bold[0].length,
+      render: (key, currentSlug, linkedTermIds) => (
+        <strong key={`inline-${key}`}>{parseInline(bold[1], currentSlug, linkedTermIds)}</strong>
+      ),
+    });
+  }
+
+  const underline = UNDERLINE_RE.exec(text);
+  if (underline) {
+    candidates.push({
+      start: underline.index,
+      end: underline.index + underline[0].length,
+      // Dotted, not solid -- every link on this site is already a solid
+      // underline (see LINK_CLASSNAME above), so a plain <u> here would
+      // read as a link that goes nowhere.
+      render: (key, currentSlug, linkedTermIds) => (
+        <u key={`inline-${key}`} className="underline decoration-dotted underline-offset-2">
+          {parseInline(underline[1], currentSlug, linkedTermIds)}
+        </u>
+      ),
+    });
+  }
+
+  const italic = ITALIC_RE.exec(text);
+  if (italic) {
+    candidates.push({
+      start: italic.index,
+      end: italic.index + italic[0].length,
+      render: (key, currentSlug, linkedTermIds) => (
+        <em key={`inline-${key}`}>{parseInline(italic[1], currentSlug, linkedTermIds)}</em>
+      ),
+    });
+  }
+
+  if (candidates.length === 0) return null;
+  candidates.sort((a, b) => a.start - b.start);
+  return candidates[0];
 }
 
 /**
- * Full content-linking pass: explicit [text](href) links first, then
- * cross-references ("see X in Y"), then glossary terms within whatever
- * plain text remains -- applied to every paragraph, list item, and
- * callout an article renders, so all three conventions link correctly no
+ * Full content-linking pass: explicit inline marks (links, bold, italic,
+ * underline) first -- recursing into each match's own captured text so
+ * marks can nest (e.g. a link inside bold) -- then, on whatever plain
+ * text remains once every mark is consumed, cross-references ("see X in
+ * Y") and finally glossary terms. Applied to every paragraph, list item,
+ * and callout an article renders, so all these conventions work no
  * matter which block type they appear in.
  */
 export function linkifyContent(
@@ -130,10 +181,24 @@ export function linkifyContent(
   currentSlug: string,
   linkedTermIds: Set<string>,
 ): ReactNode[] {
-  return splitExplicitLinks(text).flatMap((segment) => {
-    if (typeof segment !== "string") return [segment];
-    return linkifySectionReferences(segment, currentSlug).flatMap((node) =>
+  return parseInline(text, currentSlug, linkedTermIds);
+}
+
+let inlineKeySeq = 0;
+
+function parseInline(text: string, currentSlug: string, linkedTermIds: Set<string>): ReactNode[] {
+  const match = findInlineMatch(text);
+  if (!match) {
+    return linkifySectionReferences(text, currentSlug).flatMap((node) =>
       typeof node === "string" ? linkifyText(node, currentSlug, linkedTermIds) : [node],
     );
-  });
+  }
+
+  const before = text.slice(0, match.start);
+  const after = text.slice(match.end);
+  return [
+    ...parseInline(before, currentSlug, linkedTermIds),
+    match.render(inlineKeySeq++, currentSlug, linkedTermIds),
+    ...parseInline(after, currentSlug, linkedTermIds),
+  ];
 }
