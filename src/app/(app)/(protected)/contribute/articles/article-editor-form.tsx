@@ -124,6 +124,11 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
 
       <div>
         <p className={labelClass}>Content</p>
+        <p className="mt-1 mb-3 text-xs text-zinc-500 dark:text-zinc-400">
+          Any heading followed by &ldquo;in Section Title&rdquo; (e.g. &ldquo;Gut Training Is a Real, Trainable
+          Skill in Nutrition &amp; Fueling&rdquo;) links automatically. To link a bare section name, or any other
+          phrase, mid-sentence, write it as <code>[link text](/href)</code>.
+        </p>
         <ContentBlockEditor value={content} onChange={setContent} />
       </div>
 

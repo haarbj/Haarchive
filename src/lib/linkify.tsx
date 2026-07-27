@@ -85,19 +85,55 @@ export function linkifyText(
   return nodes;
 }
 
+const explicitLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+// Escape hatch for the cases the two automatic conventions below can't
+// reach: linking a bare section by name mid-sentence (the "see X in Y"
+// convention only ever matches a heading followed by its own owning
+// section, never a section referencing itself), or linking a phrase that
+// isn't a real heading or glossary term at all. Runs first and consumes
+// whatever it matches, so the remaining automatic passes only ever see
+// plain text, never look inside an already-authored link.
+function splitExplicitLinks(text: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  explicitLinkPattern.lastIndex = 0;
+
+  while ((match = explicitLinkPattern.exec(text))) {
+    nodes.push(text.slice(lastIndex, match.index));
+    nodes.push(
+      <Link
+        key={`explicit-link-${key++}`}
+        href={match[2]}
+        className="underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70"
+      >
+        {match[1]}
+      </Link>,
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  nodes.push(text.slice(lastIndex));
+  return nodes;
+}
+
 /**
- * Full content-linking pass: cross-references ("see X in Y") first, then
- * glossary terms within whatever plain text remains -- applied to every
- * paragraph, list item, and callout an article renders, so the same
- * "see X in Y" convention links correctly no matter which block type it
- * appears in.
+ * Full content-linking pass: explicit [text](href) links first, then
+ * cross-references ("see X in Y"), then glossary terms within whatever
+ * plain text remains -- applied to every paragraph, list item, and
+ * callout an article renders, so all three conventions link correctly no
+ * matter which block type they appear in.
  */
 export function linkifyContent(
   text: string,
   currentSlug: string,
   linkedTermIds: Set<string>,
 ): ReactNode[] {
-  return linkifySectionReferences(text, currentSlug).flatMap((node) =>
-    typeof node === "string" ? linkifyText(node, currentSlug, linkedTermIds) : [node],
-  );
+  return splitExplicitLinks(text).flatMap((segment) => {
+    if (typeof segment !== "string") return [segment];
+    return linkifySectionReferences(segment, currentSlug).flatMap((node) =>
+      typeof node === "string" ? linkifyText(node, currentSlug, linkedTermIds) : [node],
+    );
+  });
 }
