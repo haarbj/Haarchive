@@ -362,13 +362,21 @@ function InsertDivider({
   );
 }
 
-// Wraps the current textarea selection in `marker` on both sides (e.g.
-// selecting "very" and clicking Bold turns it into "**very**"), matching
-// how a Google Docs-style toolbar button behaves -- select first, then
-// click. Collapsed selections still insert an empty pair with the cursor
-// left in the middle, so typing starts already-marked.
-function wrapSelection(el: HTMLTextAreaElement, marker: string) {
-  const { selectionStart, selectionEnd, value } = el;
+// Wraps the current selection in `marker` on both sides (e.g. selecting
+// "very" and clicking Bold turns it into "**very**"), matching how a
+// Google Docs-style toolbar button behaves -- select first, then click.
+// Collapsed selections still insert an empty pair with the cursor left
+// in the middle, so typing starts already-marked. Works the same way on
+// a single-line input as a multi-line textarea -- both expose the same
+// selectionStart/selectionEnd/setSelectionRange API.
+function wrapSelection(el: HTMLTextAreaElement | HTMLInputElement, marker: string) {
+  const { value } = el;
+  // HTMLInputElement types these as nullable (some input types don't
+  // support selection at all) even though our text inputs always have
+  // them set at runtime -- default to "cursor at the end" if either is
+  // somehow null.
+  const selectionStart = el.selectionStart ?? value.length;
+  const selectionEnd = el.selectionEnd ?? value.length;
   const selected = value.slice(selectionStart, selectionEnd);
   return {
     value: value.slice(0, selectionStart) + marker + selected + marker + value.slice(selectionEnd),
@@ -382,6 +390,15 @@ const FORMAT_MARKS = [
   { marker: "_", label: "I", title: "Italic", className: "italic", shortcutKey: "i" },
   { marker: "++", label: "U", title: "Underline", className: "underline decoration-dotted", shortcutKey: "u" },
 ] as const;
+
+// Shared by every field that supports formatting -- the multi-line
+// FormattableTextarea below and each single-line bullet-item input in
+// StringListEditor -- so Cmd/Ctrl+B/I/U behaves identically everywhere
+// text can be typed, not just in the fields with a visible toolbar.
+function matchFormatShortcut(e: { metaKey: boolean; ctrlKey: boolean; key: string }) {
+  if (!(e.metaKey || e.ctrlKey)) return null;
+  return FORMAT_MARKS.find((m) => m.shortcutKey === e.key.toLowerCase()) ?? null;
+}
 
 // A textarea plus a small Bold/Italic/Underline row -- the closest this
 // plain-fields editor gets to a Google Docs toolbar. Cmd/Ctrl+B/I/U work
@@ -443,8 +460,7 @@ function FormattableTextarea({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
-          if (!(e.metaKey || e.ctrlKey)) return;
-          const mark = FORMAT_MARKS.find((m) => m.shortcutKey === e.key.toLowerCase());
+          const mark = matchFormatShortcut(e);
           if (!mark) return;
           e.preventDefault();
           applyMark(mark.marker);
@@ -464,15 +480,40 @@ function StringListEditor({
   onChange: (items: string[]) => void;
   label?: string;
 }) {
+  // Keyed by item index rather than one useRef per item -- the list can
+  // grow/shrink/reorder, and hooks can't be called inside `.map`.
+  const inputs = useRef(new Map<number, HTMLInputElement>());
+
+  function applyMarkAt(i: number, marker: string) {
+    const el = inputs.current.get(i);
+    if (!el) return;
+    const next = wrapSelection(el, marker);
+    onChange(items.map((it, idx) => (idx === i ? next.value : it)));
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(next.selectionStart, next.selectionEnd);
+    });
+  }
+
   return (
     <div className="space-y-2">
       <p className={labelClass}>{label}</p>
       {items.map((item, i) => (
         <div key={i} className="flex gap-2">
           <input
+            ref={(el) => {
+              if (el) inputs.current.set(i, el);
+              else inputs.current.delete(i);
+            }}
             className={`${fieldClass} flex-1`}
             value={item}
             onChange={(e) => onChange(items.map((it, idx) => (idx === i ? e.target.value : it)))}
+            onKeyDown={(e) => {
+              const mark = matchFormatShortcut(e);
+              if (!mark) return;
+              e.preventDefault();
+              applyMarkAt(i, mark.marker);
+            }}
           />
           <button
             type="button"
