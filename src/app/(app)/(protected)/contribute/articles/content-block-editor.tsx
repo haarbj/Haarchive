@@ -370,17 +370,19 @@ function wrapSelection(el: HTMLTextAreaElement, marker: string) {
 }
 
 const FORMAT_MARKS = [
-  { marker: "**", label: "B", title: "Bold", className: "font-bold" },
-  { marker: "_", label: "I", title: "Italic", className: "italic" },
-  { marker: "++", label: "U", title: "Underline", className: "underline decoration-dotted" },
+  { marker: "**", label: "B", title: "Bold", className: "font-bold", shortcutKey: "b" },
+  { marker: "_", label: "I", title: "Italic", className: "italic", shortcutKey: "i" },
+  { marker: "++", label: "U", title: "Underline", className: "underline decoration-dotted", shortcutKey: "u" },
 ] as const;
 
 // A textarea plus a small Bold/Italic/Underline row -- the closest this
-// plain-fields editor gets to a Google Docs toolbar. It doesn't render
-// the formatting live in the box (this stays a plain <textarea>, not a
-// contenteditable surface); it wraps the selection in the same **/_/++
-// marks linkifyContent renders on the published page, so what a
-// contributor sees here is the source, not a preview.
+// plain-fields editor gets to a Google Docs toolbar. Cmd/Ctrl+B/I/U work
+// too, wrapping the current selection exactly like clicking the matching
+// button. It doesn't render the formatting live in the box (this stays a
+// plain <textarea>, not a contenteditable surface); it wraps the
+// selection in the same **/_/++ marks linkifyContent renders on the
+// published page, so what a contributor sees here is the source, not a
+// preview.
 function FormattableTextarea({
   value,
   onChange,
@@ -432,6 +434,13 @@ function FormattableTextarea({
         rows={rows}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (!(e.metaKey || e.ctrlKey)) return;
+          const mark = FORMAT_MARKS.find((m) => m.shortcutKey === e.key.toLowerCase());
+          if (!mark) return;
+          e.preventDefault();
+          applyMark(mark.marker);
+        }}
         placeholder={placeholder}
       />
     </div>
