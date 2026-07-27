@@ -98,8 +98,7 @@ export function ContentBlockEditor({
         <div key={index}>
           <Card
             padding="sm"
-            draggable
-            onDragStart={() => setDragIndex(index)}
+            data-block-card
             onDragOver={(e: DragEvent<HTMLDivElement>) => {
               e.preventDefault();
               if (dragIndex !== null && dragIndex !== index) setDragOverIndex(index);
@@ -111,10 +110,6 @@ export function ContentBlockEditor({
               setDragIndex(null);
               setDragOverIndex(null);
             }}
-            onDragEnd={() => {
-              setDragIndex(null);
-              setDragOverIndex(null);
-            }}
             className={`transition ${dragIndex === index ? "opacity-40" : ""} ${
               dragOverIndex === index && dragIndex !== index ? "ring-2 ring-accent-tip" : ""
             }`}
@@ -122,9 +117,22 @@ export function ContentBlockEditor({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span
+                  draggable
+                  onDragStart={(e: DragEvent<HTMLSpanElement>) => {
+                    setDragIndex(index);
+                    const card = (e.currentTarget as HTMLElement).closest("[data-block-card]") as HTMLElement | null;
+                    if (card) e.dataTransfer.setDragImage(card, 20, 20);
+                  }}
+                  onDragEnd={() => {
+                    setDragIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  // Only this handle is draggable -- not the whole card --
+                  // so starting a selection drag inside a textarea or input
+                  // (to highlight text) behaves like normal text selection
+                  // instead of being hijacked into a block-reorder drag.
                   className="cursor-grab select-none text-zinc-400 active:cursor-grabbing dark:text-zinc-500"
                   title="Drag to reorder"
-                  aria-hidden="true"
                 >
                   ⠿
                 </span>
