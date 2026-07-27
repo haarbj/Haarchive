@@ -9,6 +9,16 @@ function isHttpUrl(value: string): boolean {
   return /^https?:\/\//.test(value);
 }
 
+// Mirrors the ListItem type in sections.ts -- a plain string, or an item
+// with its own (non-nested) sub-items.
+const listItemSchema = z.union([
+  z.string().trim().min(1),
+  z.object({
+    text: z.string().trim().min(1),
+    items: z.array(z.string().trim().min(1)),
+  }),
+]);
+
 export const contentBlockSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("heading"),
@@ -23,7 +33,7 @@ export const contentBlockSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("list"),
-    items: z.array(z.string().trim().min(1)).min(1, "Add at least one list item"),
+    items: z.array(listItemSchema).min(1, "Add at least one list item"),
   }),
   z.object({
     type: z.literal("quote"),

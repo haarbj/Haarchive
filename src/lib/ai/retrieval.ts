@@ -62,7 +62,14 @@ function extractBlocks(content: ContentBlock[]): ExtractedBlock[] {
       blocks.push({ heading, text: block.attribution ? `${block.text} (${block.attribution})` : block.text });
     } else if (block.type === "list") {
       for (const item of block.items) {
-        blocks.push({ heading, text: item });
+        if (typeof item === "string") {
+          blocks.push({ heading, text: item });
+        } else {
+          blocks.push({ heading, text: item.text });
+          for (const subItem of item.items) {
+            blocks.push({ heading, text: subItem });
+          }
+        }
       }
     }
   }

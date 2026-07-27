@@ -60,10 +60,17 @@ export const categories: Category[] = [
 
 export type CalloutVariant = "tip" | "mistake" | "research" | "takeaway" | "advanced";
 
+// A plain string is still a valid ListItem, so every existing `items:
+// string[]` list in this file already satisfies this type unchanged --
+// nesting is purely additive. Only one level deep on purpose (a sub-item
+// can't itself have sub-items): that already covers the "sub-bullets in
+// a list" use case without the editor needing a fully recursive tree.
+export type ListItem = string | { text: string; items: string[] };
+
 export type ContentBlock =
   | { type: "heading"; text: string; level?: 2 | 3 }
   | { type: "paragraph"; text: string; linkHref?: string; linkText?: string }
-  | { type: "list"; items: string[] }
+  | { type: "list"; items: ListItem[] }
   | { type: "quote"; text: string; attribution?: string }
   | {
       type: "callout";

@@ -19,7 +19,13 @@ export function estimateReadingMinutes(content: ContentBlock[]): number {
       return total + textWords + itemWords;
     }
     if (block.type === "list") {
-      return total + block.items.reduce((sum, item) => sum + wordCount(item), 0);
+      return (
+        total +
+        block.items.reduce((sum, item) => {
+          if (typeof item === "string") return sum + wordCount(item);
+          return sum + wordCount(item.text) + item.items.reduce((subSum, sub) => subSum + wordCount(sub), 0);
+        }, 0)
+      );
     }
     return total;
   }, 0);

@@ -20,8 +20,15 @@ export type CommentWithAuthor = {
 };
 
 function blockLabel(block: ContentBlock, index: number): string {
+  const firstItem = block.type === "list" ? block.items[0] : undefined;
   const preview =
-    "text" in block ? block.text : block.type === "list" ? block.items[0] : block.type === "image" ? block.url : "";
+    "text" in block
+      ? block.text
+      : block.type === "list"
+        ? (typeof firstItem === "string" ? firstItem : firstItem?.text) ?? ""
+        : block.type === "image"
+          ? block.url
+          : "";
   return `Block ${index + 1} (${block.type})${preview ? ` — ${preview.slice(0, 40)}` : ""}`;
 }
 

@@ -2,7 +2,7 @@
 
 import { useRef, useState, type DragEvent } from "react";
 
-import type { ContentBlock } from "@/lib/sections";
+import type { ContentBlock, ListItem } from "@/lib/sections";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -209,7 +209,7 @@ export function ContentBlockEditor({
               )}
 
               {block.type === "list" && (
-                <StringListEditor
+                <ListItemsEditor
                   items={block.items}
                   onChange={(items) => update(index, { ...block, items })}
                 />
@@ -524,6 +524,148 @@ function StringListEditor({
           </button>
         </div>
       ))}
+      <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, ""])}>
+        + Item
+      </Button>
+    </div>
+  );
+}
+
+function textOfListItem(item: ListItem): string {
+  return typeof item === "string" ? item : item.text;
+}
+function subItemsOfListItem(item: ListItem): string[] {
+  return typeof item === "string" ? [] : item.items;
+}
+
+// The `list` block's own items editor -- distinct from StringListEditor
+// (which stays flat, for callout bullet items) because a list item can
+// have its own sub-items one level deep. A plain string is promoted to
+// `{ text, items: [] }` the first time a sub-item is added under it.
+function ListItemsEditor({
+  items,
+  onChange,
+}: {
+  items: ListItem[];
+  onChange: (items: ListItem[]) => void;
+}) {
+  // Keyed by a composite string ("3" for a top-level item, "3-1" for its
+  // second sub-item) so both levels can share one ref map and one
+  // applyMark implementation.
+  const inputs = useRef(new Map<string, HTMLInputElement>());
+
+  function setInputRef(key: string, el: HTMLInputElement | null) {
+    if (el) inputs.current.set(key, el);
+    else inputs.current.delete(key);
+  }
+
+  function updateItem(i: number, next: ListItem) {
+    onChange(items.map((it, idx) => (idx === i ? next : it)));
+  }
+
+  function applyMarkAt(key: string, marker: string, currentText: string, commit: (text: string) => void) {
+    const el = inputs.current.get(key);
+    if (!el) return;
+    const next = wrapSelection(el, marker);
+    commit(next.value);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(next.selectionStart, next.selectionEnd);
+    });
+  }
+
+  function setText(i: number, text: string) {
+    const item = items[i];
+    updateItem(i, typeof item === "string" ? text : { ...item, text });
+  }
+  function addSubItem(i: number) {
+    const item = items[i];
+    const base = typeof item === "string" ? { text: item, items: [] as string[] } : item;
+    updateItem(i, { ...base, items: [...base.items, ""] });
+  }
+  function setSubItem(i: number, j: number, text: string) {
+    const item = items[i];
+    if (typeof item === "string") return;
+    updateItem(i, { ...item, items: item.items.map((sub, idx) => (idx === j ? text : sub)) });
+  }
+  function removeSubItem(i: number, j: number) {
+    const item = items[i];
+    if (typeof item === "string") return;
+    updateItem(i, { ...item, items: item.items.filter((_, idx) => idx !== j) });
+  }
+
+  return (
+    <div className="space-y-2">
+      <p className={labelClass}>Items</p>
+      {items.map((item, i) => {
+        const text = textOfListItem(item);
+        const subItems = subItemsOfListItem(item);
+        const key = `${i}`;
+        return (
+          <div key={i} className="space-y-2">
+            <div className="flex gap-2">
+              <input
+                ref={(el) => setInputRef(key, el)}
+                className={`${fieldClass} flex-1`}
+                value={text}
+                onChange={(e) => setText(i, e.target.value)}
+                onKeyDown={(e) => {
+                  const mark = matchFormatShortcut(e);
+                  if (!mark) return;
+                  e.preventDefault();
+                  applyMarkAt(key, mark.marker, text, (next) => setText(i, next));
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => addSubItem(i)}
+                title="Add a sub-item nested under this one"
+                className="text-xs font-semibold whitespace-nowrap text-zinc-600 dark:text-zinc-300"
+              >
+                ⇥ Sub-item
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                className="text-xs font-semibold text-red-700 dark:text-red-400"
+              >
+                Remove
+              </button>
+            </div>
+
+            {subItems.length > 0 ? (
+              <div className="ml-6 space-y-2 border-l-2 border-black/5 pl-3 dark:border-white/10">
+                {subItems.map((subItem, j) => {
+                  const subKey = `${i}-${j}`;
+                  return (
+                    <div key={j} className="flex gap-2">
+                      <input
+                        ref={(el) => setInputRef(subKey, el)}
+                        className={`${fieldClass} flex-1`}
+                        value={subItem}
+                        onChange={(e) => setSubItem(i, j, e.target.value)}
+                        onKeyDown={(e) => {
+                          const mark = matchFormatShortcut(e);
+                          if (!mark) return;
+                          e.preventDefault();
+                          applyMarkAt(subKey, mark.marker, subItem, (next) => setSubItem(i, j, next));
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeSubItem(i, j)}
+                        className="text-xs font-semibold text-red-700 dark:text-red-400"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, ""])}>
         + Item
       </Button>

@@ -54,9 +54,22 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
         if (block.type === "list") {
           return (
             <ul key={index} className="space-y-3">
-              {block.items.map((item, itemIndex) => (
-                <li key={itemIndex}>• {linkifyContent(item, sectionSlug, linkedTermIds)}</li>
-              ))}
+              {block.items.map((item, itemIndex) => {
+                const text = typeof item === "string" ? item : item.text;
+                const subItems = typeof item === "string" ? [] : item.items;
+                return (
+                  <li key={itemIndex}>
+                    • {linkifyContent(text, sectionSlug, linkedTermIds)}
+                    {subItems.length > 0 ? (
+                      <ul className="mt-2 ml-5 space-y-2">
+                        {subItems.map((subItem, subIndex) => (
+                          <li key={subIndex}>◦ {linkifyContent(subItem, sectionSlug, linkedTermIds)}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </li>
+                );
+              })}
             </ul>
           );
         }
