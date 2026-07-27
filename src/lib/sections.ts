@@ -76,6 +76,13 @@ export type ContentBlock =
       // Only meaningful for "advanced" -- other variants always render open.
       // Defaults to true for "advanced" and is ignored otherwise.
       collapsed?: boolean;
+      // Same trailing-link convention as the paragraph block above -- for
+      // cross-linking a whole section (not a specific heading within it),
+      // which the "see X in Y" convention (section-linkify.tsx) can't
+      // express since it only matches a heading followed by its owning
+      // section's title, never a bare section referencing itself.
+      linkHref?: string;
+      linkText?: string;
     }
   | { type: "image"; url: string; alt?: string; caption?: string };
 

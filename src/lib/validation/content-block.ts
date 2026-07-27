@@ -37,6 +37,8 @@ export const contentBlockSchema = z.discriminatedUnion("type", [
     text: z.string().trim().optional(),
     items: z.array(z.string().trim()).optional(),
     collapsed: z.boolean().optional(),
+    linkHref: z.string().trim().optional(),
+    linkText: z.string().trim().optional(),
   }),
   z.object({
     type: z.literal("image"),

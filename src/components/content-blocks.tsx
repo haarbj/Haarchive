@@ -88,6 +88,8 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
               text={block.text ? linkifyContent(block.text, sectionSlug, linkedTermIds) : undefined}
               items={block.items?.map((item) => linkifyContent(item, sectionSlug, linkedTermIds))}
               collapsed={block.collapsed}
+              linkHref={block.linkHref}
+              linkText={block.linkText}
             />
           );
         }
