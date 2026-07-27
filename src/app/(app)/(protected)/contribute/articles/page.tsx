@@ -20,12 +20,39 @@ export default async function MyArticlesPage() {
   const session = await getAppSession(); // non-null: contribute/layout.tsx already gated
 
   const admin = createServiceRoleClient();
-  const { data: articles } = await admin
-    .from("articles")
-    .select("id, title, status, updated_at")
-    .eq("primary_author_id", session!.userId)
-    .order("updated_at", { ascending: false })
-    .returns<ArticleListRow[]>();
+
+  // primary_author_id only ever names the original creator -- additional
+  // authors are added afterward via article_contributors (contributor_role
+  // = "author"), so this list needs both: articles created by this user,
+  // plus articles they were added to later as a co-author. Same
+  // article_contributors-lookup pattern the review queue already uses for
+  // reviewer assignments, just merged with the "own drafts" set instead of
+  // branching on admin/non-admin.
+  const [{ data: ownDrafts }, { data: coAuthorRows }] = await Promise.all([
+    admin
+      .from("articles")
+      .select("id, title, status, updated_at")
+      .eq("primary_author_id", session!.userId)
+      .returns<ArticleListRow[]>(),
+    admin
+      .from("article_contributors")
+      .select("article_id")
+      .eq("user_id", session!.userId)
+      .eq("contributor_role", "author")
+      .returns<{ article_id: string }[]>(),
+  ]);
+
+  const ownDraftIds = new Set((ownDrafts ?? []).map((a) => a.id));
+  const coAuthoredIds = (coAuthorRows ?? []).map((r) => r.article_id).filter((id) => !ownDraftIds.has(id));
+
+  const { data: coAuthoredDrafts } =
+    coAuthoredIds.length > 0
+      ? await admin.from("articles").select("id, title, status, updated_at").in("id", coAuthoredIds).returns<ArticleListRow[]>()
+      : { data: [] as ArticleListRow[] };
+
+  const articles = [...(ownDrafts ?? []), ...(coAuthoredDrafts ?? [])].sort((a, b) =>
+    b.updated_at.localeCompare(a.updated_at),
+  );
 
   return (
     <Container variant="dashboard">
