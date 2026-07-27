@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
+import { isArticleAuthor } from "@/lib/articles/is-author";
 import type { ContentBlock } from "@/lib/sections";
 import { ArticleEditorForm } from "@/app/(app)/(protected)/contribute/articles/article-editor-form";
 import { SubmitForReviewButton } from "./submit-for-review-button";
@@ -67,7 +68,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
   ]);
 
   if (!article) notFound();
-  const isAuthor = article.primary_author_id === session!.userId;
+  const isAuthor = await isArticleAuthor(admin, article.id, session!.userId, article.primary_author_id);
   if (!session!.isAdmin && !isAuthor) notFound();
 
   const commentUserIds = Array.from(new Set((commentRows ?? []).map((c) => c.user_id).filter((v): v is string => !!v)));

@@ -5,6 +5,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS } from "@/lib/articles/constants";
 import { buildArticleAttribution } from "@/lib/articles/attribution";
+import { isArticleAuthor } from "@/lib/articles/is-author";
 import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
 import { categoryMap, type Section } from "@/lib/sections";
 import { ArticleLayout } from "@/components/article-layout";
@@ -39,7 +40,7 @@ export default async function PreviewArticlePage({ params }: { params: Promise<{
   const { data: row } = await admin.from("articles").select("*").eq("id", id).maybeSingle<ArticleRow>();
   if (!row) notFound();
 
-  const isAuthor = row.primary_author_id === session!.userId;
+  const isAuthor = await isArticleAuthor(admin, id, session!.userId, row.primary_author_id);
   let isReviewer = false;
   if (!session!.isAdmin && !isAuthor) {
     const { data: assignment } = await admin

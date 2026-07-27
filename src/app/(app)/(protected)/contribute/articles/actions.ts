@@ -7,6 +7,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { hasContentPermission } from "@/lib/auth/permissions";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { articleDraftSchema, citationsSchema, type CitationInput } from "@/lib/validation/articles";
+import { isArticleAuthor } from "@/lib/articles/is-author";
 import { isReservedSlug, slugifyTitle } from "@/lib/articles/slugify";
 
 export type ArticleDraftState = { error?: string; success?: boolean };
@@ -137,7 +138,7 @@ export async function updateArticleDraft(
     .maybeSingle();
   if (!article) return { error: "Article not found." };
 
-  const isAuthor = article.primary_author_id === session.userId;
+  const isAuthor = await isArticleAuthor(admin, articleId, session.userId, article.primary_author_id);
   if (!session.isAdmin && !isAuthor) return { error: "Not authorized." };
   if (!session.isAdmin && article.status !== "draft" && article.status !== "in_review") {
     return { error: "This article can no longer be edited." };
@@ -193,7 +194,8 @@ export async function submitForReview(
     .eq("id", articleId)
     .maybeSingle();
   if (!article) return { error: "Article not found." };
-  if (article.primary_author_id !== session.userId && !session.isAdmin) return { error: "Not authorized." };
+  const isAuthor = await isArticleAuthor(admin, articleId, session.userId, article.primary_author_id);
+  if (!session.isAdmin && !isAuthor) return { error: "Not authorized." };
   if (article.status !== "draft") return { error: "Only a draft can be submitted for review." };
   if (!Array.isArray(article.content) || article.content.length === 0) {
     return { error: "Add some content before submitting for review." };
