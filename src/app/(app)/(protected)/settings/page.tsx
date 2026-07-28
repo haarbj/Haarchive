@@ -6,6 +6,7 @@ import { kgToLbs } from "@/lib/profile-fitness-source";
 import { AthleteProfileForm } from "@/app/(app)/(protected)/settings/athlete-profile-form";
 import { CommunityProfileForm } from "@/app/(app)/(protected)/settings/community-profile-form";
 import { RaceResultsSection, type RaceResultRow } from "@/app/(app)/(protected)/settings/race-results-section";
+import { InjuriesSection, type InjuryRow } from "@/app/(app)/(protected)/settings/injuries-section";
 import { SettingsForm } from "@/app/(app)/(protected)/settings/settings-form";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -36,7 +37,7 @@ export default async function SettingsPage() {
   const session = await getAppSession(); // non-null: (protected)/layout.tsx already redirected otherwise
   const supabase = await createClient();
 
-  const [{ data: profile }, { data: athleteProfile }, { data: communityProfile }, { data: raceResults }] =
+  const [{ data: profile }, { data: athleteProfile }, { data: communityProfile }, { data: raceResults }, { data: injuries }] =
     await Promise.all([
       supabase.from("profiles").select("display_name, units").single<Profile>(),
       supabase
@@ -52,6 +53,11 @@ export default async function SettingsPage() {
         .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
         .order("race_date", { ascending: false })
         .returns<RaceResultRow[]>(),
+      supabase
+        .from("injuries")
+        .select("id, injury_type, body_part, start_date, end_date, severity, affects_training, notes")
+        .order("start_date", { ascending: false })
+        .returns<InjuryRow[]>(),
     ]);
 
   return (
@@ -104,6 +110,14 @@ export default async function SettingsPage() {
       </p>
       <div className="mt-8">
         <RaceResultsSection results={raceResults ?? []} />
+      </div>
+
+      <h2 className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">Injuries</h2>
+      <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+        Keep a log of what&rsquo;s come up and when -- useful for spotting patterns over a season.
+      </p>
+      <div className="mt-8">
+        <InjuriesSection injuries={injuries ?? []} />
       </div>
     </Container>
   );

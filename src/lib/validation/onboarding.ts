@@ -25,5 +25,35 @@ export const raceResultSchema = z.object({
   courseType: z.enum(["track", "road", "xc", "trail"]),
 });
 
+export const injurySchema = z
+  .object({
+    injuryType: z.string().min(1, "Name the injury"),
+    bodyPart: z.string().min(1, "Add the body part"),
+    startDate: z
+      .string()
+      .min(1, "Add a start date")
+      .refine((val) => val <= todayStr(), "Start date can't be in the future"),
+    endDate: z.string().optional(),
+    severity: z.enum(["mild", "moderate", "severe"]),
+    affectsTraining: z.coerce.boolean().optional().default(false),
+    notes: z.string().optional(),
+  })
+  .refine((data) => !data.endDate || data.endDate >= data.startDate, {
+    message: "End date can't be before the start date",
+    path: ["endDate"],
+  });
+
+const oneToFive = z.coerce.number().int().min(1, "Rate 1–5").max(5, "Rate 1–5");
+
+export const weeklyCheckinSchema = z.object({
+  fatigue: oneToFive,
+  soreness: oneToFive,
+  sleepQuality: oneToFive,
+  stress: oneToFive,
+  notes: z.string().optional(),
+});
+
 export type GoalInput = z.infer<typeof goalSchema>;
 export type RaceResultInput = z.infer<typeof raceResultSchema>;
+export type InjuryInput = z.infer<typeof injurySchema>;
+export type WeeklyCheckinInput = z.infer<typeof weeklyCheckinSchema>;

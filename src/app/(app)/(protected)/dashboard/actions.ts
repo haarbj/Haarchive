@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/db/server";
 import { parseTimeToSeconds } from "@/lib/format";
-import { goalSchema, raceResultSchema } from "@/lib/validation/onboarding";
+import { goalSchema, raceResultSchema, weeklyCheckinSchema } from "@/lib/validation/onboarding";
+import { mostRecentMonday } from "@/lib/week";
 
 export type OnboardingState = {
   error?: string;
@@ -154,4 +155,46 @@ export async function deleteGoal(goalId: string): Promise<void> {
   await supabase.from("goals").delete().eq("id", goalId).eq("user_id", userId);
 
   revalidatePath("/dashboard");
+}
+
+export type WeeklyCheckinState = { error?: string; success?: boolean };
+
+// One row per athlete per week -- an upsert on (user_id, week_start)
+// rather than separate create/update actions, since re-submitting for a
+// week already checked into is just correcting that same week's answers,
+// not starting a new row.
+export async function submitWeeklyCheckin(
+  _prevState: WeeklyCheckinState,
+  formData: FormData,
+): Promise<WeeklyCheckinState> {
+  const parsed = weeklyCheckinSchema.safeParse({
+    fatigue: formData.get("fatigue"),
+    soreness: formData.get("soreness"),
+    sleepQuality: formData.get("sleepQuality"),
+    stress: formData.get("stress"),
+    notes: formData.get("notes") || undefined,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check your answers" };
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired — sign in again." };
+
+  const { error } = await supabase.from("weekly_checkins").upsert(
+    {
+      user_id: userId,
+      week_start: mostRecentMonday(new Date()),
+      fatigue: parsed.data.fatigue,
+      soreness: parsed.data.soreness,
+      sleep_quality: parsed.data.sleepQuality,
+      stress: parsed.data.stress,
+      notes: parsed.data.notes || null,
+    },
+    { onConflict: "user_id,week_start" },
+  );
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard");
+  return { success: true };
 }

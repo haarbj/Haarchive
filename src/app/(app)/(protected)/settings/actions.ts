@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/db/server";
 import { athleteProfileSchema } from "@/lib/validation/athlete-profile";
 import { communityProfileSchema } from "@/lib/validation/community-profile";
-import { raceResultSchema } from "@/lib/validation/onboarding";
+import { injurySchema, raceResultSchema } from "@/lib/validation/onboarding";
 import { raceDistanceMap } from "@/lib/race-distances";
 import { parseTimeToSeconds } from "@/lib/running-format";
 
@@ -273,4 +273,95 @@ export async function deleteRaceResult(raceResultId: string): Promise<void> {
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
+}
+
+export type InjuryFormState = { error?: string; success?: boolean };
+
+export async function addInjury(
+  _prevState: InjuryFormState,
+  formData: FormData,
+): Promise<InjuryFormState> {
+  const parsed = injurySchema.safeParse({
+    injuryType: formData.get("injuryType"),
+    bodyPart: formData.get("bodyPart"),
+    startDate: formData.get("startDate"),
+    endDate: formData.get("endDate") || undefined,
+    severity: formData.get("severity"),
+    affectsTraining: formData.get("affectsTraining"),
+    notes: formData.get("notes") || undefined,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check your injury details" };
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired — sign in again." };
+
+  const { error } = await supabase.from("injuries").insert({
+    user_id: userId,
+    injury_type: parsed.data.injuryType,
+    body_part: parsed.data.bodyPart,
+    start_date: parsed.data.startDate,
+    end_date: parsed.data.endDate || null,
+    severity: parsed.data.severity,
+    affects_training: parsed.data.affectsTraining,
+    notes: parsed.data.notes || null,
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+export async function updateInjury(
+  _prevState: InjuryFormState,
+  formData: FormData,
+): Promise<InjuryFormState> {
+  const injuryId = formData.get("injuryId");
+  if (typeof injuryId !== "string" || !injuryId) return { error: "Missing injury" };
+
+  const parsed = injurySchema.safeParse({
+    injuryType: formData.get("injuryType"),
+    bodyPart: formData.get("bodyPart"),
+    startDate: formData.get("startDate"),
+    endDate: formData.get("endDate") || undefined,
+    severity: formData.get("severity"),
+    affectsTraining: formData.get("affectsTraining"),
+    notes: formData.get("notes") || undefined,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check your injury details" };
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Your session expired — sign in again." };
+
+  const { error } = await supabase
+    .from("injuries")
+    .update({
+      injury_type: parsed.data.injuryType,
+      body_part: parsed.data.bodyPart,
+      start_date: parsed.data.startDate,
+      end_date: parsed.data.endDate || null,
+      severity: parsed.data.severity,
+      affects_training: parsed.data.affectsTraining,
+      notes: parsed.data.notes || null,
+    })
+    .eq("id", injuryId)
+    .eq("user_id", userId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+export async function deleteInjury(injuryId: string): Promise<void> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return;
+
+  await supabase.from("injuries").delete().eq("id", injuryId).eq("user_id", userId);
+
+  revalidatePath("/settings");
 }

@@ -7,6 +7,8 @@ import { GoalCard, type FitnessEstimate } from "@/app/(app)/(protected)/dashboar
 import { OnboardingForm } from "@/app/(app)/(protected)/dashboard/onboarding-form";
 import { equivalentPerformances } from "@/app/(app)/(protected)/dashboard/recent-fitness";
 import { StravaConnection, type LatestStravaActivity } from "@/app/(app)/(protected)/dashboard/strava-connection";
+import { WeeklyCheckinCard, type WeeklyCheckin } from "@/app/(app)/(protected)/dashboard/weekly-checkin-card";
+import { DeleteSavedCalculationButton } from "@/app/(app)/(protected)/dashboard/delete-saved-calculation-button";
 import {
   addDays,
   diffDays,
@@ -25,6 +27,7 @@ import { formatClock, formatDate, formatDistance, formatMiles, formatRelativeTim
 import { buildPerformanceTrend } from "@/lib/performance-trend";
 import { buildTrainingLoadSeries } from "@/lib/training-load";
 import { createClient } from "@/lib/db/server";
+import { mostRecentMonday } from "@/lib/week";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
@@ -126,6 +129,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     { data: athleteProfile },
     { data: completionsForLoad },
     { data: completionsForAcwr },
+    { data: weeklyCheckin },
   ] = await Promise.all([
     supabase
       .from("goals")
@@ -175,6 +179,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .not("actual_distance_m", "is", null)
       .gte("completed_at", acwrWindowStart.toISOString())
       .returns<{ completed_at: string; actual_distance_m: number }[]>(),
+    supabase
+      .from("weekly_checkins")
+      .select("fatigue, soreness, sleep_quality, stress, notes")
+      .eq("week_start", mostRecentMonday(new Date()))
+      .maybeSingle<WeeklyCheckin>(),
   ]);
 
   const primaryGoal = goals?.[0] ?? null;
@@ -390,6 +399,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {primaryGoal && <GoalCard goal={primaryGoal} estimate={fitnessEstimate} />}
 
+        <WeeklyCheckinCard checkin={weeklyCheckin ?? null} />
+
         {session?.athleteTeamId && !hasTrainingPlan && (
           <CardLink href="/plan">
             <p className="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -460,9 +471,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         <span className="font-medium text-zinc-900 dark:text-white">
                           {calc.label ?? calc.calculator_type}
                         </span>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                          {formatRelativeTime(calc.created_at)}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            {formatRelativeTime(calc.created_at)}
+                          </span>
+                          <DeleteSavedCalculationButton id={calc.id} />
+                        </div>
                       </div>
                       {equivalents.length > 0 && (
                         <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">

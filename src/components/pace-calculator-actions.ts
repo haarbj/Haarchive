@@ -37,3 +37,14 @@ export async function saveCalculation(
   revalidatePath("/dashboard");
   return { status: "success" };
 }
+
+export async function deleteSavedCalculation(calculationId: string): Promise<void> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return;
+
+  await supabase.from("saved_calculations").delete().eq("id", calculationId).eq("user_id", userId);
+
+  revalidatePath("/dashboard");
+}
