@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { kgToLbs } from "@/lib/profile-fitness-source";
+import type { ATHLETE_LEVELS, SEXES } from "@/lib/validation/athlete-profile";
 import { AthleteProfileForm } from "@/app/(app)/(protected)/settings/athlete-profile-form";
 import { CommunityProfileForm } from "@/app/(app)/(protected)/settings/community-profile-form";
 import { RaceResultsSection, type RaceResultRow } from "@/app/(app)/(protected)/settings/race-results-section";
@@ -25,7 +26,16 @@ type AthleteProfile = {
   weight_kg: number | null;
   current_weekly_mileage: number | null;
   running_days_per_week: number | null;
+  sex: (typeof SEXES)[number] | null;
+  height_cm: number | null;
+  years_running: number | null;
+  current_level: (typeof ATHLETE_LEVELS)[number] | null;
+  primary_event: string | null;
 };
+
+function cmToIn(cm: number): number {
+  return cm / 2.54;
+}
 
 type CommunityProfile = {
   bio: string | null;
@@ -42,7 +52,9 @@ export default async function SettingsPage() {
       supabase.from("profiles").select("display_name, units").single<Profile>(),
       supabase
         .from("athlete_profiles")
-        .select("birth_year, weight_kg, current_weekly_mileage, running_days_per_week")
+        .select(
+          "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event",
+        )
         .maybeSingle<AthleteProfile>(),
       supabase
         .from("community_profiles")
@@ -87,6 +99,11 @@ export default async function SettingsPage() {
           initialWeightLb={athleteProfile?.weight_kg != null ? Math.round(kgToLbs(athleteProfile.weight_kg)) : null}
           initialCurrentWeeklyMileage={athleteProfile?.current_weekly_mileage ?? null}
           initialDaysPerWeek={athleteProfile?.running_days_per_week ?? null}
+          initialSex={athleteProfile?.sex ?? null}
+          initialHeightIn={athleteProfile?.height_cm != null ? Math.round(cmToIn(athleteProfile.height_cm) * 10) / 10 : null}
+          initialYearsRunning={athleteProfile?.years_running ?? null}
+          initialCurrentLevel={athleteProfile?.current_level ?? null}
+          initialPrimaryEvent={athleteProfile?.primary_event ?? null}
         />
       </div>
 

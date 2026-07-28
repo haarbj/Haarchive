@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { isAdminEmail } from "@/lib/auth/session";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
+import { ATHLETE_LEVEL_LABELS, type ATHLETE_LEVELS, type SEXES } from "@/lib/validation/athlete-profile";
 import { formatClock, formatDate, formatDistance, formatRelativeTime } from "@/lib/format";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
@@ -49,9 +50,21 @@ export default async function UserDetailPage({ params }: PageProps) {
     admin.from("profiles").select("display_name, avatar_url, units, created_at").eq("id", id).maybeSingle(),
     admin
       .from("athlete_profiles")
-      .select("birth_year, weight_kg, current_weekly_mileage, running_days_per_week")
+      .select(
+        "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event",
+      )
       .eq("user_id", id)
-      .maybeSingle(),
+      .maybeSingle<{
+        birth_year: number | null;
+        weight_kg: number | null;
+        current_weekly_mileage: number | null;
+        running_days_per_week: number | null;
+        sex: (typeof SEXES)[number] | null;
+        height_cm: number | null;
+        years_running: number | null;
+        current_level: (typeof ATHLETE_LEVELS)[number] | null;
+        primary_event: string | null;
+      }>(),
     admin.from("community_profiles").select("bio, location").eq("user_id", id).maybeSingle(),
     admin.from("contributor_profiles").select("title, bio").eq("user_id", id).maybeSingle(),
     admin.from("team_memberships").select("team_id, role").eq("user_id", id).returns<{ team_id: string; role: string }[]>(),
@@ -163,6 +176,36 @@ export default async function UserDetailPage({ params }: PageProps) {
                 <div className="flex justify-between">
                   <dt>Days/week</dt>
                   <dd>{athleteProfile.running_days_per_week}</dd>
+                </div>
+              )}
+              {athleteProfile.sex && athleteProfile.sex !== "unspecified" && (
+                <div className="flex justify-between">
+                  <dt>Sex</dt>
+                  <dd className="capitalize">{athleteProfile.sex}</dd>
+                </div>
+              )}
+              {athleteProfile.height_cm != null && (
+                <div className="flex justify-between">
+                  <dt>Height</dt>
+                  <dd>{Math.round((athleteProfile.height_cm / 2.54) * 10) / 10} in</dd>
+                </div>
+              )}
+              {athleteProfile.years_running != null && (
+                <div className="flex justify-between">
+                  <dt>Years running</dt>
+                  <dd>{athleteProfile.years_running}</dd>
+                </div>
+              )}
+              {athleteProfile.current_level && (
+                <div className="flex justify-between">
+                  <dt>Level</dt>
+                  <dd>{ATHLETE_LEVEL_LABELS[athleteProfile.current_level]}</dd>
+                </div>
+              )}
+              {athleteProfile.primary_event && (
+                <div className="flex justify-between">
+                  <dt>Primary event</dt>
+                  <dd>{athleteProfile.primary_event}</dd>
                 </div>
               )}
             </dl>

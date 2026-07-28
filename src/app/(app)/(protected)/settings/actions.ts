@@ -33,6 +33,10 @@ function lbsToKg(lbs: number): number {
   return lbs * 0.453592;
 }
 
+function inToCm(inches: number): number {
+  return inches * 2.54;
+}
+
 export async function updateProfile(
   _prevState: UpdateProfileState,
   formData: FormData,
@@ -77,6 +81,11 @@ export async function updateAthleteProfile(
     weightLb: formData.get("weightLb"),
     currentWeeklyMileage: formData.get("currentWeeklyMileage"),
     daysPerWeek: formData.get("daysPerWeek"),
+    sex: formData.get("sex") || undefined,
+    heightIn: formData.get("heightIn") || undefined,
+    yearsRunning: formData.get("yearsRunning") || undefined,
+    currentLevel: formData.get("currentLevel") || undefined,
+    primaryEvent: formData.get("primaryEvent") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Please check the values above." };
@@ -95,6 +104,11 @@ export async function updateAthleteProfile(
     weight_kg: lbsToKg(parsed.data.weightLb),
     current_weekly_mileage: parsed.data.currentWeeklyMileage,
     running_days_per_week: parsed.data.daysPerWeek,
+    sex: parsed.data.sex ?? null,
+    height_cm: parsed.data.heightIn != null ? inToCm(parsed.data.heightIn) : null,
+    years_running: parsed.data.yearsRunning ?? null,
+    current_level: parsed.data.currentLevel ?? null,
+    primary_event: parsed.data.primaryEvent || null,
   });
 
   if (error) {
