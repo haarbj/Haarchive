@@ -8,8 +8,10 @@ import {
   ALLOWED_ARTICLE_TRANSITIONS,
   ARTICLE_CONTRIBUTOR_ROLES,
   ARTICLE_STATUSES,
+  ARTICLE_STATUS_LABELS,
   type ArticleContributorRole,
 } from "@/lib/articles/constants";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 export type ArticleAdminState = { error?: string; success?: boolean };
 
@@ -76,7 +78,11 @@ export async function transitionArticleStatus(
   const nextStatus = nextStatusRaw as (typeof ARTICLE_STATUSES)[number];
 
   const admin = createServiceRoleClient();
-  const { data: article } = await admin.from("articles").select("status").eq("id", articleId).maybeSingle();
+  const { data: article } = await admin
+    .from("articles")
+    .select("status, title, primary_author_id")
+    .eq("id", articleId)
+    .maybeSingle<{ status: string; title: string; primary_author_id: string | null }>();
   if (!article) return { error: "Article not found." };
 
   const allowed = ALLOWED_ARTICLE_TRANSITIONS[article.status] ?? [];
@@ -95,6 +101,15 @@ export async function transitionArticleStatus(
     .select("slug")
     .single();
   if (error) return { error: error.message };
+
+  if (article.primary_author_id && article.primary_author_id !== session.userId) {
+    await createNotification({
+      userId: article.primary_author_id,
+      type: "article_status_changed",
+      content: `Your article "${article.title}" is now ${ARTICLE_STATUS_LABELS[nextStatus]}.`,
+      relatedEntityId: articleId,
+    });
+  }
 
   revalidatePath(`/admin/articles/${articleId}`);
   revalidatePath("/admin/articles");

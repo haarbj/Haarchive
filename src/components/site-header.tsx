@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { categories, sectionsInCategory } from "@/lib/sections";
 import { AuthStatus } from "@/components/auth-status";
+import { NotificationBell } from "@/components/notification-bell";
 import { SiteSearchBox } from "@/components/site-search";
 
 // Every category except Tools lives inside the "Learn" mega menu -- Tools
@@ -206,6 +207,7 @@ export function SiteHeader() {
               />
             </svg>
           </Link>
+          <NotificationBell />
           <AuthStatus />
         </div>
 
@@ -339,6 +341,10 @@ export function SiteHeader() {
               </svg>
               Questions
             </Link>
+          </div>
+
+          <div className="border-b border-black/5 py-3 dark:border-white/10">
+            <NotificationBell />
           </div>
 
           <div className="mt-4 border-t border-black/5 pt-4 dark:border-white/10">

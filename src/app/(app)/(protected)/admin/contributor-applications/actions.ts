@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { loadAllUsers } from "@/lib/admin/users";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 export type ReviewApplicationState = { error?: string; success?: boolean };
 
@@ -74,6 +75,19 @@ export async function reviewContributorApplication(
     })
     .eq("id", id);
   if (error) return { error: error.message };
+
+  const notifyUserId = grantUserId ?? application.user_id;
+  if (notifyUserId) {
+    await createNotification({
+      userId: notifyUserId,
+      type: "application_reviewed",
+      content:
+        status === "approved"
+          ? "Your contributor application was approved -- you can start writing under Contribute."
+          : "Your contributor application was not approved this time.",
+      relatedEntityId: null,
+    });
+  }
 
   revalidatePath("/admin/contributor-applications");
   return { success: true };

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 export type DraftAnswerState = { error?: string; success?: boolean };
 
@@ -78,6 +79,20 @@ export async function addQuestionComment(
     comment: comment.trim(),
   });
   if (error) return { error: error.message };
+
+  const { data: question } = await admin
+    .from("questions")
+    .select("title, assigned_to")
+    .eq("id", questionId)
+    .maybeSingle<{ title: string; assigned_to: string | null }>();
+  if (question?.assigned_to && question.assigned_to !== session.userId) {
+    await createNotification({
+      userId: question.assigned_to,
+      type: "question_comment",
+      content: `New feedback on your draft for "${question.title}".`,
+      relatedEntityId: questionId,
+    });
+  }
 
   revalidatePath(`/contribute/questions/${questionId}`);
   return { success: true };

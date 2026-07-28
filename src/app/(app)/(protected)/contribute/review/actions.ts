@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 export type AddCommentState = { error?: string; success?: boolean };
 
@@ -52,6 +53,20 @@ export async function addArticleComment(
     comment: comment.trim(),
   });
   if (error) return { error: error.message };
+
+  const { data: article } = await admin
+    .from("articles")
+    .select("title, primary_author_id")
+    .eq("id", articleId)
+    .maybeSingle<{ title: string; primary_author_id: string | null }>();
+  if (article?.primary_author_id && article.primary_author_id !== session.userId) {
+    await createNotification({
+      userId: article.primary_author_id,
+      type: "article_comment",
+      content: `New comment on your article "${article.title}".`,
+      relatedEntityId: articleId,
+    });
+  }
 
   revalidatePath(`/contribute/review/${articleId}`);
   return { success: true };
