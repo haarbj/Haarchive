@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 
 import { updateUserPermissions } from "./actions";
 import { Card } from "@/components/ui/card";
@@ -28,9 +29,17 @@ export function UserPermissionsRow({
   return (
     <Card padding="md" as="form" action={formAction}>
       <input type="hidden" name="userId" value={id} />
-      <div>
-        <p className="font-semibold text-zinc-900 dark:text-white">{displayName}</p>
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">{email}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-semibold text-zinc-900 dark:text-white">{displayName}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-300">{email}</p>
+        </div>
+        <Link
+          href={`/admin/users/${id}`}
+          className="shrink-0 text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+        >
+          View details →
+        </Link>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-zinc-700 dark:text-zinc-300">
