@@ -140,7 +140,7 @@ export async function TeamScheduleView({ userId, coachView = false }: { userId: 
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
           {coachView
             ? "No schedule for this group yet."
-            : "You're connected to Brophy Broncos XC — your coach hasn't set up a schedule for your group yet."}
+            : "You're connected to Brophy Broncos XC. Your coach hasn't set up a schedule for your group yet."}
         </p>
       </div>
     );

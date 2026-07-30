@@ -351,7 +351,7 @@ export function HeatTracker() {
 
       <div>
         <p className="mb-3 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
-          48-hour WBGT outlook — plan your sessions
+          48-hour WBGT outlook: plan your sessions
         </p>
         <div className="relative rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900">
           {series && linePath && areaPath ? (
@@ -582,7 +582,7 @@ export function HeatTracker() {
                   }}
                 >
                   <span className="hidden sm:inline">
-                    {cToF(BLACK_FLAG_C).toFixed(0)}°F — take training indoors
+                    {cToF(BLACK_FLAG_C).toFixed(0)}°F: take training indoors
                   </span>
                   <span className="sm:hidden">
                     {cToF(BLACK_FLAG_C).toFixed(0)}°F limit
@@ -630,24 +630,24 @@ export function HeatTracker() {
       <div className="flex flex-wrap gap-4 text-xs text-zinc-600 dark:text-zinc-300">
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[0].swatchClass}`} />
-          Green flag — under {cToF(ZONES[0].maxC).toFixed(0)}°F: train as
+          Green flag, under {cToF(ZONES[0].maxC).toFixed(0)}°F: train as
           planned, easy or hard
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[1].swatchClass}`} />
-          Yellow flag — {cToF(ZONES[0].maxC).toFixed(0)}–
+          Yellow flag, {cToF(ZONES[0].maxC).toFixed(0)}–
           {cToF(ZONES[1].maxC).toFixed(0)}°F: easy runs are fine, ease off
           intervals and tempo
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[2].swatchClass}`} />
-          Red flag — {cToF(ZONES[1].maxC).toFixed(0)}–
+          Red flag, {cToF(ZONES[1].maxC).toFixed(0)}–
           {cToF(ZONES[2].maxC).toFixed(0)}°F: easy runs by effort only,
           intervals and tempo move indoors
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[3].swatchClass}`} />
-          Black flag — above {cToF(ZONES[2].maxC).toFixed(0)}°F: skip
+          Black flag, above {cToF(ZONES[2].maxC).toFixed(0)}°F: skip
           outdoor training, easy or hard
         </span>
       </div>
@@ -704,7 +704,7 @@ export function HeatTracker() {
           Wet Bulb Globe Temperature (WBGT) is what sports physiologists use
           to gauge heat stress in distance runners, since it combines air
           temperature and humidity with the radiant heat load a body absorbs
-          outdoors — a fuller picture than air temperature alone. A true WBGT
+          outdoors, a fuller picture than air temperature alone. A true WBGT
           reading comes from a black-globe thermometer plus wind and solar
           sensors; this page instead uses the Australian Bureau of
           Meteorology&rsquo;s outdoor approximation, which estimates the same
@@ -725,7 +725,7 @@ export function HeatTracker() {
         </h2>
         <p>
           Check it before you plan a session, not just before you walk out
-          the door — the 48-hour outlook exists so you can move a track
+          the door: the 48-hour outlook exists so you can move a track
           workout or long run to a cooler window (early morning tends to
           beat afternoon) instead of just gutting through the heat you
           happen to hit. Treat the flag color as the headline and the exact
@@ -742,7 +742,7 @@ export function HeatTracker() {
           while easy mileage stays fine, red flag means shifting those hard
           efforts to a treadmill or a cooler window of the day, and black
           flag is the point where outdoor training itself carries real
-          heat-illness risk.<sup>3</sup> These aren&rsquo;t arbitrary lines —
+          heat-illness risk.<sup>3</sup> These aren&rsquo;t arbitrary lines:
           at the Boston Marathon, every recorded exertional heat stroke case
           over a multi-year period occurred once WBGT climbed into this
           range, and incidence tracked the rise in WBGT from the start of
@@ -753,7 +753,7 @@ export function HeatTracker() {
         </p>
         <p>
           This is general sports-science guidance, not a substitute for a
-          coach&rsquo;s judgment — heat illness can escalate quickly during
+          coach&rsquo;s judgment: heat illness can escalate quickly during
           hard efforts, so when conditions sit near a flag boundary,
           it&rsquo;s worth erring conservative and listening to how the body
           actually feels that day.
@@ -773,8 +773,8 @@ export function HeatTracker() {
                 className="text-zinc-900 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/30 dark:hover:decoration-white"
               >
                 Thermal Comfort observations
-              </a>{" "}
-              — source of the outdoor WBGT approximation formula used here.
+              </a>
+              : source of the outdoor WBGT approximation formula used here.
             </li>
             <li>
               Lemke &amp; Kjellstrom,{" "}
@@ -787,8 +787,8 @@ export function HeatTracker() {
                 Applicability of the model presented by the Australian
                 Bureau of Meteorology to determine WBGT in outdoor
                 workplaces
-              </a>{" "}
-              — independent validation of the approximation&rsquo;s accuracy
+              </a>
+              : independent validation of the approximation&rsquo;s accuracy
               and limitations against physical sensors.
             </li>
             <li>
@@ -803,7 +803,7 @@ export function HeatTracker() {
                 Exertional heat illness during training and competition
               </a>
               , <em>Medicine &amp; Science in Sports &amp; Exercise</em>{" "}
-              (2007) — source of the flag thresholds and training guidance
+              (2007): source of the flag thresholds and training guidance
               used on this page.
             </li>
             <li>
@@ -816,8 +816,8 @@ export function HeatTracker() {
               >
                 Exertional Heat Stroke at the Boston Marathon: Demographics
                 and the Environment
-              </a>{" "}
-              — real-race evidence linking WBGT to heat stroke incidence in
+              </a>
+              : real-race evidence linking WBGT to heat stroke incidence in
               distance runners.
             </li>
             <li>
@@ -832,8 +832,8 @@ export function HeatTracker() {
                 Equivalent Temperature as Predictive Models of Medical
                 Stress in a Marathon: Analysis of 30 Years of Data From the
                 Twin Cities Marathon
-              </a>{" "}
-              — three decades of race data on WBGT and medical demand.
+              </a>
+              : three decades of race data on WBGT and medical demand.
             </li>
           </ol>
         </div>

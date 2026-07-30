@@ -93,7 +93,7 @@ export default async function PreviewArticlePage({ params }: { params: Promise<{
   return (
     <Container variant="content">
       <div className="rounded-lg border border-amber-400/50 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-400/30 dark:bg-amber-950/40 dark:text-amber-200">
-        <strong>Preview</strong> — this is exactly how the article will look once published ({ARTICLE_STATUS_LABELS[article.status]} now). Not visible to readers yet.
+        <strong>Preview</strong>: this is exactly how the article will look once published ({ARTICLE_STATUS_LABELS[article.status]} now). Not visible to readers yet.
       </div>
       <div className="mt-4">
         <BackLink href={backHref}>Back to {isAuthor ? "draft" : "review"}</BackLink>

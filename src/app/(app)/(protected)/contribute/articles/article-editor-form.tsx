@@ -82,7 +82,7 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
               defaultValue={initial.evidenceCategory}
               className={fieldClass}
             >
-              <option value="">— None —</option>
+              <option value="">None</option>
               {EVIDENCE_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
                   {EVIDENCE_CATEGORY_LABELS[category]}
@@ -128,7 +128,7 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
           Any heading followed by &ldquo;in Section Title&rdquo; (e.g. &ldquo;Gut Training Is a Real, Trainable
           Skill in Nutrition &amp; Fueling&rdquo;) links automatically. To link a bare section name, or any other
           phrase, mid-sentence, write it as <code>[link text](/href)</code>. For emphasis, wrap text in{" "}
-          <code>**bold**</code>, <code>_italic_</code>, or <code>++underline++</code> — select text and click
+          <code>**bold**</code>, <code>_italic_</code>, or <code>++underline++</code>: select text and click
           B/I/U, or press Cmd/Ctrl+B/I/U, in any text field below, including bullet items.
         </p>
         <ContentBlockEditor value={content} onChange={setContent} />

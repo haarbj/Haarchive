@@ -114,7 +114,7 @@ export function AthleteProfileForm({
             Sex
           </label>
           <select id={`${baseId}-sex`} name="sex" defaultValue={initialSex ?? ""} className={fieldClass}>
-            <option value="">— Not set —</option>
+            <option value="">Not set</option>
             {SEXES.map((s) => (
               <option key={s} value={s}>
                 {SEX_LABELS[s]}
@@ -159,7 +159,7 @@ export function AthleteProfileForm({
             Current level
           </label>
           <select id={`${baseId}-level`} name="currentLevel" defaultValue={initialCurrentLevel ?? ""} className={fieldClass}>
-            <option value="">— Not set —</option>
+            <option value="">Not set</option>
             {ATHLETE_LEVELS.map((level) => (
               <option key={level} value={level}>
                 {ATHLETE_LEVEL_LABELS[level]}

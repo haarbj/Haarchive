@@ -49,7 +49,7 @@ export function CreateInviteForm() {
       {state.inviteUrl && (
         <div className="mt-3 rounded-lg bg-black/[0.03] p-3 dark:bg-white/[0.05]">
           <p className="text-xs text-zinc-600 dark:text-zinc-300">
-            Send this link to the coach — it&rsquo;s single-use and only works with the email above.
+            Send this link to the coach: it&rsquo;s single-use and only works with the email above.
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <code className="break-all rounded bg-black/5 px-2 py-1 text-xs text-zinc-900 dark:bg-white/10 dark:text-white">

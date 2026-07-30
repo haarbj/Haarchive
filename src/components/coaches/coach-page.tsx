@@ -375,7 +375,7 @@ export function CoachPage({ coach }: CoachPageProps) {
         <p className={eyebrowClass}>Coach Genome</p>
         <h2 className={sectionHeadingClass}>Emphasis at a Glance</h2>
         <p className={sectionProseClass}>
-          Not a ranking — just where {coach.name} puts training emphasis, relative to the other six systems in
+          Not a ranking, just where {coach.name} puts training emphasis, relative to the other six systems in
           the{" "}
           <Link href="/coaching-library" className={inlineLinkClass}>
             Coaching Library

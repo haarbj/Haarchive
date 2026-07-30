@@ -1408,7 +1408,7 @@ export function EnvironmentalCalculator() {
                 {envWeatherA.fetchedConditions && (
                   <div className={statCardClass}>
                     <p className={statLabelClass}>
-                      {envWeatherA.weatherLocation ? `Conditions — ${envWeatherA.weatherLocation}` : "Conditions"}
+                      {envWeatherA.weatherLocation ? `Conditions: ${envWeatherA.weatherLocation}` : "Conditions"}
                     </p>
                     <div className="mt-2 space-y-1.5 text-sm">
                       <div className="flex items-center justify-between gap-3">

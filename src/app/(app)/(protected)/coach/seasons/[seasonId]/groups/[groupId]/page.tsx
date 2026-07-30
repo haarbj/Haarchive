@@ -147,7 +147,7 @@ export default async function GroupSchedulePage({ params }: PageProps) {
       <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
       <Heading className="mt-4">{group.name}</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        {season.name} — build this group&rsquo;s week-by-week schedule.
+        {season.name}: build this group&rsquo;s week-by-week schedule.
       </p>
 
       {allGroups && allGroups.length > 1 && (

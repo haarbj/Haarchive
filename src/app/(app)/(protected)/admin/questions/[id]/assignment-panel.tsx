@@ -56,7 +56,7 @@ export function AssignmentPanel({
             Assigned contributor
           </label>
           <select id="assignedTo" name="assignedTo" defaultValue={assignedTo ?? ""} className={fieldClass}>
-            <option value="">— None —</option>
+            <option value="">None</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.displayName} ({u.email})
@@ -74,7 +74,7 @@ export function AssignmentPanel({
             defaultValue={assignedReviewer ?? ""}
             className={fieldClass}
           >
-            <option value="">— None —</option>
+            <option value="">None</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.displayName} ({u.email})

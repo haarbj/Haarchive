@@ -188,8 +188,8 @@ export async function generateContentSuggestion(
     const isRateLimited = err instanceof APICallError && err.statusCode === 429;
     return {
       error: isRateLimited
-        ? "Hitting the model's rate limit right now — try again in a minute."
-        : "Couldn't generate a suggestion right now — try again in a moment.",
+        ? "Hitting the model's rate limit right now. Try again in a minute."
+        : "Couldn't generate a suggestion right now. Try again in a moment.",
     };
   }
 

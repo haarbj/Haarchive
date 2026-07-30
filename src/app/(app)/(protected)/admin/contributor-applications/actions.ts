@@ -51,7 +51,7 @@ export async function reviewContributorApplication(
       const users = await loadAllUsers();
       const match = users.find((u) => u.email.toLowerCase() === application.email.toLowerCase());
       if (!match) {
-        return { error: "No account found yet for this email — ask them to sign up, then approve again." };
+        return { error: "No account found yet for this email. Ask them to sign up, then approve again." };
       }
       grantUserId = match.id;
     }

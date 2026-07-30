@@ -45,7 +45,7 @@ export async function submitContactMessage(
     .eq(identityColumn, identityValue as string)
     .gte("created_at", since);
   if ((count ?? 0) >= RATE_LIMIT_MAX) {
-    return { error: "You've already sent a few messages recently — give it a bit before sending more." };
+    return { error: "You've already sent a few messages recently. Give it a bit before sending more." };
   }
 
   const { error } = await admin.from("contact_messages").insert({

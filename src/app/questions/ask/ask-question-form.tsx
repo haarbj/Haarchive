@@ -40,7 +40,7 @@ export function AskQuestionForm({ sourceSectionSlug }: AskQuestionFormProps) {
   if (state.success) {
     return (
       <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 dark:border-emerald-400/30 dark:bg-emerald-400/5">
-        <p className="text-lg font-semibold text-zinc-900 dark:text-white">Thanks — that’s in the queue.</p>
+        <p className="text-lg font-semibold text-zinc-900 dark:text-white">Thanks, that’s in the queue.</p>
         <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
           It’ll show up on the Questions page right away, and it factors into what gets written next.
         </p>
@@ -102,7 +102,7 @@ export function AskQuestionForm({ sourceSectionSlug }: AskQuestionFormProps) {
                     className="text-sm font-medium text-sky-700 underline decoration-sky-700/30 underline-offset-2 hover:decoration-sky-700/70 dark:text-sky-300 dark:decoration-sky-300/30"
                   >
                     {match.sectionTitle}
-                    {match.heading ? ` — ${match.heading}` : ""}
+                    {match.heading ? `: ${match.heading}` : ""}
                   </Link>
                 </li>
               ))}
@@ -110,7 +110,7 @@ export function AskQuestionForm({ sourceSectionSlug }: AskQuestionFormProps) {
           ) : null}
           {!searching ? (
             <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-              Take a look — if it doesn’t fully answer this, go ahead and submit below anyway.
+              Take a look: if it doesn’t fully answer this, go ahead and submit below anyway.
             </p>
           ) : null}
         </div>

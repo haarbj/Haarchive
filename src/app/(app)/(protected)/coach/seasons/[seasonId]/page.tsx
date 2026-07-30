@@ -95,7 +95,7 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
           </div>
         ) : (
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-            No groups yet — <Link href="/coach/groups" className="underline">create one</Link> to start building a
+            No groups yet: <Link href="/coach/groups" className="underline">create one</Link> to start building a
             schedule.
           </p>
         )}

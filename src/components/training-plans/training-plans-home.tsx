@@ -32,7 +32,7 @@ export function TrainingPlansHome() {
       <p className={sectionProseClass}>
         Five real, day-by-day marathon plans from John Davis&rsquo;s <em>Marathon Excellence for Everyone</em>,
         each available as a 12- or 18-week build. The tracks are ordered by weekly mileage, not difficulty
-        labels — pick the one whose peak week is closest to what you&rsquo;re actually training, or already know
+        labels: pick the one whose peak week is closest to what you&rsquo;re actually training, or already know
         you can build to. New to running entirely? Start with{" "}
         <Link
           href="/how-to-start-running"
@@ -40,7 +40,7 @@ export function TrainingPlansHome() {
         >
           How to Start Running
         </Link>{" "}
-        instead — these plans assume a real aerobic base already exists.
+        instead: these plans assume a real aerobic base already exists.
       </p>
 
       <div className="mt-8 space-y-4">
@@ -80,7 +80,7 @@ export function TrainingPlansHome() {
       </div>
 
       <p className="mt-6 text-xs text-zinc-600 dark:text-zinc-300">
-        Every plan scales to your own target peak weekly mileage and displays in miles or kilometers — the
+        Every plan scales to your own target peak weekly mileage and displays in miles or kilometers: the
         numbers above are each plan&rsquo;s own reference volume, not a fixed requirement. Looking for advanced
         periodization strategy (double threshold, altitude, heat, individualizing the load) instead of a
         specific plan? See{" "}

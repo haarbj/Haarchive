@@ -67,7 +67,7 @@ export default async function CoachPage() {
           </div>
         ) : (
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-            No seasons yet — generate one to get started.
+            No seasons yet. Generate one to get started.
           </p>
         )}
       </div>

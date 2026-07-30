@@ -47,7 +47,7 @@ export function QuestionSearchBox() {
           ) : (
             <>
               <p className="px-2 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-                Already asked — upvote instead of duplicating
+                Already asked: upvote instead of duplicating
               </p>
               {results.map((result) => (
                 <div

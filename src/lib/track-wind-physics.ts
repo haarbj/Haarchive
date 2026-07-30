@@ -81,8 +81,8 @@ export const ALT_PAIR: Partial<Record<RepType, RepType>> = {
 // don't read as a clean sentence.
 export const REP_DESCRIPTIONS: Record<RepType, string> = {
   "200m": "Covers the far curve and the home straight only.",
-  "200m-alt": "Covers the near curve and the back straight only — the other half of the lap from the standard 200m.",
-  "400m": "A full lap — every curve and straight, once each.",
+  "200m-alt": "Covers the near curve and the back straight only, the other half of the lap from the standard 200m.",
+  "400m": "A full lap: every curve and straight, once each.",
   "600m": "A lap and a half: two trips down the home straight, one down the back straight.",
   "600m-alt": "A lap and a half the other way: two trips down the back straight, one down the home straight.",
   "1000m": "Two and a half laps: three trips down the home straight, two down the back straight.",

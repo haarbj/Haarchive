@@ -26,7 +26,7 @@ export async function updateContributorProfile(
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
-  if (!userId) return { error: "Your session expired — sign in again." };
+  if (!userId) return { error: "Your session expired. Sign in again." };
 
   const { title, bio, expertiseInput, avatarUrl } = parsed.data;
 

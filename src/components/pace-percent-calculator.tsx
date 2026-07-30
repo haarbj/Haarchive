@@ -132,7 +132,7 @@ export function PacePercentCalculator() {
             <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
               {mode === "forward"
                 ? "Find the workout pace that's a given percentage of a reference pace (e.g. 5K pace)."
-                : "You ran a workout at a known percentage — back-solve what reference pace that implies."}
+                : "You ran a workout at a known percentage: back-solve what reference pace that implies."}
             </p>
           </div>
 
@@ -158,8 +158,8 @@ export function PacePercentCalculator() {
             </div>
             <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
               {basis === "pace"
-                ? "Canova's own convention — evenly spaced in pace, e.g. every 10% step from a 5:00 pace is a fixed 30 seconds."
-                : "The inverse-proportion version most exercise science uses — evenly spaced in speed instead."}
+                ? "Canova's own convention: evenly spaced in pace, e.g. every 10% step from a 5:00 pace is a fixed 30 seconds."
+                : "The inverse-proportion version most exercise science uses: evenly spaced in speed instead."}
             </p>
           </div>
         </div>
@@ -298,7 +298,7 @@ export function PacePercentCalculator() {
                   </p>
                 )}
                 <p className="mt-1.5 text-[10.5px] text-zinc-600 dark:text-zinc-300">
-                  Unit conversion never changes the percentage math above — 90% of 5:00/mi is 5:30/mi regardless
+                  Unit conversion never changes the percentage math above: 90% of 5:00/mi is 5:30/mi regardless
                   of which unit it&rsquo;s displayed in.
                 </p>
               </div>
@@ -307,7 +307,7 @@ export function PacePercentCalculator() {
                 calculatorType="pace-percent-calculator"
                 input={{ mode, basis, paceUnit, paceInput, percentInput }}
                 output={{ resultSeconds, resultPace: `${formatPace(resultSeconds, paceUnit)}${PACE_UNIT_LABEL[paceUnit]}` }}
-                label={`${percentInput}% ${basis === "pace" ? "of pace" : "of speed"} — ${formatPace(knownSeconds!, paceUnit)}${PACE_UNIT_LABEL[paceUnit]}`}
+                label={`${percentInput}% ${basis === "pace" ? "of pace" : "of speed"}: ${formatPace(knownSeconds!, paceUnit)}${PACE_UNIT_LABEL[paceUnit]}`}
               />
             </>
           ) : (
@@ -346,11 +346,11 @@ export function PacePercentCalculator() {
                 <p>
                   Pace and speed are inverses of each other, so these are genuinely different formulas, not two
                   ways of writing the same math. Percent of pace is defined to be linear and symmetric in pace
-                  units — 90% of a 5:00 pace is 5:30, and 80% is 6:00, a fixed 30-second step each time regardless
+                  units: 90% of a 5:00 pace is 5:30, and 80% is 6:00, a fixed 30-second step each time regardless
                   of the reference pace. That symmetry is why Renato Canova and other coaches who use
                   percentage-based workouts default to percent of pace: a given percentage gap feels like a
                   consistent effort jump whether the reference pace is fast or slow. Percent of speed is the
-                  more intuitive inverse-proportion version (resultPace = referencePace ÷ percent) — evenly
+                  more intuitive inverse-proportion version (resultPace = referencePace ÷ percent), evenly
                   spaced in speed instead, which is closer to how exercise-science research usually expresses
                   intensity.
                 </p>
@@ -371,11 +371,11 @@ export function PacePercentCalculator() {
                 <p>
                   A few approximate, physiologically-based markers worth knowing (all as a percent of 5K pace,
                   percent-of-pace basis): critical velocity is roughly 95%, lactate threshold is roughly 91–92%,
-                  and aerobic threshold is roughly 85%. The &ldquo;5% rule&rdquo; is a related rule of thumb — a
+                  and aerobic threshold is roughly 85%. The &ldquo;5% rule&rdquo; is a related rule of thumb: a
                   well-trained runner slows by roughly 5% for every doubling of race distance, so 10K pace is
                   about 95% of 5K pace, half marathon pace is about 90% of 5K pace (95% of 10K pace), and
                   marathon pace is about 95% of half marathon pace (90% of 10K pace). All of these shift with
-                  individual training status and event specialization — treat them as reference points, not
+                  individual training status and event specialization: treat them as reference points, not
                   fixed rules.
                 </p>
               </div>
@@ -403,7 +403,7 @@ export function PacePercentCalculator() {
                     pace percentage calculator
                   </a>{" "}
                   (Running Writings, MIT licensed), rebuilt for Haarchive with a plain-text pace entry, direct
-                  percent entry, and saved-result support. This tool only does the arithmetic — it doesn&rsquo;t
+                  percent entry, and saved-result support. This tool only does the arithmetic: it doesn&rsquo;t
                   know your training history, so a percentage that&rsquo;s appropriate for one runner&rsquo;s
                   reference pace may be too hard or too easy for another&rsquo;s, especially at the extremes
                   (below about 80% or above about 105%).

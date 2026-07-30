@@ -194,7 +194,7 @@ const XC_ADJUSTMENTS = [
 const MAF_ADJUSTMENTS = [
   {
     label:
-      "Recovering from illness, injury, or surgery — or on regular medication",
+      "Recovering from illness, injury, or surgery, or on regular medication",
     value: -10,
   },
   {
@@ -202,12 +202,12 @@ const MAF_ADJUSTMENTS = [
     value: -5,
   },
   {
-    label: "Consistent, injury-free training — 2 years or less",
+    label: "Consistent, injury-free training: 2 years or less",
     value: 0,
   },
   {
     label:
-      "Consistent, injury-free training — more than 2 years, and still improving",
+      "Consistent, injury-free training: more than 2 years, and still improving",
     value: 5,
   },
 ];
@@ -591,7 +591,7 @@ export function PaceCalculator() {
               {Math.round((1 - xcAdjustment) * 100)}% faster to estimate
               flat track/road effort before estimating other distances.
               Many flatter, firmer courses may need a smaller adjustment,
-              while very difficult courses may need a larger one — still a
+              while very difficult courses may need a larger one, still a
               rough rule of thumb, not a precise conversion.
             </p>
           )}
@@ -657,7 +657,7 @@ export function PaceCalculator() {
                 <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">
                   This level of fitness typically points toward building
                   aerobic consistency and durability before adding more
-                  intensity — a general starting point, not a diagnosis of
+                  intensity: a general starting point, not a diagnosis of
                   what you specifically need.
                 </p>
                 <Link
@@ -780,7 +780,7 @@ export function PaceCalculator() {
 
               <p className="mt-6 text-sm text-zinc-700 dark:text-zinc-200">
                 Based on this performance, here are estimated training
-                paces to use as a reference — not a personalized plan,
+                paces to use as a reference, not a personalized plan,
                 since that also depends on your mileage, history, and
                 goals.
               </p>
@@ -809,7 +809,7 @@ export function PaceCalculator() {
                   derivedFrom="= XC 5K pace ÷ 0.93"
                   splitCaption={formatLapLine([xcFiveKPace / 0.93], [400, 800])}
                   hrLabel={tempoHrLabel}
-                  description="Comfortably hard — controlled and sustainable, never all-out. Roughly a 6-out-of-10 effort."
+                  description="Comfortably hard: controlled and sustainable, never all-out. Roughly a 6-out-of-10 effort."
                   learnMoreHref="/workout-library#dialing-in-a-tempo-run"
                   showDetails={showAdvanced}
                 />
@@ -821,8 +821,8 @@ export function PaceCalculator() {
                     [xcFiveKPace],
                     [400, 800, 1000],
                   )}
-                  hrNote="Max effort — heart rate lags behind pace on reps this short, so trust the pace and how it feels over a number."
-                  description="Hard but controlled, not an all-out sprint. Pace alone doesn't determine the adaptation — rep length and recovery matter just as much as the number on the watch."
+                  hrNote="Max effort: heart rate lags behind pace on reps this short, so trust the pace and how it feels over a number."
+                  description="Hard but controlled, not an all-out sprint. Pace alone doesn't determine the adaptation: rep length and recovery matter just as much as the number on the watch."
                   learnMoreHref="/5k-training#vo2-max-intervals"
                   showDetails={showAdvanced}
                 />
@@ -830,7 +830,7 @@ export function PaceCalculator() {
                   label="Marathon"
                   paceLabel={formatPaceValue(marathonPaceRange)}
                   hrLabel={marathonHrLabel}
-                  description="Steady and controlled — a pace you could defend from mile 1 to mile 26, not just survive. Requires marathon-specific training, not just current fitness."
+                  description="Steady and controlled: a pace you could defend from mile 1 to mile 26, not just survive. Requires marathon-specific training, not just current fitness."
                   learnMoreHref="/marathon-training#racing-the-last-25"
                   showDetails={showAdvanced}
                 />
@@ -1009,7 +1009,7 @@ export function PaceCalculator() {
         )}
         {(ageValid || knownMaxHrValid) && restingHrValid && (
           <p className="mt-3 text-xs text-zinc-600 dark:text-zinc-300">
-            Give yourself about five beats on either side of each target —
+            Give yourself about five beats on either side of each target,
             see{" "}
             <Link
               href="/training-plans#finding-your-training-heart-rate"
@@ -1049,17 +1049,17 @@ export function PaceCalculator() {
               <div className={detailsBodyClass}>
                 <p>
                   Equivalent race times use Pete Riegel&rsquo;s endurance
-                  formula —{" "}
+                  formula:{" "}
                   <code className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-xs dark:bg-white/10">
                     T2 = T1 × (D2/D1)^1.06
-                  </code>{" "}
-                  — built from an analysis of world records spanning 100
+                  </code>
+                  , built from an analysis of world records spanning 100
                   meters to 100 miles.<sup>1</sup> It&rsquo;s most reliable
                   comparing distances of a similar character, roughly 5K
                   through the marathon. Bridging all the way down to the
                   mile is less reliable, since that crosses from a race
                   that&rsquo;s meaningfully anaerobic into one that&rsquo;s
-                  almost entirely aerobic — a runner whose speed and
+                  almost entirely aerobic. A runner whose speed and
                   endurance aren&rsquo;t in the &ldquo;average&rdquo; ratio
                   the formula assumes will see the mile estimate miss by
                   more than the others. The marathon estimate is shown as a
@@ -1083,12 +1083,12 @@ export function PaceCalculator() {
                 <p>
                   Selecting Cross Country adjusts the entered time faster
                   before estimating anything else, using whichever course
-                  difficulty is selected — 3% for a flat, firm, fast course
+                  difficulty is selected: 3% for a flat, firm, fast course
                   up to 10% for a very hilly, muddy, or technical one, with
                   5% (average hills and footing) as the default. This is
                   still a common coaching rule of thumb for translating
                   grass, turns, and hills into an equivalent flat effort,
-                  not a precise conversion — nobody can reduce a specific
+                  not a precise conversion: nobody can reduce a specific
                   course to one number with real accuracy, but a runner who
                   knows their course was unusually tough or unusually fast
                   can dial the estimate in better than a single fixed
@@ -1119,7 +1119,7 @@ export function PaceCalculator() {
                   underlying training system was built around: easy pace
                   is XC 5K pace plus 1:30–2:30 per mile, tempo/threshold
                   pace is XC 5K pace divided by 0.93, and VO2-oriented
-                  reps are run at XC 5K pace itself — though the actual
+                  reps are run at XC 5K pace itself, though the actual
                   adaptation from those reps depends on rep length and
                   recovery too, not pace alone. A track or road entry is
                   reverse-adjusted into an estimated XC-effort 5K pace
@@ -1149,16 +1149,16 @@ export function PaceCalculator() {
                 <p>
                   Max heart rate uses the standard 220-minus-age population
                   estimate unless a known max HR is entered, in which case
-                  that real number replaces it everywhere on this page — a
+                  that real number replaces it everywhere on this page: a
                   measured or race-tested value is always more trustworthy
                   than a population formula. The aerobic training ceiling
                   uses Maffetone&rsquo;s MAF Method (180 minus age,
-                  adjusted for training and health history) — a specific,
+                  adjusted for training and health history), a specific,
                   somewhat controversial system, not a consensus number,
                   which is why it&rsquo;s labeled as an estimate. The
                   effort-based targets use the Karvonen formula, extended
                   across a few common intensities. The heart-rate ranges
-                  next to each pace zone are approximate — heart rate
+                  next to each pace zone are approximate: heart rate
                   responds more slowly than pace, especially on short hard
                   efforts, so treat pace and effort as the primary targets
                   and heart rate as a secondary check.
@@ -1178,12 +1178,12 @@ export function PaceCalculator() {
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  Every number here is a starting point, not a verdict —
+                  Every number here is a starting point, not a verdict:
                   test it against how the effort actually feels, and let
                   feel win when the two disagree. Two runners with the
                   same recent race time but very different training
                   histories shouldn&rsquo;t run the same week, and this
-                  page has no way to know that difference — it only knows
+                  page has no way to know that difference: it only knows
                   the one result you entered.
                 </p>
                 <div className="mt-3 border-t border-black/10 pt-3 dark:border-white/10">
@@ -1201,8 +1201,8 @@ export function PaceCalculator() {
                       >
                         Athletic Records and Human Endurance
                       </a>
-                      , <em>American Scientist</em>, Vol. 69, No. 3 (1981)
-                      — source of the race-time prediction formula used
+                      , <em>American Scientist</em>, Vol. 69, No. 3 (1981):
+                      source of the race-time prediction formula used
                       here.
                     </li>
                   </ol>

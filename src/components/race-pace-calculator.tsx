@@ -369,7 +369,7 @@ export function RacePaceCalculator() {
                   result:
                     mode === "time-to-pace" ? `${formatSplitPace(resultSeconds, splitUnit)}${splitLabel}` : formatClock(resultSeconds),
                 }}
-                label={`${distanceLabel} — ${mode === "time-to-pace" ? formatClock(raceTimeSeconds!) : `${formatSplitPace(paceSeconds!, splitUnit)}${splitLabel}`}`}
+                label={`${distanceLabel}: ${mode === "time-to-pace" ? formatClock(raceTimeSeconds!) : `${formatSplitPace(paceSeconds!, splitUnit)}${splitLabel}`}`}
               />
             </>
           ) : (

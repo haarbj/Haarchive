@@ -26,21 +26,21 @@ export function ContactPage() {
         </h2>
         <ul className="space-y-3">
           <li>
-            • Coaching inquiries — one-on-one coaching, a race buildup, or a review of a plan you&rsquo;re
+            • Coaching inquiries: one-on-one coaching, a race buildup, or a review of a plan you&rsquo;re
             already running.
           </li>
           <li>
-            • Contributing —{" "}
+            • Contributing:{" "}
             <Link href="/contribute-apply" className={linkClass}>
               apply to write articles, answer reader questions, or help review submissions
             </Link>
             . Every contributor is approved by hand, so tell me a bit about yourself first.
           </li>
           <li>
-            • Collaborations — guest writing, research discussions, or joint projects with other coaches
+            • Collaborations: guest writing, research discussions, or joint projects with other coaches
             and physiologists.
           </li>
-          <li>• Speaking — talks or workshops on training philosophy, aerobic development, or coaching methodology.</li>
+          <li>• Speaking: talks or workshops on training philosophy, aerobic development, or coaching methodology.</li>
         </ul>
       </div>
 

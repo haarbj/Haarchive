@@ -48,7 +48,7 @@ export default async function ContributePage() {
           <div>
             <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">My Profile</p>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              Set your bio, title, expertise, and profile picture — shown publicly once you&rsquo;re
+              Set your bio, title, expertise, and profile picture, shown publicly once you&rsquo;re
               credited on an article.
             </p>
           </div>

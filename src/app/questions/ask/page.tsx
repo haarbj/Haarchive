@@ -32,7 +32,7 @@ export default async function AskQuestionPage({ searchParams }: AskPageProps) {
         {sourceSection
           ? `Asking about "${sourceSection.title}." `
           : ""}
-        Every question and topic suggestion goes straight into the editorial pipeline — nothing here is a
+        Every question and topic suggestion goes straight into the editorial pipeline: nothing here is a
         comment thread. Post it, upvote what you’d like to see prioritized, and check back on the{" "}
         <Link
           href="/questions"

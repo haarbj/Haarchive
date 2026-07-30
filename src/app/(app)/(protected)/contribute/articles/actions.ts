@@ -84,12 +84,12 @@ export async function createArticleDraft(
 
   const slug = slugifyTitle(parsed.data.title);
   if (!slug || isReservedSlug(slug)) {
-    return { error: "That title produces a page address that's already in use — try a more specific title." };
+    return { error: "That title produces a page address that's already in use. Try a more specific title." };
   }
 
   const admin = createServiceRoleClient();
   const { data: existing } = await admin.from("articles").select("id").eq("slug", slug).maybeSingle();
-  if (existing) return { error: "An article with that title already exists — try a more specific title." };
+  if (existing) return { error: "An article with that title already exists. Try a more specific title." };
 
   const { data: article, error } = await admin
     .from("articles")

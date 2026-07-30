@@ -41,7 +41,7 @@ export function ContributorsPanel({
               className="flex items-center justify-between rounded-lg border border-black/10 px-3 py-2 text-sm dark:border-white/10"
             >
               <span className="text-zinc-900 dark:text-white">
-                {c.name} <span className="text-zinc-500 dark:text-zinc-400">— {c.role}</span>
+                {c.name} <span className="text-zinc-500 dark:text-zinc-400">({c.role})</span>
               </span>
               <button
                 type="button"

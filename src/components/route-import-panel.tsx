@@ -52,7 +52,7 @@ export function RouteImportPanel({
     }
     setStatus("loaded");
     setMessage(
-      `Loaded ${label} — ${milesFromMeters(summary.totalDistanceM)} mi, ${formatClock(summary.totalTimeSeconds)}, ` +
+      `Loaded ${label}: ${milesFromMeters(summary.totalDistanceM)} mi, ${formatClock(summary.totalTimeSeconds)}, ` +
         `${feetFromMeters(summary.elevationGainM)}ft gain / ${feetFromMeters(summary.elevationLossM)}ft loss`,
     );
     onRouteLoaded(summary, label, route);

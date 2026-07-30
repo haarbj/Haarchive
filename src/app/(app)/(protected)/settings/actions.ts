@@ -55,7 +55,7 @@ export async function updateProfile(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
-    return { error: "Your session expired — sign in again." };
+    return { error: "Your session expired. Sign in again." };
   }
 
   const { error } = await supabase
@@ -95,7 +95,7 @@ export async function updateAthleteProfile(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
-    return { error: "Your session expired — sign in again." };
+    return { error: "Your session expired. Sign in again." };
   }
 
   const { error } = await supabase.from("athlete_profiles").upsert({
@@ -138,7 +138,7 @@ export async function updateCommunityProfile(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
-    return { error: "Your session expired — sign in again." };
+    return { error: "Your session expired. Sign in again." };
   }
 
   const { error } = await supabase.from("community_profiles").upsert({
@@ -187,7 +187,7 @@ export async function addRaceResult(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
-    return { error: "Your session expired — sign in again." };
+    return { error: "Your session expired. Sign in again." };
   }
 
   const { error } = await supabase.from("race_results").insert({
@@ -247,7 +247,7 @@ export async function updateRaceResult(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
-    return { error: "Your session expired — sign in again." };
+    return { error: "Your session expired. Sign in again." };
   }
 
   // Scoped to both id and user_id -- RLS already enforces owner-only
@@ -309,7 +309,7 @@ export async function addInjury(
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
-  if (!userId) return { error: "Your session expired — sign in again." };
+  if (!userId) return { error: "Your session expired. Sign in again." };
 
   const { error } = await supabase.from("injuries").insert({
     user_id: userId,
@@ -348,7 +348,7 @@ export async function updateInjury(
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
-  if (!userId) return { error: "Your session expired — sign in again." };
+  if (!userId) return { error: "Your session expired. Sign in again." };
 
   const { error } = await supabase
     .from("injuries")

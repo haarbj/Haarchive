@@ -371,7 +371,7 @@ export function GapCalculator() {
                 )}
                 {deltaSeconds !== null && Math.abs(deltaSeconds) >= 1 && (
                   <p className="mt-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-                    {formatSignedSeconds(deltaSeconds)} {unitLabel} from the {direction} —{" "}
+                    {formatSignedSeconds(deltaSeconds)} {unitLabel} from the {direction}:{" "}
                     {deltaSeconds > 0
                       ? mode === "pace"
                         ? "the hill cost you this much per unit distance."

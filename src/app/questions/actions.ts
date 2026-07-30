@@ -56,7 +56,7 @@ export async function submitQuestion(
     .eq(identityColumn, identityValue as string)
     .gte("created_at", since);
   if ((count ?? 0) >= RATE_LIMIT_MAX) {
-    return { error: "You've submitted several questions recently — give it a bit before adding more." };
+    return { error: "You've submitted several questions recently. Give it a bit before adding more." };
   }
 
   const { data, error } = await admin

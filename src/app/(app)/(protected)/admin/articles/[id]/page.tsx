@@ -159,7 +159,7 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
               (citations ?? []).map((c, index) => (
                 <p key={index} className="text-sm text-zinc-600 dark:text-zinc-300">
                   {c.paper_title}
-                  {c.authors ? ` — ${c.authors}` : ""}
+                  {c.authors ? `: ${c.authors}` : ""}
                   {c.year ? ` (${c.year})` : ""}
                   {c.link_or_doi ? ` · ${c.link_or_doi}` : ""}
                   {c.topic ? ` · Topic: ${c.topic}` : ""}

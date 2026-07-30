@@ -81,7 +81,7 @@ function buildIndex(): IndexedEntry[] {
 
   for (const plan of TRAINING_PLANS) {
     entries.push({
-      title: `${plan.trackLabel} — ${plan.durationWeeks}-Week ${plan.raceType}`,
+      title: `${plan.trackLabel}: ${plan.durationWeeks}-Week ${plan.raceType}`,
       subtitle: `~${Math.round(plan.referenceAvgWeeklyMiles)} mi/week average, peaking around ${Math.round(plan.referencePeakWeeklyMiles)} mi`,
       href: `/training-plans/${plan.slug}`,
       group: "Training Plans",

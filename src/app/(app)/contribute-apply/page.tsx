@@ -21,8 +21,8 @@ export default function ContributeApplyPage() {
       <BackLink href="/contact">Back to Contact</BackLink>
       <Heading>Apply to Contribute</Heading>
       <p className="mt-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        The Haarchive&rsquo;s contributor pipeline — writing articles, answering reader questions, and
-        reviewing submissions — is open to anyone who applies, but every contributor is approved by hand
+        The Haarchive&rsquo;s contributor pipeline (writing articles, answering reader questions, and
+        reviewing submissions) is open to anyone who applies, but every contributor is approved by hand
         first. A few questions to help with that below; I read every application myself.
       </p>
 

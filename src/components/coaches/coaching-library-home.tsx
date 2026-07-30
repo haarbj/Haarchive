@@ -16,15 +16,15 @@ import {
 } from "@/lib/section-styles";
 
 const SHARED_PRINCIPLES = [
-  "Aerobic volume is the foundation, even in systems that don't advertise it that way — marathon-specific blocks and double-threshold work both sit on top of large aerobic mileage, not instead of it.",
+  "Aerobic volume is the foundation, even in systems that don't advertise it that way: marathon-specific blocks and double-threshold work both sit on top of large aerobic mileage, not instead of it.",
   "Recovery is trainable and has to be managed deliberately, not treated as time off from the real work.",
-  "Progression has to move toward race specificity — general fitness eventually has to convert into the exact demand of the goal race.",
+  "Progression has to move toward race specificity: general fitness eventually has to convert into the exact demand of the goal race.",
 ];
 
 const DISAGREEMENTS = [
-  "How much quality work should sit near threshold — some systems spend heavily there; others argue that's exactly the zone to minimize.",
-  "How prescriptive training should be — precise pace zones and lactate targets on one end, feel and context on the other.",
-  "How much technical and mental coaching matters — a core pillar for some systems, largely agnostic for others.",
+  "How much quality work should sit near threshold: some systems spend heavily there; others argue that's exactly the zone to minimize.",
+  "How prescriptive training should be: precise pace zones and lactate targets on one end, feel and context on the other.",
+  "How much technical and mental coaching matters: a core pillar for some systems, largely agnostic for others.",
 ];
 
 // The Coaching Library's homepage -- registered as the "coaching-library"
@@ -43,13 +43,13 @@ export function CoachingLibraryHome() {
         <p className={sectionProseClass}>
           A coaching philosophy is a belief about which physiological or psychological constraint most limits
           performance, and in what order that constraint should be addressed. Every workout a coach prescribes
-          is downstream of that belief — which is exactly why two systems can look completely different on
+          is downstream of that belief, which is exactly why two systems can look completely different on
           paper and still both produce Olympic medalists.
         </p>
         <p className={sectionProseClass}>
           The goal of this library isn&rsquo;t to rank the seven systems below. It&rsquo;s to make each one&rsquo;s
           internal logic legible enough that you can judge which beliefs actually match your own training
-          history, goals, and constraints — see{" "}
+          history, goals, and constraints. See{" "}
           <Link
             href="/training-philosophy"
             className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
@@ -116,7 +116,7 @@ export function CoachingLibraryHome() {
         <h2 className={sectionHeadingClass}>Coach Comparison Table</h2>
         <p className={sectionProseClass}>
           The fastest way to see how seven philosophies actually differ, side by side. Sort any column, filter to
-          a slice you care about, and scroll horizontally on a narrow screen — the coach column stays put.
+          a slice you care about, and scroll horizontally on a narrow screen: the coach column stays put.
         </p>
         <div className="mt-8">
           <CoachComparisonTable coaches={coaches} />
@@ -138,7 +138,7 @@ export function CoachingLibraryHome() {
         <p className={eyebrowClass}>Coach Genome</p>
         <h2 className={sectionHeadingClass}>Compare Two Coaches Side by Side</h2>
         <p className={sectionProseClass}>
-          Ten categories, scored 0-100 by emphasis — not a ranking of which coach is better, just where each one
+          Ten categories, scored 0-100 by emphasis: not a ranking of which coach is better, just where each one
           puts training focus. Pick any two coaches to compare directly, and hover a category for what it means.
         </p>
         <div className="mt-8 rounded-2xl border border-black/10 bg-white p-6 shadow-card sm:p-8 dark:border-white/10 dark:bg-zinc-900">
@@ -150,7 +150,7 @@ export function CoachingLibraryHome() {
         <p className={eyebrowClass}>Timeline</p>
         <h2 className={sectionHeadingClass}>Evolution of Coaching Ideas</h2>
         <p className={sectionProseClass}>
-          These seven philosophies didn&rsquo;t arrive one after another — most were active at the same time as
+          These seven philosophies didn&rsquo;t arrive one after another: most were active at the same time as
           several others. The bars below show each coach&rsquo;s real active era, so the overlap itself is part
           of the story.
         </p>
@@ -163,7 +163,7 @@ export function CoachingLibraryHome() {
         <p className={sectionProseClass}>
           How these seven philosophies actually relate to each other and to the coaches who shaped them, drawn
           from the same influence data on each coach&rsquo;s own page. Not every philosophy here descends from
-          another — some emerged independently, which is exactly why they appear as separate roots rather than
+          another: some emerged independently, which is exactly why they appear as separate roots rather than
           forced into one connected chain.
         </p>
         <div className="mt-8 rounded-2xl border border-black/10 bg-white p-6 shadow-card sm:p-8 dark:border-white/10 dark:bg-zinc-900">

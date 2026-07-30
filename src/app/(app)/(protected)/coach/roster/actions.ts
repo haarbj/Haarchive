@@ -39,7 +39,7 @@ export async function addAthleteToRoster(
 
   const match = data.users.find((u) => u.email?.toLowerCase() === email);
   if (!match) {
-    return { error: "No account found with that email — they need to sign up first." };
+    return { error: "No account found with that email. They need to sign up first." };
   }
 
   const { error } = await admin

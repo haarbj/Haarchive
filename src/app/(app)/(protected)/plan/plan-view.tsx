@@ -205,7 +205,7 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
         <Card padding="md" className="mt-10">
           <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
             This plan has run its course.{" "}
-            {coachView ? "Nice work." : "Nice work — set a new goal on your dashboard whenever you’re ready for the next one."}
+            {coachView ? "Nice work." : "Nice work. Set a new goal on your dashboard whenever you’re ready for the next one."}
           </p>
         </Card>
       ) : (

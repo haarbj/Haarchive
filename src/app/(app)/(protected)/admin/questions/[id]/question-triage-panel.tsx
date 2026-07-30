@@ -243,7 +243,7 @@ function AiAssistPanel({
     <div className="rounded-2xl border border-violet-500/30 bg-violet-500/5 p-6 dark:border-violet-400/30 dark:bg-violet-400/5">
       <p className="text-sm font-semibold tracking-wide text-zinc-900 uppercase dark:text-white">AI Assist</p>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-        Generates a draft and placement suggestion, not a finished article — this is a starting point to
+        Generates a draft and placement suggestion, not a finished article. This is a starting point to
         revise, since the site’s content lives in a hand-authored file rather than a CMS.
       </p>
 

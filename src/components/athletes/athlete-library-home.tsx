@@ -47,7 +47,7 @@ export function AthleteLibraryHome() {
             Coaching Library
           </Link>{" "}
           covers what each coaching philosophy believes. This library covers what that belief actually looked
-          like in a real athlete&rsquo;s training — the weekly structure, the signature sessions, the
+          like in a real athlete&rsquo;s training: the weekly structure, the signature sessions, the
           physiological targets, and how it changed across coaching changes. These pages are not biographies:
           the point is always the philosophy in practice, not the athlete&rsquo;s life story.
         </p>

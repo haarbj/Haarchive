@@ -48,7 +48,7 @@ export default async function SuggestionsPage() {
       <BackLink href="/contribute">Back to Contribute</BackLink>
       <Heading>Suggestions & Citations</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        Foundations pages stay hand-curated, but you can flag what should change and why — an admin reviews
+        Foundations pages stay hand-curated, but you can flag what should change and why: an admin reviews
         it and integrates the change manually. Citations here aren&rsquo;t tied to any specific article.
       </p>
 

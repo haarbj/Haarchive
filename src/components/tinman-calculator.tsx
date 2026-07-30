@@ -82,7 +82,7 @@ export function TinmanCalculator() {
     <div className="mt-10 space-y-10">
       <p className="rounded-lg border border-black/10 bg-black/[0.02] px-4 py-3 text-xs text-zinc-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-300">
         Not affiliated with or endorsed by Tom Schwartz or Final Surge. This model was reverse-engineered
-        independently by statistically fitting real, public calculator output — see &ldquo;Behind the
+        independently by statistically fitting real, public calculator output. See &ldquo;Behind the
         calculator&rdquo; below for the methodology.
       </p>
 
@@ -126,7 +126,7 @@ export function TinmanCalculator() {
             <p className="text-xs text-zinc-600 dark:text-zinc-300">Enter your time as mm:ss or h:mm:ss.</p>
           )}
           <div>
-            <p className={labelClass}>Gender (for the Rating value only — every pace below is the same either way)</p>
+            <p className={labelClass}>Gender (for the Rating value only, every pace below is the same either way)</p>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -168,7 +168,7 @@ export function TinmanCalculator() {
                 calculatorType="tinman-calculator"
                 input={{ distanceKey, timeInput, gender }}
                 output={{ rating: result.rating.toFixed(1), time3k: formatTinmanTime(result.time3kSeconds) }}
-                label={`${distance.label} — ${timeInput}`}
+                label={`${distance.label}: ${timeInput}`}
               />
             </div>
           </div>
@@ -230,7 +230,7 @@ export function TinmanCalculator() {
           <div>
             <p className={sectionLabelClass}>Race splits (even pace)</p>
             <p className="mb-3 text-xs text-zinc-600 dark:text-zinc-300">
-              The literal time you&rsquo;d hit at each split running {distance.label} at a perfectly even pace — not a
+              The literal time you&rsquo;d hit at each split running {distance.label} at a perfectly even pace, not a
               fitness-adjusted prediction like the table above.
             </p>
             <div className="overflow-x-auto">
@@ -302,7 +302,7 @@ export function TinmanCalculator() {
             <summary className={summaryClass}>Behind the calculator</summary>
             <div className={`${detailsBodyClass} space-y-3`}>
               <p>
-                This isn&rsquo;t Jack Daniels&rsquo; VDOT — that model was tested directly against real output from
+                This isn&rsquo;t Jack Daniels&rsquo; VDOT: that model was tested directly against real output from
                 the source calculator and fit roughly 500x worse than the model actually used here. Instead, every
                 performance converts to an equivalent 3000m time via a distance-only fatigue curve (a natural spline
                 below 3000m, a power law above it), which is fitness-independent: the same curve shape holds whether
@@ -315,7 +315,7 @@ export function TinmanCalculator() {
               </p>
               <p>
                 This entire model was reverse-engineered independently, by collecting real input/output pairs from
-                the public calculator and statistically fitting the relationships above — not by reading or copying
+                the public calculator and statistically fitting the relationships above, not by reading or copying
                 any of the original tool&rsquo;s code. Validated to a median error under 0.2 seconds and a worst
                 case around 1 second against ~3,400 real predictions spanning 100m to the marathon.
               </p>

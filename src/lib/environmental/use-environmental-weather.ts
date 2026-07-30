@@ -50,7 +50,7 @@ export function useEnvironmentalWeather(): UseEnvironmentalWeatherResult {
 
   function runFetch(lat: number, lon: number, label: string, mode: WhenMode, when: string) {
     if (mode === "specific" && !when) {
-      setWeatherMessage(`Location set to ${label} — pick a date and time to fetch conditions for it.`);
+      setWeatherMessage(`Location set to ${label}. Pick a date and time to fetch conditions for it.`);
       return;
     }
     setWeatherMessage(mode === "now" ? "Fetching current conditions…" : "Fetching conditions for that date…");

@@ -227,7 +227,7 @@ export default async function UserDetailPage({ params }: PageProps) {
             <ul className="mt-3 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-300">
               {goals.map((g) => (
                 <li key={g.id}>
-                  {g.race_name} — {formatDistance(g.distance_m)}
+                  {g.race_name}: {formatDistance(g.distance_m)}
                   {g.goal_time_s ? ` in ${formatClock(g.goal_time_s)}` : ""}
                   {g.goal_date ? ` · ${formatDate(g.goal_date)}` : ""}
                 </li>
@@ -244,7 +244,7 @@ export default async function UserDetailPage({ params }: PageProps) {
             <ul className="mt-3 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-300">
               {raceResults.slice(0, 5).map((r) => (
                 <li key={r.id}>
-                  {r.race_name} — {formatDistance(r.distance_m)} in {formatClock(r.finish_time_s)} · {formatDate(r.race_date)}
+                  {r.race_name}: {formatDistance(r.distance_m)} in {formatClock(r.finish_time_s)} · {formatDate(r.race_date)}
                 </li>
               ))}
             </ul>
@@ -259,7 +259,7 @@ export default async function UserDetailPage({ params }: PageProps) {
             <ul className="mt-3 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-300">
               {injuries.map((injury) => (
                 <li key={injury.id}>
-                  {injury.injury_type} ({injury.body_part}) — {formatDate(injury.start_date)}
+                  {injury.injury_type} ({injury.body_part}): {formatDate(injury.start_date)}
                   {injury.end_date ? ` – ${formatDate(injury.end_date)}` : " – ongoing"}
                   {injury.affects_training ? " · affecting training" : ""}
                 </li>
@@ -276,7 +276,7 @@ export default async function UserDetailPage({ params }: PageProps) {
             <ul className="mt-3 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-300">
               {trainingPlans.slice(0, 5).map((plan) => (
                 <li key={plan.id}>
-                  {plan.name} — {plan.status} ({formatDate(plan.start_date)} – {formatDate(plan.end_date)})
+                  {plan.name}: {plan.status} ({formatDate(plan.start_date)} – {formatDate(plan.end_date)})
                 </li>
               ))}
             </ul>
@@ -289,7 +289,7 @@ export default async function UserDetailPage({ params }: PageProps) {
             <ul className="mt-3 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-300">
               {connectedAccounts.map((acct) => (
                 <li key={acct.provider} className="capitalize">
-                  {acct.provider} — {acct.last_synced_at ? `synced ${formatRelativeTime(acct.last_synced_at)}` : "never synced"}
+                  {acct.provider}: {acct.last_synced_at ? `synced ${formatRelativeTime(acct.last_synced_at)}` : "never synced"}
                 </li>
               ))}
             </ul>
@@ -334,8 +334,8 @@ export default async function UserDetailPage({ params }: PageProps) {
                       className="underline decoration-black/20 underline-offset-2 hover:decoration-black dark:decoration-white/20 dark:hover:decoration-white"
                     >
                       {article.title}
-                    </Link>{" "}
-                    — {ARTICLE_STATUS_LABELS[article.status]}
+                    </Link>
+                    : {ARTICLE_STATUS_LABELS[article.status]}
                   </li>
                 ))}
               </ul>

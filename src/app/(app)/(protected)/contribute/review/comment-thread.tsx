@@ -29,7 +29,7 @@ function blockLabel(block: ContentBlock, index: number): string {
         : block.type === "image"
           ? block.url
           : "";
-  return `Block ${index + 1} (${block.type})${preview ? ` — ${preview.slice(0, 40)}` : ""}`;
+  return `Block ${index + 1} (${block.type})${preview ? `: ${preview.slice(0, 40)}` : ""}`;
 }
 
 export function CommentThread({

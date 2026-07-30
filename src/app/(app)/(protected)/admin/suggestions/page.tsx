@@ -61,7 +61,7 @@ export default async function AdminSuggestionsPage() {
       <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Suggestions & Citations</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        Nothing here changes a Foundations page automatically — accepting a suggestion or citation just marks
+        Nothing here changes a Foundations page automatically: accepting a suggestion or citation just marks
         it reviewed; integrating it into the actual page content is still a manual edit.
       </p>
 

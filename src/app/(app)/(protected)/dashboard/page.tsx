@@ -41,9 +41,9 @@ export const metadata: Metadata = {
 
 const STRAVA_ERROR_MESSAGES: Record<string, string> = {
   denied: "Strava connection was cancelled.",
-  invalid_state: "That Strava connection attempt couldn't be verified — please try again.",
-  token_exchange_failed: "Strava didn't accept that connection — please try again.",
-  save_failed: "Connected to Strava, but saving it failed — please try again.",
+  invalid_state: "That Strava connection attempt couldn't be verified. Please try again.",
+  token_exchange_failed: "Strava didn't accept that connection. Please try again.",
+  save_failed: "Connected to Strava, but saving it failed. Please try again.",
 };
 
 type Goal = {
@@ -369,7 +369,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </>
             ) : (
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                No workout scheduled today. Rest days are part of the plan too — adaptation happens
+                No workout scheduled today. Rest days are part of the plan too: adaptation happens
                 during recovery, not just during training.
               </p>
             )}
@@ -436,7 +436,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <Card padding="sm" shadow={false} className="mt-3">
               <p className="text-sm font-semibold text-zinc-900 dark:text-white">Equivalent 5K time over time</p>
               <p className="text-xs text-zinc-600 dark:text-zinc-300">
-                Every race projected to a 5K distance (Riegel) so different distances share one trend line — lower is faster.
+                Every race projected to a 5K distance (Riegel) so different distances share one trend line: lower is faster.
               </p>
               <div className="mt-3">
                 <PerformanceTrendChart points={raceTrend} targetLabel="5K" />
@@ -489,7 +489,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </div>
             ) : (
               <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                Nothing saved yet — save a result from the Pace Calculator to see it here.
+                Nothing saved yet. Save a result from the Pace Calculator to see it here.
               </p>
             )}
           </div>
@@ -528,7 +528,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </div>
               <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
                 Ramping mileage up faster than about 1.5x your recent monthly average is when running injuries get
-                more common (Gabbett 2016) — a real, widely-used signal, though not a precise risk score. Based on
+                more common (Gabbett 2016), a real, widely-used signal, though not a precise risk score. Based on
                 distance alone, not intensity.
               </p>
             </Card>

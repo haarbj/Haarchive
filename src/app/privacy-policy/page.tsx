@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Last updated July 8, 2026. This page explains what The Haarchive
         collects, why, and how it&rsquo;s protected. The Haarchive is
-        operated by Brody Haar as an individual project, not a company —
+        operated by Brody Haar as an individual project, not a company:
         this is written to be genuinely clear and accurate, not a substitute
         for formal legal advice.
       </p>
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
           Anything you see saved (like a remembered finish time) is stored
           only in your browser&rsquo;s local storage, on your own device.
           Clearing your browser data, or using a different device or
-          browser, removes it completely — we never have a copy.
+          browser, removes it completely: we never have a copy.
         </p>
 
         <h2 className={headingClass}>Information we collect with an account</h2>
@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
         <ul className="space-y-3">
           <li>
             • <strong>Account information:</strong> your email address and
-            password, or — if you sign in with Google — the name, email
+            password, or (if you sign in with Google) the name, email
             address, and profile photo your Google account shares with us.
             We never see or store your Google password.
           </li>
@@ -68,9 +68,9 @@ export default function PrivacyPolicyPage() {
 
         <h2 className={headingClass}>How we use it</h2>
         <p>
-          We use this information to operate the account features you use —
-          your dashboard, your saved goals and results, your saved
-          calculations — and to personalize the training tools on the site
+          We use this information to operate the account features you use
+          (your dashboard, your saved goals and results, your saved
+          calculations) and to personalize the training tools on the site
           for you. We don&rsquo;t sell your information, and we don&rsquo;t
           use it for advertising.
         </p>
@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
         <ul className="space-y-3">
           <li>
             • <strong>Supabase</strong> hosts our database and handles
-            authentication — your account data lives on Supabase&rsquo;s
+            authentication: your account data lives on Supabase&rsquo;s
             infrastructure.
           </li>
           <li>
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
         <ul className="space-y-3">
           <li>
             • Database access is restricted with row-level security, so your
-            data is only ever readable by you — enforced at the database
+            data is only ever readable by you: enforced at the database
             itself, not just in application code.
           </li>
           <li>
@@ -126,7 +126,7 @@ export default function PrivacyPolicyPage() {
           >
             privacy@brodyhaar.com
           </a>
-          . These requests are currently handled manually — a self-serve
+          . These requests are currently handled manually: a self-serve
           export and deletion option is planned for the future.
         </p>
 

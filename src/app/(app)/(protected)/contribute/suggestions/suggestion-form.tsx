@@ -73,7 +73,7 @@ export function SuggestionForm({ targets }: { targets: FoundationsSuggestionTarg
       ) : null}
       {state.success ? (
         <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Submitted — thank you.
+          Submitted, thank you.
         </p>
       ) : null}
 

@@ -5,7 +5,7 @@ import { SiteSearchBox } from "@/components/site-search";
 import { runSiteSearch } from "@/lib/search/run-search";
 
 export const metadata: Metadata = {
-  title: "Search — The Haarchive",
+  title: "Search | The Haarchive",
 };
 
 type SearchPageProps = {

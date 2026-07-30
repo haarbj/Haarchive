@@ -24,24 +24,24 @@ export const coaches: Coach[] = [
       intensityPhilosophy: "Feel-based, sequenced phases",
       mileagePhilosophy: "Very high, base-first",
       recoveryPhilosophy: "Built into the phase structure itself",
-      longTermSustainability: "High — designed for a multi-year career",
+      longTermSustainability: "High: designed for a multi-year career",
     },
     historicalContext: {
       emergedBecause:
-        "In 1950s New Zealand, distance coaching had no formal tradition to build on — Lydiard, a competitive marathoner himself, developed his methodology largely from personal experimentation rather than inheriting one.",
+        "In 1950s New Zealand, distance coaching had no formal tradition to build on: Lydiard, a competitive marathoner himself, developed his methodology largely from personal experimentation rather than inheriting one.",
       problemItSolved:
-        "Runners of the era were often fast but fragile — capable of a single quick time trial but unable to sustain form or improve across a career. Lydiard set out to build durable, long-term aerobic capacity rather than chase short-term speed.",
+        "Runners of the era were often fast but fragile: capable of a single quick time trial but unable to sustain form or improve across a career. Lydiard set out to build durable, long-term aerobic capacity rather than chase short-term speed.",
       priorSystems:
-        "Mainstream coaching before Lydiard leaned heavily on interval training popularized by European coaches in the 1940s and 50s — repeated hard efforts on the track, with comparatively little sustained aerobic volume.",
+        "Mainstream coaching before Lydiard leaned heavily on interval training popularized by European coaches in the 1940s and 50s: repeated hard efforts on the track, with comparatively little sustained aerobic volume.",
       assumptionsChallenged:
         "He challenged the assumption that speed should be trained first and endurance second, inverting the order: aerobic capacity had to be built for months before any anaerobic work began.",
       laterInfluence:
         "His aerobic-base-first sequencing became the template most modern endurance programs still use, whether or not they credit Lydiard by name, and directly shaped later coaches like Joe Vigil and Tom Schwartz.",
     },
     philosophy: [
-      "Lydiard believed the single biggest limiter to distance performance is an underdeveloped aerobic system — most runners fail not because they lack speed, but because they can't sustain the speed they already have. Endurance has to be built before speed is layered on top of it, in a specific order, not trained at the same time.",
-      "He measured that belief against a career, not a season. A program that produces fast results in month one by skipping the aerobic base produces a lower ceiling years later — patience wasn't a virtue bolted onto the system, it was the mechanism.",
-      "Practically, that meant three to six months of purely aerobic running — conversational, high-volume, no interval work at all — before any anaerobic or speed work entered the picture, and even then only in a specific, time-limited phase built to peak once, on purpose, for the goal race.",
+      "Lydiard believed the single biggest limiter to distance performance is an underdeveloped aerobic system: most runners fail not because they lack speed, but because they can't sustain the speed they already have. Endurance has to be built before speed is layered on top of it, in a specific order, not trained at the same time.",
+      "He measured that belief against a career, not a season. A program that produces fast results in month one by skipping the aerobic base produces a lower ceiling years later: patience wasn't a virtue bolted onto the system, it was the mechanism.",
+      "Practically, that meant three to six months of purely aerobic running (conversational, high-volume, no interval work at all) before any anaerobic or speed work entered the picture, and even then only in a specific, time-limited phase built to peak once, on purpose, for the goal race.",
     ],
     corePrinciples: [
       "Build the aerobic base before anything else",
@@ -61,7 +61,7 @@ export const coaches: Coach[] = [
       },
       {
         name: "The Three Hills",
-        description: "Steep hill running, hill bounding, and hill springing — three techniques, three distinct adaptations.",
+        description: "Steep hill running, hill bounding, and hill springing: three techniques, three distinct adaptations.",
         workoutLibraryHref: "/workout-library#three-ways-lydiard-used-a-hill",
       },
       {
@@ -75,18 +75,18 @@ export const coaches: Coach[] = [
       },
       {
         name: "Long Aerobic Runs",
-        description: "Conversational-effort runs up to 22 miles, even for milers — the source of the aerobic base itself.",
+        description: "Conversational-effort runs up to 22 miles, even for milers: the source of the aerobic base itself.",
       },
     ],
     periodization: [
-      { label: "Aerobic Base", description: "Three to six months of purely aerobic running — no interval work at all." },
+      { label: "Aerobic Base", description: "Three to six months of purely aerobic running: no interval work at all." },
       { label: "Hills & Strength", description: "The three hill techniques bridge aerobic volume into anaerobic power." },
       { label: "Anaerobic & Speed", description: "About four weeks of interval and sprint-technique work, always with recovery between hard days." },
       { label: "Coordination & Sharpening", description: "Weekly sharpening sessions, a time trial to diagnose weaknesses, a development race or two." },
-      { label: "Taper & Race", description: "Ten days of low volume, short efforts — legs kept fresh, not fatigued, into the goal race." },
+      { label: "Taper & Race", description: "Ten days of low volume, short efforts: legs kept fresh, not fatigued, into the goal race." },
     ],
     periodizationSummary:
-      "Lydiard structured a season as a pyramid: the wider the aerobic base, the higher the peak it can support. Each phase after the base is roughly four to five weeks, moving from anaerobic development into coordination and finally a freshening taper — the same phase order whether the athlete runs 25 miles a week or 100.",
+      "Lydiard structured a season as a pyramid: the wider the aerobic base, the higher the peak it can support. Each phase after the base is roughly four to five weeks, moving from anaerobic development into coordination and finally a freshening taper: the same phase order whether the athlete runs 25 miles a week or 100.",
     weeklyStructure: [
       { day: "Monday", session: "Windsprints" },
       { day: "Tuesday", session: "Easy fartlek" },
@@ -97,7 +97,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Long aerobic run" },
     ],
     weeklyStructureNote:
-      "This is race week specifically — earlier in a cycle, most days are simply aerobic running at a conversational effort with no structure beyond that.",
+      "This is race week specifically. Earlier in a cycle, most days are simply aerobic running at a conversational effort with no structure beyond that.",
     bestFor: [
       { label: "Long-term development", description: "Athletes and coaches building toward a multi-year ceiling, not one season." },
       { label: "High school & collegiate runners", description: "Time to invest years before racing peaks matter most." },
@@ -105,25 +105,25 @@ export const coaches: Coach[] = [
       { label: "Self-coached runners without lactate testing", description: "The system runs on feel and time trials, not lab equipment." },
     ],
     notIdealFor: [
-      { label: "Impatient athletes", description: "Real results take years, not weeks — an athlete who needs to see fast improvement this season will find the aerobic-first sequencing frustrating." },
+      { label: "Impatient athletes", description: "Real results take years, not weeks: an athlete who needs to see fast improvement this season will find the aerobic-first sequencing frustrating." },
       { label: "Runners short on time", description: "The high-volume aerobic base assumes real weekly training hours; a runner capped at three to four hours a week won't get the same effect." },
-      { label: "Athletes who need pace/lactate precision", description: "The system runs on feel and time trials, not numbers — a data-oriented athlete may find it under-specified." },
+      { label: "Athletes who need pace/lactate precision", description: "The system runs on feel and time trials, not numbers: a data-oriented athlete may find it under-specified." },
       { label: "Very short-distance specialists", description: "Built around endurance events; a pure sprinter gets little from this specific sequencing." },
     ],
     misunderstandings: [
       {
         myth: "Lydiard = high mileage.",
         reality:
-          "Mileage was the visible part. The actual system is a phase order — base, then anaerobic, then coordination, then taper — with volume scaled to the athlete, not a fixed 100-mile-week mandate.",
+          "Mileage was the visible part. The actual system is a phase order (base, then anaerobic, then coordination, then taper) with volume scaled to the athlete, not a fixed 100-mile-week mandate.",
       },
       {
         myth: "More hills always means better.",
         reality:
-          "Lydiard used three distinct hill techniques for three different adaptations — alactic power, bounding strength, ankle-specific springiness — not interchangeable hard hill days.",
+          "Lydiard used three distinct hill techniques for three different adaptations (alactic power, bounding strength, ankle-specific springiness) not interchangeable hard hill days.",
       },
       {
         myth: "Lydiard ignored speed work.",
-        reality: "The system has a dedicated anaerobic and speed phase — it's sequenced after the base, not absent from it.",
+        reality: "The system has a dedicated anaerobic and speed phase: it's sequenced after the base, not absent from it.",
       },
     ],
     criticisms: [
@@ -139,21 +139,21 @@ export const coaches: Coach[] = [
         explanation:
           "A high school or college program on a three-to-four-year eligibility clock may not have time to bank years of pure aerobic base before racing matters.",
         response:
-          "Supporters argue shortcuts cost more than they save — an athlete pushed to anaerobic work early peaks earlier and regresses sooner, so the patient system produces the longer, higher career arc.",
+          "Supporters argue shortcuts cost more than they save: an athlete pushed to anaerobic work early peaks earlier and regresses sooner, so the patient system produces the longer, higher career arc.",
       },
       {
         criticism: "Feel-based training is hard to standardize across a large squad",
         explanation:
           "Without lactate testing or pace zones, a coach managing dozens of athletes has less objective data to catch under- or over-training early.",
         response:
-          "Supporters note Lydiard's own athletes used time trials as an objective check — feel isn't the same as guessing, and the time trial substitutes for lab data reasonably well.",
+          "Supporters note Lydiard's own athletes used time trials as an objective check: feel isn't the same as guessing, and the time trial substitutes for lab data reasonably well.",
       },
       {
         criticism: "High mileage raises injury risk for some athletes",
         explanation:
           "Not every runner's frame or history can absorb 100-mile weeks safely, and the system has no built-in individualization mechanism for that risk.",
         response:
-          "Supporters point out the phase order — not the specific volume number — is the actual system; volume is meant to scale to what an individual athlete can absorb.",
+          "Supporters point out the phase order, not the specific volume number, is the actual system; volume is meant to scale to what an individual athlete can absorb.",
       },
     ],
     strongestArgument:
@@ -167,29 +167,29 @@ export const coaches: Coach[] = [
       {
         coachSlug: "daniels",
         critique:
-          "Jack Daniels might argue that pure feel-based training leaves real fitness gains on the table — without measured pace zones, it's hard to know precisely how much an athlete has actually improved between phases.",
+          "Jack Daniels might argue that pure feel-based training leaves real fitness gains on the table: without measured pace zones, it's hard to know precisely how much an athlete has actually improved between phases.",
       },
       {
         coachSlug: "canova",
         critique:
-          "Renato Canova might argue the system undertrains race-specific efficiency — a deep aerobic base doesn't automatically transfer into an efficient goal-pace performance without dedicated specific work.",
+          "Renato Canova might argue the system undertrains race-specific efficiency: a deep aerobic base doesn't automatically transfer into an efficient goal-pace performance without dedicated specific work.",
       },
       {
         coachSlug: "tom-schwartz",
         critique:
-          "Tom Schwartz might argue the rigid phase structure asks a lot of athletes without lactate testing or pace data to self-monitor — sustainability, not just sequencing, needs to be actively managed.",
+          "Tom Schwartz might argue the rigid phase structure asks a lot of athletes without lactate testing or pace data to self-monitor: sustainability, not just sequencing, needs to be actively managed.",
       },
     ],
     dailyLife: {
       narrative:
-        "If Arthur Lydiard coached you, most of your year would feel almost boring — long, comfortable runs, day after day, with no watch pressure and no interval sessions in sight. The payoff shows up later, not this week.",
-      easyDays: "The overwhelming majority of training — conversational effort, no pace targets, just time on your feet.",
+        "If Arthur Lydiard coached you, most of your year would feel almost boring: long, comfortable runs, day after day, with no watch pressure and no interval sessions in sight. The payoff shows up later, not this week.",
+      easyDays: "The overwhelming majority of training: conversational effort, no pace targets, just time on your feet.",
       hardSessions: "Absent for months at a time during the base phase, then arriving all at once in a dedicated four-week block of hills and intervals.",
-      frequency: "Hard sessions cluster tightly once they start — several a week during the anaerobic phase — after months of none at all.",
-      recovery: "Built into the phase structure itself rather than day to day — the whole base phase is \"recovery\" relative to the anaerobic phase that follows it.",
-      mileage: "High, and the same regardless of your event — Lydiard had milers running marathon-length long runs.",
+      frequency: "Hard sessions cluster tightly once they start (several a week during the anaerobic phase) after months of none at all.",
+      recovery: "Built into the phase structure itself rather than day to day: the whole base phase is \"recovery\" relative to the anaerobic phase that follows it.",
+      mileage: "High, and the same regardless of your event: Lydiard had milers running marathon-length long runs.",
       progression: "A strict pyramid: base, then hills, then anaerobic/speed, then coordination, then a short taper, peaking once for the goal race.",
-      mistakes: "A missed long run or a skipped hill session isn't treated as a crisis — the base phase is long enough to absorb an off week. What isn't forgiven is rushing the phase order out of impatience; that's the one mistake with no repair.",
+      mistakes: "A missed long run or a skipped hill session isn't treated as a crisis: the base phase is long enough to absorb an off week. What isn't forgiven is rushing the phase order out of impatience; that's the one mistake with no repair.",
     },
     lastingInfluence: {
       paragraphs: [
@@ -209,13 +209,13 @@ export const coaches: Coach[] = [
         title: "Running to the Top",
         author: "Arthur Lydiard & Garth Gilmour",
         kind: "book",
-        description: "Lydiard's own account of the system in his words — the aerobic-base philosophy, the phase structure, and the reasoning behind both.",
+        description: "Lydiard's own account of the system in his words: the aerobic-base philosophy, the phase structure, and the reasoning behind both.",
       },
       {
         title: "Jogging with Arthur Lydiard",
         author: "Arthur Lydiard & Garth Gilmour",
         kind: "book",
-        description: "The book that turned Lydiard's Auckland jogging club into a worldwide movement — written for absolute beginners, not elites.",
+        description: "The book that turned Lydiard's Auckland jogging club into a worldwide movement: written for absolute beginners, not elites.",
       },
       {
         title: "Healthy Intelligent Training",
@@ -233,7 +233,7 @@ export const coaches: Coach[] = [
       {
         name: "Peter Snell",
         events: "800m / 1500m",
-        whyRepresentative: "Olympic gold in both events (1964) after a Lydiard-built aerobic base topped 100 miles a week — the clearest proof the system works even for middle-distance specialists.",
+        whyRepresentative: "Olympic gold in both events (1964) after a Lydiard-built aerobic base topped 100 miles a week: the clearest proof the system works even for middle-distance specialists.",
         relationship: "coached",
         slug: "peter-snell",
         caseStudy: {
@@ -245,13 +245,13 @@ export const coaches: Coach[] = [
           raceOutcome:
             "Olympic gold in both the 800m and 1500m at the 1964 Tokyo Games, after building his base on marathon-length long runs despite specializing in middle distance.",
           whyItFits:
-            "Snell's results are the clearest proof the aerobic-first sequencing works even for a middle-distance specialist — the base wasn't wasted volume, it was the foundation his speed sat on.",
+            "Snell's results are the clearest proof the aerobic-first sequencing works even for a middle-distance specialist: the base wasn't wasted volume, it was the foundation his speed sat on.",
         },
       },
       {
         name: "Murray Halberg",
         events: "5000m",
-        whyRepresentative: "Olympic gold (1960) despite a permanently disabled left arm — evidence Lydiard's system rewarded aerobic development over raw physical talent.",
+        whyRepresentative: "Olympic gold (1960) despite a permanently disabled left arm: evidence Lydiard's system rewarded aerobic development over raw physical talent.",
         relationship: "coached",
       },
       {
@@ -265,7 +265,7 @@ export const coaches: Coach[] = [
       {
         title: "Building the Season",
         question: {
-          question: "Is the aerobic base genuinely built — months of real volume, no shortcuts?",
+          question: "Is the aerobic base genuinely built (months of real volume, no shortcuts)?",
           outcomes: [
             {
               condition: "No",
@@ -296,7 +296,7 @@ export const coaches: Coach[] = [
           outcomes: [
             {
               condition: "No",
-              steps: ["Build aerobic volume before anything else — nothing else is worth addressing yet"],
+              steps: ["Build aerobic volume before anything else: nothing else is worth addressing yet"],
             },
             {
               condition: "Yes",
@@ -307,7 +307,7 @@ export const coaches: Coach[] = [
                   { condition: "Yes", steps: ["Introduce hills and anaerobic work"] },
                   {
                     condition: "No",
-                    steps: ["Move into coordination and race-specific sharpening — the athlete is close to ready"],
+                    steps: ["Move into coordination and race-specific sharpening: the athlete is close to ready"],
                   },
                 ],
               },
@@ -320,11 +320,11 @@ export const coaches: Coach[] = [
       {
         workout: "8 × 800m at all-out effort, full recovery between reps",
         reaction:
-          "That's a track session for the anaerobic phase, not the base — has the aerobic foundation actually been built first, or is this borrowing against a foundation that isn't there yet?",
+          "That's a track session for the anaerobic phase, not the base: has the aerobic foundation actually been built first, or is this borrowing against a foundation that isn't there yet?",
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "Now we're talking — that's exactly the kind of volume that builds the engine everything else sits on.",
+        reaction: "Now we're talking: that's exactly the kind of volume that builds the engine everything else sits on.",
       },
     ],
     relatedPhilosophies: [
@@ -345,10 +345,10 @@ export const coaches: Coach[] = [
       },
     ],
     keyTakeaways: [
-      "The best-prepared athlete usually beats the most talented one — durable, consistent preparation beats a \"perfect\" plan that breaks down first.",
+      "The best-prepared athlete usually beats the most talented one: durable, consistent preparation beats a \"perfect\" plan that breaks down first.",
       "Loading anaerobic work onto a talented young runner before their aerobic base is ready produces fast early results and a lower long-term ceiling.",
       "A workout that's right for one athlete can be wrong for another even if it looks identical on paper.",
-      "Copy the phase order — base, then anaerobic/speed, then freshen — not the exact weekly numbers built for an Olympic miler.",
+      "Copy the phase order (base, then anaerobic/speed, then freshen) not the exact weekly numbers built for an Olympic miler.",
     ],
     genome: {
       aerobicDevelopment: 100,
@@ -382,13 +382,13 @@ export const coaches: Coach[] = [
       intensityPhilosophy: "Precise pace zones (VDOT)",
       mileagePhilosophy: "Moderate, precision over volume",
       recoveryPhilosophy: "Respect the taper; never overshoot prescribed paces",
-      longTermSustainability: "High — paces recalculate as fitness and life change",
+      longTermSustainability: "High: paces recalculate as fitness and life change",
     },
     historicalContext: {
       emergedBecause:
         "By the 1970s, exercise physiology had matured into a real laboratory science, but that research rarely reached everyday coaches and runners, who were still training largely by tradition and feel.",
       problemItSolved:
-        "Daniels set out to translate measured physiological data — VO₂max, running economy — into training paces an athlete could actually use, rather than leaving pace selection to guesswork.",
+        "Daniels set out to translate measured physiological data (VO₂max, running economy) into training paces an athlete could actually use, rather than leaving pace selection to guesswork.",
       priorSystems:
         "Training before Daniels was typically prescribed by feel, by a coach's personal experience, or by copying professional athletes' published logs, with little individualization to a specific runner's own measured fitness.",
       assumptionsChallenged:
@@ -397,9 +397,9 @@ export const coaches: Coach[] = [
         "VDOT became the basis for most pace-calculator tools used across the sport today, and its emphasis on measured, individualized pacing influenced later data-driven systems, including the Norwegian model's own lactate-based precision.",
     },
     philosophy: [
-      "Daniels believes the biggest limiter is imprecision — most runners under- or over-train specific systems because they're training by feel or by a borrowed plan rather than by their own measured physiology.",
-      "His answer is VDOT: a single number derived from a recent race result that maps directly onto five training paces — Easy, Marathon, Threshold, Interval, and Repetition. Every session targets a specific, quantifiable adaptation rather than a vague \"hard\" or \"easy.\"",
-      "Precision, not volume or toughness, is what separates a good plan from a wasted one in his framing — and because VDOT is recalculated as fitness changes, the target pace always matches current ability rather than a static plan written months in advance.",
+      "Daniels believes the biggest limiter is imprecision: most runners under- or over-train specific systems because they're training by feel or by a borrowed plan rather than by their own measured physiology.",
+      "His answer is VDOT: a single number derived from a recent race result that maps directly onto five training paces: Easy, Marathon, Threshold, Interval, and Repetition. Every session targets a specific, quantifiable adaptation rather than a vague \"hard\" or \"easy.\"",
+      "Precision, not volume or toughness, is what separates a good plan from a wasted one in his framing, and because VDOT is recalculated as fitness changes, the target pace always matches current ability rather than a static plan written months in advance.",
     ],
     corePrinciples: [
       "Train off your own numbers, not a generic plan",
@@ -418,18 +418,18 @@ export const coaches: Coach[] = [
         description: "Sustained or cruise-interval running at comfortably-hard lactate-threshold pace.",
         workoutLibraryHref: "/workout-library#dialing-in-a-tempo-run",
       },
-      { name: "Repetition (R-pace) Work", description: "Short, fast reps with full recovery, targeting economy and speed — not VO₂max." },
+      { name: "Repetition (R-pace) Work", description: "Short, fast reps with full recovery, targeting economy and speed, not VO₂max." },
       { name: "Cruise Intervals", description: "Daniels' own term: threshold-paced intervals with short recoveries, longer total time at pace than a single tempo run allows." },
       { name: "Marathon-Pace Long Runs", description: "Long runs that include sustained marathon-pace segments as fitness builds." },
     ],
     periodization: [
-      { label: "Base (Easy + Strides)", description: "Easy aerobic volume and short strides — no quality sessions yet." },
+      { label: "Base (Easy + Strides)", description: "Easy aerobic volume and short strides: no quality sessions yet." },
       { label: "Early Quality (Threshold)", description: "Threshold work is introduced first, on top of the aerobic base." },
       { label: "Peak Quality (VO₂max + Race-Pace)", description: "Interval and repetition work layer on, alongside race-pace long runs." },
       { label: "Taper", description: "Volume drops sharply; intensity and recalculated paces stay sharp." },
     ],
     periodizationSummary:
-      "Phase boundaries are set by VDOT math, not a fixed calendar — a phase ends when the numbers say the current pace band has been absorbed, not when a set number of weeks has passed.",
+      "Phase boundaries are set by VDOT math, not a fixed calendar: a phase ends when the numbers say the current pace band has been absorbed, not when a set number of weeks has passed.",
     weeklyStructure: [
       { day: "Monday", session: "Easy + strides" },
       { day: "Tuesday", session: "Threshold (T-pace)" },
@@ -440,7 +440,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Easy or rest" },
     ],
     weeklyStructureNote:
-      "One example mid-cycle week — the exact placement of the three quality sessions shifts across a training block, and every pace is recalculated from current VDOT, not fixed race to race.",
+      "One example mid-cycle week: the exact placement of the three quality sessions shifts across a training block, and every pace is recalculated from current VDOT, not fixed race to race.",
     bestFor: [
       { label: "Data-oriented runners", description: "Want a precise, quantified target for every session, not a feel-based instruction." },
       { label: "Goal-race specialists", description: "Training for a specific event and distance with a known recent time to calculate from." },
@@ -449,14 +449,14 @@ export const coaches: Coach[] = [
     ],
     notIdealFor: [
       { label: "Runners who dislike numbers and pace math", description: "VDOT recalculation and five named paces are the whole system; an athlete who wants to just run by feel will find it overly clinical." },
-      { label: "Athletes without a recent race result", description: "VDOT needs a real, current time trial or race to calculate from — without one, the paces are guesses." },
+      { label: "Athletes without a recent race result", description: "VDOT needs a real, current time trial or race to calculate from; without one, the paces are guesses." },
       { label: "Runners prone to obsessing over pace", description: "Precise targets can backfire for an athlete who already struggles to let go of the watch on an easy day." },
       { label: "Programs needing heavy technical/mental coaching", description: "The formula is largely agnostic to biomechanics and psychology." },
     ],
     misunderstandings: [
       {
         myth: "VDOT is just a pace calculator.",
-        reality: "It's a periodization framework — the same number sets five distinct training paces and shifts a plan's phase boundaries as fitness changes.",
+        reality: "It's a periodization framework: the same number sets five distinct training paces and shifts a plan's phase boundaries as fitness changes.",
       },
       {
         myth: "Daniels ignores the aerobic base.",
@@ -464,24 +464,24 @@ export const coaches: Coach[] = [
       },
       {
         myth: "Faster is always better in training.",
-        reality: "Daniels was famously precise that R-pace and I-pace shouldn't be run faster than prescribed — overshooting trains the wrong system and adds unnecessary fatigue.",
+        reality: "Daniels was famously precise that R-pace and I-pace shouldn't be run faster than prescribed: overshooting trains the wrong system and adds unnecessary fatigue.",
       },
     ],
     criticisms: [
       {
         criticism: "Can become a substitute for coaching judgment",
         explanation: "A rigid formula risks becoming \"the plan says so\" instead of a coach reading how an individual athlete is actually responding.",
-        response: "Supporters note VDOT is recalculated from real, current performance — closer to a feedback loop than a fixed prescription, and Daniels himself stressed adjusting to how a runner is actually adapting.",
+        response: "Supporters note VDOT is recalculated from real, current performance: closer to a feedback loop than a fixed prescription, and Daniels himself stressed adjusting to how a runner is actually adapting.",
       },
       {
         criticism: "Downplays biomechanics and psychology",
         explanation: "The system has essentially nothing to say about running form or mental preparation, both of which other systems treat as central.",
-        response: "Supporters argue precision in one domain doesn't require expertise in every domain — Daniels solved pace prescription rigorously and left technique and psychology to other resources deliberately.",
+        response: "Supporters argue precision in one domain doesn't require expertise in every domain: Daniels solved pace prescription rigorously and left technique and psychology to other resources deliberately.",
       },
       {
         criticism: "VDOT tables assume a fairly standard physiological response",
-        explanation: "Unusual responders — very young, aging, or returning from injury or illness — may get prescribed paces that don't fit their real current state.",
-        response: "Supporters point out VDOT is meant to be recalculated often — a bad pace prescription self-corrects at the next test rather than staying wrong for a whole season.",
+        explanation: "Unusual responders (very young, aging, or returning from injury or illness) may get prescribed paces that don't fit their real current state.",
+        response: "Supporters point out VDOT is meant to be recalculated often: a bad pace prescription self-corrects at the next test rather than staying wrong for a whole season.",
       },
       {
         criticism: "The five-zone model may oversimplify a continuous physiological spectrum",
@@ -490,17 +490,17 @@ export const coaches: Coach[] = [
       },
     ],
     strongestArgument:
-      "VDOT gave non-elite runners access to the same caliber of individualized, physiologically-grounded pace prescription that had previously required a lab and an exercise physiologist on staff — turning Daniels' own PhD-level expertise into something any runner with a stopwatch and a recent race result could use directly.",
+      "VDOT gave non-elite runners access to the same caliber of individualized, physiologically-grounded pace prescription that had previously required a lab and an exercise physiologist on staff, turning Daniels' own PhD-level expertise into something any runner with a stopwatch and a recent race result could use directly.",
     evidenceStrength: {
       rating: 4,
       description:
-        "VDOT is built directly on peer-reviewed VO₂max and running-economy research, and pace-zone training is now broad coaching consensus — though the exact accuracy of any single VDOT-derived pace for an individual athlete still varies.",
+        "VDOT is built directly on peer-reviewed VO₂max and running-economy research, and pace-zone training is now broad coaching consensus, though the exact accuracy of any single VDOT-derived pace for an individual athlete still varies.",
     },
     otherCoachesCritique: [
       {
         coachSlug: "lydiard",
         critique:
-          "Arthur Lydiard might argue that chasing exact pace zones risks losing the patience a long aerobic base actually requires — numbers can tempt a coach to rush a phase before it's truly ready.",
+          "Arthur Lydiard might argue that chasing exact pace zones risks losing the patience a long aerobic base actually requires: numbers can tempt a coach to rush a phase before it's truly ready.",
       },
       {
         coachSlug: "vigil",
@@ -515,14 +515,14 @@ export const coaches: Coach[] = [
     ],
     dailyLife: {
       narrative:
-        "If Jack Daniels coached you, every session on your calendar would have an exact pace attached to it, recalculated the moment your fitness changes — training would feel less like intuition and more like precision engineering.",
-      easyDays: "Genuinely easy, at a pace calculated to be easy — no drifting toward \"moderately hard\" because it feels productive.",
+        "If Jack Daniels coached you, every session on your calendar would have an exact pace attached to it, recalculated the moment your fitness changes. Training would feel less like intuition and more like precision engineering.",
+      easyDays: "Genuinely easy, at a pace calculated to be easy: no drifting toward \"moderately hard\" because it feels productive.",
       hardSessions: "Sharply defined: an Interval day is not a Threshold day is not a Repetition day, each with its own exact pace band and rest prescription.",
-      frequency: "Typically three quality sessions a week — one each for Threshold, Interval or Repetition, and a marathon-pace long run — with easy running filling the rest.",
-      recovery: "Built around respecting the pace bands strictly — running R-pace or I-pace faster than prescribed is treated as a mistake, not extra credit.",
-      mileage: "Moderate relative to some systems — Daniels prioritizes precision of intensity over sheer volume.",
-      progression: "VDOT is recalculated as fitness changes, so paces — not just the calendar — literally shift as a season progresses.",
-      mistakes: "A missed session doesn't trigger panic — it's absorbed into the next VDOT recalculation. What Daniels warns against explicitly is running R-pace or I-pace faster than prescribed, treating overachievement as if it were free progress rather than a miscalibration.",
+      frequency: "Typically three quality sessions a week (one each for Threshold, Interval or Repetition, and a marathon-pace long run) with easy running filling the rest.",
+      recovery: "Built around respecting the pace bands strictly: running R-pace or I-pace faster than prescribed is treated as a mistake, not extra credit.",
+      mileage: "Moderate relative to some systems: Daniels prioritizes precision of intensity over sheer volume.",
+      progression: "VDOT is recalculated as fitness changes, so paces, not just the calendar, literally shift as a season progresses.",
+      mistakes: "A missed session doesn't trigger panic: it's absorbed into the next VDOT recalculation. What Daniels warns against explicitly is running R-pace or I-pace faster than prescribed, treating overachievement as if it were free progress rather than a miscalibration.",
     },
     lastingInfluence: {
       paragraphs: [
@@ -548,7 +548,7 @@ export const coaches: Coach[] = [
         title: "VDOT O2 training tables and companion app",
         author: "Jack Daniels",
         kind: "website",
-        description: "The living, updated version of the VDOT tables — useful for calculating your own paces directly rather than reading about the concept secondhand.",
+        description: "The living, updated version of the VDOT tables: useful for calculating your own paces directly rather than reading about the concept secondhand.",
       },
       {
         title: "Jack Daniels' academic research on elite distance runners' VO₂max",
@@ -625,11 +625,11 @@ export const coaches: Coach[] = [
     workoutReactions: [
       {
         workout: "8 × 800m at all-out effort, full recovery between reps",
-        reaction: "All-out isn't a pace — what VDOT is this actually targeting? Run at a calculated Repetition or Interval pace, not by feel.",
+        reaction: "All-out isn't a pace: what VDOT is this actually targeting? Run at a calculated Repetition or Interval pace, not by feel.",
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "Fine as an Easy-pace long run — but if any of it drifted toward Marathon pace, that should be deliberate, not accidental.",
+        reaction: "Fine as an Easy-pace long run, but if any of it drifted toward Marathon pace, that should be deliberate, not accidental.",
       },
     ],
     relatedPhilosophies: [
@@ -650,9 +650,9 @@ export const coaches: Coach[] = [
       },
     ],
     keyTakeaways: [
-      "Train off your own measured numbers, recalculated as fitness changes — not a plan written for someone else's VDOT.",
+      "Train off your own measured numbers, recalculated as fitness changes, not a plan written for someone else's VDOT.",
       "Five paces exist because they train five different things; running Interval pace for a Repetition session (or vice versa) misses the point of both.",
-      "Precision cuts both ways — the same discipline that sets an exact target also caps it, so R-pace and I-pace sessions are capped as firmly as they're prescribed.",
+      "Precision cuts both ways: the same discipline that sets an exact target also caps it, so R-pace and I-pace sessions are capped as firmly as they're prescribed.",
       "Respect the taper as deliberately as the buildup; it's part of the formula, not a break from it.",
     ],
     genome: {
@@ -688,13 +688,13 @@ export const coaches: Coach[] = [
       intensityPhilosophy: "Race-specific density (special blocks)",
       mileagePhilosophy: "High, marathon-specific",
       recoveryPhilosophy: "Protected days built around each special block",
-      longTermSustainability: "Moderate — special blocks are demanding to sustain long-term",
+      longTermSustainability: "Moderate: special blocks are demanding to sustain long-term",
     },
     historicalContext: {
       emergedBecause:
         "As East African distance runners came to dominate marathon racing in the 1980s and 90s, Canova worked directly within Kenyan and Ethiopian training groups and observed that generic aerobic training alone didn't explain why some athletes converted fitness into marathon performance better than others.",
       problemItSolved:
-        "He set out to close the gap between general aerobic fitness and race-specific efficiency at marathon pace specifically — an athlete could be extremely fit and still not run an efficient marathon.",
+        "He set out to close the gap between general aerobic fitness and race-specific efficiency at marathon pace specifically: an athlete could be extremely fit and still not run an efficient marathon.",
       priorSystems:
         "The dominant marathon approach before Canova's special blocks followed a broadly Lydiard-shaped model: build a wide aerobic base, then taper into a general sharpening phase, with marathon pace itself rehearsed only occasionally.",
       assumptionsChallenged:
@@ -703,9 +703,9 @@ export const coaches: Coach[] = [
         "Special-block periodization became a defining feature of many elite marathon training camps, particularly in East Africa, influencing how modern marathon buildups are structured in their final months.",
     },
     philosophy: [
-      "Canova believes the biggest limiter for marathoners specifically is a mismatch between general fitness and race-specific efficiency — an athlete can have excellent VO₂max and still fail to hold marathon pace because the body hasn't been drilled at that exact intensity for that exact duration.",
+      "Canova believes the biggest limiter for marathoners specifically is a mismatch between general fitness and race-specific efficiency: an athlete can have excellent VO₂max and still fail to hold marathon pace because the body hasn't been drilled at that exact intensity for that exact duration.",
       "His answer is the \"special block\": a sustained period at or near goal race pace, sometimes 20-plus kilometers, that gets denser and more frequent as the race approaches. Rather than building a wide aerobic base and tapering into intensity the way Lydiard does, Canova loads specificity progressively.",
-      "The aerobic base still has to be there underneath it — it just isn't the visible structure of the plan. Marathon pace itself is treated as the adaptation to chase, not just a byproduct of general aerobic fitness.",
+      "The aerobic base still has to be there underneath it; it just isn't the visible structure of the plan. Marathon pace itself is treated as the adaptation to chase, not just a byproduct of general aerobic fitness.",
     ],
     corePrinciples: [
       "Train the exact demand of the race distance",
@@ -720,13 +720,13 @@ export const coaches: Coach[] = [
       { name: "Special Block", description: "20-plus km sustained at or near marathon pace, increasing in density as the race nears." },
       { name: "Progressive Long Run", description: "A long run that builds from easy into marathon-pace over its final segments." },
       { name: "Marathon-Pace Long Run", description: "Extended running held at goal race pace for the bulk of the session." },
-      { name: "Broken Tempo", description: "Marathon-pace segments separated by short, controlled recoveries — more total time at pace than one continuous effort allows." },
+      { name: "Broken Tempo", description: "Marathon-pace segments separated by short, controlled recoveries: more total time at pace than one continuous effort allows." },
     ],
     periodization: [
       { label: "General Preparation", description: "Broad aerobic volume, no marathon-specific pace work yet." },
       { label: "Fundamental Period", description: "Aerobic base deepens; longer aerobic runs and general strength are added." },
       { label: "Specific Period", description: "Special blocks are introduced at marathon pace, still moderate in length." },
-      { label: "Pre-Competitive Period", description: "Special blocks intensify — longer, more frequent, closer to true race pace and duration." },
+      { label: "Pre-Competitive Period", description: "Special blocks intensify: longer, more frequent, closer to true race pace and duration." },
       { label: "Race", description: "A short taper into the goal marathon." },
     ],
     periodizationSummary:
@@ -741,7 +741,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Long aerobic run" },
     ],
     weeklyStructureNote:
-      "A late-buildup week specifically — special-block frequency and length increase gradually across a full cycle rather than appearing at this density from week one.",
+      "A late-buildup week specifically: special-block frequency and length increase gradually across a full cycle rather than appearing at this density from week one.",
     bestFor: [
       { label: "Experienced marathoners", description: "Already have a solid aerobic base in place to load specificity onto." },
       { label: "Single-goal-race athletes", description: "Training for one target marathon rather than a season of racing." },
@@ -751,7 +751,7 @@ export const coaches: Coach[] = [
     notIdealFor: [
       { label: "Beginners or runners without an aerobic base", description: "Special blocks assume a large existing aerobic foundation; without it, marathon-pace density is just overreaching." },
       { label: "Athletes training for short distances", description: "The system is built specifically around marathon specificity; it has little to say about 1500m-10K training." },
-      { label: "Runners who need variety to stay engaged", description: "Special blocks are long, repetitive, sustained efforts — mentally demanding in a very specific way." },
+      { label: "Runners who need variety to stay engaged", description: "Special blocks are long, repetitive, sustained efforts: mentally demanding in a very specific way." },
       { label: "Self-coached runners without close monitoring", description: "Progressive, race-specific loading this aggressive is easy to mistime without expert oversight." },
     ],
     misunderstandings: [
@@ -761,7 +761,7 @@ export const coaches: Coach[] = [
       },
       {
         myth: "Special blocks are for elites only.",
-        reality: "The principle — progressive, race-specific density — scales down. The exact distances and paces don't transfer directly, but the structure does.",
+        reality: "The principle (progressive, race-specific density) scales down. The exact distances and paces don't transfer directly, but the structure does.",
       },
     ],
     criticisms: [
@@ -773,25 +773,25 @@ export const coaches: Coach[] = [
       {
         criticism: "Limited published methodology outside elite circles",
         explanation: "Canova's system is documented mostly through interviews and secondhand accounts rather than a single canonical book, making it harder for non-elite coaches to apply precisely.",
-        response: "Supporters argue the core principle — progressive race-specific density — is simple enough to extract and scale even without a formal manual.",
+        response: "Supporters argue the core principle (progressive race-specific density) is simple enough to extract and scale even without a formal manual.",
       },
       {
         criticism: "Assumes access to elite-level training environments",
-        explanation: "Canova's most famous results come from training camps with extensive support, altitude access, and full-time athletes — conditions a self-coached amateur can't replicate.",
-        response: "Supporters point out the underlying principle — increase specificity as the race nears — transfers to any level, even if the exact volumes and paces don't.",
+        explanation: "Canova's most famous results come from training camps with extensive support, altitude access, and full-time athletes: conditions a self-coached amateur can't replicate.",
+        response: "Supporters point out the underlying principle (increase specificity as the race nears) transfers to any level, even if the exact volumes and paces don't.",
       },
       {
         criticism: "May under-develop pure speed and VO₂max",
         explanation: "Heavy emphasis on marathon-pace density leaves less room for shorter, faster interval work that builds top-end speed.",
-        response: "Supporters note this is by design for marathon specialists — the marathon is rarely decided by who has the fastest mile, but by who can hold the required pace longest.",
+        response: "Supporters note this is by design for marathon specialists: the marathon is rarely decided by who has the fastest mile, but by who can hold the required pace longest.",
       },
     ],
     strongestArgument:
-      "Canova's marathoners have produced some of the deepest fields of fast times in history, and the special-block concept directly targets the exact adaptation — efficiency at goal pace — that generic aerobic or interval training only approximates.",
+      "Canova's marathoners have produced some of the deepest fields of fast times in history, and the special-block concept directly targets the exact adaptation (efficiency at goal pace) that generic aerobic or interval training only approximates.",
     evidenceStrength: {
       rating: 2,
       description:
-        "Special-block periodization has produced remarkable results, but it's documented mostly through interviews and observed practice rather than controlled research specifically validating the protocol itself — the evidence here is real-world results, not formal study.",
+        "Special-block periodization has produced remarkable results, but it's documented mostly through interviews and observed practice rather than controlled research specifically validating the protocol itself: the evidence here is real-world results, not formal study.",
     },
     otherCoachesCritique: [
       {
@@ -802,7 +802,7 @@ export const coaches: Coach[] = [
       {
         coachSlug: "daniels",
         critique:
-          "Jack Daniels might argue the system is under-quantified — without calculated pace zones, it's hard for another coach to replicate the exact intensity Canova's athletes are training at.",
+          "Jack Daniels might argue the system is under-quantified: without calculated pace zones, it's hard for another coach to replicate the exact intensity Canova's athletes are training at.",
       },
       {
         coachSlug: "lydiard",
@@ -812,18 +812,18 @@ export const coaches: Coach[] = [
     ],
     dailyLife: {
       narrative:
-        "If Renato Canova coached you toward a marathon, the final months would feel like slowly turning up the intensity dial on marathon pace itself, rather than adding more variety — the closer the race, the more your training would look like a smaller version of the race.",
+        "If Renato Canova coached you toward a marathon, the final months would feel like slowly turning up the intensity dial on marathon pace itself, rather than adding more variety: the closer the race, the more your training would look like a smaller version of the race.",
       easyDays: "Genuinely easy, filling most of the week, with the specific job of letting you absorb the special blocks.",
-      hardSessions: "Long, sustained efforts at or near marathon pace — not short, sharp intervals — that get progressively longer and more frequent.",
+      hardSessions: "Long, sustained efforts at or near marathon pace (not short, sharp intervals) that get progressively longer and more frequent.",
       frequency: "Two special-block sessions a week in the late buildup, layered onto an otherwise aerobic week.",
-      recovery: "Managed around the special blocks specifically — the days before and after a block are protected, since the block itself is the week's real work.",
+      recovery: "Managed around the special blocks specifically: the days before and after a block are protected, since the block itself is the week's real work.",
       mileage: "High, with aerobic volume filling in around the special blocks rather than competing with them.",
       progression: "Reverse of a typical taper: specificity and density of race-pace work increase as the race approaches, not decrease.",
-      mistakes: "A missed special block isn't crammed back in the next day — the density curve simply continues from wherever training actually is, since forcing it back in risks exactly the overreaching the progressive buildup is designed to avoid.",
+      mistakes: "A missed special block isn't crammed back in the next day: the density curve simply continues from wherever training actually is, since forcing it back in risks exactly the overreaching the progressive buildup is designed to avoid.",
     },
     lastingInfluence: {
       paragraphs: [
-        "Canova has coached a long list of world-record and championship-level Kenyan and Ethiopian marathoners, and popularized race-specific \"special block\" training as a distinct alternative to the classic base-then-taper model — an approach that has influenced how many modern elite marathon programs structure a buildup's final months.",
+        "Canova has coached a long list of world-record and championship-level Kenyan and Ethiopian marathoners, and popularized race-specific \"special block\" training as a distinct alternative to the classic base-then-taper model, an approach that has influenced how many modern elite marathon programs structure a buildup's final months.",
       ],
       items: [
         { label: "Ideas Introduced", description: "Race-specific density that increases, rather than decreases, as the goal race approaches." },
@@ -840,7 +840,7 @@ export const coaches: Coach[] = [
       {
         title: "Renato Canova training-methodology interviews",
         kind: "interview",
-        description: "The primary way Canova's methodology has actually been documented — long-form conversations with the coach himself, not a single manual.",
+        description: "The primary way Canova's methodology has actually been documented: long-form conversations with the coach himself, not a single manual.",
       },
       {
         title: "Canova coaching clinics and lecture materials",
@@ -923,7 +923,7 @@ export const coaches: Coach[] = [
                 question: "Is marathon-pace efficiency the limiter (fit, but fades at goal pace)?",
                 outcomes: [
                   { condition: "Yes", steps: ["Introduce or increase special-block density"] },
-                  { condition: "No", steps: ["Fitness and specificity are both there — taper and race"] },
+                  { condition: "No", steps: ["Fitness and specificity are both there: taper and race"] },
                 ],
               },
             },
@@ -938,7 +938,7 @@ export const coaches: Coach[] = [
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "Good aerobic volume — now how much of it was held at or near goal marathon pace?",
+        reaction: "Good aerobic volume: now how much of it was held at or near goal marathon pace?",
       },
     ],
     relatedPhilosophies: [
@@ -959,9 +959,9 @@ export const coaches: Coach[] = [
       },
     ],
     keyTakeaways: [
-      "Fitness in general isn't the same as fitness at your exact goal pace — train the specific demand, not just the general capacity.",
+      "Fitness in general isn't the same as fitness at your exact goal pace: train the specific demand, not just the general capacity.",
       "Specificity should increase as the race gets closer, not fade out into a generic taper too early.",
-      "A special block still sits on top of an aerobic base — skipping straight to marathon-pace density without it is the most common way this system gets misapplied.",
+      "A special block still sits on top of an aerobic base: skipping straight to marathon-pace density without it is the most common way this system gets misapplied.",
       "Match block length and frequency to your own fitness and event, not to a professional marathoner's exact prescription.",
     ],
     genome: {
@@ -997,30 +997,30 @@ export const coaches: Coach[] = [
       intensityPhilosophy: "Aerobic-first, altitude-adjusted",
       mileagePhilosophy: "High, altitude-adjusted",
       recoveryPhilosophy: "Mental routines treated as real recovery, not just rest",
-      longTermSustainability: "High — whole-athlete approach ages well across a career",
+      longTermSustainability: "High: whole-athlete approach ages well across a career",
     },
     historicalContext: {
       emergedBecause:
         "Coaching through the 1970s-90s at Adams State College, a small Division II program without the resources of major sports powers, Vigil looked for every legitimate performance lever available, not just physiological ones.",
       problemItSolved:
-        "He addressed a gap in American distance coaching, which at the time treated biomechanics and psychology as largely outside a coach's job — Vigil argued both were coachable skills that could meaningfully change outcomes.",
+        "He addressed a gap in American distance coaching, which at the time treated biomechanics and psychology as largely outside a coach's job: Vigil argued both were coachable skills that could meaningfully change outcomes.",
       priorSystems:
         "Most American programs of the era followed a physiology-only model, similar in spirit to Lydiard's aerobic-first sequencing, but rarely incorporated deliberate technical or mental-skills coaching as a formal part of training.",
       assumptionsChallenged:
         "He challenged the assumption that running form and mental composure were fixed, inborn traits rather than trainable skills deserving their own dedicated coaching attention.",
       laterInfluence:
-        "His integration of sports psychology into daily distance training helped legitimize the discipline within American collegiate running, and his Adams State program produced results — including Deena Kastor's American record — that made the whole-athlete approach hard to dismiss.",
+        "His integration of sports psychology into daily distance training helped legitimize the discipline within American collegiate running, and his Adams State program produced results (including Deena Kastor's American record) that made the whole-athlete approach hard to dismiss.",
     },
     philosophy: [
-      "Vigil believed the biggest limiter wasn't purely physiological — an athlete's economy of movement and mental composure under fatigue mattered as much as raw aerobic capacity, and both could be deliberately trained rather than accepted as fixed traits.",
+      "Vigil believed the biggest limiter wasn't purely physiological: an athlete's economy of movement and mental composure under fatigue mattered as much as raw aerobic capacity, and both could be deliberately trained rather than accepted as fixed traits.",
       "His system paired Lydiard-style aerobic-first volume, often at altitude, with unusually heavy attention to running mechanics and psychological preparation. Two athletes with identical VO₂max numbers, in his view, could have very different race outcomes based on how efficiently they moved and how they handled pressure.",
-      "That combination — aerobic volume, technical coaching, and deliberate mental-skills work — was treated as one integrated program, not three separate concerns competing for training time.",
+      "That combination (aerobic volume, technical coaching, and deliberate mental-skills work) was treated as one integrated program, not three separate concerns competing for training time.",
     ],
     corePrinciples: [
       "Aerobic-first volume, frequently built at altitude",
       "Biomechanics is a trainable skill, not a fixed trait",
       "Psychology is a trainable skill, not a fixed trait",
-      "Altitude adaptation takes six to twelve weeks — respect the timeline",
+      "Altitude adaptation takes six to twelve weeks: respect the timeline",
       "Individualize technical work to each athlete's own inefficiencies",
       "Coach the whole athlete, not just their physiology",
     ],
@@ -1039,7 +1039,7 @@ export const coaches: Coach[] = [
       { label: "Race", description: "Racing at sea level or altitude, depending on the goal event." },
     ],
     periodizationSummary:
-      "The practical sequencing is strict about one thing: aerobic conditioning happens at sea level first, then the athlete moves up. Pace and volume both have to come down during the six-to-twelve-week adaptation window — an athlete simply can't sustain sea-level pace or mileage continuously at elevation.",
+      "The practical sequencing is strict about one thing: aerobic conditioning happens at sea level first, then the athlete moves up. Pace and volume both have to come down during the six-to-twelve-week adaptation window: an athlete simply can't sustain sea-level pace or mileage continuously at elevation.",
     weeklyStructure: [
       { day: "Monday", session: "Easy aerobic + technique drills" },
       { day: "Tuesday", session: "Moderate aerobic + strides" },
@@ -1050,7 +1050,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Rest or very easy recovery" },
     ],
     weeklyStructureNote:
-      "An illustrative week built from Vigil's aerobic-first, technical, and mental framework — not a single documented training log.",
+      "An illustrative week built from Vigil's aerobic-first, technical, and mental framework, not a single documented training log.",
     bestFor: [
       { label: "Athletes training at altitude", description: "The system's sequencing and timeline are built specifically for that adaptation." },
       { label: "Technically limited runners", description: "Whose form is holding back an otherwise strong aerobic engine." },
@@ -1058,28 +1058,28 @@ export const coaches: Coach[] = [
       { label: "Whole-athlete college programs", description: "Building a program culture, not just a training log." },
     ],
     notIdealFor: [
-      { label: "Athletes uninterested in technical/mental coaching", description: "The biomechanics and psychology components are central, not optional — a runner who just wants a pace plan may find it overbuilt." },
+      { label: "Athletes uninterested in technical/mental coaching", description: "The biomechanics and psychology components are central, not optional: a runner who just wants a pace plan may find it overbuilt." },
       { label: "Runners without altitude access", description: "Big parts of the system are built around altitude training's specific timeline; a sea-level-only athlete gets an incomplete version of it." },
       { label: "Athletes needing fast results", description: "Both technical retraining and altitude adaptation take months; this isn't a system for a short-notice goal race." },
-      { label: "Runners who prefer a purely numeric, formula-driven plan", description: "Much of the coaching is qualitative — form cues, mental preparation — rather than a fixed pace or lactate target." },
+      { label: "Runners who prefer a purely numeric, formula-driven plan", description: "Much of the coaching is qualitative (form cues, mental preparation) rather than a fixed pace or lactate target." },
     ],
     misunderstandings: [
       {
         myth: "Vigil = altitude training.",
         reality:
-          "Altitude was the setting, not the method — the system paired Lydiard-style aerobic volume with deliberate technical and mental work, and required six to twelve weeks of reduced pace and volume to adapt, not just \"train up high and get faster.\"",
+          "Altitude was the setting, not the method: the system paired Lydiard-style aerobic volume with deliberate technical and mental work, and required six to twelve weeks of reduced pace and volume to adapt, not just \"train up high and get faster.\"",
       },
     ],
     criticisms: [
       {
         criticism: "Biomechanics coaching is hard to standardize",
         explanation: "Unlike a measurable pace or lactate value, \"improve your form\" is qualitative and coach-dependent, making the system harder to teach or replicate consistently.",
-        response: "Supporters argue that's exactly the point — form is individual, and a good coach's eye catches issues a generic drill list never would.",
+        response: "Supporters argue that's exactly the point: form is individual, and a good coach's eye catches issues a generic drill list never would.",
       },
       {
         criticism: "Altitude training isn't accessible to most athletes",
         explanation: "Moving to elevation for six to twelve weeks is a real logistical and financial barrier most runners and even many programs can't clear.",
-        response: "Supporters note the aerobic-first and technical/psychological components still transfer fully at sea level — altitude is one lever in the system, not a requirement for the rest of it.",
+        response: "Supporters note the aerobic-first and technical/psychological components still transfer fully at sea level: altitude is one lever in the system, not a requirement for the rest of it.",
       },
       {
         criticism: "Psychological coaching can be dismissed as unfalsifiable",
@@ -1088,7 +1088,7 @@ export const coaches: Coach[] = [
       },
     ],
     strongestArgument:
-      "Vigil's results — an American marathon record and Olympic bronze from Deena Kastor, one of the most decorated NCAA Division II distance programs in history — came from treating the whole athlete (body, mechanics, mind) as the unit of development, at a time when most American programs treated physiology as the only lever worth pulling.",
+      "Vigil's results (an American marathon record and Olympic bronze from Deena Kastor, one of the most decorated NCAA Division II distance programs in history) came from treating the whole athlete (body, mechanics, mind) as the unit of development, at a time when most American programs treated physiology as the only lever worth pulling.",
     evidenceStrength: {
       rating: 3,
       description:
@@ -1113,14 +1113,14 @@ export const coaches: Coach[] = [
     ],
     dailyLife: {
       narrative:
-        "If Joe Vigil coached you, your training log would include as much attention to your stride and your mindset as to your mileage — technical drills and mental-preparation routines would be as normal a part of the week as a long run.",
+        "If Joe Vigil coached you, your training log would include as much attention to your stride and your mindset as to your mileage. Technical drills and mental-preparation routines would be as normal a part of the week as a long run.",
       easyDays: "Aerobic and unhurried, often paired with deliberate technique drills rather than run purely for volume.",
-      hardSessions: "Moderate tempo and hill work, dosed carefully around whichever adaptation phase — sea-level, altitude-adapting, or full altitude volume — you're in.",
-      frequency: "Built around the season's altitude calendar — pace and volume both scale down for six to twelve weeks after any move to elevation.",
+      hardSessions: "Moderate tempo and hill work, dosed carefully around whichever adaptation phase (sea-level, altitude-adapting, or full altitude volume) you're in.",
+      frequency: "Built around the season's altitude calendar: pace and volume both scale down for six to twelve weeks after any move to elevation.",
       recovery: "Includes structured mental-preparation routines as a real recovery and readiness tool, not just physical rest.",
       mileage: "High, but always adjusted for altitude-adaptation timing rather than held constant year-round.",
       progression: "Sea-level aerobic prep, then altitude adaptation, then altitude-specific volume, then race-specific sharpening.",
-      mistakes: "A technical flaw or a rough mental-preparation session isn't corrected by adding more mileage — it's addressed directly, with its own drill or exercise, since Vigil treated the underlying skill as the thing actually broken, not the athlete's fitness.",
+      mistakes: "A technical flaw or a rough mental-preparation session isn't corrected by adding more mileage: it's addressed directly, with its own drill or exercise, since Vigil treated the underlying skill as the thing actually broken, not the athlete's fitness.",
     },
     lastingInfluence: {
       paragraphs: [
@@ -1129,7 +1129,7 @@ export const coaches: Coach[] = [
       items: [
         { label: "Ideas Introduced", description: "Biomechanics and psychology as coachable, trainable skills on equal footing with aerobic development." },
         { label: "Coaching Innovations", description: "One of the first US collegiate programs to formally integrate sports psychology into daily distance training." },
-        { label: "Long-Term Impact", description: "Helped legitimize whole-athlete coaching — body, mechanics, mind — within American collegiate distance running." },
+        { label: "Long-Term Impact", description: "Helped legitimize whole-athlete coaching (body, mechanics, mind) within American collegiate distance running." },
       ],
     },
     influencedBy: [[{ name: "Arthur Lydiard's aerobic-first philosophy", slug: "lydiard" }]],
@@ -1167,7 +1167,7 @@ export const coaches: Coach[] = [
           ],
           raceOutcome: "American marathon record (2:19:36) and Olympic bronze medal at the 2004 Athens Games.",
           whyItFits:
-            "Kastor has publicly credited Vigil's combination of aerobic, technical, and psychological coaching directly for her results — not aerobic fitness alone.",
+            "Kastor has publicly credited Vigil's combination of aerobic, technical, and psychological coaching directly for her results, not aerobic fitness alone.",
         },
       },
       {
@@ -1229,7 +1229,7 @@ export const coaches: Coach[] = [
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "Solid aerobic work — did you use any of it to also work on mental composure through the later, harder miles?",
+        reaction: "Solid aerobic work: did you use any of it to also work on mental composure through the later, harder miles?",
       },
     ],
     relatedPhilosophies: [
@@ -1241,7 +1241,7 @@ export const coaches: Coach[] = [
       {
         slug: "tom-schwartz",
         shared: "Both individualize coaching to the specific athlete.",
-        difference: "Schwartz centers sustainability and repeatability; Vigil centers the whole athlete — body, mechanics, and mind.",
+        difference: "Schwartz centers sustainability and repeatability; Vigil centers the whole athlete (body, mechanics, and mind).",
       },
       {
         slug: "canova",
@@ -1250,10 +1250,10 @@ export const coaches: Coach[] = [
       },
     ],
     keyTakeaways: [
-      "Aerobic capacity alone doesn't decide a race — economy of movement and composure under pressure are trainable levers too.",
+      "Aerobic capacity alone doesn't decide a race: economy of movement and composure under pressure are trainable levers too.",
       "Altitude adaptation takes six to twelve weeks; pushing sea-level pace or volume during that window works against the adaptation, not toward it.",
       "Technical form work should target each athlete's own specific inefficiencies, not a generic drill list.",
-      "Treat psychological preparation as a real, structured part of training — not a motivational afterthought.",
+      "Treat psychological preparation as a real, structured part of training, not a motivational afterthought.",
     ],
     genome: {
       aerobicDevelopment: 90,
@@ -1288,35 +1288,35 @@ export const coaches: Coach[] = [
       primaryAdaptation: "Type IIa fiber oxidative capacity via Critical Velocity",
       intensityPhilosophy: "Sustainable, repeatable intensity",
       mileagePhilosophy: "Moderate, deliberately sustainable",
-      recoveryPhilosophy: "The organizing constraint — repeatability is the whole point",
-      longTermSustainability: "Very high — explicitly built to avoid burnout",
+      recoveryPhilosophy: "The organizing constraint: repeatability is the whole point",
+      longTermSustainability: "Very high: explicitly built to avoid burnout",
     },
     historicalContext: {
       emergedBecause:
         "In 1989-90, as a volunteer coach and graduate assistant at the University of Wisconsin-La Crosse, Schwartz combined V.O2 max and lactate testing from the university's Human Performance Lab with what his own runners actually reported feeling at different training paces to identify one specific, repeatable intensity in between two extremes. He first called it \"Critical Value\" (borrowing a statistics term) before renaming it \"Critical Velocity\" for clarity. The concept later spread far beyond that original lab setting through 2000s-2010s online running communities, where self-coached amateurs often had access to elite training concepts without the recovery capacity that made them work for professional athletes.",
       problemItSolved:
-        "Coaching directly, Schwartz noticed a pattern: athletes assigned traditional lactate-threshold paces routinely ran 8-12 seconds per mile faster than instructed and called it easy, while runners training near 5K pace or faster improved for only three or four weeks before stalling. Critical Velocity was his answer to what sat in between — hard enough to keep driving adaptation, but genuinely repeatable week after week. Once popularized through Tinman Endurance Coaching, that same principle solved a second, later problem: the mismatch between professional-level, demanding workouts circulating in online running communities and the actual recovery resources of a self-coached adult balancing training with work and family.",
+        "Coaching directly, Schwartz noticed a pattern: athletes assigned traditional lactate-threshold paces routinely ran 8-12 seconds per mile faster than instructed and called it easy, while runners training near 5K pace or faster improved for only three or four weeks before stalling. Critical Velocity was his answer to what sat in between: hard enough to keep driving adaptation, but genuinely repeatable week after week. Once popularized through Tinman Endurance Coaching, that same principle solved a second, later problem: the mismatch between professional-level, demanding workouts circulating in online running communities and the actual recovery resources of a self-coached adult balancing training with work and family.",
       priorSystems:
-        "By the time Critical Velocity spread through online running communities in the 2000s and 2010s, much of that self-coached culture emphasized occasional maximal efforts — chasing a single impressive workout result — over a coherent, sustainable weekly structure.",
+        "By the time Critical Velocity spread through online running communities in the 2000s and 2010s, much of that self-coached culture emphasized occasional maximal efforts (chasing a single impressive workout result) over a coherent, sustainable weekly structure.",
       assumptionsChallenged:
         "He challenged the idea that harder is always better, arguing that a session's value depends on whether it can be repeated, not on how much it hurt.",
       laterInfluence:
         "Critical Velocity and the broader emphasis on sustainable, monitored training shifted a meaningful part of the self-coached running community away from occasional maximal efforts and toward consistent, repeatable quality.",
     },
     philosophy: [
-      "Schwartz believes the biggest limiter is training that can't be repeated — a workout that leaves an athlete needing days to recover produces one strong data point and a worse week overall.",
-      "His philosophy centers on Critical Velocity (CV) — a sustainable, lab-derived intensity between threshold and VO₂max pace — as the backbone of a program, on the belief that frequent, moderately hard, fully repeatable sessions compound faster over a season than occasional all-out efforts. He defines CV as approximately 90% of V.O2max — a figure he derived from his own V.O2 max and lactate testing of runners in the University of Wisconsin-La Crosse's Human Performance Lab, where the precise computed range came out closer to 88-91.5% before he settled on 90% as the practical, public figure. In practice, that's the pace a well-conditioned runner can hold for roughly a 30-to-35-minute all-out effort — close to current 10K race pace for most competitive runners — though the sustainable window stretches to 40-45 minutes for runners whose Type IIa fibers are already well-adapted to CV work, and shrinks to 20-25 minutes for more speed-oriented runners. As a practical self-check, Schwartz tells athletes to simply ask: can I hold this pace for half an hour?",
-      "The physiological case underneath CV is about a specific fiber type: Type IIa, fast-intermediate fibers Schwartz considers the most adaptable in the body — not Type IIb, which exists only in rodents (the human equivalent is Type IIx, commonly labeled \"fast-glycolytic\" in exercise-physiology textbooks). Training right at CV makes those fibers proficient at oxidative (aerobic) ATP regeneration; high-intensity, anaerobic-leaning training instead makes them proficient at non-oxidative ATP regeneration. CV deliberately trains the former, turning Type IIa fibers into genuine aerobic contributors rather than leaving them purely as a speed reserve.",
+      "Schwartz believes the biggest limiter is training that can't be repeated: a workout that leaves an athlete needing days to recover produces one strong data point and a worse week overall.",
+      "His philosophy centers on Critical Velocity (CV), a sustainable, lab-derived intensity between threshold and VO₂max pace, as the backbone of a program, on the belief that frequent, moderately hard, fully repeatable sessions compound faster over a season than occasional all-out efforts. He defines CV as approximately 90% of V.O2max, a figure he derived from his own V.O2 max and lactate testing of runners in the University of Wisconsin-La Crosse's Human Performance Lab, where the precise computed range came out closer to 88-91.5% before he settled on 90% as the practical, public figure. In practice, that's the pace a well-conditioned runner can hold for roughly a 30-to-35-minute all-out effort, close to current 10K race pace for most competitive runners, though the sustainable window stretches to 40-45 minutes for runners whose Type IIa fibers are already well-adapted to CV work, and shrinks to 20-25 minutes for more speed-oriented runners. As a practical self-check, Schwartz tells athletes to simply ask: can I hold this pace for half an hour?",
+      "The physiological case underneath CV is about a specific fiber type: Type IIa, fast-intermediate fibers Schwartz considers the most adaptable in the body, not Type IIb, which exists only in rodents (the human equivalent is Type IIx, commonly labeled \"fast-glycolytic\" in exercise-physiology textbooks). Training right at CV makes those fibers proficient at oxidative (aerobic) ATP regeneration; high-intensity, anaerobic-leaning training instead makes them proficient at non-oxidative ATP regeneration. CV deliberately trains the former, turning Type IIa fibers into genuine aerobic contributors rather than leaving them purely as a speed reserve.",
       "Aerobic development is still the foundation underneath it. Schwartz's contribution is optimizing the ceiling of what can be trained often, at real intensity, without digging a fatigue hole the rest of the week has to climb out of.",
     ],
     corePrinciples: [
       "Train at sustainable intensities more often, not maximally, occasionally",
-      "Critical Velocity as an organizing training intensity — roughly a 30-35 minute all-out effort, about 90% of V.O2max",
-      "Type IIa fibers are the most trainable — CV targets their oxidative capacity directly",
-      "Individualize pace targets from an athlete's own recent data — traditionally estimated from a 7-minute all-out effort for V.O2max pace, then dialed back to 90% — not a fixed universal formula",
+      "Critical Velocity as an organizing training intensity: roughly a 30-35 minute all-out effort, about 90% of V.O2max",
+      "Type IIa fibers are the most trainable: CV targets their oxidative capacity directly",
+      "Individualize pace targets from an athlete's own recent data (traditionally estimated from a 7-minute all-out effort for V.O2max pace, then dialed back to 90%) not a fixed universal formula",
       "Avoid heroic workouts that require days of recovery",
-      "Regularity over grandeur — ~90% effort, repeated often, compounds more than 100% efforts needing 48+ hours of recovery",
-      "Favor feel (RPE) and calculated pace over a strict heart-rate ceiling — \"controlled discomfort\" can be the right call even with an elevated heart rate",
+      "Regularity over grandeur: ~90% effort, repeated often, compounds more than 100% efforts needing 48+ hours of recovery",
+      "Favor feel (RPE) and calculated pace over a strict heart-rate ceiling: \"controlled discomfort\" can be the right call even with an elevated heart rate",
       "Consistency of moderately hard work over sporadic maximal work",
     ],
     physiologicalEmphasis: ["aerobicBase", "vo2max", "lactateThreshold", "mentalPerformance"],
@@ -1325,21 +1325,21 @@ export const coaches: Coach[] = [
       {
         name: "Tinman Tempo",
         description:
-          "Deliberately slower and longer than a traditional lactate-threshold tempo — closer to an aerobic-threshold or marathon-pace effort (roughly 80-85% of 5K pace), dosed to be genuinely repeatable week to week rather than a one-off hard effort.",
+          "Deliberately slower and longer than a traditional lactate-threshold tempo, closer to an aerobic-threshold or marathon-pace effort (roughly 80-85% of 5K pace), dosed to be genuinely repeatable week to week rather than a one-off hard effort.",
       },
       { name: "Cruise Intervals", description: "Threshold-paced intervals with short recoveries, extending total time at pace." },
       { name: "Aerobic Threshold Repeats", description: "Moderate-intensity repeats used to build the aerobic ceiling CV work sits on top of." },
-      { name: "Strides", description: "Regularly scheduled 4-6 × 100m fast, relaxed strides at the end of easy runs — keeps neuromuscular sharpness and top-end mechanics without adding real fatigue." },
+      { name: "Strides", description: "Regularly scheduled 4-6 × 100m fast, relaxed strides at the end of easy runs: keeps neuromuscular sharpness and top-end mechanics without adding real fatigue." },
     ],
     periodization: [
-      { label: "Aerobic Development", description: "General aerobic volume — the foundation everything else sits on." },
+      { label: "Aerobic Development", description: "General aerobic volume: the foundation everything else sits on." },
       { label: "CV Introduction", description: "Critical Velocity work is layered in at a genuinely sustainable, repeatable dose." },
       { label: "CV + Race-Specific Blend", description: "CV work blends with race-specific pace as the goal event approaches." },
       { label: "Sharpening", description: "Volume trims slightly; intensity stays sharp and controlled." },
       { label: "Race", description: "A short taper into the goal race." },
     ],
     periodizationSummary:
-      "The season-long throughline is sustainability, not a fixed calendar template — CV volume and frequency build only as fast as an athlete can absorb them without needing extra recovery days, which is exactly the failure mode the whole philosophy is built to avoid.",
+      "The season-long throughline is sustainability, not a fixed calendar template: CV volume and frequency build only as fast as an athlete can absorb them without needing extra recovery days, which is exactly the failure mode the whole philosophy is built to avoid.",
     weeklyStructure: [
       { day: "Monday", session: "Easy aerobic + strides" },
       { day: "Tuesday", session: "CV intervals" },
@@ -1350,7 +1350,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Rest or easy recovery" },
     ],
     weeklyStructureNote:
-      "An illustrative week built around the sustainable-intensity philosophy — not a single published Tinman template. Strides show up regularly on easy days: Schwartz rarely lets a runner go a full week without triggering the neuromuscular system at all, even on otherwise purely aerobic days.",
+      "An illustrative week built around the sustainable-intensity philosophy, not a single published Tinman template. Strides show up regularly on easy days: Schwartz rarely lets a runner go a full week without triggering the neuromuscular system at all, even on otherwise purely aerobic days.",
     bestFor: [
       { label: "Self-coached adults", description: "Balancing training with work and life, without the recovery budget for heroic sessions." },
       { label: "Overreaching-prone athletes", description: "Runners who tend to push hard days too far." },
@@ -1359,7 +1359,7 @@ export const coaches: Coach[] = [
     ],
     notIdealFor: [
       { label: "Athletes chasing maximal, all-out efforts", description: "The philosophy is built around avoiding heroic workouts; an athlete who thrives on occasional all-out tests may feel held back." },
-      { label: "Runners who want a fixed, universal formula", description: "Pace targets are drawn from an athlete's own recent data trends, not a fixed table — self-monitoring is required." },
+      { label: "Runners who want a fixed, universal formula", description: "Pace targets are drawn from an athlete's own recent data trends, not a fixed table; self-monitoring is required." },
       { label: "Athletes uncomfortable with self-monitoring", description: "Heart-rate-to-pace tracking and self-assessment are central to getting real value from the system." },
       { label: "Athletes needing formal technique/biomechanics drill work", description: "Schwartz coaches mental relaxation and pacing feel closely, but doesn't prescribe the kind of formal biomechanics drill curriculum a coach like Vigil does." },
     ],
@@ -1367,17 +1367,17 @@ export const coaches: Coach[] = [
       {
         myth: "Tinman = Critical Velocity.",
         reality:
-          "Critical Velocity is only one tool inside a much larger philosophy — the same emphasis on repeatable, sustainable, moderately hard training applies to tempo runs, cruise intervals, and aerobic monitoring, not just one named pace.",
+          "Critical Velocity is only one tool inside a much larger philosophy: the same emphasis on repeatable, sustainable, moderately hard training applies to tempo runs, cruise intervals, and aerobic monitoring, not just one named pace.",
       },
       {
         myth: "A \"Tinman Tempo\" is the same as a traditional lactate-threshold tempo run.",
         reality:
-          "It's deliberately slower and longer — closer to 80-85% of 5K pace, more of an aerobic-threshold or marathon-pace effort — not held at the classic ~1-hour race pace the way Jack Daniels' T-pace is.",
+          "It's deliberately slower and longer (closer to 80-85% of 5K pace, more of an aerobic-threshold or marathon-pace effort) not held at the classic ~1-hour race pace the way Jack Daniels' T-pace is.",
       },
       {
         myth: "Schwartz only coaches physiology, not the mental side of racing.",
         reality:
-          "He emphasizes mental relaxation closely — running fast while keeping the face, jaw, and shoulders fluid, and favoring \"controlled discomfort\" (feeling smooth despite a high heart rate) over rigid heart-rate ceilings.",
+          "He emphasizes mental relaxation closely: running fast while keeping the face, jaw, and shoulders fluid, and favoring \"controlled discomfort\" (feeling smooth despite a high heart rate) over rigid heart-rate ceilings.",
       },
       {
         myth: "Schwartz's methodology is only ever applied by self-coached amateurs.",
@@ -1394,21 +1394,21 @@ export const coaches: Coach[] = [
       {
         criticism: "Critical Velocity terminology isn't standardized across the sport",
         explanation: "CV is a specific intensity that varies in how different coaches and tools calculate it, making it harder to compare across sources than an established metric like VDOT.",
-        response: "Supporters argue the exact number matters less than the principle — training at a genuinely sustainable, repeatable intensity — which holds regardless of how precisely CV itself is defined.",
+        response: "Supporters argue the exact number matters less than the principle (training at a genuinely sustainable, repeatable intensity) which holds regardless of how precisely CV itself is defined.",
       },
       {
         criticism: "Can be perceived as under-training top-end speed",
         explanation: "An emphasis on sustainable, moderate-hard work may leave less room for maximal speed development than systems with dedicated all-out phases.",
-        response: "Supporters note most non-elite runners are never actually speed-limited — they're limited by how much quality work they can sustainably absorb, which is exactly what this system targets.",
+        response: "Supporters note most non-elite runners are never actually speed-limited: they're limited by how much quality work they can sustainably absorb, which is exactly what this system targets.",
       },
       {
         criticism: "Relies heavily on self-coached data literacy",
         explanation: "Getting real value from heart-rate-to-pace monitoring requires an athlete to actually track and interpret their own trends, which not every self-coached runner does well.",
-        response: "Supporters argue this is true of any data-informed system, and the alternative — training blind — is worse, not better.",
+        response: "Supporters argue this is true of any data-informed system, and the alternative (training blind) is worse, not better.",
       },
     ],
     strongestArgument:
-      "By making \"never leave a hole the rest of the week has to climb out of\" the organizing principle, Schwartz built a system explicitly designed for the actual constraints most runners train under — full-time jobs, families, limited recovery time — rather than assuming professional-athlete recovery resources.",
+      "By making \"never leave a hole the rest of the week has to climb out of\" the organizing principle, Schwartz built a system explicitly designed for the actual constraints most runners train under (full-time jobs, families, limited recovery time) rather than assuming professional-athlete recovery resources.",
     otherCoachesCritique: [
       {
         coachSlug: "lydiard",
@@ -1418,7 +1418,7 @@ export const coaches: Coach[] = [
       {
         coachSlug: "canova",
         critique:
-          "Renato Canova might argue sustainable, moderate-hard training doesn't build the specific race-pace efficiency a marathon needs — comfort and race-readiness aren't the same thing.",
+          "Renato Canova might argue sustainable, moderate-hard training doesn't build the specific race-pace efficiency a marathon needs: comfort and race-readiness aren't the same thing.",
       },
       {
         coachSlug: "norwegian-system",
@@ -1428,18 +1428,18 @@ export const coaches: Coach[] = [
     ],
     dailyLife: {
       narrative:
-        "If Tom Schwartz coached you, your hardest days would feel genuinely manageable — challenging, but never so costly you'd dread the next day's run. The whole week is built to be repeated, not survived.",
-      easyDays: "Easy, aerobic, unremarkable by design — the point is volume without cost.",
-      hardSessions: "Moderately hard and controlled — Critical Velocity intervals or cruise intervals dosed to be repeatable, run with a deliberately relaxed face, jaw, and shoulders rather than visible strain, never an all-out test.",
+        "If Tom Schwartz coached you, your hardest days would feel genuinely manageable: challenging, but never so costly you'd dread the next day's run. The whole week is built to be repeated, not survived.",
+      easyDays: "Easy, aerobic, unremarkable by design: the point is volume without cost.",
+      hardSessions: "Moderately hard and controlled: Critical Velocity intervals or cruise intervals dosed to be repeatable, run with a deliberately relaxed face, jaw, and shoulders rather than visible strain, never an all-out test.",
       frequency: "Two to three quality sessions most weeks, spaced to stay genuinely repeatable rather than clustered.",
-      recovery: "The organizing constraint of the whole system — if a session isn't repeatable without extra recovery, it's considered miscalibrated, not a good day.",
+      recovery: "The organizing constraint of the whole system: if a session isn't repeatable without extra recovery, it's considered miscalibrated, not a good day.",
       mileage: "Moderate and individualized, guided by your own heart-rate-to-pace trend rather than a fixed target.",
       progression: "CV volume and frequency increase only as fast as you can absorb them without needing extra recovery days.",
-      mistakes: "A hard session that clearly cost more than it built isn't repeated the next week at the same dose — it's a direct signal to back off, since the whole system treats needing extra recovery as evidence the intensity was miscalibrated, not a badge of effort.",
+      mistakes: "A hard session that clearly cost more than it built isn't repeated the next week at the same dose: it's a direct signal to back off, since the whole system treats needing extra recovery as evidence the intensity was miscalibrated, not a badge of effort.",
     },
     lastingInfluence: {
       paragraphs: [
-        "Schwartz popularized Critical Velocity as an accessible organizing concept for non-elite, self-coached runners through Tinman Endurance Coaching, and pushed back publicly against a \"heroic workout\" culture in online running communities — shifting many self-coached runners toward sustainable, monitored training instead.",
+        "Schwartz popularized Critical Velocity as an accessible organizing concept for non-elite, self-coached runners through Tinman Endurance Coaching, and pushed back publicly against a \"heroic workout\" culture in online running communities, shifting many self-coached runners toward sustainable, monitored training instead.",
       ],
       items: [
         { label: "Ideas Introduced", description: "Critical Velocity as an accessible, organizing training intensity for self-coached runners." },
@@ -1455,7 +1455,7 @@ export const coaches: Coach[] = [
         publication: "LetsRun.com",
         kind: "article",
         description:
-          "Written by Schwartz himself to correct a mainstream running site's mischaracterization of his methodology — the single most direct, in-his-own-words source for the exact CV math, the Type IIa/IIb/IIx fiber distinction, and the 1989-90 origin of Critical Velocity.",
+          "Written by Schwartz himself to correct a mainstream running site's mischaracterization of his methodology: the single most direct, in-his-own-words source for the exact CV math, the Type IIa/IIb/IIx fiber distinction, and the 1989-90 origin of Critical Velocity.",
         url: "https://www.letsrun.com/news/2016/02/drew-hunters-coach-tom-tinman-schwartz-explains-critical-velocity-type-iia-muscle-fibers/",
       },
       {
@@ -1496,7 +1496,7 @@ export const coaches: Coach[] = [
         url: "https://podcasts.apple.com/us/podcast/sweat-elite-podcast/id1326102413#episodeGuid=https%3A%2F%2Fwww.sweatelite.co%2F%3Fpost_type%3Dpodcast%26p%3D22315",
       },
       {
-        title: "Talking With The Tinmen — Drew Hunter, Sam Parsons, Reed Fischer, Tyler Mueller and Tom Schwartz",
+        title: "Talking With The Tinmen: Drew Hunter, Sam Parsons, Reed Fischer, Tyler Mueller and Tom Schwartz",
         publication: "Citius Mag Podcast",
         kind: "podcast",
         description: "The Tinman Elite squad and Schwartz together, showing the repeatability rule applied at professional training volume.",
@@ -1550,7 +1550,7 @@ export const coaches: Coach[] = [
       {
         name: "Tinman Elite",
         events: "Professional distance running team (2018-2021)",
-        whyRepresentative: "The professional squad Schwartz co-founded and coached directly, applying the repeatability rule to athletes running well over 100 miles a week — proof the system scales to elite volume, not just self-coached amateurs.",
+        whyRepresentative: "The professional squad Schwartz co-founded and coached directly, applying the repeatability rule to athletes running well over 100 miles a week: proof the system scales to elite volume, not just self-coached amateurs.",
         relationship: "coached",
       },
       {
@@ -1628,7 +1628,7 @@ export const coaches: Coach[] = [
                 question: "Is Critical Velocity capacity the limiter?",
                 outcomes: [
                   { condition: "Yes", steps: ["Add CV or cruise-interval work, dosed to stay repeatable"] },
-                  { condition: "No", steps: ["Fitness is there — check whether recovery, not fitness, is the actual limiter"] },
+                  { condition: "No", steps: ["Fitness is there: check whether recovery, not fitness, is the actual limiter"] },
                 ],
               },
             },
@@ -1639,11 +1639,11 @@ export const coaches: Coach[] = [
     workoutReactions: [
       {
         workout: "8 × 800m at all-out effort, full recovery between reps",
-        reaction: "You've probably accumulated more fatigue than adaptation. All-out isn't repeatable — could you have done this again tomorrow?",
+        reaction: "You've probably accumulated more fatigue than adaptation. All-out isn't repeatable: could you have done this again tomorrow?",
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "Good, as long as it stayed at a genuinely easy effort — did your heart rate stay proportional to pace the whole way, or did it drift late?",
+        reaction: "Good, as long as it stayed at a genuinely easy effort: did your heart rate stay proportional to pace the whole way, or did it drift late?",
       },
     ],
     relatedPhilosophies: [
@@ -1665,7 +1665,7 @@ export const coaches: Coach[] = [
     ],
     keyTakeaways: [
       "A repeatable moderately-hard session, done consistently, beats an occasional heroic one that costs days of recovery.",
-      "Critical Velocity is an organizing concept, not the whole system — tempo, cruise intervals, and aerobic monitoring all matter too.",
+      "Critical Velocity is an organizing concept, not the whole system: tempo, cruise intervals, and aerobic monitoring all matter too.",
       "Individualize pace targets from your own recent data trends rather than a fixed formula.",
       "If a workout leaves you needing several days to recover, it likely cost more than it built.",
     ],
@@ -1702,7 +1702,7 @@ export const coaches: Coach[] = [
       intensityPhilosophy: "Structured mesocycles toward one race",
       mileagePhilosophy: "High, progressively built",
       recoveryPhilosophy: "Fixed easy weeks built into the mesocycle calendar",
-      longTermSustainability: "Moderate — high mileage limits how many cycles a year",
+      longTermSustainability: "Moderate: high mileage limits how many cycles a year",
     },
     historicalContext: {
       emergedBecause:
@@ -1710,16 +1710,16 @@ export const coaches: Coach[] = [
       problemItSolved:
         "Pfitzinger, himself a two-time Olympic Marathon Trials finalist with an exercise-physiology background, set out to translate lactate-threshold research into a specific, periodized marathon plan.",
       priorSystems:
-        "Marathon plans before Advanced Marathoning tended to be generalist — built around weekly mileage targets and a long run, without a specific physiological target driving the plan's structure.",
+        "Marathon plans before Advanced Marathoning tended to be generalist: built around weekly mileage targets and a long run, without a specific physiological target driving the plan's structure.",
       assumptionsChallenged:
         "He challenged the idea that VO₂max or raw mileage were the most important marathon predictors, arguing lactate threshold specifically deserved to be the organizing target.",
       laterInfluence:
         "Advanced Marathoning's medium-long run and threshold-centered mesocycle structure became one of the most widely followed marathon frameworks for serious non-elite runners, and remains in print decades after its first edition.",
     },
     philosophy: [
-      "Pfitzinger believes the biggest limiter for marathoners is lactate threshold pace specifically — not VO₂max, not raw mileage — because the marathon is run well below VO₂max but right around what the body can clear lactate at sustainably.",
+      "Pfitzinger believes the biggest limiter for marathoners is lactate threshold pace specifically, not VO₂max, not raw mileage, because the marathon is run well below VO₂max but right around what the body can clear lactate at sustainably.",
       "His system raises that threshold directly through structured lactate-threshold and marathon-pace running, layered onto a genuinely large aerobic base, in progressive mesocycles that build toward one goal marathon.",
-      "The mileage in his plans is scaffolding around that specific target, not volume for its own sake — the same mesocycle structure scales down to lower-mileage plans for less experienced marathoners.",
+      "The mileage in his plans is scaffolding around that specific target, not volume for its own sake: the same mesocycle structure scales down to lower-mileage plans for less experienced marathoners.",
     ],
     corePrinciples: [
       "Lactate threshold as the primary trainable predictor",
@@ -1759,7 +1759,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Long run (marathon-pace segments late in the cycle)" },
     ],
     weeklyStructureNote:
-      "An illustrative mid-cycle week — exact day placement and mileage scale to the athlete's chosen plan level in Pfitzinger's own multiple mileage tracks.",
+      "An illustrative mid-cycle week: exact day placement and mileage scale to the athlete's chosen plan level in Pfitzinger's own multiple mileage tracks.",
     bestFor: [
       { label: "Marathoners with a base already", description: "At least one prior marathon or a solid aerobic foundation." },
       { label: "Structured-plan followers", description: "Runners who want a book-based, repeatable plan rather than a fully custom program." },
@@ -1767,23 +1767,23 @@ export const coaches: Coach[] = [
       { label: "Single-goal-marathon training", description: "Built around one target race, not a season of shorter events." },
     ],
     notIdealFor: [
-      { label: "First-time or very new runners", description: "The mesocycle structure and medium-long runs assume some existing base — it's built for marathoners with at least one prior training cycle." },
+      { label: "First-time or very new runners", description: "The mesocycle structure and medium-long runs assume some existing base; it's built for marathoners with at least one prior training cycle." },
       { label: "Athletes who dislike high weekly mileage", description: "Even the lower mileage tracks in Advanced Marathoning are substantial; a runner wanting a low-volume approach will find it a poor fit." },
-      { label: "Runners without a fixed goal race", description: "The whole structure builds toward one calendar date — it doesn't fit an open-ended, season-long racing approach well." },
+      { label: "Runners without a fixed goal race", description: "The whole structure builds toward one calendar date: it doesn't fit an open-ended, season-long racing approach well." },
       { label: "Athletes needing heavy technical or mental coaching", description: "The system centers on lactate threshold and mileage structure, not biomechanics or psychology." },
     ],
     misunderstandings: [
       {
         myth: "Pfitzinger = just high mileage.",
         reality:
-          "The mileage is scaffolding around a specific target — lactate threshold — progressively built across mesocycles. The same structure scales down to lower-mileage plans in his own books, not just elite volume.",
+          "The mileage is scaffolding around a specific target (lactate threshold) progressively built across mesocycles. The same structure scales down to lower-mileage plans in his own books, not just elite volume.",
       },
     ],
     criticisms: [
       {
         criticism: "High mileage even at the \"lower\" plan levels",
         explanation: "Even Pfitzinger's most modest published plans assume real weekly volume, which can be a barrier for time-constrained or newer marathoners.",
-        response: "Supporters note the mesocycle structure — not the specific mileage number — is the actual system, and the same phase order works at lower volume with adjustment.",
+        response: "Supporters note the mesocycle structure, not the specific mileage number, is the actual system, and the same phase order works at lower volume with adjustment.",
       },
       {
         criticism: "Book-based plans can't fully individualize",
@@ -1793,11 +1793,11 @@ export const coaches: Coach[] = [
       {
         criticism: "Less emphasis on speed and VO₂max relative to threshold",
         explanation: "Critics note the system's threshold-centered focus may leave less room for top-end speed development than a Daniels-style approach.",
-        response: "Supporters point out the marathon is rarely decided by top-end speed — lactate threshold really is the better predictor for that specific distance.",
+        response: "Supporters point out the marathon is rarely decided by top-end speed: lactate threshold really is the better predictor for that specific distance.",
       },
     ],
     strongestArgument:
-      "Advanced Marathoning became one of the most widely used structured marathon references precisely because it translated genuine exercise-physiology research — lactate threshold as the key marathon predictor — into a plan a serious amateur could actually follow without a coach.",
+      "Advanced Marathoning became one of the most widely used structured marathon references precisely because it translated genuine exercise-physiology research (lactate threshold as the key marathon predictor) into a plan a serious amateur could actually follow without a coach.",
     evidenceStrength: {
       rating: 4,
       description:
@@ -1822,18 +1822,18 @@ export const coaches: Coach[] = [
     ],
     dailyLife: {
       narrative:
-        "If Pete Pfitzinger coached you toward a marathon, your week would revolve around two anchors — a threshold run and a medium-long run — with everything else there to support those two sessions.",
+        "If Pete Pfitzinger coached you toward a marathon, your week would revolve around two anchors (a threshold run and a medium-long run) with everything else there to support those two sessions.",
       easyDays: "Genuinely easy, functioning as recovery between the week's two anchor sessions.",
       hardSessions: "A dedicated lactate-threshold run, sharply defined and not casually extended.",
       frequency: "One threshold session and one medium-long run most weeks, plus a long run with marathon-pace segments late in the cycle.",
-      recovery: "Structured around the mesocycle — easy weeks and reduced volume are built into the calendar at fixed points, not left to feel.",
+      recovery: "Structured around the mesocycle: easy weeks and reduced volume are built into the calendar at fixed points, not left to feel.",
       mileage: "High and progressively built across the mesocycles, following one of several fixed mileage tracks.",
       progression: "Base and endurance, then lactate threshold, then race preparation with marathon-pace work, then a fixed taper.",
-      mistakes: "A missed threshold session shifts the mesocycle slightly rather than getting doubled up the next day — cramming two quality sessions close together defeats the structure's own logic of controlled, spaced stress.",
+      mistakes: "A missed threshold session shifts the mesocycle slightly rather than getting doubled up the next day: cramming two quality sessions close together defeats the structure's own logic of controlled, spaced stress.",
     },
     lastingInfluence: {
       paragraphs: [
-        "Pfitzinger — a two-time U.S. Olympic Marathon Trials finalist and exercise physiologist — co-authored Advanced Marathoning, one of the most widely used structured marathon training references for competitive non-elite runners, popularizing the medium-long run and lactate-threshold-centered marathon periodization for a mass audience of serious amateur marathoners.",
+        "Pfitzinger (a two-time U.S. Olympic Marathon Trials finalist and exercise physiologist) co-authored Advanced Marathoning, one of the most widely used structured marathon training references for competitive non-elite runners, popularizing the medium-long run and lactate-threshold-centered marathon periodization for a mass audience of serious amateur marathoners.",
       ],
       items: [
         { label: "Ideas Introduced", description: "Lactate threshold, not VO₂max, as the single most important trainable predictor of marathon performance." },
@@ -1930,7 +1930,7 @@ export const coaches: Coach[] = [
                 question: "Is lactate threshold the limiter (fades in the last 10K)?",
                 outcomes: [
                   { condition: "Yes", steps: ["Prioritize the weekly lactate-threshold session"] },
-                  { condition: "No", steps: ["Add marathon-pace segments to the long run — threshold is there, specificity isn't"] },
+                  { condition: "No", steps: ["Add marathon-pace segments to the long run: threshold is there, specificity isn't"] },
                 ],
               },
             },
@@ -1941,11 +1941,11 @@ export const coaches: Coach[] = [
     workoutReactions: [
       {
         workout: "8 × 800m at all-out effort, full recovery between reps",
-        reaction: "That's closer to VO₂max work than anything in my system — where's the lactate-threshold session this week?",
+        reaction: "That's closer to VO₂max work than anything in my system: where's the lactate-threshold session this week?",
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "That's the anchor session — did it include any marathon-pace segments late, once you're deep enough into the buildup for that?",
+        reaction: "That's the anchor session: did it include any marathon-pace segments late, once you're deep enough into the buildup for that?",
       },
     ],
     relatedPhilosophies: [
@@ -1969,7 +1969,7 @@ export const coaches: Coach[] = [
       "Lactate threshold pace, not VO₂max, is the number most worth training directly for a marathon.",
       "The medium-long run is a weekly staple, not an occasional bonus session.",
       "Marathon-pace running belongs inside long runs well before race day, not just in a few dedicated workouts.",
-      "High mileage in this system is scaffolding around threshold training, not volume for its own sake — it scales down without losing the structure.",
+      "High mileage in this system is scaffolding around threshold training, not volume for its own sake: it scales down without losing the structure.",
     ],
     genome: {
       aerobicDevelopment: 75,
@@ -2003,7 +2003,7 @@ export const coaches: Coach[] = [
       intensityPhilosophy: "Lactate-tested double sessions",
       mileagePhilosophy: "High, split across two sessions a day",
       recoveryPhilosophy: "Two controlled sessions cost less than one all-out day",
-      longTermSustainability: "Moderate — demanding schedule, but low muscular cost per session",
+      longTermSustainability: "Moderate: demanding schedule, but low muscular cost per session",
     },
     historicalContext: {
       emergedBecause:
@@ -2018,8 +2018,8 @@ export const coaches: Coach[] = [
         "Global attention following the Ingebrigtsen family's championship results brought frequent blood-lactate testing into mainstream distance-running conversation, and the model has since been adapted into triathlon by Kristian Blummenfelt and Gustav Iden.",
     },
     philosophy: [
-      "The Norwegian model holds that running's real ceiling on hard training is usually muscular, not cardiovascular — and that the biggest limiter is how much high-value, threshold-adjacent work an athlete can absorb without digging into a muscular fatigue hole.",
-      "By holding two sessions a day just below the point where lactate starts accumulating faster than the body can clear it — tracked with frequent blood-lactate testing rather than feel or heart rate — the system fits a large volume of high-value work into a week at a muscular cost closer to one long session than two full hard days.",
+      "The Norwegian model holds that running's real ceiling on hard training is usually muscular, not cardiovascular, and that the biggest limiter is how much high-value, threshold-adjacent work an athlete can absorb without digging into a muscular fatigue hole.",
+      "By holding two sessions a day just below the point where lactate starts accumulating faster than the body can clear it (tracked with frequent blood-lactate testing rather than feel or heart rate), the system fits a large volume of high-value work into a week at a muscular cost closer to one long session than two full hard days.",
       "A large aerobic base still underlies the whole structure. The double-threshold format is how that base gets converted into race fitness at low muscular cost, not a replacement for the base itself.",
     ],
     corePrinciples: [
@@ -2039,7 +2039,7 @@ export const coaches: Coach[] = [
       },
       {
         name: "The X Element",
-        description: "A weekly, deliberately different, harder stimulus — most often short hill sprints.",
+        description: "A weekly, deliberately different, harder stimulus: most often short hill sprints.",
         workoutLibraryHref: "/workout-library#the-norwegian-x-element-a-third-different-stimulus",
       },
     ],
@@ -2062,7 +2062,7 @@ export const coaches: Coach[] = [
       { day: "Sunday", session: "Long aerobic run" },
     ],
     weeklyStructureNote:
-      "An illustrative elite-level week (often totaling around 180 km) — intensity is controlled by lactate testing, not pace or feel, and total volume scales down significantly for sub-elite athletes.",
+      "An illustrative elite-level week (often totaling around 180 km). Intensity is controlled by lactate testing, not pace or feel, and total volume scales down significantly for sub-elite athletes.",
     bestFor: [
       { label: "1500m through 10K specialists", description: "With access to frequent lactate testing." },
       { label: "Athletes who can handle two sessions a day", description: "Real time and recovery capacity for double days." },
@@ -2073,13 +2073,13 @@ export const coaches: Coach[] = [
       { label: "Athletes without lactate-testing access", description: "The entire system runs on frequent blood-lactate measurement; without it, \"double threshold\" just becomes two uncontrolled hard sessions." },
       { label: "Runners with limited time for two sessions a day", description: "Double days require real schedule flexibility most working adults or student-athletes with other commitments don't have." },
       { label: "Athletes racing longer than 10K", description: "The model is most proven at 1500m through 10K; its application to marathon distances is far less established." },
-      { label: "Runners who prefer feel-based, less quantified training", description: "Precision via lactate testing is the whole point — an athlete who dislikes that level of quantification will find it clinical." },
+      { label: "Runners who prefer feel-based, less quantified training", description: "Precision via lactate testing is the whole point; an athlete who dislikes that level of quantification will find it clinical." },
     ],
     misunderstandings: [
       {
         myth: "Norwegian System = just running twice a day.",
         reality:
-          "The double sessions are precisely controlled by lactate testing at a specific, moderate intensity (roughly 2.3–3.0 mmol/L) — running twice a day at an uncontrolled effort is a different system and doesn't produce the same low muscular cost.",
+          "The double sessions are precisely controlled by lactate testing at a specific, moderate intensity (roughly 2.3–3.0 mmol/L); running twice a day at an uncontrolled effort is a different system and doesn't produce the same low muscular cost.",
       },
     ],
     criticisms: [
@@ -2091,12 +2091,12 @@ export const coaches: Coach[] = [
       {
         criticism: "Twice-daily training isn't realistic for most runners",
         explanation: "Fitting two sessions into one day, six to eight hours apart, assumes a schedule flexibility most working adults and students simply don't have.",
-        response: "Supporters point out the core principle — controlled, moderate-intensity threshold work at a low muscular cost — scales down to a single well-controlled session a day for most runners.",
+        response: "Supporters point out the core principle (controlled, moderate-intensity threshold work at a low muscular cost) scales down to a single well-controlled session a day for most runners.",
       },
       {
         criticism: "Evidence is concentrated in a small number of elite athletes",
         explanation: "The model's most famous results come from a handful of Norwegian and adjacent elite athletes; broader evidence across the general running population is thinner.",
-        response: "Supporters argue the underlying physiological logic — muscular, not cardiovascular, cost is the real training-load ceiling — is well-supported independent of who has used the specific protocol.",
+        response: "Supporters argue the underlying physiological logic (muscular, not cardiovascular, cost is the real training-load ceiling) is well-supported independent of who has used the specific protocol.",
       },
       {
         criticism: "Risk of undertraining true high-intensity work",
@@ -2105,7 +2105,7 @@ export const coaches: Coach[] = [
       },
     ],
     strongestArgument:
-      "The Ingebrigtsen family's results — multiple global titles and records across 1500m, 5000m, and 10,000m from the same small training group — are hard to explain away, and the model's core insight (running's real training-load ceiling is muscular, not cardiovascular) is genuinely well-supported physiology, not just a result of talent.",
+      "The Ingebrigtsen family's results (multiple global titles and records across 1500m, 5000m, and 10,000m from the same small training group) are hard to explain away, and the model's core insight (running's real training-load ceiling is muscular, not cardiovascular) is genuinely well-supported physiology, not just a result of talent.",
     evidenceStrength: {
       rating: 4,
       description:
@@ -2120,7 +2120,7 @@ export const coaches: Coach[] = [
       {
         coachSlug: "pfitzinger",
         critique:
-          "Pete Pfitzinger might argue the model is proven mainly at 1500m through 10K, and its application to the marathon — where his own system is built specifically — remains far less established.",
+          "Pete Pfitzinger might argue the model is proven mainly at 1500m through 10K, and its application to the marathon (where his own system is built specifically) remains far less established.",
       },
       {
         coachSlug: "tom-schwartz",
@@ -2130,21 +2130,21 @@ export const coaches: Coach[] = [
     ],
     dailyLife: {
       narrative:
-        "If you trained under the Norwegian System, your day would often include two separate sessions, both precisely dosed by a lactate meter rather than by feel — demanding on your schedule, but each individual session would feel more controlled than exhausting.",
+        "If you trained under the Norwegian System, your day would often include two separate sessions, both precisely dosed by a lactate meter rather than by feel, demanding on your schedule, but each individual session would feel more controlled than exhausting.",
       easyDays: "Easy aerobic running, filling the days between double-threshold sessions.",
       hardSessions: "Controlled threshold intervals, morning and evening, each kept deliberately within a narrow, lactate-tested intensity band.",
-      frequency: "Two to three double-threshold days a week, plus one distinct \"X element\" session — often short hill sprints.",
-      recovery: "Built into the format itself — the whole point of two controlled sessions is a lower muscular cost than one all-out day, not less total work.",
+      frequency: "Two to three double-threshold days a week, plus one distinct \"X element\" session, often short hill sprints.",
+      recovery: "Built into the format itself: the whole point of two controlled sessions is a lower muscular cost than one all-out day, not less total work.",
       mileage: "High for elite practitioners (often around 180 km/week), split across two daily sessions rather than one long one.",
       progression: "Aerobic base, then introduce double threshold, then build threshold volume and add the X element, then race-specific sharpening.",
-      mistakes: "A session that drifts above the lactate target isn't finished as planned — the pace is adjusted down mid-session, since running the full prescribed volume at the wrong intensity defeats the entire point of testing in the first place.",
+      mistakes: "A session that drifts above the lactate target isn't finished as planned: the pace is adjusted down mid-session, since running the full prescribed volume at the wrong intensity defeats the entire point of testing in the first place.",
     },
     lastingInfluence: {
       paragraphs: [
         "Popularized globally by the Ingebrigtsen family's results and later adopted in triathlon by Kristian Blummenfelt and Gustav Iden, the model brought frequent blood-lactate testing into mainstream distance-running conversation as a legitimate alternative to heart-rate- or feel-based intensity control.",
       ],
       items: [
-        { label: "Ideas Introduced", description: "Running's real training-load ceiling is usually muscular, not cardiovascular — two controlled sessions cost less than one all-out effort." },
+        { label: "Ideas Introduced", description: "Running's real training-load ceiling is usually muscular, not cardiovascular: two controlled sessions cost less than one all-out effort." },
         { label: "Terminology", description: "\"Double threshold\" and the \"X element\" entered mainstream distance-running vocabulary largely through this system's global attention." },
         { label: "Coaching Innovations", description: "Brought frequent blood-lactate testing into everyday training decisions, not just occasional lab assessment." },
         { label: "Long-Term Impact", description: "Directly influenced triathlon training (Blummenfelt, Iden) beyond running, and shifted global conversation toward lactate-informed intensity control." },
@@ -2233,7 +2233,7 @@ export const coaches: Coach[] = [
                 question: "Is lactate threshold the limiter (measured lactate rises faster than expected)?",
                 outcomes: [
                   { condition: "Yes", steps: ["Add or increase double-threshold sessions"] },
-                  { condition: "No", steps: ["Threshold is solid — check whether the weekly X element is missing"] },
+                  { condition: "No", steps: ["Threshold is solid: check whether the weekly X element is missing"] },
                 ],
               },
             },
@@ -2248,7 +2248,7 @@ export const coaches: Coach[] = [
       },
       {
         workout: "20-mile long run at conversational, easy effort",
-        reaction: "Fine as easy volume between your threshold days — just make sure it isn't replacing one of your double-threshold sessions.",
+        reaction: "Fine as easy volume between your threshold days: just make sure it isn't replacing one of your double-threshold sessions.",
       },
     ],
     relatedPhilosophies: [
@@ -2269,9 +2269,9 @@ export const coaches: Coach[] = [
       },
     ],
     keyTakeaways: [
-      "Running's real training-load ceiling is usually muscular, not cardiovascular — two controlled sessions cost less muscularly than one all-out effort.",
+      "Running's real training-load ceiling is usually muscular, not cardiovascular: two controlled sessions cost less muscularly than one all-out effort.",
       "Lactate testing, not feel or heart rate, is what keeps double-threshold days genuinely controlled rather than accidentally too hard.",
-      "The weekly X element matters as much as the threshold sessions themselves — without it, the week trains only one gear.",
+      "The weekly X element matters as much as the threshold sessions themselves: without it, the week trains only one gear.",
       "This is one well-tested individual system that spread through direct mentorship, not several coaches independently discovering the same thing.",
     ],
     genome: {

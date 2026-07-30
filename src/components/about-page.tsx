@@ -15,11 +15,11 @@ const timeline: {
 }[] = [
   {
     label: "Brophy College Prep, Arizona",
-    note: "Four years of racing under Mike Scannell — the coach who took Grant Fisher from a sub-4 mile to Olympic medals in the 5,000m and 10,000m. I started as one of the slower runners on the team freshman year; the turning point was the summer after, spent training through Flagstaff's altitude, and I came back sophomore year a different runner. By senior year that had grown into roughly 70 miles a week of altitude training each summer, a state championship junior year — Brophy's first in 17 years — and a First-Team state medal senior year. What actually stuck, though, was the physiology and psychology I picked up from Scannell and camps like Project Gold and Anasazi, before I had the language for either.",
+    note: "Four years of racing under Mike Scannell: the coach who took Grant Fisher from a sub-4 mile to Olympic medals in the 5,000m and 10,000m. I started as one of the slower runners on the team freshman year; the turning point was the summer after, spent training through Flagstaff's altitude, and I came back sophomore year a different runner. By senior year that had grown into roughly 70 miles a week of altitude training each summer, a state championship junior year (Brophy's first in 17 years), and a First-Team state medal senior year. What actually stuck, though, was the physiology and psychology I picked up from Scannell and camps like Project Gold and Anasazi, before I had the language for either.",
   },
   {
     label: "Run22",
-    note: "During COVID lockdowns junior year, with nowhere left to train together in person, I built an online community for runners in my graduating class on Strava. Run22 grew to nearly 400 members across 26 states, trading training questions and encouragement — and it was the first time I noticed I liked the coaching and community side of the sport as much as the racing itself.",
+    note: "During COVID lockdowns junior year, with nowhere left to train together in person, I built an online community for runners in my graduating class on Strava. Run22 grew to nearly 400 members across 26 states, trading training questions and encouragement. It was the first time I noticed I liked the coaching and community side of the sport as much as the racing itself.",
   },
   {
     label: "Vanderbilt, SEC cross country",
@@ -29,26 +29,26 @@ const timeline: {
   },
   {
     label: "Stepping off the plan",
-    note: "Walking away from the team meant reading instead of just following a plan — Matt Fitzgerald's 80/20 Running, Phil Maffetone's MAF Method — and testing what I found, which is where the aerobic-first approach the rest of this site is built on actually started.",
+    note: "Walking away from the team meant reading instead of just following a plan (Matt Fitzgerald's 80/20 Running, Phil Maffetone's MAF Method) and testing what I found, which is where the aerobic-first approach the rest of this site is built on actually started.",
   },
   {
     label: "Marathon training, on my own terms",
-    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. I'd skipped enough of it in the lead-up that an injury three weeks out left me broken down by the second half of the race — nothing to do with how I paced it. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
+    note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. I'd skipped enough of it in the lead-up that an injury three weeks out left me broken down by the second half of the race, which had nothing to do with how I paced it. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
   },
   {
     label: "Coaching, and this archive",
-    note: "I started by coaching a handful of Run22 members directly, and now coach the Vanderbilt Run Club through full and half marathon training. Alongside that, years of reading Lydiard, Daniels, Canova, and physiology papers side by side, trying to find where they agreed — and writing all of it down so I wouldn't have to re-derive it every time.",
+    note: "I started by coaching a handful of Run22 members directly, and now coach the Vanderbilt Run Club through full and half marathon training. Alongside that, years of reading Lydiard, Daniels, Canova, and physiology papers side by side, trying to find where they agreed, and writing all of it down so I wouldn't have to re-derive it every time.",
   },
 ];
 
 const influences: { name: string; note: string }[] = [
   {
     name: "Stephen Seiler's Polarized Training",
-    note: "The one I lean on most — roughly 80% of training time easy, 20% genuinely hard, almost nothing in between. I learned it from Matt Fitzgerald's book 80/20 Running.",
+    note: "The one I lean on most: roughly 80% of training time easy, 20% genuinely hard, almost nothing in between. I learned it from Matt Fitzgerald's book 80/20 Running.",
   },
   {
     name: "Arthur Lydiard",
-    note: "Base before anything else — speed is common, endurance is rare.",
+    note: "Base before anything else: speed is common, endurance is rare.",
   },
   {
     name: "Jack Daniels",
@@ -64,11 +64,11 @@ const influences: { name: string; note: string }[] = [
   },
   {
     name: "Steve Magness",
-    note: "A physiologist's skepticism applied to coaching folklore — testing assumptions instead of repeating them.",
+    note: "A physiologist's skepticism applied to coaching folklore: testing assumptions instead of repeating them.",
   },
   {
     name: "Norwegian threshold training",
-    note: "Double-threshold days and obsessive lactate monitoring — proof that even \"easy\" training rewards measurement.",
+    note: "Double-threshold days and obsessive lactate monitoring: proof that even \"easy\" training rewards measurement.",
   },
 ];
 
@@ -93,7 +93,7 @@ export function AboutPage() {
         </Heading>
         <p className="mt-6 max-w-[66ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
           The Haarchive is a long-term resource dedicated to the physiology,
-          psychology, philosophy, and practice of distance running — helping
+          psychology, philosophy, and practice of distance running, helping
           athletes learn not only how to train, but how to think about
           training.
         </p>
@@ -101,7 +101,7 @@ export function AboutPage() {
         <FeaturedEssay
           href="/why-running-is-valuable-for-everyone"
           title="Why Running Is Valuable for Everyone"
-          description="Running scales perfectly across ambition — the same physiology that produces an Olympic champion is what makes an easy run worth doing at all. A good place to start if you’re new here."
+          description="Running scales perfectly across ambition: the same physiology that produces an Olympic champion is what makes an easy run worth doing at all. A good place to start if you’re new here."
           ctaLabel="Read the essay →"
         />
 
@@ -122,7 +122,7 @@ export function AboutPage() {
         </h2>
         <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
           <p>
-            Every calculator on this site — the{" "}
+            Every calculator on this site, the{" "}
             <Link
               href="/pace-calculator"
               className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
@@ -136,7 +136,7 @@ export function AboutPage() {
             >
               Heat Tracker
             </Link>{" "}
-            — works fully without an account. Nothing you enter is sent
+            works fully without an account. Nothing you enter is sent
             anywhere; it stays in your browser.
           </p>
           <p>
@@ -148,7 +148,7 @@ export function AboutPage() {
           </p>
           <p>
             When you sign in with Google, we only ever request your name,
-            email address, and profile photo — enough to create your
+            email address, and profile photo: enough to create your
             account, nothing more. See exactly what&rsquo;s collected and
             why in the{" "}
             <Link
@@ -176,15 +176,15 @@ export function AboutPage() {
             of answers. One is a thirty-second video telling you to eat
             bananas and believe in yourself. The other is a peer-reviewed
             paper on substrate utilization that assumes you already have a
-            physiology degree. Almost nothing sits between them — a place
+            physiology degree. Almost nothing sits between them: a place
             that explains why the banana works, in language built for someone
             who wants to train intelligently.
           </p>
           <p>
             That gap is what this site is trying to close. Every section
-            here is built the same way: start with the mechanism — why
+            here is built the same way: start with the mechanism (why
             oxygen delivery, muscle fiber type, or hormonal response works
-            the way it does — and only then get to the workout it produces.
+            the way it does) and only then get to the workout it produces.
             The goal is to get you to the point where you could write your
             own plan, because you understand the system well enough to
             reason about it instead of just following it.
@@ -250,14 +250,14 @@ export function AboutPage() {
           I compare coaching systems instead of committing to one, and
           I&rsquo;m suspicious of anyone who does. The coaches and
           researchers below all built real, medal-winning methods, yet they
-          disagree with each other — on how much of training should be
+          disagree with each other: on how much of training should be
           aerobic base versus race-specific work, or how precisely intensity
           should be measured. Studying where they diverge teaches you more
           than adopting any one of them wholesale. If you pushed me to pick
           the one closest to what I actually believe, though, it&rsquo;s the
-          80/20 principle — Stephen Seiler&rsquo;s research on polarized
+          80/20 principle (Stephen Seiler&rsquo;s research on polarized
           training, which I first ran into through Matt Fitzgerald&rsquo;s
-          book of the same name — not because the others are wrong, but
+          book of the same name), not because the others are wrong, but
           because that ratio is the version of &ldquo;mostly easy,
           occasionally hard&rdquo; that&rsquo;s held up best for me in
           practice.
@@ -302,7 +302,7 @@ export function AboutPage() {
         <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
           <p>
             A workout is only half the transaction. The other half is
-            understanding why it&rsquo;s there — what adaptation it&rsquo;s
+            understanding why it&rsquo;s there: what adaptation it&rsquo;s
             chasing, how to judge whether the body is actually absorbing it,
             when pushing through fatigue is productive and when it&rsquo;s
             just damage. A coach who only hands out the first half produces
@@ -378,7 +378,7 @@ export function AboutPage() {
         </div>
 
         <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-          New sections get added the same way this one did — I learn
+          New sections get added the same way this one did: I learn
           something, verify it&rsquo;s solid, and write it down in the place
           a reader would actually go looking for it.
         </p>
@@ -396,14 +396,14 @@ export function AboutPage() {
           <p>
             Ten years from now I&rsquo;d like this site to hold a few hundred
             connected pages on training, physiology, psychology, and
-            coaching history — refined the same way any long-running
+            coaching history, refined the same way any long-running
             research project gets refined, by being wrong sometimes and
             updating the record. If you&rsquo;re reading this early,
             you&rsquo;re reading a smaller version of what this is trying to
             become.
           </p>
           <p className="font-medium text-zinc-900 italic dark:text-white">
-            The archive grows the same way the aerobic system does — slowly,
+            The archive grows the same way the aerobic system does: slowly,
             and only with consistent, unglamorous work.
           </p>
         </div>

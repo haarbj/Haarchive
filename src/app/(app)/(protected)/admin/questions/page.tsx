@@ -85,7 +85,7 @@ export default async function AdminQuestionsPage({ searchParams }: AdminQuestion
             ))}
           </div>
           <p className="mt-3 text-xs text-zinc-600 dark:text-zinc-400">
-            Highlighted buckets have 8+ open questions — consider a dedicated article or a real expansion.
+            Highlighted buckets have 8+ open questions: consider a dedicated article or a real expansion.
           </p>
         </div>
       ) : null}

@@ -34,7 +34,7 @@ export function useWindWeather(): UseWindWeatherResult {
 
   function runFetch(lat: number, lon: number, label: string, mode: WhenMode, when: string) {
     if (mode === "specific" && !when) {
-      setWeatherMessage(`Location set to ${label} — pick a date and time to fetch wind for it.`);
+      setWeatherMessage(`Location set to ${label}. Pick a date and time to fetch wind for it.`);
       return;
     }
     setWeatherMessage(mode === "now" ? "Fetching current wind…" : "Fetching wind for that date…");

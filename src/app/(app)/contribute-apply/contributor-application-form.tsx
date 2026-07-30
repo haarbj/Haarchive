@@ -15,7 +15,7 @@ export function ContributorApplicationForm() {
       <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 dark:border-emerald-400/30 dark:bg-emerald-400/5">
         <p className="text-lg font-semibold text-zinc-900 dark:text-white">Thanks for applying.</p>
         <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
-          I read every application myself — I&rsquo;ll follow up at the email you left once I&rsquo;ve had a
+          I read every application myself. I&rsquo;ll follow up at the email you left once I&rsquo;ve had a
           chance to review it.
         </p>
       </div>

@@ -115,8 +115,8 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
         )}
         <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
           Every mileage-based day below scales to hold the same proportion of peak week it has in the original
-          plan. Quality sessions already written as a percentage of pace (e.g. &ldquo;90% 5K&rdquo;) never change
-          — see the{" "}
+          plan. Quality sessions already written as a percentage of pace (e.g. &ldquo;90% 5K&rdquo;) never change.
+          See the{" "}
           <Link
             href="/pace-percent-calculator"
             className="underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"

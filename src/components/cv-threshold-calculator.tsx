@@ -293,7 +293,7 @@ export function CvThresholdCalculator() {
         <ContentCallout
           variant="mistake"
           title="Couldn't load the model data"
-          text="This calculator depends on a data file that didn't load — try refreshing the page."
+          text="This calculator depends on a data file that didn't load. Try refreshing the page."
         />
       )}
 
@@ -305,7 +305,7 @@ export function CvThresholdCalculator() {
         <ContentCallout
           variant="mistake"
           title="Outside the model's range"
-          text="This performance (or age) falls outside the ~800m–12,000m, ~90 second–80 minute, age 10–90 range the model was actually fit on — treat the result as a rough extrapolation, not a reliable estimate."
+          text="This performance (or age) falls outside the ~800m–12,000m, ~90 second–80 minute, age 10–90 range the model was actually fit on. Treat the result as a rough extrapolation, not a reliable estimate."
         />
       )}
 
@@ -376,7 +376,7 @@ export function CvThresholdCalculator() {
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <PaceRow
               label="Threshold"
-              description="The fastest pace that's still a metabolic steady state — heart rate, lactate, and VO2 hold roughly stable over time."
+              description="The fastest pace that's still a metabolic steady state: heart rate, lactate, and VO2 hold roughly stable over time."
               paceSeconds={speedToPaceSeconds(paces.thresholdSpeedMS, outputUnit)}
               unit={outputUnit}
               rangeSeconds={
@@ -392,7 +392,7 @@ export function CvThresholdCalculator() {
             />
             <PaceRow
               label="CV"
-              description="Critical velocity — the exact boundary between sustainable and unsustainable. Always the median estimate, in both modes."
+              description="Critical velocity: the exact boundary between sustainable and unsustainable. Always the median estimate, in both modes."
               paceSeconds={speedToPaceSeconds(paces.cvSpeedMS, outputUnit)}
               unit={outputUnit}
               rangeSeconds={
@@ -407,7 +407,7 @@ export function CvThresholdCalculator() {
             />
             <PaceRow
               label="VO2max"
-              description="The slowest pace that reliably drives VO2 up to its max — not a sprint, just the pace where the clock inevitably runs out."
+              description="The slowest pace that reliably drives VO2 up to its max, not a sprint, just the pace where the clock inevitably runs out."
               paceSeconds={speedToPaceSeconds(paces.vo2maxSpeedMS, outputUnit)}
               unit={outputUnit}
               rangeSeconds={
@@ -459,11 +459,11 @@ export function CvThresholdCalculator() {
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  This is a statistical model, not a formula — it was fit on roughly 8,600 real race performances
+                  This is a statistical model, not a formula: it was fit on roughly 8,600 real race performances
                   from about 1,600 high school, college, adult, and master&rsquo;s runners, using the critical
                   speed model (the standard physiology method for separating sustainable from unsustainable
                   paces) as its outcome. A quantile regression surface over distance, time, and age predicts the
-                  10th, 50th, and 90th percentile of threshold, CV, and VO2max pace for a given performance —
+                  10th, 50th, and 90th percentile of threshold, CV, and VO2max pace for a given performance,
                   which is why the result is a range, not one number: two runners with an identical race time can
                   have genuinely different training paces depending on how aerobically or anaerobically oriented
                   they are.
@@ -481,14 +481,14 @@ export function CvThresholdCalculator() {
               <div className={detailsBodyClass}>
                 <p>
                   Consider an 18:00 5K runner: the average (median) threshold pace among runners at that level is
-                  roughly 6:08/mile — but at that exact pace, any given 18:00 5K runner has close to a 50/50
+                  roughly 6:08/mile, but at that exact pace, any given 18:00 5K runner has close to a 50/50
                   chance of actually being over threshold, not under it. If the goal is a reliable metabolic
                   steady state, a 50/50 shot isn&rsquo;t reliable. That&rsquo;s why threshold pace defaults to a{" "}
-                  <strong>safe estimate</strong> — the 10th percentile of the threshold-speed distribution, slow
+                  <strong>safe estimate</strong>: the 10th percentile of the threshold-speed distribution, slow
                   enough that roughly 90% of runners at that performance level are genuinely below threshold at
                   it. VO2max pace uses the same logic in the other direction (the 90th percentile of speed, fast
                   enough that it reliably is unsustainable). CV pace doesn&rsquo;t get a &ldquo;safe&rdquo;
-                  direction — it&rsquo;s defined as the 50/50 boundary itself, so it&rsquo;s always the median in
+                  direction: it&rsquo;s defined as the 50/50 boundary itself, so it&rsquo;s always the median in
                   both modes. Switching to median estimate mode gives the 50th percentile for all three, closer
                   to what a traditional (non-uncertainty-aware) calculator would show.
                 </p>
@@ -505,10 +505,10 @@ export function CvThresholdCalculator() {
               <div className={detailsBodyClass}>
                 <p>
                   Older calculators define &ldquo;VO2max pace&rdquo; as the speed reached at the end of a
-                  lab-based treadmill ramp test — but that number is heavily dependent on the specific ramp
+                  lab-based treadmill ramp test, but that number is heavily dependent on the specific ramp
                   protocol used, and around half of runners (even elite ones) never actually reach a true VO2
                   plateau during one at all. Any pace faster than steady-state max will eventually drive VO2 to
-                  its ceiling — it&rsquo;s just a question of how long that takes (a mile at mile pace, five kilometers
+                  its ceiling: it&rsquo;s just a question of how long that takes (a mile at mile pace, five kilometers
                   at 5K pace). This calculator instead defines VO2max pace as the <em>slowest</em> pace that
                   reliably produces that outcome, which in practice comes out close to 5K pace rather than a much
                   faster, ramp-test-specific number.
@@ -526,12 +526,12 @@ export function CvThresholdCalculator() {
               <div className={detailsBodyClass}>
                 <p>
                   Every runner in the underlying dataset raced three distances between 800m and 5K in the same
-                  season — a &ldquo;true&rdquo; middle-distance specialist who only ever races 400m–800m isn&rsquo;t
+                  season. A &ldquo;true&rdquo; middle-distance specialist who only ever races 400m–800m isn&rsquo;t
                   well represented, so predictions skew &ldquo;too aerobic&rdquo; for that kind of runner; the wide
                   uncertainty range for 800m–1600m performances is the model being honest about that gap, not a
                   flaw to ignore. The model is fit on times roughly equivalent to a 14:00–25:00 5K and doesn&rsquo;t
                   extrapolate well far beyond that, and it&rsquo;s built from high school, college, adult, and
-                  master&rsquo;s performances specifically — not elite or true-recreational runners, who aren&rsquo;t
+                  master&rsquo;s performances specifically, not elite or true-recreational runners, who aren&rsquo;t
                   well represented in either direction.
                 </p>
                 <div className="mt-3 border-t border-black/10 pt-3 dark:border-white/10">
@@ -548,7 +548,7 @@ export function CvThresholdCalculator() {
                     >
                       threshold/CV/VO2max pace calculator
                     </a>{" "}
-                    (Running Writings, MIT licensed) — same underlying model data, rebuilt with a plain-text
+                    (Running Writings, MIT licensed): same underlying model data, rebuilt with a plain-text
                     entry, an adjustable age input the original tool doesn&rsquo;t expose, and saved-result
                     support.
                   </p>

@@ -259,7 +259,7 @@ export function InjuriesSection({ injuries }: { injuries: InjuryRow[] }) {
       )}
 
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
-        This stays private to you — it&rsquo;s never shown to your coach or on your public profile.
+        This stays private to you: it&rsquo;s never shown to your coach or on your public profile.
       </p>
     </div>
   );

@@ -45,7 +45,7 @@ export default async function AdminContributorApplicationsPage() {
       <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Contributor Applications</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        Approving grants Content Contributor access immediately — the applicant needs an account (signed up
+        Approving grants Content Contributor access immediately: the applicant needs an account (signed up
         with the same email) before that can take effect.
       </p>
 

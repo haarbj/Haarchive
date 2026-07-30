@@ -51,7 +51,7 @@ export function Bibliography({ sources }: { sources: PrimarySource[] }) {
                 {source.author || source.publication ? (
                   <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
                     {source.author}
-                    {source.author && source.publication ? " — " : null}
+                    {source.author && source.publication ? ", " : null}
                     {source.publication}
                   </p>
                 ) : null}

@@ -38,7 +38,7 @@ export default async function AdminMessagesPage() {
       <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Messages</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        Everything submitted through the /contact form. Reply directly to the sender&rsquo;s email — nothing
+        Everything submitted through the /contact form. Reply directly to the sender&rsquo;s email: nothing
         here notifies them automatically.
       </p>
 

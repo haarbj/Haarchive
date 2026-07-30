@@ -98,7 +98,7 @@ export default async function QuestionsPage() {
     <Container variant="content">
       <Heading>Questions</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        The Haarchive is a curated library, not a discussion board — this page is how you help shape
+        The Haarchive is a curated library, not a discussion board: this page is how you help shape
         what gets written next. Ask a question, suggest a topic, or upvote what you’d most like to see
         covered. Every submission feeds directly into the editorial pipeline: it either expands an
         existing article, becomes a new one, joins the FAQ, or gets filed as a future research topic.

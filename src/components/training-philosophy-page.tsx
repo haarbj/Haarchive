@@ -109,7 +109,7 @@ const INDIVIDUALIZATION_FACTORS = [
 
 const PROGRESSION = [
   { label: "Training Philosophy", href: undefined, blurb: "The beliefs about adaptation everything else follows from." },
-  { label: "Exercise Physiology", href: "/exercise-physiology", blurb: "The mechanisms — VO₂ max, threshold, fatigue — that explain why those beliefs hold." },
+  { label: "Exercise Physiology", href: "/exercise-physiology", blurb: "The mechanisms (VO₂ max, threshold, fatigue) that explain why those beliefs hold." },
   { label: "Coaching", href: "/coaching-and-training", blurb: "Turning physiology into structured systems and training decisions." },
   { label: "Workouts", href: "/workout-library", blurb: "The specific sessions those systems prescribe." },
   { label: "Performance", href: undefined, blurb: "The race-day result all of the above was built toward." },
@@ -189,11 +189,11 @@ export function TrainingPhilosophyPage() {
         <ConvergenceDiagram />
 
         <p className={proseClass}>
-          The obvious question is which one is correct. That&rsquo;s the wrong question — every system above
+          The obvious question is which one is correct. That&rsquo;s the wrong question: every system above
           works because it correctly identifies some real constraint on how the body adapts, and every
           system disagrees with the others about which constraint matters most, when, and for whom. The
           question worth answering isn&rsquo;t which coach is right. It&rsquo;s <em>why</em> each one
-          prescribes what they prescribe — the belief about the body underneath the workout. That belief is
+          prescribes what they prescribe: the belief about the body underneath the workout. That belief is
           what actually determines whether a method fits you, not its medal count.
         </p>
       </section>
@@ -211,7 +211,7 @@ export function TrainingPhilosophyPage() {
             </h3>
             <p className={proseClass}>
               A workout is valuable because of the adaptation it creates, not because it&rsquo;s famous. A
-              session is a delivery mechanism for a specific physiological signal — more capillaries, a
+              session is a delivery mechanism for a specific physiological signal: more capillaries, a
               higher lactate threshold, better running economy. Copy the delivery mechanism without
               understanding the signal, and you get a session that looks right and does nothing.
             </p>
@@ -224,7 +224,7 @@ export function TrainingPhilosophyPage() {
             <p className={proseClass}>
               Most runners memorize workouts. Better runners understand why they work. A famous session
               copied from a professional&rsquo;s training log, without understanding what it&rsquo;s meant
-              to adapt or where it sits in that runner&rsquo;s cycle, is trivia — not training.
+              to adapt or where it sits in that runner&rsquo;s cycle, is trivia, not training.
             </p>
           </div>
 
@@ -233,7 +233,7 @@ export function TrainingPhilosophyPage() {
               Aerobic fitness is the foundation
             </h3>
             <p className={proseClass}>
-              Every system used higher up — anaerobic power, VO₂ max, lactate threshold — is built on top of
+              Every system used higher up (anaerobic power, VO₂ max, lactate threshold) is built on top of
               aerobic capacity: capillary density, mitochondrial volume, the aerobic enzymes available to
               the working muscle. Skip the base, and every layer above it has less to stand on.
             </p>
@@ -246,7 +246,7 @@ export function TrainingPhilosophyPage() {
             </h3>
             <p className={proseClass}>
               Two runners chasing the same goal race can need almost opposite training, because training
-              doesn&rsquo;t respond to the goal alone — it responds to the runner:
+              doesn&rsquo;t respond to the goal alone. It responds to the runner:
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {INDIVIDUALIZATION_FACTORS.map((factor) => (
@@ -266,7 +266,7 @@ export function TrainingPhilosophyPage() {
             </h3>
             <p className={proseClass}>
               Years matter more than individual workouts. The aerobic engine described above takes years to
-              fully mature — no single week, hit or missed, moves that timeline much. A runner training
+              fully mature: no single week, hit or missed, moves that timeline much. A runner training
               consistently at 90% of their theoretical best plan will out-develop one training brilliantly
               for six weeks and burning out for six.
             </p>
@@ -280,7 +280,7 @@ export function TrainingPhilosophyPage() {
           From Belief to Race Day
         </h2>
         <p className={proseClass}>
-          Every other section of the Haarchive is downstream of the beliefs on this page — each one takes
+          Every other section of the Haarchive is downstream of the beliefs on this page: each one takes
           the previous section&rsquo;s answer and builds the next question on top of it.
         </p>
         <ProgressionDiagram />

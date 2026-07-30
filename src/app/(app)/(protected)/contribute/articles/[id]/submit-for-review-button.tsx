@@ -21,7 +21,7 @@ export function SubmitForReviewButton({ articleId }: { articleId: string }) {
       ) : null}
       {state.success ? (
         <p role="status" className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Submitted — a reviewer or admin will take a look.
+          Submitted. A reviewer or admin will take a look.
         </p>
       ) : null}
     </form>

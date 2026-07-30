@@ -32,7 +32,7 @@ export default async function ContributorProfilePage() {
       <BackLink href="/contribute">Back to Contribute</BackLink>
       <Heading variant="compact">My Contributor Profile</Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-        Shown publicly on any article you&rsquo;re credited on — your name, title, bio, and areas of
+        Shown publicly on any article you&rsquo;re credited on: your name, title, bio, and areas of
         expertise.
       </p>
 

@@ -223,7 +223,7 @@ export function HrThresholdCalculator() {
         <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
           This is how much of the population the range below is built to cover. At 90%, the range shown is wide
           enough that only about 1 in 20 runners would have a true LT1/LT2 below the bottom of it, and about 1 in
-          20 above the top — the middle 90% fall somewhere inside. Widen it to 95% to be more inclusive of
+          20 above the top: the middle 90% fall somewhere inside. Widen it to 95% to be more inclusive of
           outliers, or narrow it to 80% for a tighter, more typical-runner estimate; 90% is a reasonable default.
         </p>
       </div>
@@ -299,7 +299,7 @@ export function HrThresholdCalculator() {
                   log(100 − x) transformed scale to correct for the fact percentages are bounded at 100% and get
                   skewed as they approach it. That produces a pooled mean and a total variance combining both
                   between-study and between-individual variation, which is what the reference range above is
-                  drawn from — not just one study&rsquo;s numbers, and not a made-up rule of thumb.
+                  drawn from, not just one study&rsquo;s numbers, and not a made-up rule of thumb.
                 </p>
               </div>
             </details>
@@ -314,7 +314,7 @@ export function HrThresholdCalculator() {
               <div className={detailsBodyClass}>
                 <p>
                   Only one study in the underlying dataset (Weltman et al. 1990, 31 recreational runners) reports
-                  LT1 or LT2 as a percentage of HR reserve at all, so there&rsquo;s no between-study variance to pool —
+                  LT1 or LT2 as a percentage of HR reserve at all, so there&rsquo;s no between-study variance to pool:
                   the range shown is that single study&rsquo;s own individual-level variability, treated as if it were
                   a population estimate. It&rsquo;s included because it&rsquo;s still real data, not a guess, but it doesn&rsquo;t
                   carry the same weight as the multi-study %HRmax figures.
@@ -337,7 +337,7 @@ export function HrThresholdCalculator() {
                   and LT2 averages about {VO2MAX_THRESHOLD_ESTIMATE.lt2.meanPct.toFixed(0)}% (
                   {VO2MAX_THRESHOLD_ESTIMATE.lt2.lowPct.toFixed(0)}–{VO2MAX_THRESHOLD_ESTIMATE.lt2.highPct.toFixed(0)}%
                   range, {VO2MAX_THRESHOLD_ESTIMATE.lt2.studies} studies). This calculator doesn&rsquo;t turn that into a
-                  pace directly — see the{" "}
+                  pace directly. See the{" "}
                   <Link href="/cv-threshold-calculator" className="underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white">
                     Threshold, CV &amp; VO2max Pace Calculator
                   </Link>{" "}
@@ -364,11 +364,11 @@ export function HrThresholdCalculator() {
                   >
                     LT1/LT2 heart rate meta-analysis
                   </a>{" "}
-                  (MIT licensed) — that repository is a dataset and R analysis script, not a web app, so this
+                  (MIT licensed): that repository is a dataset and R analysis script, not a web app, so this
                   interface was built new around its verified statistics. Max HR uses the standard
                   220-minus-age population estimate unless you enter a known value, which is always more
                   trustworthy than a population formula. These are population reference ranges, not a
-                  personalized lab test — an individual&rsquo;s real LT1/LT2 can sit outside even a wide range,
+                  personalized lab test: an individual&rsquo;s real LT1/LT2 can sit outside even a wide range,
                   especially given how much fast-twitch/slow-twitch orientation affects where these thresholds
                   land.
                 </p>

@@ -47,7 +47,7 @@ export async function submitContributorApplication(
     .eq(identityColumn, identityValue as string)
     .gte("created_at", since);
   if ((count ?? 0) >= RATE_LIMIT_MAX) {
-    return { error: "You've already submitted an application recently — give it a bit before applying again." };
+    return { error: "You've already submitted an application recently. Give it a bit before applying again." };
   }
 
   const { error } = await admin.from("contributor_applications").insert({

@@ -105,7 +105,7 @@ export function ExplainWorkoutButton({ workoutId, phase, workoutKind, distanceBu
           {phase && (
             <p className="text-zinc-600 dark:text-zinc-300">
               <span className="font-semibold text-zinc-900 dark:text-white">Training phase </span>
-              <span className="capitalize">{phase}</span> — {phaseSummary(phase, distanceBucket)}
+              <span className="capitalize">{phase}</span>: {phaseSummary(phase, distanceBucket)}
             </p>
           )}
           {coaching && (

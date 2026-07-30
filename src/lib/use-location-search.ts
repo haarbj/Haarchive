@@ -54,7 +54,7 @@ export function useLocationSearch({
 
   function attemptGeolocation() {
     if (!navigator.geolocation) {
-      setStatusMessage("Your browser doesn't support location lookup — search for a city instead.");
+      setStatusMessage("Your browser doesn't support location lookup. Search for a city instead.");
       return;
     }
     setStatusMessage("Asking for your location…");
@@ -64,7 +64,7 @@ export function useLocationSearch({
         onResolved(latitude, longitude, `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`);
       },
       () => {
-        setStatusMessage("Location access was blocked — search for a city above instead.");
+        setStatusMessage("Location access was blocked. Search for a city above instead.");
       },
       { timeout: 8000 },
     );

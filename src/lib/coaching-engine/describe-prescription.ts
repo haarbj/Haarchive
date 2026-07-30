@@ -97,6 +97,6 @@ export function describePrescription(prescription: WorkoutPrescription): string 
     case "vo2":
       return `${miles(prescription.warmupM)} warmup + ${prescription.reps}×${prescription.repM}m @ ${paceRange(prescription.paceRangeSecPerKm)} w/ ${prescription.recoveryM}m jog + ${miles(prescription.cooldownM)} cooldown`;
     case "race":
-      return `${miles(prescription.distanceM)} — this is race day`;
+      return `${miles(prescription.distanceM)}, this is race day`;
   }
 }

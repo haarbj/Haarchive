@@ -40,7 +40,7 @@ export function OnboardingForm({ teamConnected = false }: OnboardingFormProps) {
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
             {teamConnected
               ? "Your coach builds your actual training -- this is just for you: something to aim for, and a reason to care about the work each day. Why does this goal matter to you?"
-              : "One goal race, and optionally your most recent result. That’s all it takes to start personalizing things — nothing else is collected yet."}
+              : "One goal race, and optionally your most recent result. That’s all it takes to start personalizing things. Nothing else is collected yet."}
           </p>
         </div>
         <button

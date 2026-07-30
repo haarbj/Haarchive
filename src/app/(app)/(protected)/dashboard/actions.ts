@@ -36,7 +36,7 @@ export async function saveOnboarding(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
-    return { error: "Your session expired — sign in again." };
+    return { error: "Your session expired. Sign in again." };
   }
 
   const { error: goalError } = await supabase.from("goals").insert({
@@ -179,7 +179,7 @@ export async function submitWeeklyCheckin(
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
-  if (!userId) return { error: "Your session expired — sign in again." };
+  if (!userId) return { error: "Your session expired. Sign in again." };
 
   const { error } = await supabase.from("weekly_checkins").upsert(
     {

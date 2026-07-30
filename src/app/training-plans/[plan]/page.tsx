@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PlanRouteParams): Promise<Met
   const plan = trainingPlanMap.get(slug);
   if (!plan) return {};
 
-  const title = `${plan.trackLabel} — ${plan.durationWeeks}-Week ${plan.raceType} Plan`;
+  const title = `${plan.trackLabel}: ${plan.durationWeeks}-Week ${plan.raceType} Plan`;
   const description = `A ${plan.durationWeeks}-week ${plan.raceType.toLowerCase()} plan averaging roughly ${Math.round(plan.referenceAvgWeeklyMiles)} miles per week, peaking around ${Math.round(plan.referencePeakWeeklyMiles)}.`;
 
   return {
@@ -45,7 +45,7 @@ export default async function PlanRoutePage({ params }: PlanRouteParams) {
     <Container variant="content">
       <BackLink href="/training-plans">Back to Training Plans</BackLink>
       <Heading>
-        {plan.trackLabel} — {plan.durationWeeks}-Week {plan.raceType}
+        {plan.trackLabel}: {plan.durationWeeks}-Week {plan.raceType}
       </Heading>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Reference plan averages roughly {Math.round(plan.referenceAvgWeeklyMiles)} miles per week, peaking around{" "}

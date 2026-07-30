@@ -44,18 +44,18 @@ export function heatGuidance(wbgtC: number, zoneName: HeatZoneName): { title: st
     if (wbgtC < 10) {
       return {
         title: "Ideal training conditions",
-        sub: "Full go-ahead — intervals, tempo, long runs, whatever's on the plan.",
+        sub: "Full go-ahead: intervals, tempo, long runs, whatever's on the plan.",
       };
     }
     if (wbgtC < 15) {
       return {
         title: "Optimal for hard efforts",
-        sub: "Good day for intervals or tempo — heat won't be a limiter.",
+        sub: "Good day for intervals or tempo: heat won't be a limiter.",
       };
     }
     return {
       title: "Low risk",
-      sub: "Hydrate well before and after — carry water mid-run only if that's already part of your routine. Intervals and tempo can go as planned.",
+      sub: "Hydrate well before and after. Carry water mid-run only if that's already part of your routine. Intervals and tempo can go as planned.",
     };
   }
   if (zoneName === "yellow") {
@@ -71,7 +71,7 @@ export function heatGuidance(wbgtC: number, zoneName: HeatZoneName): { title: st
     };
   }
   return {
-    title: "Extreme risk — black flag",
+    title: "Extreme risk: black flag",
     sub: "Move training indoors or postpone. Heat stroke risk is too high for outdoor work at this level.",
   };
 }
