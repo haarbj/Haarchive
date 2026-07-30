@@ -18,16 +18,21 @@ type ImageCropModalProps = {
   imageSrc: string;
   onCancel: () => void;
   onConfirm: (blob: Blob) => void;
+  // Only offered when cropping a freshly-picked file (see ImageUrlField) --
+  // uploads it exactly as selected, no forced crop. Not offered when
+  // re-cropping an already-uploaded photo, since there's nothing meaningful
+  // to "use as-is" there beyond just cancelling.
+  onSkip?: () => void;
 };
 
 // A photo's natural framing rarely matches the fixed-height band it
 // actually renders in (the hero image especially -- object-cover just
 // grabs the center by default, which can cut off the actual subject). This
-// lets a contributor choose what shows instead of leaving it to chance.
-// Shared by both the cover image field and each in-body image block (see
-// ImageUrlField), for a freshly-picked file and an already-uploaded one
-// alike.
-export function ImageCropModal({ imageSrc, onCancel, onConfirm }: ImageCropModalProps) {
+// lets a contributor choose what shows instead of leaving it to chance --
+// but it's an option, not a requirement, hence onSkip. Shared by both the
+// cover image field and each in-body image block (see ImageUrlField), for
+// a freshly-picked file and an already-uploaded one alike.
+export function ImageCropModal({ imageSrc, onCancel, onConfirm, onSkip }: ImageCropModalProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [naturalAspect, setNaturalAspect] = useState<number | null>(null);
@@ -130,6 +135,11 @@ export function ImageCropModal({ imageSrc, onCancel, onConfirm }: ImageCropModal
             <Button type="button" variant="ghost" onClick={onCancel}>
               Cancel
             </Button>
+            {onSkip ? (
+              <Button type="button" variant="outline" onClick={onSkip} disabled={isProcessing}>
+                Use original
+              </Button>
+            ) : null}
             <Button type="button" onClick={handleConfirm} disabled={isProcessing || !croppedAreaPixels}>
               {isProcessing ? "Cropping…" : "Apply crop"}
             </Button>

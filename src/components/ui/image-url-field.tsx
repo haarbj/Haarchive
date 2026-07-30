@@ -26,15 +26,18 @@ export function ImageUrlField({ value, onChange, inputId, placeholder = "Image U
   const [uploadError, setUploadError] = useState<string | null>(null);
   // A freshly-picked file (a blob: object URL, revoked once the modal
   // closes) or the already-uploaded `value` (re-cropping a photo that's
-  // already been saved) -- either way, cropping happens before anything
-  // is uploaded, never after.
+  // already been saved).
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+  // Kept alongside cropSrc so "Use original" (skipping the crop) can still
+  // upload the file the user actually picked -- only set when cropSrc came
+  // from a fresh file selection, not from re-cropping an existing `value`.
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
-  function uploadBlob(blob: Blob) {
+  function uploadFile(file: Blob, filename: string) {
     setUploadError(null);
     startUpload(async () => {
       const formData = new FormData();
-      formData.set("file", blob, "cropped.jpg");
+      formData.set("file", file, filename);
       const result = await uploadArticleImage(formData);
       if (result.error) {
         setUploadError(result.error);
@@ -49,12 +52,14 @@ export function ImageUrlField({ value, onChange, inputId, placeholder = "Image U
     e.target.value = "";
     if (!file) return;
     setUploadError(null);
+    setPendingFile(file);
     setCropSrc(URL.createObjectURL(file));
   }
 
   function closeCropModal() {
     if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
     setCropSrc(null);
+    setPendingFile(null);
   }
 
   return (
@@ -107,8 +112,17 @@ export function ImageUrlField({ value, onChange, inputId, placeholder = "Image U
           onCancel={closeCropModal}
           onConfirm={(blob) => {
             closeCropModal();
-            uploadBlob(blob);
+            uploadFile(blob, "cropped.jpg");
           }}
+          onSkip={
+            pendingFile
+              ? () => {
+                  const file = pendingFile;
+                  closeCropModal();
+                  uploadFile(file, file.name);
+                }
+              : undefined
+          }
         />
       ) : null}
     </div>
