@@ -126,6 +126,7 @@ export async function updateCommunityProfile(
   formData: FormData,
 ): Promise<UpdateCommunityProfileState> {
   const parsed = communityProfileSchema.safeParse({
+    avatarUrl: formData.get("avatarUrl"),
     bio: formData.get("bio"),
     location: formData.get("location"),
     favoriteDistances: formData.getAll("favoriteDistances"),
@@ -141,16 +142,20 @@ export async function updateCommunityProfile(
     return { error: "Your session expired. Sign in again." };
   }
 
-  const { error } = await supabase.from("community_profiles").upsert({
-    user_id: userId,
-    bio: parsed.data.bio,
-    location: parsed.data.location,
-    favorite_distances: parsed.data.favoriteDistances,
-  });
+  // avatar_url lives on profiles (shared with the contributor profile),
+  // not community_profiles -- two separate writes, not one row.
+  const [{ error }, { error: avatarError }] = await Promise.all([
+    supabase.from("community_profiles").upsert({
+      user_id: userId,
+      bio: parsed.data.bio,
+      location: parsed.data.location,
+      favorite_distances: parsed.data.favoriteDistances,
+    }),
+    supabase.from("profiles").update({ avatar_url: parsed.data.avatarUrl || null }).eq("id", userId),
+  ]);
 
-  if (error) {
-    return { error: error.message };
-  }
+  if (error) return { error: error.message };
+  if (avatarError) return { error: avatarError.message };
 
   revalidatePath("/settings");
   revalidatePath(`/community/${userId}`);

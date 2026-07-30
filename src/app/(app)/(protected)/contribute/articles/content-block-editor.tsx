@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ImageUrlField } from "@/components/ui/image-url-field";
 import { FormattableEditable, InlineFormattableField } from "./formattable-editable";
+import { uploadArticleImage } from "./actions";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -327,7 +328,7 @@ function ImageBlockFields({
 }) {
   return (
     <div className="space-y-2">
-      <ImageUrlField value={block.url} onChange={(url) => onChange({ ...block, url })} />
+      <ImageUrlField value={block.url} onChange={(url) => onChange({ ...block, url })} uploadAction={uploadArticleImage} />
       <input
         className={fieldClass}
         value={block.alt ?? ""}

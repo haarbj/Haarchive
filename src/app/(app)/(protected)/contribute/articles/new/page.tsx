@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ArticleEditorForm } from "@/app/(app)/(protected)/contribute/articles/article-editor-form";
+import { loadTagOptions } from "@/lib/articles/tag-options";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -20,7 +21,9 @@ const EMPTY_INITIAL = {
   citations: [],
 };
 
-export default function NewArticleDraftPage() {
+export default async function NewArticleDraftPage() {
+  const tagOptions = await loadTagOptions();
+
   return (
     <Container variant="narrow">
       <BackLink href="/contribute/articles">Back to My Drafts</BackLink>
@@ -31,7 +34,7 @@ export default function NewArticleDraftPage() {
       </p>
 
       <div className="mt-8">
-        <ArticleEditorForm mode="create" initial={EMPTY_INITIAL} />
+        <ArticleEditorForm mode="create" initial={EMPTY_INITIAL} tagOptions={tagOptions} />
       </div>
     </Container>
   );

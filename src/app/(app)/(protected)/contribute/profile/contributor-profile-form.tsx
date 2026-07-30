@@ -4,8 +4,10 @@ import { useActionState, useId, useState } from "react";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { updateContributorProfile } from "./actions";
+import { uploadAvatarImage } from "@/app/(app)/(protected)/settings/avatar-actions";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
+import { ImageUrlField } from "@/components/ui/image-url-field";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -35,35 +37,18 @@ export function ContributorProfileForm({
         <p className="text-sm text-zinc-600 dark:text-zinc-300">{displayName}</p>
       </div>
 
-      <div className="flex items-center gap-4">
-        {avatarPreview ? (
-          // Arbitrary external URL pasted by the contributor, not a local/
-          // optimized asset -- next/image would need remotePatterns for
-          // every possible host, so a plain <img> is the deliberate choice
-          // for this MVP paste-a-URL flow.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatarPreview}
-            alt=""
-            className="h-16 w-16 rounded-full border border-black/10 object-cover dark:border-white/10"
-          />
-        ) : (
-          <div className="h-16 w-16 rounded-full bg-black/5 dark:bg-white/10" />
-        )}
-        <div className="flex-1">
-          <label htmlFor={`${baseId}-avatar`} className={labelClass}>
-            Profile picture URL
-          </label>
-          <input
-            id={`${baseId}-avatar`}
-            name="avatarUrl"
-            type="text"
-            defaultValue={initialAvatarUrl}
-            onChange={(e) => setAvatarPreview(e.target.value)}
-            placeholder="https://…"
-            className={fieldClass}
-          />
-        </div>
+      <div>
+        <label htmlFor={`${baseId}-avatar`} className={labelClass}>
+          Profile picture
+        </label>
+        <ImageUrlField
+          inputId={`${baseId}-avatar`}
+          value={avatarPreview}
+          onChange={setAvatarPreview}
+          uploadAction={uploadAvatarImage}
+          placeholder="https://…"
+        />
+        <input type="hidden" name="avatarUrl" value={avatarPreview} />
       </div>
 
       <div>

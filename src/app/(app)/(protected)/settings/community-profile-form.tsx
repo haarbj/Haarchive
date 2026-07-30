@@ -1,19 +1,22 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useId, useState } from "react";
 import Link from "next/link";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { RACE_DISTANCES } from "@/lib/race-distances";
 import { updateCommunityProfile } from "./actions";
+import { uploadAvatarImage } from "@/app/(app)/(protected)/settings/avatar-actions";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
+import { ImageUrlField } from "@/components/ui/image-url-field";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
 type CommunityProfileFormProps = {
   userId: string;
   hasProfile: boolean;
+  initialAvatarUrl: string;
   initialBio: string;
   initialLocation: string;
   initialFavoriteDistances: string[];
@@ -22,15 +25,31 @@ type CommunityProfileFormProps = {
 export function CommunityProfileForm({
   userId,
   hasProfile,
+  initialAvatarUrl,
   initialBio,
   initialLocation,
   initialFavoriteDistances,
 }: CommunityProfileFormProps) {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(updateCommunityProfile, {});
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
 
   return (
     <form action={formAction} className="space-y-5">
+      <div>
+        <label htmlFor={`${baseId}-avatar`} className={labelClass}>
+          Profile picture
+        </label>
+        <ImageUrlField
+          inputId={`${baseId}-avatar`}
+          value={avatarUrl}
+          onChange={setAvatarUrl}
+          uploadAction={uploadAvatarImage}
+          placeholder="https://…"
+        />
+        <input type="hidden" name="avatarUrl" value={avatarUrl} />
+      </div>
+
       <div>
         <label htmlFor={`${baseId}-bio`} className={labelClass}>
           Bio

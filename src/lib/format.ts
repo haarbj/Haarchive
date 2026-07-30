@@ -24,6 +24,14 @@ export function formatDate(dateStr: string): string {
   });
 }
 
+// Tags are stored lowercase (see parseTags in validation/articles.ts and
+// questions' own parseTags) for consistent matching/filtering -- this is
+// purely a display transform, so "heart rate" reads as "Heart Rate"
+// wherever a tag is actually shown to a reader.
+export function titleCase(text: string): string {
+  return text.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
+}
+
 // "2 hours ago"-style relative time for a full timestamp (as opposed to
 // formatDate's plain "yyyy-mm-dd" handling above), used for things logged
 // with a precise moment rather than just a calendar date.

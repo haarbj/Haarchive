@@ -2,26 +2,32 @@
 
 import { useState, useTransition, type ChangeEvent } from "react";
 
-import { uploadArticleImage } from "@/app/(app)/(protected)/contribute/articles/actions";
 import { fieldClass as baseFieldClass } from "@/lib/form-styles";
 import { FormError } from "@/components/ui/form-error";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
+export type ImageUploadAction = (formData: FormData) => Promise<{ url?: string; error?: string }>;
+
 type ImageUrlFieldProps = {
   value: string;
   onChange: (url: string) => void;
+  // Pluggable rather than hardcoded to one action -- different call sites
+  // upload to different places under different permission rules (an
+  // article image vs. a personal avatar), but want the exact same picker
+  // + crop UI either way.
+  uploadAction: ImageUploadAction;
   inputId?: string;
   placeholder?: string;
 };
 
-// The URL-field-plus-upload-button-plus-preview cluster shared by the
-// article cover image field and each image content block -- "upload a
-// photo you took yourself" needs the exact same round trip
-// (uploadArticleImage -> public URL written back into this field) in both
-// places, so this owns it once rather than twice.
-export function ImageUrlField({ value, onChange, inputId, placeholder = "Image URL" }: ImageUrlFieldProps) {
+// The URL-field-plus-upload-button-plus-preview cluster shared by every
+// "paste a URL or upload a photo" field on the site -- article cover
+// images, in-body image blocks, and profile avatars all need the exact
+// same round trip (upload -> public URL written back into this field), so
+// this owns it once rather than once per call site.
+export function ImageUrlField({ value, onChange, uploadAction, inputId, placeholder = "Image URL" }: ImageUrlFieldProps) {
   const [isUploading, startUpload] = useTransition();
   const [uploadError, setUploadError] = useState<string | null>(null);
   // A freshly-picked file (a blob: object URL, revoked once the modal
@@ -38,7 +44,7 @@ export function ImageUrlField({ value, onChange, inputId, placeholder = "Image U
     startUpload(async () => {
       const formData = new FormData();
       formData.set("file", file, filename);
-      const result = await uploadArticleImage(formData);
+      const result = await uploadAction(formData);
       if (result.error) {
         setUploadError(result.error);
         return;

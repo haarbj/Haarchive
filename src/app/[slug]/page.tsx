@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FileText } from "lucide-react";
 
 import {
   categories,
@@ -9,14 +11,16 @@ import {
   sections,
   sectionsInCategory,
   type Category,
+  type ContentBlock,
   type Section,
 } from "@/lib/sections";
 import { createClient } from "@/lib/db/server";
 import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
 import { buildArticleAttribution, type ArticleAttribution } from "@/lib/articles/attribution";
+import { ARTICLE_TYPE_LABELS, type ArticleType } from "@/lib/articles/constants";
 import { mapPublicCitationRow, type PublicCitation } from "@/lib/articles/citations";
 import type { Article } from "@/lib/articles/types";
-import { formatDate } from "@/lib/format";
+import { formatDate, titleCase } from "@/lib/format";
 import { estimateReadingMinutes } from "@/lib/reading-time";
 import { ContactPage } from "@/components/contact-page";
 import { CoachingLibraryHome } from "@/components/coaches/coaching-library-home";
@@ -63,6 +67,9 @@ const sectionTools: Record<string, ComponentType> = {
 
 type SectionPageProps = {
   params: Promise<{ slug: string }>;
+  // Only meaningful on the "articles" index (see the tag pill links on each
+  // card) -- every other section ignores it.
+  searchParams: Promise<{ tag?: string }>;
 };
 
 export function generateStaticParams() {
@@ -91,21 +98,45 @@ async function loadPublishedArticle(slug: string): Promise<Article | null> {
   return mapArticleRow(data);
 }
 
-async function loadPublishedArticleList(): Promise<
-  { slug: string; title: string; subtitle: string | null; publishedAt: string | null }[]
-> {
+type PublishedArticleListItem = {
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  publishedAt: string | null;
+  coverImageUrl: string | null;
+  tags: string[];
+  articleType: string;
+  readingMinutes: number;
+};
+
+async function loadPublishedArticleList(): Promise<PublishedArticleListItem[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("articles")
-    .select("slug, title, subtitle, published_at")
+    .select("slug, title, subtitle, published_at, cover_image_url, tags, article_type, content")
     .eq("status", "published")
     .order("published_at", { ascending: false })
-    .returns<{ slug: string; title: string; subtitle: string | null; published_at: string | null }[]>();
+    .returns<
+      {
+        slug: string;
+        title: string;
+        subtitle: string | null;
+        published_at: string | null;
+        cover_image_url: string | null;
+        tags: string[] | null;
+        article_type: string;
+        content: ContentBlock[] | null;
+      }[]
+    >();
   return (data ?? []).map((row) => ({
     slug: row.slug,
     title: row.title,
     subtitle: row.subtitle,
     publishedAt: row.published_at,
+    coverImageUrl: row.cover_image_url,
+    tags: row.tags ?? [],
+    articleType: row.article_type,
+    readingMinutes: estimateReadingMinutes(row.content ?? []),
   }));
 }
 
@@ -168,35 +199,59 @@ export async function generateMetadata({
   const { slug } = await params;
   const section = sectionMap.get(slug);
   const category = categoryMap.get(slug);
-  let entry: { title: string; mission: string } | undefined = section ?? category;
+  const entry = section ?? category;
 
-  if (!entry) {
-    const article = await loadPublishedArticle(slug);
-    if (article) entry = { title: article.title, mission: article.subtitle ?? "" };
+  if (entry) {
+    return {
+      title: entry.title,
+      description: entry.mission,
+      openGraph: {
+        title: entry.title,
+        description: entry.mission,
+        images: ["/opengraph-image.png"],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: entry.title,
+        description: entry.mission,
+        images: ["/opengraph-image.png"],
+      },
+    };
   }
 
-  if (!entry) {
-    return {};
-  }
+  // A DB-backed article: share-link previews should show its own cover
+  // photo and title, not the generic sitewide fallback -- og:type
+  // "article" plus publishedTime is the standard signal link-preview
+  // consumers (iMessage, Slack, Twitter/X) key off for an article-style
+  // card instead of a plain website link.
+  const article = await loadPublishedArticle(slug);
+  if (!article) return {};
+
+  const ogImage = article.coverImageUrl ?? "/opengraph-image.png";
+  const description = article.subtitle ?? "";
 
   return {
-    title: entry.title,
-    description: entry.mission,
+    title: article.title,
+    description,
     openGraph: {
-      title: entry.title,
-      description: entry.mission,
-      images: ["/opengraph-image.png"],
+      type: "article",
+      title: article.title,
+      description,
+      images: [ogImage],
+      publishedTime: article.publishedAt ?? undefined,
     },
     twitter: {
-      title: entry.title,
-      description: entry.mission,
-      images: ["/opengraph-image.png"],
+      card: "summary_large_image",
+      title: article.title,
+      description,
+      images: [ogImage],
     },
   };
 }
 
-export default async function SectionPage({ params }: SectionPageProps) {
+export default async function SectionPage({ params, searchParams }: SectionPageProps) {
   const { slug } = await params;
+  const { tag: activeTag } = await searchParams;
   const section = sectionMap.get(slug);
   const category = categoryMap.get(slug);
 
@@ -243,7 +298,15 @@ export default async function SectionPage({ params }: SectionPageProps) {
     // Only the "articles" index section needs this -- the DB articles it
     // lists alongside the hand-authored essays are the contributor
     // pipeline's actual output (see /contribute/articles).
-    const publishedArticles = section.articleSlugs ? await loadPublishedArticleList() : [];
+    const allPublishedArticles = section.articleSlugs ? await loadPublishedArticleList() : [];
+    // Tags are stored lowercase (see parseTags in validation/articles.ts),
+    // and the tag pill links pass the raw stored value through untouched
+    // -- titleCase() only ever applies at render time -- so this is a
+    // plain, exact, case-sensitive match against real data, not a fuzzy
+    // text search.
+    const publishedArticles = activeTag
+      ? allPublishedArticles.filter((article) => article.tags.includes(activeTag))
+      : allPublishedArticles;
 
     // An essay reached via the Articles index (sections.ts' articleSlugs)
     // should link back to Articles, not the broader Writing & Resources
@@ -269,7 +332,21 @@ export default async function SectionPage({ params }: SectionPageProps) {
         {ToolComponent ? (
           <ToolComponent />
         ) : section.articleSlugs ? (
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          <>
+            {activeTag ? (
+              <div className="mt-8 flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
+                <span>
+                  Filtering by <span className="font-semibold text-zinc-900 dark:text-white">{titleCase(activeTag)}</span>
+                </span>
+                <Link
+                  href={`/${section.slug}`}
+                  className="font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+                >
+                  Clear
+                </Link>
+              </div>
+            ) : null}
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {section.articleSlugs.map((articleSlug) => {
               const article = sectionMap.get(articleSlug);
               if (!article) return null;
@@ -287,21 +364,108 @@ export default async function SectionPage({ params }: SectionPageProps) {
                 </CardLink>
               );
             })}
-            {publishedArticles.map((article) => (
-              <CardLink key={article.slug} href={`/${article.slug}`}>
-                <h2 className="text-xl font-semibold tracking-tight">{article.title}</h2>
-                {article.publishedAt ? (
-                  <p className="mt-1 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                    {formatDate(article.publishedAt.slice(0, 10))}
-                  </p>
-                ) : null}
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{article.subtitle ?? ""}</p>
-                <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
-                  Read the essay →
-                </span>
-              </CardLink>
-            ))}
-          </div>
+            {publishedArticles.map((article) =>
+              article.coverImageUrl ? (
+                <div key={article.slug} className="group relative flex aspect-video overflow-hidden rounded-card">
+                  {/* The "go to article" hit-area for the whole card --
+                      sits behind everything else so the tag links below
+                      (pointer-events-auto) can claim clicks in their own
+                      small region instead. Deliberately no z-index here:
+                      plain DOM order (this, then the image, then the
+                      gradient, then the content wrapper) already stacks
+                      everything correctly within the card, and an explicit
+                      z-index previously tied numerically with the site
+                      header's own z-[var(--z-header)] token, which made the
+                      card's content render above the sticky header while
+                      scrolling. The card can't just be one big <Link>
+                      anymore now that tags are their own links -- <a> can't
+                      nest inside <a> -- so this is the standard "stretched
+                      link" pattern instead. */}
+                  <Link
+                    href={`/${article.slug}`}
+                    aria-label={article.title}
+                    className="absolute inset-0 rounded-card focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL, not a local/optimized asset */}
+                  <img
+                    src={article.coverImageUrl}
+                    alt=""
+                    className="pointer-events-none absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                  {/* Two scrims, not one -- the eyebrow line now lives at the
+                      top of the card (filling what used to be dead space
+                      above the headline), so the top needs its own fade
+                      too, not just the bottom-anchored one the headline
+                      sits on. Same "never fully transparent" reasoning as
+                      ArticleHero's own scrim either way. */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+                  <div className="pointer-events-none relative flex h-full w-full flex-col justify-between p-4">
+                    <div className="pointer-events-auto space-y-1.5">
+                      {/* h-7 + flex-wrap + overflow-hidden, not just
+                          overflow-hidden on a single non-wrapping row: a tag
+                          that doesn't fully fit now wraps whole onto a
+                          second row instead of getting sliced in half at
+                          the edge -- and since that second row sits past
+                          the fixed one-row height, it's clipped away
+                          entirely rather than shown partially. No JS
+                          measurement needed; flex-wrap already only ever
+                          wraps a whole item, never part of one. */}
+                      <div className="flex h-7 flex-wrap gap-1.5 overflow-hidden">
+                        {/* Article type first and visually distinct (solid,
+                            not translucent) -- it's the one label here that
+                            actually says what kind of piece this is; the
+                            free-form tags are secondary context after it. */}
+                        <span className="inline-flex shrink-0 items-center gap-1 rounded-pill bg-white px-2.5 py-1 text-xs font-semibold text-zinc-900">
+                          <FileText className="h-3 w-3" />
+                          {ARTICLE_TYPE_LABELS[article.articleType as ArticleType] ?? "Article"}
+                        </span>
+                        {article.tags.map((tag) => (
+                          <Link
+                            key={tag}
+                            href={`/${section.slug}?tag=${encodeURIComponent(tag)}`}
+                            className="shrink-0 scale-100 rounded-pill bg-white/15 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm transition hover:scale-110 hover:bg-white/30"
+                          >
+                            {titleCase(tag)}
+                          </Link>
+                        ))}
+                      </div>
+                      {/* drop-shadow, not just a lighter/darker gradient --
+                          plain text (unlike the tags above) has no pill
+                          background of its own to fall back on, so a photo
+                          with a bright patch right here needs a per-pixel
+                          contrast aid, not just an average darkening. */}
+                      <p className="text-xs font-medium text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                        {article.readingMinutes} min read
+                        {article.publishedAt ? ` · ${formatDate(article.publishedAt.slice(0, 10))}` : ""}
+                      </p>
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold tracking-tight text-white text-balance line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                        {article.title}
+                      </h2>
+                      {article.subtitle ? (
+                        <p className="mt-1 text-sm text-white/80 line-clamp-2">{article.subtitle}</p>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <CardLink key={article.slug} href={`/${article.slug}`}>
+                  <h2 className="text-xl font-semibold tracking-tight">{article.title}</h2>
+                  {article.publishedAt ? (
+                    <p className="mt-1 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                      {formatDate(article.publishedAt.slice(0, 10))}
+                    </p>
+                  ) : null}
+                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{article.subtitle ?? ""}</p>
+                  <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+                    Read the essay →
+                  </span>
+                </CardLink>
+              ),
+            )}
+            </div>
+          </>
         ) : isArticle ? (
           <ArticleLayout section={section} category={parentCategory} content={content} />
         ) : (

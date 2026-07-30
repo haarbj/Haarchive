@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { categoryMap, resolveLinkedSection } from "@/lib/sections";
-import { formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime, titleCase } from "@/lib/format";
 import { linkifyContent } from "@/lib/linkify";
 import type { Question } from "@/lib/questions/types";
 import { StatusBadge } from "@/components/questions/status-badge";
@@ -76,7 +76,7 @@ export function QuestionCard({ question, upvoted }: QuestionCardProps) {
                 key={tag}
                 className="rounded-full border border-black/10 px-2 py-0.5 text-xs text-zinc-500 dark:border-white/10 dark:text-zinc-400"
               >
-                {tag}
+                {titleCase(tag)}
               </span>
             ))}
           </div>

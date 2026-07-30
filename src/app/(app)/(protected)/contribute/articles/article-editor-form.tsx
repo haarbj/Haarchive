@@ -4,8 +4,10 @@ import { useActionState, useId, useState } from "react";
 
 import type { ContentBlock } from "@/lib/sections";
 import { ARTICLE_TYPES, ARTICLE_TYPE_LABELS, EVIDENCE_CATEGORIES, EVIDENCE_CATEGORY_LABELS } from "@/lib/articles/constants";
+import type { TagOption } from "@/lib/articles/tag-options";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
-import { createArticleDraft, updateArticleDraft, type ArticleDraftState } from "./actions";
+import { titleCase } from "@/lib/format";
+import { createArticleDraft, updateArticleDraft, uploadArticleImage, type ArticleDraftState } from "./actions";
 import { ContentBlockEditor } from "./content-block-editor";
 import { CitationsEditor, type CitationDraft } from "./citations-editor";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,8 @@ import { FormError } from "@/components/ui/form-error";
 import { ImageUrlField } from "@/components/ui/image-url-field";
 
 const fieldClass = `w-full ${baseFieldClass}`;
+
+const MAX_TAGS = 8;
 
 export type ArticleEditorInitial = {
   title: string;
@@ -26,16 +30,28 @@ export type ArticleEditorInitial = {
 };
 
 type Props =
-  | { mode: "create"; articleId?: undefined; initial: ArticleEditorInitial }
-  | { mode: "edit"; articleId: string; initial: ArticleEditorInitial };
+  | { mode: "create"; articleId?: undefined; initial: ArticleEditorInitial; tagOptions: TagOption[] }
+  | { mode: "edit"; articleId: string; initial: ArticleEditorInitial; tagOptions: TagOption[] };
 
-export function ArticleEditorForm({ mode, articleId, initial }: Props) {
+export function ArticleEditorForm({ mode, articleId, initial, tagOptions }: Props) {
   const baseId = useId();
   const action = mode === "create" ? createArticleDraft : updateArticleDraft;
   const [state, formAction, isPending] = useActionState<ArticleDraftState, FormData>(action, {});
   const [content, setContent] = useState<ContentBlock[]>(initial.content);
   const [citations, setCitations] = useState<CitationDraft[]>(initial.citations);
   const [coverImageUrl, setCoverImageUrl] = useState(initial.coverImageUrl);
+  const [selectedTags, setSelectedTags] = useState<string[]>(() =>
+    initial.tagsInput
+      .split(",")
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean),
+  );
+
+  function toggleTag(name: string) {
+    setSelectedTags((prev) =>
+      prev.includes(name) ? prev.filter((t) => t !== name) : prev.length < MAX_TAGS ? [...prev, name] : prev,
+    );
+  }
 
   return (
     <form action={formAction} className="space-y-8">
@@ -96,25 +112,55 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
         </div>
 
         <div>
-          <label htmlFor={`${baseId}-tags`} className={labelClass}>
-            Tags
-          </label>
-          <input
-            id={`${baseId}-tags`}
-            name="tagsInput"
-            type="text"
-            defaultValue={initial.tagsInput}
-            placeholder="marathon, fueling, recovery"
-            className={fieldClass}
-          />
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Separate with commas.</p>
+          <p className={labelClass}>Tags</p>
+          {tagOptions.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {tagOptions.map((tag) => {
+                const checked = selectedTags.includes(tag.name);
+                return (
+                  <label
+                    key={tag.id}
+                    className={`inline-flex cursor-pointer items-center gap-1.5 rounded-pill border px-3 py-1 text-sm transition ${
+                      checked
+                        ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
+                        : "border-black/10 text-zinc-700 hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleTag(tag.name)}
+                      disabled={!checked && selectedTags.length >= MAX_TAGS}
+                      className="sr-only"
+                    />
+                    {titleCase(tag.name)}
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-zinc-600 dark:text-zinc-300">
+              No tags exist yet -- an admin can add some from the Admin → Article Tags page.
+            </p>
+          )}
+          <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            Up to {MAX_TAGS}. A fixed list, kept consistent for everyone -- an admin can add more tags to
+            choose from.
+          </p>
+          <input type="hidden" name="tagsInput" value={selectedTags.join(",")} />
         </div>
 
         <div>
           <label htmlFor={`${baseId}-cover`} className={labelClass}>
             Cover image
           </label>
-          <ImageUrlField inputId={`${baseId}-cover`} value={coverImageUrl} onChange={setCoverImageUrl} placeholder="https://…" />
+          <ImageUrlField
+            inputId={`${baseId}-cover`}
+            value={coverImageUrl}
+            onChange={setCoverImageUrl}
+            uploadAction={uploadArticleImage}
+            placeholder="https://…"
+          />
           <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
         </div>
       </div>

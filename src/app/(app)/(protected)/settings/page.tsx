@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 type Profile = {
   display_name: string;
   units: "mi" | "km";
+  avatar_url: string | null;
 };
 
 type AthleteProfile = {
@@ -49,7 +50,7 @@ export default async function SettingsPage() {
 
   const [{ data: profile }, { data: athleteProfile }, { data: communityProfile }, { data: raceResults }, { data: injuries }] =
     await Promise.all([
-      supabase.from("profiles").select("display_name, units").single<Profile>(),
+      supabase.from("profiles").select("display_name, units, avatar_url").single<Profile>(),
       supabase
         .from("athlete_profiles")
         .select(
@@ -115,6 +116,7 @@ export default async function SettingsPage() {
         <CommunityProfileForm
           userId={session!.userId}
           hasProfile={!!communityProfile}
+          initialAvatarUrl={profile?.avatar_url ?? ""}
           initialBio={communityProfile?.bio ?? ""}
           initialLocation={communityProfile?.location ?? ""}
           initialFavoriteDistances={communityProfile?.favorite_distances ?? []}

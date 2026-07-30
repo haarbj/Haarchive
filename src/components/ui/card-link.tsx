@@ -7,6 +7,7 @@ const PADDING_CLASSES: Record<CardPadding, string> = {
   sm: "rounded-control p-4",
   md: "rounded-card p-6",
   lg: "rounded-card p-8",
+  none: "rounded-card",
 };
 
 type CardLinkProps = {

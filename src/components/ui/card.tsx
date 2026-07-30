@@ -4,12 +4,18 @@ import type { ElementType, ReactNode } from "react";
 // 34 files. `padding` ties to the radius that recipe actually used at each
 // size (denser cards -> rounded-control, bigger cards -> rounded-card), so
 // callers don't have to think about radius separately.
-export type CardPadding = "sm" | "md" | "lg";
+export type CardPadding = "sm" | "md" | "lg" | "none";
 
 const PADDING_CLASSES: Record<CardPadding, string> = {
   sm: "rounded-control p-4",
   md: "rounded-card p-6",
   lg: "rounded-card p-8",
+  // For a card whose content needs to bleed to the edge (e.g. a cover-image
+  // thumbnail) -- the caller pads its own text content instead of relying
+  // on a uniform inset, since a negative-margin trick to defeat p-6 is
+  // fragile inside a CSS grid item (the actual cause of the "gray overflow"
+  // this replaced).
+  none: "rounded-card",
 };
 
 type CardProps = {

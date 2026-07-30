@@ -36,7 +36,10 @@ export function ImageCropModal({ imageSrc, onCancel, onConfirm, onSkip }: ImageC
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [naturalAspect, setNaturalAspect] = useState<number | null>(null);
-  const [aspect, setAspect] = useState<number | null>(null);
+  // Starts at a plain default, not null -- Cropper has to actually render
+  // to fire onMediaLoaded (below) in the first place, so gating its render
+  // on aspect being non-null was a deadlock: nothing could ever set it.
+  const [aspect, setAspect] = useState<number>(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,18 +79,16 @@ export function ImageCropModal({ imageSrc, onCancel, onConfirm, onSkip }: ImageC
         </div>
 
         <div className="relative h-80 bg-black">
-          {aspect ? (
-            <Cropper
-              image={imageSrc}
-              crop={crop}
-              zoom={zoom}
-              aspect={aspect}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onMediaLoaded={handleMediaLoaded}
-              onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
-            />
-          ) : null}
+          <Cropper
+            image={imageSrc}
+            crop={crop}
+            zoom={zoom}
+            aspect={aspect}
+            onCropChange={setCrop}
+            onZoomChange={setZoom}
+            onMediaLoaded={handleMediaLoaded}
+            onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
+          />
         </div>
 
         <div className="space-y-4 px-5 py-4">

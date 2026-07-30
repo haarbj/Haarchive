@@ -39,6 +39,24 @@ function parseCitationsForm(formData: FormData) {
   return { success: true as const, data: result.data };
 }
 
+// Defense in depth -- the editor's checkbox picker only ever submits
+// recognized tags, but this is what actually enforces it, in case that's
+// ever bypassed (a hand-crafted request, a future editor bug). Silently
+// drops anything unrecognized rather than erroring the whole save.
+async function filterToAllowedTags(
+  admin: ReturnType<typeof createServiceRoleClient>,
+  tags: string[],
+): Promise<string[]> {
+  if (tags.length === 0) return [];
+  const { data } = await admin
+    .from("article_tag_options")
+    .select("name")
+    .in("name", tags)
+    .returns<{ name: string }[]>();
+  const allowed = new Set((data ?? []).map((row) => row.name));
+  return tags.filter((tag) => allowed.has(tag));
+}
+
 async function replaceCitations(
   admin: ReturnType<typeof createServiceRoleClient>,
   articleId: string,
@@ -91,6 +109,8 @@ export async function createArticleDraft(
   const { data: existing } = await admin.from("articles").select("id").eq("slug", slug).maybeSingle();
   if (existing) return { error: "An article with that title already exists. Try a more specific title." };
 
+  const allowedTags = await filterToAllowedTags(admin, parsed.data.tagsInput);
+
   const { data: article, error } = await admin
     .from("articles")
     .insert({
@@ -99,7 +119,7 @@ export async function createArticleDraft(
       subtitle: parsed.data.subtitle ?? null,
       article_type: parsed.data.articleType,
       evidence_category: parsed.data.evidenceCategory ?? null,
-      tags: parsed.data.tagsInput,
+      tags: allowedTags,
       cover_image_url: parsed.data.coverImageUrl || null,
       content: parsed.data.contentJson,
       primary_author_id: session.userId,
@@ -150,6 +170,8 @@ export async function updateArticleDraft(
   const citationsResult = parseCitationsForm(formData);
   if (!citationsResult.success) return { error: citationsResult.error };
 
+  const allowedTags = await filterToAllowedTags(admin, parsed.data.tagsInput);
+
   // Slug is set once at creation and never changes here, even if the title
   // does -- a title edit shouldn't silently break a link someone already
   // shared to this article.
@@ -160,7 +182,7 @@ export async function updateArticleDraft(
       subtitle: parsed.data.subtitle ?? null,
       article_type: parsed.data.articleType,
       evidence_category: parsed.data.evidenceCategory ?? null,
-      tags: parsed.data.tagsInput,
+      tags: allowedTags,
       cover_image_url: parsed.data.coverImageUrl || null,
       content: parsed.data.contentJson,
     })

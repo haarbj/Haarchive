@@ -107,6 +107,18 @@ export default async function AdminPage() {
           </span>
         </CardLink>
 
+        <CardLink href="/admin/tags" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Article Tags</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Manage the fixed list of tags contributors can pick from when writing an article.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
         <CardLink href="/admin/messages" className="flex items-center justify-between">
           <div>
             <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Messages</p>

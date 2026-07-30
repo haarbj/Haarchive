@@ -87,8 +87,15 @@ export function ArticleHero({ title, mission, coverImageUrl, attribution, readin
     return (
       <div className="mt-8 overflow-hidden rounded-card border border-black/10 dark:border-white/10">
         <div className="relative">
+          {/* aspect-video (16:9) rather than a fixed height per breakpoint
+              (the previous h-72/h-96/h-[440px] steps): a fixed height
+              against a fluid width means the visible crop actually drifted
+              as the viewport resized, and it couldn't be matched by
+              anything else on the site. One ratio, reused verbatim on the
+              Articles-index card below, means a photo cropped once (see
+              ImageCropModal) looks the same wherever it appears. */}
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL, not a local/optimized asset */}
-          <img src={coverImageUrl} alt="" className="h-72 w-full object-cover sm:h-96 md:h-[440px]" />
+          <img src={coverImageUrl} alt="" className="aspect-video w-full object-cover" />
           {/* Never fades to fully transparent -- the top of the image stays
               tinted at 40% instead of bare, so a title that wraps to more
               lines than expected doesn't run out of contrast floor. Matches

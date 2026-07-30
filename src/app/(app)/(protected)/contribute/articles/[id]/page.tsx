@@ -6,6 +6,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
 import { isArticleAuthor } from "@/lib/articles/is-author";
+import { loadTagOptions } from "@/lib/articles/tag-options";
 import type { ContentBlock } from "@/lib/sections";
 import { ArticleEditorForm } from "@/app/(app)/(protected)/contribute/articles/article-editor-form";
 import { SubmitForReviewButton } from "./submit-for-review-button";
@@ -52,7 +53,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
   const session = await getAppSession(); // non-null: contribute/layout.tsx already gated
 
   const admin = createServiceRoleClient();
-  const [{ data: article }, { data: citations }, { data: commentRows }] = await Promise.all([
+  const [{ data: article }, { data: citations }, { data: commentRows }, tagOptions] = await Promise.all([
     admin.from("articles").select("*").eq("id", id).maybeSingle<ArticleRow>(),
     admin
       .from("article_citations")
@@ -65,6 +66,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
       .eq("article_id", id)
       .order("created_at", { ascending: true })
       .returns<CommentRow[]>(),
+    loadTagOptions(),
   ]);
 
   if (!article) notFound();
@@ -136,7 +138,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
 
       {canEdit ? (
         <div className="mt-8">
-          <ArticleEditorForm mode="edit" articleId={article.id} initial={initial} />
+          <ArticleEditorForm mode="edit" articleId={article.id} initial={initial} tagOptions={tagOptions} />
         </div>
       ) : (
         <p className="mt-8 text-sm text-zinc-600 dark:text-zinc-300">
