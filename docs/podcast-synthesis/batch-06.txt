@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #165- Predictions for 2020 + Injury Tips.txt
+resources/Podcasts/Running Rogue - Episode #166- 8 Common Training Mistakes.txt
+resources/Podcasts/Running Rogue - Episode #168- Recover like a Champion.txt
+resources/Podcasts/Running Rogue - Episode #169- Blood Chemistry and Performance.txt
+resources/Podcasts/Running Rogue - Episode #170- The Mental Side of Injury.txt
+resources/Podcasts/Running Rogue - Episode #173- Bouncing Back from a Bad Race.txt
+resources/Podcasts/Running Rogue - Episode #174- Races and Life on Hold... Now What-.txt

@@ -1,0 +1,6 @@
+resources/Podcasts/Running Rogue - Episode 406- Nailing Your Long Run Workouts.txt
+resources/Podcasts/Running Rogue - Episode 407- But WHY do YOU Run-.txt
+resources/Podcasts/Running Rogue - Episode 408- Developing Mental Fortitude.txt
+resources/Podcasts/Running Rogue - Episode 409- Creating Your Vision and Goals.txt
+resources/Podcasts/Running Rogue - Episode 73- What is Quality- (Part 1).txt
+resources/Podcasts/Running Rogue - Episode 74- What is Quality- (Part 2).txt

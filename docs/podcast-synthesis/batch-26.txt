@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #336- Physical Therapy for Better Running with Dr. Morgan Riggins.txt
+resources/Podcasts/Running Rogue - Episode #338- Your Post-Race Reset.txt
+resources/Podcasts/Running Rogue - Episode #342- More is More or Less is More-.txt
+resources/Podcasts/Running Rogue - Episode #344- The Truth about Zone 2 Training.txt
+resources/Podcasts/Running Rogue - Episode #345- Managing Sickness and Training.txt
+resources/Podcasts/Running Rogue - Episode #346- Current Coaching Curiosities.txt
+resources/Podcasts/Running Rogue - Episode #347- Assess Your Opportunity Areas.txt

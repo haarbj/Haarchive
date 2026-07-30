@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #63- Masters Running, Training with Age.txt
+resources/Podcasts/Running Rogue - Episode #64- Endure with Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #65- Health Maintenance for Athletes.txt
+resources/Podcasts/Running Rogue - Episode #66- Listener Questions, Round 3.txt
+resources/Podcasts/Running Rogue - Episode #67- Keeping it Real with Colleen Quigley.txt
+resources/Podcasts/Running Rogue - Episode #68- Fueling Your Run.txt
+resources/Podcasts/Running Rogue - Episode #7- Miles Matter.txt

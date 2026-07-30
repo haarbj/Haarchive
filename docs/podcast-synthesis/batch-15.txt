@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #251- Building and Executing Long Run Workouts.txt
+resources/Podcasts/Running Rogue - Episode #253- Deciding What's Next for Your Training.txt
+resources/Podcasts/Running Rogue - Episode #256- The Running Rogue Way.txt
+resources/Podcasts/Running Rogue - Episode #257- Defining Junk Miles (+NYC and Shalane).txt
+resources/Podcasts/Running Rogue - Episode #258- The Pain and Triumph of Running.txt
+resources/Podcasts/Running Rogue - Episode #259- The Anxiety and Peace of Running.txt
+resources/Podcasts/Running Rogue - Episode #26- Chasing Excellence with Coach Barnett.txt

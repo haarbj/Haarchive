@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #45- Performance Nutrition (+ Sleep).txt
+resources/Podcasts/Running Rogue - Episode #46- Race Strategy from 5K to Marathon.txt
+resources/Podcasts/Running Rogue - Episode #48- Seven Pillars of Running Wisdom with Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #49- Dealing with Injury.txt
+resources/Podcasts/Running Rogue - Episode #5- Marathon Race Planning.txt
+resources/Podcasts/Running Rogue - Episode #51- Dealing with Failure.txt
+resources/Podcasts/Running Rogue - Episode #54- Planning Your Macrocycles.txt

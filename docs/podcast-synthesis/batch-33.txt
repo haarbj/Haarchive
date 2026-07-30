@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #396- What is Aerobic Strength-.txt
+resources/Podcasts/Running Rogue - Episode #397- Getting Race Specific.txt
+resources/Podcasts/Running Rogue - Episode #40- Becoming a [Road] Warrior.txt
+resources/Podcasts/Running Rogue - Episode #41- Famous Last Words, Marathon Edition.txt
+resources/Podcasts/Running Rogue - Episode #42- The One Percents.txt
+resources/Podcasts/Running Rogue - Episode #43- Running and Pregnancy.txt
+resources/Podcasts/Running Rogue - Episode #44- Listener Questions.txt

@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #155- Half Marathon Race Questions.txt
+resources/Podcasts/Running Rogue - Episode #157- Mileage Matters-.txt
+resources/Podcasts/Running Rogue - Episode #158- Coaching, Bodyweight, and Performance with Dena Evans.txt
+resources/Podcasts/Running Rogue - Episode #159- Long Term Planning.txt
+resources/Podcasts/Running Rogue - Episode #16- Women and Running.txt
+resources/Podcasts/Running Rogue - Episode #163- The Case for Base [Building] with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #164- Listener Questions on Balance, Time Goals, Workouts, and More.txt

@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode 398- Taper and Post Race Recovery.txt
+resources/Podcasts/Running Rogue - Episode 399- The What, Why, and How of Down Weeks.txt
+resources/Podcasts/Running Rogue - Episode 401- 9 Truths about Training Paces.txt
+resources/Podcasts/Running Rogue - Episode 402- All About that Tempo.txt
+resources/Podcasts/Running Rogue - Episode 403- The Art of the Long Run.txt
+resources/Podcasts/Running Rogue - Episode 404- Do You Medium Long Run-.txt
+resources/Podcasts/Running Rogue - Episode 405- The Art and Science of Recovery Runs.txt

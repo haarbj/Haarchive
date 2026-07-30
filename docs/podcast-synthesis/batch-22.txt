@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #306- The -Why- Behind Slowing Down to Get Faster.txt
+resources/Podcasts/Running Rogue - Episode #307- Understanding RED-S with Tina Muir.txt
+resources/Podcasts/Running Rogue - Episode #308- Q&A on Marathon Training with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #309- The Longest Race with Kara Goucher.txt
+resources/Podcasts/Running Rogue - Episode #310- Mastering the Marathon (especially Boston) with Nell Rojas.txt
+resources/Podcasts/Running Rogue - Episode #311- Choosing to Run with Desiree Linden.txt
+resources/Podcasts/Running Rogue - Episode #313- Managing Tough Weather on Race Day.txt

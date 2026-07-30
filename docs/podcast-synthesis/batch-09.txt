@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #197- When to Press and When to Rest.txt
+resources/Podcasts/Running Rogue - Episode #199- Periodize Your Strength Training with Travis Goyeneche.txt
+resources/Podcasts/Running Rogue - Episode #20- Overcoming Limits.txt
+resources/Podcasts/Running Rogue - Episode #200- Listener Stories & Questions with Jennifer and Jafar.txt
+resources/Podcasts/Running Rogue - Episode #201- Training by Effort.txt
+resources/Podcasts/Running Rogue - Episode #202- Total Stress Load + Stress Inventory.txt
+resources/Podcasts/Running Rogue - Episode #203- The Practical Side of Dealing with Injury.txt

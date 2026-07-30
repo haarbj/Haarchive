@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #290- To Carbo Load or Not-.txt
+resources/Podcasts/Running Rogue - Episode #291- Is Your Training Polarized Enough-.txt
+resources/Podcasts/Running Rogue - Episode #292- Race Week Q&A with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #293- Reframing Success as a Runner.txt
+resources/Podcasts/Running Rogue - Episode #294- Slaying Your Pre-Race Demons.txt
+resources/Podcasts/Running Rogue - Episode #295- Giving Your All on Race Day.txt
+resources/Podcasts/Running Rogue - Episode #296- Back to the Basics of Recovery.txt

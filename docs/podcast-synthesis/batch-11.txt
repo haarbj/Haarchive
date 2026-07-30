@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #222- The Myth of Race Weight.txt
+resources/Podcasts/Running Rogue - Episode #223- The Art of the Recovery Run.txt
+resources/Podcasts/Running Rogue - Episode #224- Building Toward a Breakthrough.txt
+resources/Podcasts/Running Rogue - Episode #225- Silencing Self Doubt.txt
+resources/Podcasts/Running Rogue - Episode #226- Embracing Failure with Coach Tenille Hoogland.txt
+resources/Podcasts/Running Rogue - Episode #228- Letter to My Younger (Running) Self.txt
+resources/Podcasts/Running Rogue - Episode #229- Let's Talk about Periodization.txt

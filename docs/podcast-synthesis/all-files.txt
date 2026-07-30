@@ -1,0 +1,286 @@
+resources/Podcasts/Running Rogue - Episode #1- Breaking Two and Arthur Lydiard.txt
+resources/Podcasts/Running Rogue - Episode #10- Usain Bolt + Running by Feel.txt
+resources/Podcasts/Running Rogue - Episode #100- Running, A Love Letter.txt
+resources/Podcasts/Running Rogue - Episode #102- The Anatomy of a Breakthrough with Ben Flanagan.txt
+resources/Podcasts/Running Rogue - Episode #103- Goal Smashing with Cate Barrett and Jessie Barnes.txt
+resources/Podcasts/Running Rogue - Episode #104- Geeking Out with Ben Rosario from NAZ Elite.txt
+resources/Podcasts/Running Rogue - Episode #105- Training for Trail, Part 2.txt
+resources/Podcasts/Running Rogue - Episode #11- Why Do You Run-.txt
+resources/Podcasts/Running Rogue - Episode #110- The Science of Recovery with Christie Aschwanden and Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #114- Get Started, Running for Beginners.txt
+resources/Podcasts/Running Rogue - Episode #115- Workout Management with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #116- Adam Goucher and Running with the Buffaloes.txt
+resources/Podcasts/Running Rogue - Episode #117- Sweat Science Smorgasbord with Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #119- Run the Mile You're In with Ryan Hall.txt
+resources/Podcasts/Running Rogue - Episode #12- All Things Running Form.txt
+resources/Podcasts/Running Rogue - Episode #126- Core Training Principles with Brent Stein.txt
+resources/Podcasts/Running Rogue - Episode #13- Creating a Vision and Goals for Your Running.txt
+resources/Podcasts/Running Rogue - Episode #130- First Marathons with Emily Sisson.txt
+resources/Podcasts/Running Rogue - Episode #131- Performance Engineering with Sasha Gollish.txt
+resources/Podcasts/Running Rogue - Episode #132- Missing Goals- Let's Talk about Why with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #134- Believe in Your Body with Jessie Barnes and Peter Hogan.txt
+resources/Podcasts/Running Rogue - Episode #136- Missing Goals- Part 2 with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #137- Building a Training Plan with Jen Harney.txt
+resources/Podcasts/Running Rogue - Episode #138- Olympic Medals and Hill Training with Ryan Ponsonby.txt
+resources/Podcasts/Running Rogue - Episode #139- Choosing a Coach with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #14- Boston Marathon Course Strategy.txt
+resources/Podcasts/Running Rogue - Episode #144- Staying Fit through Injury with Sasha Gollish.txt
+resources/Podcasts/Running Rogue - Episode #147- Listener Questions, Round 6.txt
+resources/Podcasts/Running Rogue - Episode #148- The -What If's- of Training with Brent Stein.txt
+resources/Podcasts/Running Rogue - Episode #149- Running True-False with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #15- The Importance of Peaking and Training with a Group.txt
+resources/Podcasts/Running Rogue - Episode #150- Mental Tips and Tricks for Race Day.txt
+resources/Podcasts/Running Rogue - Episode #152- Marathon Race Questions.txt
+resources/Podcasts/Running Rogue - Episode #153- Running True-False, Part 2 with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #154- An Ode to Shalane, 10 Training Lessons from Her Career.txt
+resources/Podcasts/Running Rogue - Episode #155- Half Marathon Race Questions.txt
+resources/Podcasts/Running Rogue - Episode #157- Mileage Matters-.txt
+resources/Podcasts/Running Rogue - Episode #158- Coaching, Bodyweight, and Performance with Dena Evans.txt
+resources/Podcasts/Running Rogue - Episode #159- Long Term Planning.txt
+resources/Podcasts/Running Rogue - Episode #16- Women and Running.txt
+resources/Podcasts/Running Rogue - Episode #163- The Case for Base [Building] with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #164- Listener Questions on Balance, Time Goals, Workouts, and More.txt
+resources/Podcasts/Running Rogue - Episode #165- Predictions for 2020 + Injury Tips.txt
+resources/Podcasts/Running Rogue - Episode #166- 8 Common Training Mistakes.txt
+resources/Podcasts/Running Rogue - Episode #168- Recover like a Champion.txt
+resources/Podcasts/Running Rogue - Episode #169- Blood Chemistry and Performance.txt
+resources/Podcasts/Running Rogue - Episode #170- The Mental Side of Injury.txt
+resources/Podcasts/Running Rogue - Episode #173- Bouncing Back from a Bad Race.txt
+resources/Podcasts/Running Rogue - Episode #174- Races and Life on Hold... Now What-.txt
+resources/Podcasts/Running Rogue - Episode #175- It's Time to Work Your Weaknesses.txt
+resources/Podcasts/Running Rogue - Episode #178- Maffetone Method Redux with Mallory Brooks.txt
+resources/Podcasts/Running Rogue - Episode #179- Training Differences for Women.txt
+resources/Podcasts/Running Rogue - Episode #18- Self Talk and Visualization.txt
+resources/Podcasts/Running Rogue - Episode #180- Lessons from Base Training with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #181- Navigating a Running Funk.txt
+resources/Podcasts/Running Rogue - Episode #183- Staying Motivated featuring Kara Goucher.txt
+resources/Podcasts/Running Rogue - Episode #185- Good and Bad Fatigue, How to Assess and Manage Both.txt
+resources/Podcasts/Running Rogue - Episode #187- Running as a Pathway to Truth.txt
+resources/Podcasts/Running Rogue - Episode #188- Eight Tips for Marathon Training in a Pandemic.txt
+resources/Podcasts/Running Rogue - Episode #190- Seven Tips for Re-Building Your Fitness.txt
+resources/Podcasts/Running Rogue - Episode #193- Training and Vacation.txt
+resources/Podcasts/Running Rogue - Episode #194- Finding Run-Life Balance.txt
+resources/Podcasts/Running Rogue - Episode #195- Dealing with Doubts and Fears with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #197- When to Press and When to Rest.txt
+resources/Podcasts/Running Rogue - Episode #199- Periodize Your Strength Training with Travis Goyeneche.txt
+resources/Podcasts/Running Rogue - Episode #20- Overcoming Limits.txt
+resources/Podcasts/Running Rogue - Episode #200- Listener Stories & Questions with Jennifer and Jafar.txt
+resources/Podcasts/Running Rogue - Episode #201- Training by Effort.txt
+resources/Podcasts/Running Rogue - Episode #202- Total Stress Load + Stress Inventory.txt
+resources/Podcasts/Running Rogue - Episode #203- The Practical Side of Dealing with Injury.txt
+resources/Podcasts/Running Rogue - Episode #204- Conducting a Stress Management Audit with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #205- Tracking Heart Rate Variability and How to Apply It.txt
+resources/Podcasts/Running Rogue - Episode #206- True or False, Running Injury Edition with Brodie Sharpe.txt
+resources/Podcasts/Running Rogue - Episode #218- Introducing Kids to Running with Cami Hawkins, CEO of Marathon Kids.txt
+resources/Podcasts/Running Rogue - Episode #219- Back to the Basics, 5 Pillars of Long Term Running Success.txt
+resources/Podcasts/Running Rogue - Episode #220- Anatomy of a Down Week.txt
+resources/Podcasts/Running Rogue - Episode #221- Pain, Clinical Somatics, and Running Injuries with Sarah Warren.txt
+resources/Podcasts/Running Rogue - Episode #222- The Myth of Race Weight.txt
+resources/Podcasts/Running Rogue - Episode #223- The Art of the Recovery Run.txt
+resources/Podcasts/Running Rogue - Episode #224- Building Toward a Breakthrough.txt
+resources/Podcasts/Running Rogue - Episode #225- Silencing Self Doubt.txt
+resources/Podcasts/Running Rogue - Episode #226- Embracing Failure with Coach Tenille Hoogland.txt
+resources/Podcasts/Running Rogue - Episode #228- Letter to My Younger (Running) Self.txt
+resources/Podcasts/Running Rogue - Episode #229- Let's Talk about Periodization.txt
+resources/Podcasts/Running Rogue - Episode #23- The Coach-Athlete Relationship (Part 1 of 2).txt
+resources/Podcasts/Running Rogue - Episode #230- Lessons in Goal Smashing.txt
+resources/Podcasts/Running Rogue - Episode #231- Adventures in Running and Business, The Rogue Expeditions Story.txt
+resources/Podcasts/Running Rogue - Episode #232- The Church of the Long Run.txt
+resources/Podcasts/Running Rogue - Episode #233- Dealing with Running Burnout.txt
+resources/Podcasts/Running Rogue - Episode #234- Common Running Insecurities.txt
+resources/Podcasts/Running Rogue - Episode #235- 4 Ways to Improve Your Running Form.txt
+resources/Podcasts/Running Rogue - Episode #236- 5 Tips for Training in the Heat.txt
+resources/Podcasts/Running Rogue - Episode #237- Relaxed Running = Fast Running.txt
+resources/Podcasts/Running Rogue - Episode #24- The Coach-Athlete Relationship (Part 2 of 2).txt
+resources/Podcasts/Running Rogue - Episode #240- Slow Down, Get Your Time by Taking Your Time.txt
+resources/Podcasts/Running Rogue - Episode #241- The Dos and Don'ts of Cross Training.txt
+resources/Podcasts/Running Rogue - Episode #242- Building Aerobic Strength.txt
+resources/Podcasts/Running Rogue - Episode #243- The Race-Specific Phase of Training.txt
+resources/Podcasts/Running Rogue - Episode #244- The Taper Phase.txt
+resources/Podcasts/Running Rogue - Episode #246- 9 Truths about Training Paces.txt
+resources/Podcasts/Running Rogue - Episode #247- Embracing the Go Slow to Go Fast Philosophy.txt
+resources/Podcasts/Running Rogue - Episode #248- Choosing Your Race Pace.txt
+resources/Podcasts/Running Rogue - Episode #249- Getting the Most from Your Prep Race.txt
+resources/Podcasts/Running Rogue - Episode #25- Tapping into Your Personal Power.txt
+resources/Podcasts/Running Rogue - Episode #250- Building Your Own Race Plan.txt
+resources/Podcasts/Running Rogue - Episode #251- Building and Executing Long Run Workouts.txt
+resources/Podcasts/Running Rogue - Episode #253- Deciding What's Next for Your Training.txt
+resources/Podcasts/Running Rogue - Episode #256- The Running Rogue Way.txt
+resources/Podcasts/Running Rogue - Episode #257- Defining Junk Miles (+NYC and Shalane).txt
+resources/Podcasts/Running Rogue - Episode #258- The Pain and Triumph of Running.txt
+resources/Podcasts/Running Rogue - Episode #259- The Anxiety and Peace of Running.txt
+resources/Podcasts/Running Rogue - Episode #26- Chasing Excellence with Coach Barnett.txt
+resources/Podcasts/Running Rogue - Episode #261- The Magic of the Medium Long Run.txt
+resources/Podcasts/Running Rogue - Episode #262- Prepping for Downhill Races.txt
+resources/Podcasts/Running Rogue - Episode #264- The Dos and Don'ts of Running Tech.txt
+resources/Podcasts/Running Rogue - Episode #265- The Fear and Courage of Running.txt
+resources/Podcasts/Running Rogue - Episode #266- How-To Guide to the Tempo Workout.txt
+resources/Podcasts/Running Rogue - Episode #267- 5K-10K Training with My Coach Cathy Casey.txt
+resources/Podcasts/Running Rogue - Episode #269- Getting the Most from Your Coach.txt
+resources/Podcasts/Running Rogue - Episode #27- Summer Training.txt
+resources/Podcasts/Running Rogue - Episode #270- Super Shoes and Training.txt
+resources/Podcasts/Running Rogue - Episode #271- 11 Running Hacks.txt
+resources/Podcasts/Running Rogue - Episode #272- All Things Boston Marathon.txt
+resources/Podcasts/Running Rogue - Episode #273- The Passion and Occasional Apathy of Running.txt
+resources/Podcasts/Running Rogue - Episode #274- Chasing Consistency.txt
+resources/Podcasts/Running Rogue - Episode #275- Running and Mental Health with Michael Wilt.txt
+resources/Podcasts/Running Rogue - Episode #276- 10 Tips for a New Season.txt
+resources/Podcasts/Running Rogue - Episode #277- Running for -Late Bloomers-.txt
+resources/Podcasts/Running Rogue - Episode #279- Q&A on Running Fundamentals.txt
+resources/Podcasts/Running Rogue - Episode #280- The Power of Progression.txt
+resources/Podcasts/Running Rogue - Episode #281- Pre-Gaming and Post-Gaming Your Runs.txt
+resources/Podcasts/Running Rogue - Episode #282- Running and Longevity.txt
+resources/Podcasts/Running Rogue - Episode #283- Running in Heat + Positive Self-Talk.txt
+resources/Podcasts/Running Rogue - Episode #284- The Seasons of Running.txt
+resources/Podcasts/Running Rogue - Episode #285- 9 Common Mistakes in Managing Injury.txt
+resources/Podcasts/Running Rogue - Episode #286- 12 Tips for First-Time Marathoners.txt
+resources/Podcasts/Running Rogue - Episode #287- On Dreaming Big and Broken Hearts with Kara Goucher.txt
+resources/Podcasts/Running Rogue - Episode #288- Listener Questions with Marathon Training Academy.txt
+resources/Podcasts/Running Rogue - Episode #289- 10 Tips for Building Mileage.txt
+resources/Podcasts/Running Rogue - Episode #29- Running, Risk, and World Travel with Adam Dailey.txt
+resources/Podcasts/Running Rogue - Episode #290- To Carbo Load or Not-.txt
+resources/Podcasts/Running Rogue - Episode #291- Is Your Training Polarized Enough-.txt
+resources/Podcasts/Running Rogue - Episode #292- Race Week Q&A with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #293- Reframing Success as a Runner.txt
+resources/Podcasts/Running Rogue - Episode #294- Slaying Your Pre-Race Demons.txt
+resources/Podcasts/Running Rogue - Episode #295- Giving Your All on Race Day.txt
+resources/Podcasts/Running Rogue - Episode #296- Back to the Basics of Recovery.txt
+resources/Podcasts/Running Rogue - Episode #297- 6 Tips for Winter Training.txt
+resources/Podcasts/Running Rogue - Episode #298- Solo vs Group Training.txt
+resources/Podcasts/Running Rogue - Episode #299- 6 Steps to Set Goals and Plan for 2023.txt
+resources/Podcasts/Running Rogue - Episode #300- 9 Reflections on Training, Coaching, and Living from 2022.txt
+resources/Podcasts/Running Rogue - Episode #301- My Running Insecurities.txt
+resources/Podcasts/Running Rogue - Episode #304- Build Your Running Intuition.txt
+resources/Podcasts/Running Rogue - Episode #305- 8 Things to STOP Doing.txt
+resources/Podcasts/Running Rogue - Episode #306- The -Why- Behind Slowing Down to Get Faster.txt
+resources/Podcasts/Running Rogue - Episode #307- Understanding RED-S with Tina Muir.txt
+resources/Podcasts/Running Rogue - Episode #308- Q&A on Marathon Training with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #309- The Longest Race with Kara Goucher.txt
+resources/Podcasts/Running Rogue - Episode #310- Mastering the Marathon (especially Boston) with Nell Rojas.txt
+resources/Podcasts/Running Rogue - Episode #311- Choosing to Run with Desiree Linden.txt
+resources/Podcasts/Running Rogue - Episode #313- Managing Tough Weather on Race Day.txt
+resources/Podcasts/Running Rogue - Episode #315- Race Week Q&A with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #316- 10 [Running] Lies We Tell Ourselves.txt
+resources/Podcasts/Running Rogue - Episode #317- 5 Ways to Level Up Your Training for Fall Races.txt
+resources/Podcasts/Running Rogue - Episode #318- 5 Misperceptions of 5K-10K Training.txt
+resources/Podcasts/Running Rogue - Episode #319- 7 Tips for Managing the Details of Your Training.txt
+resources/Podcasts/Running Rogue - Episode #32- Facing Your Fears.txt
+resources/Podcasts/Running Rogue - Episode #320- Building Grit and Resilience in Your Running.txt
+resources/Podcasts/Running Rogue - Episode #322- Summer Training Q&A with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #323- Building (or Rebuilding) Your Running Foundation.txt
+resources/Podcasts/Running Rogue - Episode #324- Training Paces and Race Planning with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #325- Becoming a Sustainable Runner with Tina Muir and Zoë Rom.txt
+resources/Podcasts/Running Rogue - Episode #326- Separating Your Identity from Your Results.txt
+resources/Podcasts/Running Rogue - Episode #327- Live Q&A with Nicole Winter.txt
+resources/Podcasts/Running Rogue - Episode #328- Should I Do a Prep Race (or Not)-.txt
+resources/Podcasts/Running Rogue - Episode #33- The Alchemy of Running, Science or Magic-.txt
+resources/Podcasts/Running Rogue - Episode #330- Dreaming of the Marathon with Sarah Perry.txt
+resources/Podcasts/Running Rogue - Episode #331- Break Through a Performance Plateau.txt
+resources/Podcasts/Running Rogue - Episode #332- Nailing Race Day Execution.txt
+resources/Podcasts/Running Rogue - Episode #333- Building Belief in Yourself with Dan Wiersema.txt
+resources/Podcasts/Running Rogue - Episode #334- Running and Longevity.txt
+resources/Podcasts/Running Rogue - Episode #335- Running and Wearables with Jeff Knight.txt
+resources/Podcasts/Running Rogue - Episode #336- Physical Therapy for Better Running with Dr. Morgan Riggins.txt
+resources/Podcasts/Running Rogue - Episode #338- Your Post-Race Reset.txt
+resources/Podcasts/Running Rogue - Episode #342- More is More or Less is More-.txt
+resources/Podcasts/Running Rogue - Episode #344- The Truth about Zone 2 Training.txt
+resources/Podcasts/Running Rogue - Episode #345- Managing Sickness and Training.txt
+resources/Podcasts/Running Rogue - Episode #346- Current Coaching Curiosities.txt
+resources/Podcasts/Running Rogue - Episode #347- Assess Your Opportunity Areas.txt
+resources/Podcasts/Running Rogue - Episode #348- The (Rational) Irrational Fears Episode.txt
+resources/Podcasts/Running Rogue - Episode #349- Athlete Questions on Bad Days, Paces, Taper Length, Dogs, and More.txt
+resources/Podcasts/Running Rogue - Episode #350- 10 Tips to Get Your Mind Right for Race Day.txt
+resources/Podcasts/Running Rogue - Episode #352- 5 Tips to Run Your Best Fall Race!.txt
+resources/Podcasts/Running Rogue - Episode #353- Listener Questions on Heat, Race Timing, Managing Injury and More.txt
+resources/Podcasts/Running Rogue - Episode #354- The Balance Episode.txt
+resources/Podcasts/Running Rogue - Episode #355- The Re-Introduction Episode + Tips on Boston Training.txt
+resources/Podcasts/Running Rogue - Episode #357- Seeing the Forest, not the Trees.txt
+resources/Podcasts/Running Rogue - Episode #358- Building the Confidence to Chase Big Goals with Listener Maeson.txt
+resources/Podcasts/Running Rogue - Episode #359- Building Your Routine (aka Planting the Trees).txt
+resources/Podcasts/Running Rogue - Episode #361- Principles on Strength for Runners.txt
+resources/Podcasts/Running Rogue - Episode #362- Listener Q&A to end 2024!.txt
+resources/Podcasts/Running Rogue - Episode #363- Nailing Race Day (+ Bonus Houston Tips).txt
+resources/Podcasts/Running Rogue - Episode #364- Find Your Inner Superhero.txt
+resources/Podcasts/Running Rogue - Episode #365- Staying Present in Training and Racing.txt
+resources/Podcasts/Running Rogue - Episode #366- Balancing Running and Life with Listener Nicole.txt
+resources/Podcasts/Running Rogue - Episode #368- What Social Media Gets Wrong about Run Coaching.txt
+resources/Podcasts/Running Rogue - Episode #369- Listener Questions on Burn Out, BMI, Creatine and More.txt
+resources/Podcasts/Running Rogue - Episode #37- Running True or False with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #370- Managing the 99 Percent + Final Boston Prep Tips.txt
+resources/Podcasts/Running Rogue - Episode #373- To Marathon or Not to Marathon with Listener Marisa.txt
+resources/Podcasts/Running Rogue - Episode #374- Defining (and Re-Defining) Success on Race Day.txt
+resources/Podcasts/Running Rogue - Episode #376- Listener Q&A on Building Back, Finding Your Edge, and More.txt
+resources/Podcasts/Running Rogue - Episode #377- Six Ways to Be Patient to Reach Your Potential.txt
+resources/Podcasts/Running Rogue - Episode #378- Priming towards Your Fall Race.txt
+resources/Podcasts/Running Rogue - Episode #379- Why So Fast-.txt
+resources/Podcasts/Running Rogue - Episode #38- Listener Questions with Jean and Ardith.txt
+resources/Podcasts/Running Rogue - Episode #380- Five Reminders in Prep for Your Fall Race.txt
+resources/Podcasts/Running Rogue - Episode #382- Back to the Basics with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #383- Training Fundamentals, Part 1.txt
+resources/Podcasts/Running Rogue - Episode #384- Training Fundamentals, Part 2.txt
+resources/Podcasts/Running Rogue - Episode #385- Racing Fundamentals, Part 1.txt
+resources/Podcasts/Running Rogue - Episode #386- Racing Fundamentals, Part 2.txt
+resources/Podcasts/Running Rogue - Episode #387- Miles Matter Redux.txt
+resources/Podcasts/Running Rogue - Episode #388- Find Your Peak.txt
+resources/Podcasts/Running Rogue - Episode #389- What is Quality Work (aka Speed Work)-.txt
+resources/Podcasts/Running Rogue - Episode #390- The Why and How of Running by Feel.txt
+resources/Podcasts/Running Rogue - Episode #391- Long-Term Planning for Max Success.txt
+resources/Podcasts/Running Rogue - Episode #392- Periodization... Say What-!-.txt
+resources/Podcasts/Running Rogue - Episode #393- Pop Quiz... Is Your Running Polarized Enough- (Part 1).txt
+resources/Podcasts/Running Rogue - Episode #394- Is Your Running Polarized Enough- (Part 2).txt
+resources/Podcasts/Running Rogue - Episode #395- How Big is Your Base-.txt
+resources/Podcasts/Running Rogue - Episode #396- What is Aerobic Strength-.txt
+resources/Podcasts/Running Rogue - Episode #397- Getting Race Specific.txt
+resources/Podcasts/Running Rogue - Episode #40- Becoming a [Road] Warrior.txt
+resources/Podcasts/Running Rogue - Episode #41- Famous Last Words, Marathon Edition.txt
+resources/Podcasts/Running Rogue - Episode #42- The One Percents.txt
+resources/Podcasts/Running Rogue - Episode #43- Running and Pregnancy.txt
+resources/Podcasts/Running Rogue - Episode #44- Listener Questions.txt
+resources/Podcasts/Running Rogue - Episode #45- Performance Nutrition (+ Sleep).txt
+resources/Podcasts/Running Rogue - Episode #46- Race Strategy from 5K to Marathon.txt
+resources/Podcasts/Running Rogue - Episode #48- Seven Pillars of Running Wisdom with Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #49- Dealing with Injury.txt
+resources/Podcasts/Running Rogue - Episode #5- Marathon Race Planning.txt
+resources/Podcasts/Running Rogue - Episode #51- Dealing with Failure.txt
+resources/Podcasts/Running Rogue - Episode #54- Planning Your Macrocycles.txt
+resources/Podcasts/Running Rogue - Episode #57- Listener Questions, Round 2.txt
+resources/Podcasts/Running Rogue - Episode #58- The Taper + Post Race Recovery.txt
+resources/Podcasts/Running Rogue - Episode #59- Purpose in Practice, Part 1.txt
+resources/Podcasts/Running Rogue - Episode #6- Mental training (+ Chris eating crow).txt
+resources/Podcasts/Running Rogue - Episode #60- Purpose in Practice, Part 2.txt
+resources/Podcasts/Running Rogue - Episode #61- The Artistry of Coach-Athlete Communication.txt
+resources/Podcasts/Running Rogue - Episode #62- Athlete Ownership + Responsibilities.txt
+resources/Podcasts/Running Rogue - Episode #63- Masters Running, Training with Age.txt
+resources/Podcasts/Running Rogue - Episode #64- Endure with Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #65- Health Maintenance for Athletes.txt
+resources/Podcasts/Running Rogue - Episode #66- Listener Questions, Round 3.txt
+resources/Podcasts/Running Rogue - Episode #67- Keeping it Real with Colleen Quigley.txt
+resources/Podcasts/Running Rogue - Episode #68- Fueling Your Run.txt
+resources/Podcasts/Running Rogue - Episode #7- Miles Matter.txt
+resources/Podcasts/Running Rogue - Episode #72- Purpose in Practice (Part 3) + Podcast Training Info.txt
+resources/Podcasts/Running Rogue - Episode #75- The McMillan Calculator and More with Greg McMillan.txt
+resources/Podcasts/Running Rogue - Episode #77- Training Paces and Goal Times.txt
+resources/Podcasts/Running Rogue - Episode #79- Listener Questions, Round 4.txt
+resources/Podcasts/Running Rogue - Episode #8- Austin Marathon & Half Marathon Race Strategy.txt
+resources/Podcasts/Running Rogue - Episode #86- What Does the Race Require- (Part 1).txt
+resources/Podcasts/Running Rogue - Episode #88- What Does the Race Require- (Part 2).txt
+resources/Podcasts/Running Rogue - Episode #89- What Does the Race Require- (Part 3).txt
+resources/Podcasts/Running Rogue - Episode #9- A Chat with Scotty Mac.txt
+resources/Podcasts/Running Rogue - Episode #91- What Does the Race Require- (Part 4, Marathon Edition).txt
+resources/Podcasts/Running Rogue - Episode #94- Training for the Trail.txt
+resources/Podcasts/Running Rogue - Episode #96- How to Assess Your Last Race, Good or Bad.txt
+resources/Podcasts/Running Rogue - Episode #97- The Maffetone Method.txt
+resources/Podcasts/Running Rogue - Episode 133- Strength Training with Jason Fitzgerald.txt
+resources/Podcasts/Running Rogue - Episode 398- Taper and Post Race Recovery.txt
+resources/Podcasts/Running Rogue - Episode 399- The What, Why, and How of Down Weeks.txt
+resources/Podcasts/Running Rogue - Episode 401- 9 Truths about Training Paces.txt
+resources/Podcasts/Running Rogue - Episode 402- All About that Tempo.txt
+resources/Podcasts/Running Rogue - Episode 403- The Art of the Long Run.txt
+resources/Podcasts/Running Rogue - Episode 404- Do You Medium Long Run-.txt
+resources/Podcasts/Running Rogue - Episode 405- The Art and Science of Recovery Runs.txt
+resources/Podcasts/Running Rogue - Episode 406- Nailing Your Long Run Workouts.txt
+resources/Podcasts/Running Rogue - Episode 407- But WHY do YOU Run-.txt
+resources/Podcasts/Running Rogue - Episode 408- Developing Mental Fortitude.txt
+resources/Podcasts/Running Rogue - Episode 409- Creating Your Vision and Goals.txt
+resources/Podcasts/Running Rogue - Episode 73- What is Quality- (Part 1).txt
+resources/Podcasts/Running Rogue - Episode 74- What is Quality- (Part 2).txt

@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #348- The (Rational) Irrational Fears Episode.txt
+resources/Podcasts/Running Rogue - Episode #349- Athlete Questions on Bad Days, Paces, Taper Length, Dogs, and More.txt
+resources/Podcasts/Running Rogue - Episode #350- 10 Tips to Get Your Mind Right for Race Day.txt
+resources/Podcasts/Running Rogue - Episode #352- 5 Tips to Run Your Best Fall Race!.txt
+resources/Podcasts/Running Rogue - Episode #353- Listener Questions on Heat, Race Timing, Managing Injury and More.txt
+resources/Podcasts/Running Rogue - Episode #354- The Balance Episode.txt
+resources/Podcasts/Running Rogue - Episode #355- The Re-Introduction Episode + Tips on Boston Training.txt

@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #11- Why Do You Run-.txt
+resources/Podcasts/Running Rogue - Episode #110- The Science of Recovery with Christie Aschwanden and Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #114- Get Started, Running for Beginners.txt
+resources/Podcasts/Running Rogue - Episode #115- Workout Management with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #116- Adam Goucher and Running with the Buffaloes.txt
+resources/Podcasts/Running Rogue - Episode #117- Sweat Science Smorgasbord with Alex Hutchinson.txt
+resources/Podcasts/Running Rogue - Episode #119- Run the Mile You're In with Ryan Hall.txt

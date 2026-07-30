@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #33- The Alchemy of Running, Science or Magic-.txt
+resources/Podcasts/Running Rogue - Episode #330- Dreaming of the Marathon with Sarah Perry.txt
+resources/Podcasts/Running Rogue - Episode #331- Break Through a Performance Plateau.txt
+resources/Podcasts/Running Rogue - Episode #332- Nailing Race Day Execution.txt
+resources/Podcasts/Running Rogue - Episode #333- Building Belief in Yourself with Dan Wiersema.txt
+resources/Podcasts/Running Rogue - Episode #334- Running and Longevity.txt
+resources/Podcasts/Running Rogue - Episode #335- Running and Wearables with Jeff Knight.txt

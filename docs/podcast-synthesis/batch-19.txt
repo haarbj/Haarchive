@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #284- The Seasons of Running.txt
+resources/Podcasts/Running Rogue - Episode #285- 9 Common Mistakes in Managing Injury.txt
+resources/Podcasts/Running Rogue - Episode #286- 12 Tips for First-Time Marathoners.txt
+resources/Podcasts/Running Rogue - Episode #287- On Dreaming Big and Broken Hearts with Kara Goucher.txt
+resources/Podcasts/Running Rogue - Episode #288- Listener Questions with Marathon Training Academy.txt
+resources/Podcasts/Running Rogue - Episode #289- 10 Tips for Building Mileage.txt
+resources/Podcasts/Running Rogue - Episode #29- Running, Risk, and World Travel with Adam Dailey.txt

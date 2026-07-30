@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #204- Conducting a Stress Management Audit with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #205- Tracking Heart Rate Variability and How to Apply It.txt
+resources/Podcasts/Running Rogue - Episode #206- True or False, Running Injury Edition with Brodie Sharpe.txt
+resources/Podcasts/Running Rogue - Episode #218- Introducing Kids to Running with Cami Hawkins, CEO of Marathon Kids.txt
+resources/Podcasts/Running Rogue - Episode #219- Back to the Basics, 5 Pillars of Long Term Running Success.txt
+resources/Podcasts/Running Rogue - Episode #220- Anatomy of a Down Week.txt
+resources/Podcasts/Running Rogue - Episode #221- Pain, Clinical Somatics, and Running Injuries with Sarah Warren.txt

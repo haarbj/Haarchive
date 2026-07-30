@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #185- Good and Bad Fatigue, How to Assess and Manage Both.txt
+resources/Podcasts/Running Rogue - Episode #187- Running as a Pathway to Truth.txt
+resources/Podcasts/Running Rogue - Episode #188- Eight Tips for Marathon Training in a Pandemic.txt
+resources/Podcasts/Running Rogue - Episode #190- Seven Tips for Re-Building Your Fitness.txt
+resources/Podcasts/Running Rogue - Episode #193- Training and Vacation.txt
+resources/Podcasts/Running Rogue - Episode #194- Finding Run-Life Balance.txt
+resources/Podcasts/Running Rogue - Episode #195- Dealing with Doubts and Fears with Jason Brooks.txt

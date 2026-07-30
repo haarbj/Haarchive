@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #244- The Taper Phase.txt
+resources/Podcasts/Running Rogue - Episode #246- 9 Truths about Training Paces.txt
+resources/Podcasts/Running Rogue - Episode #247- Embracing the Go Slow to Go Fast Philosophy.txt
+resources/Podcasts/Running Rogue - Episode #248- Choosing Your Race Pace.txt
+resources/Podcasts/Running Rogue - Episode #249- Getting the Most from Your Prep Race.txt
+resources/Podcasts/Running Rogue - Episode #25- Tapping into Your Personal Power.txt
+resources/Podcasts/Running Rogue - Episode #250- Building Your Own Race Plan.txt

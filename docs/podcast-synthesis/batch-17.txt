@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #27- Summer Training.txt
+resources/Podcasts/Running Rogue - Episode #270- Super Shoes and Training.txt
+resources/Podcasts/Running Rogue - Episode #271- 11 Running Hacks.txt
+resources/Podcasts/Running Rogue - Episode #272- All Things Boston Marathon.txt
+resources/Podcasts/Running Rogue - Episode #273- The Passion and Occasional Apathy of Running.txt
+resources/Podcasts/Running Rogue - Episode #274- Chasing Consistency.txt
+resources/Podcasts/Running Rogue - Episode #275- Running and Mental Health with Michael Wilt.txt

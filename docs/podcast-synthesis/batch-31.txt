@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #382- Back to the Basics with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #383- Training Fundamentals, Part 1.txt
+resources/Podcasts/Running Rogue - Episode #384- Training Fundamentals, Part 2.txt
+resources/Podcasts/Running Rogue - Episode #385- Racing Fundamentals, Part 1.txt
+resources/Podcasts/Running Rogue - Episode #386- Racing Fundamentals, Part 2.txt
+resources/Podcasts/Running Rogue - Episode #387- Miles Matter Redux.txt
+resources/Podcasts/Running Rogue - Episode #388- Find Your Peak.txt

@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #276- 10 Tips for a New Season.txt
+resources/Podcasts/Running Rogue - Episode #277- Running for -Late Bloomers-.txt
+resources/Podcasts/Running Rogue - Episode #279- Q&A on Running Fundamentals.txt
+resources/Podcasts/Running Rogue - Episode #280- The Power of Progression.txt
+resources/Podcasts/Running Rogue - Episode #281- Pre-Gaming and Post-Gaming Your Runs.txt
+resources/Podcasts/Running Rogue - Episode #282- Running and Longevity.txt
+resources/Podcasts/Running Rogue - Episode #283- Running in Heat + Positive Self-Talk.txt

@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #175- It's Time to Work Your Weaknesses.txt
+resources/Podcasts/Running Rogue - Episode #178- Maffetone Method Redux with Mallory Brooks.txt
+resources/Podcasts/Running Rogue - Episode #179- Training Differences for Women.txt
+resources/Podcasts/Running Rogue - Episode #18- Self Talk and Visualization.txt
+resources/Podcasts/Running Rogue - Episode #180- Lessons from Base Training with Jason Brooks.txt
+resources/Podcasts/Running Rogue - Episode #181- Navigating a Running Funk.txt
+resources/Podcasts/Running Rogue - Episode #183- Staying Motivated featuring Kara Goucher.txt

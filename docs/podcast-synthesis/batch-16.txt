@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #261- The Magic of the Medium Long Run.txt
+resources/Podcasts/Running Rogue - Episode #262- Prepping for Downhill Races.txt
+resources/Podcasts/Running Rogue - Episode #264- The Dos and Don'ts of Running Tech.txt
+resources/Podcasts/Running Rogue - Episode #265- The Fear and Courage of Running.txt
+resources/Podcasts/Running Rogue - Episode #266- How-To Guide to the Tempo Workout.txt
+resources/Podcasts/Running Rogue - Episode #267- 5K-10K Training with My Coach Cathy Casey.txt
+resources/Podcasts/Running Rogue - Episode #269- Getting the Most from Your Coach.txt

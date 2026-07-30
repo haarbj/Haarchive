@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #1- Breaking Two and Arthur Lydiard.txt
+resources/Podcasts/Running Rogue - Episode #10- Usain Bolt + Running by Feel.txt
+resources/Podcasts/Running Rogue - Episode #100- Running, A Love Letter.txt
+resources/Podcasts/Running Rogue - Episode #102- The Anatomy of a Breakthrough with Ben Flanagan.txt
+resources/Podcasts/Running Rogue - Episode #103- Goal Smashing with Cate Barrett and Jessie Barnes.txt
+resources/Podcasts/Running Rogue - Episode #104- Geeking Out with Ben Rosario from NAZ Elite.txt
+resources/Podcasts/Running Rogue - Episode #105- Training for Trail, Part 2.txt

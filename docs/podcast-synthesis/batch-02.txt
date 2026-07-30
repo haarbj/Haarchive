@@ -1,0 +1,7 @@
+resources/Podcasts/Running Rogue - Episode #12- All Things Running Form.txt
+resources/Podcasts/Running Rogue - Episode #126- Core Training Principles with Brent Stein.txt
+resources/Podcasts/Running Rogue - Episode #13- Creating a Vision and Goals for Your Running.txt
+resources/Podcasts/Running Rogue - Episode #130- First Marathons with Emily Sisson.txt
+resources/Podcasts/Running Rogue - Episode #131- Performance Engineering with Sasha Gollish.txt
+resources/Podcasts/Running Rogue - Episode #132- Missing Goals- Let's Talk about Why with James Dodds.txt
+resources/Podcasts/Running Rogue - Episode #134- Believe in Your Body with Jessie Barnes and Peter Hogan.txt
