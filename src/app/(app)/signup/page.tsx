@@ -7,6 +7,7 @@ import { AuthForm } from "@/components/auth-form";
 import { GoogleSignInButton } from "@/components/oauth-buttons";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { FormError } from "@/components/ui/form-error";
 
 export const metadata: Metadata = {
   title: "Sign up",
@@ -31,9 +32,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
           : "Free to create. Your calculator results stay yours to export or delete at any time."}
       </p>
       {inviteToken && !invite && (
-        <p role="alert" className="mt-3 text-sm font-medium text-red-700 dark:text-red-400">
-          That invite link isn&rsquo;t valid or has already been used.
-        </p>
+        <FormError className="mt-3">That invite link isn&rsquo;t valid or has already been used.</FormError>
       )}
 
       <div className="mt-8">

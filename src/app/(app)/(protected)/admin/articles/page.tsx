@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
@@ -7,6 +6,8 @@ import { formatRelativeTime } from "@/lib/format";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { ListRow } from "@/components/ui/list-row";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "Articles",
@@ -39,20 +40,16 @@ export default async function AdminArticlesPage() {
       <div className="mt-8 space-y-2">
         {sorted.length > 0 ? (
           sorted.map((article) => (
-            <Link
-              key={article.id}
-              href={`/admin/articles/${article.id}`}
-              className="flex items-center justify-between rounded-xl border border-black/10 bg-white px-4 py-3 text-sm transition hover:-translate-y-0.5 hover:shadow-card-hover dark:border-white/10 dark:bg-zinc-900"
-            >
+            <ListRow key={article.id} href={`/admin/articles/${article.id}`}>
               <span className="font-medium text-zinc-900 dark:text-white">{article.title}</span>
               <span className="flex items-center gap-3 text-zinc-600 dark:text-zinc-300">
                 <span>{ARTICLE_STATUS_LABELS[article.status]}</span>
                 <span>· {formatRelativeTime(article.updated_at)}</span>
               </span>
-            </Link>
+            </ListRow>
           ))
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">No articles yet.</p>
+          <EmptyState>No articles yet.</EmptyState>
         )}
       </div>
     </Container>

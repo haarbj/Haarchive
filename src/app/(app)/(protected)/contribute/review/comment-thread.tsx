@@ -7,6 +7,8 @@ import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { addArticleComment, deleteArticleComment, toggleCommentResolved, type AddCommentState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ConfirmButton } from "@/components/ui/confirm-button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -74,14 +76,13 @@ export function CommentThread({
                     >
                       {c.resolved ? "Reopen" : "Mark resolved"}
                     </button>
-                    <button
-                      type="button"
-                      disabled={isToggling}
-                      onClick={() => startToggle(() => deleteArticleComment(c.id, articleId))}
+                    <ConfirmButton
+                      action={() => deleteArticleComment(c.id, articleId)}
+                      confirmMessage="Delete this comment? This can't be undone."
+                      label="Delete"
+                      pendingLabel="Deleting…"
                       className="text-xs font-semibold text-red-700 dark:text-red-400"
-                    >
-                      Delete
-                    </button>
+                    />
                   </div>
                 ) : null}
               </div>
@@ -112,14 +113,11 @@ export function CommentThread({
           <textarea
             name="comment"
             rows={3}
+            aria-label="Comment"
             placeholder="Needs more nuance. During high-volume endurance training, processed carbohydrates can be useful and sometimes necessary."
             className={fieldClass}
           />
-          {state.error ? (
-            <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-              {state.error}
-            </p>
-          ) : null}
+          {state.error ? <FormError>{state.error}</FormError> : null}
           <Button type="submit" disabled={isPending}>
             {isPending ? "Posting…" : "Add comment"}
           </Button>

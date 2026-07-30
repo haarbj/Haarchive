@@ -2,9 +2,9 @@ import Link from "next/link";
 
 import { ContactForm } from "@/components/contact-form";
 import { socialLinks } from "@/lib/social-links";
+import { textLinkClass } from "@/components/ui/text-link";
 
-const linkClass =
-  "font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70";
+const linkClass = `font-semibold text-zinc-900 dark:text-white ${textLinkClass}`;
 
 // The Contact section's ToolComponent (see sectionTools in [slug]/page.tsx)
 // -- a form and reader-facing links aren't expressible as ContentBlock[], so

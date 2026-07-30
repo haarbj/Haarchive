@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 
 import { LabeledInput } from "@/components/ui/labeled-input";
-import { formatClock, parseTimeToSeconds } from "@/lib/format";
+import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
 import { statCardClass, statLabelClass } from "@/lib/tool-styles";
 

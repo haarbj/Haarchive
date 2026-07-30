@@ -5,6 +5,7 @@ import { useActionState, useId, useState } from "react";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { updateContributorProfile } from "./actions";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -101,11 +102,7 @@ export function ContributorProfileForm({
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Separate with commas.</p>
       </div>
 
-      {state.error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
       {state.success && (
         <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Saved.

@@ -2,6 +2,7 @@ import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import { formatDate } from "@/lib/format";
 import { MILE_METERS } from "@/lib/race-distances";
 import type { WorkoutType } from "@/lib/coaching-engine";
+import { Badge } from "@/components/ui/badge";
 
 // Previously implemented independently in three files (schedule-builder.tsx,
 // team-schedule-view.tsx, all-groups-day-view.tsx) -- adding duration_min
@@ -46,9 +47,9 @@ export function WorkoutMetaLine({
       {workout.workout_type && ` · ${workoutTypeLabel(workout.workout_type)}`}
       {includeDuration && workout.duration_min && ` · ${workout.duration_min} min`}
       {workout.is_race && (
-        <span className="ml-1.5 rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-bold tracking-wide text-rose-800 normal-case dark:bg-rose-900/40 dark:text-rose-300">
+        <Badge tone="race" className="ml-1.5 normal-case">
           RACE
-        </span>
+        </Badge>
       )}
     </p>
   );

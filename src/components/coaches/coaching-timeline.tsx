@@ -27,7 +27,7 @@ export function CoachingTimeline({ coaches }: { coaches: Coach[] }) {
           {DECADE_MARKS.map((year) => (
             <span
               key={year}
-              className="absolute top-0 -translate-x-1/2 text-xs text-zinc-400 dark:text-zinc-500"
+              className="absolute top-0 -translate-x-1/2 text-xs text-zinc-500 dark:text-zinc-400"
               style={{ left: `${percent(year)}%` }}
             >
               {year}

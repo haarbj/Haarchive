@@ -239,7 +239,7 @@ export function FormattableEditable({
       <FormatToolbar onApplyMark={applyMark} onApplyLink={applyLink} />
       <div className="relative">
         {value === "" && placeholder ? (
-          <span className="pointer-events-none absolute top-2.5 left-4 text-base text-zinc-400 dark:text-zinc-500">
+          <span className="pointer-events-none absolute top-2.5 left-4 text-base text-zinc-500 dark:text-zinc-400">
             {placeholder}
           </span>
         ) : null}
@@ -280,7 +280,7 @@ export function InlineFormattableField({
   return (
     <div className={`relative ${className}`}>
       {value === "" && placeholder ? (
-        <span className="pointer-events-none absolute top-2.5 left-4 text-base text-zinc-400 dark:text-zinc-500">
+        <span className="pointer-events-none absolute top-2.5 left-4 text-base text-zinc-500 dark:text-zinc-400">
           {placeholder}
         </span>
       ) : null}

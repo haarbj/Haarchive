@@ -1,4 +1,28 @@
-import type { ArticleAttribution, ContributorAttribution } from "@/components/article-byline";
+export type ContributorAttribution = {
+  userId: string;
+  name: string;
+  title: string | null;
+  avatarUrl: string | null;
+};
+
+export type ArticleAttribution = {
+  // Every "author"-role person, rendered with equal visual weight -- some
+  // articles genuinely have no single "lead," just co-authors who wrote it
+  // together, so this never singles one out. primary_author_id (if it
+  // resolves to one of these) only sorts that person first, as a display-
+  // order hint, not a claim they contributed more.
+  authors: ContributorAttribution[];
+  // A distinct role from "author" (see article_contributors/the admin
+  // panel) -- kept as its own separately-labeled group instead of merged
+  // into the author line, so an author and a contributor actually read
+  // differently, not as two names in the same bucket.
+  contributors: ContributorAttribution[];
+  // Kept separate from authorship entirely -- review is a distinct trust
+  // signal (verification), not another flavor of "helped write this".
+  reviewers: ContributorAttribution[];
+  publishedAt: string | null;
+  evidenceCategory: string | null;
+};
 
 type ContributorRow = { user_id: string; contributor_role: string; title_override: string | null };
 type ProfileRow = { id: string; display_name: string; avatar_url: string | null };
@@ -12,6 +36,7 @@ export function buildArticleAttribution(
   contributors: ContributorRow[],
   profiles: ProfileRow[],
   contributorProfiles: ContributorProfileRow[],
+  primaryAuthorId: string | null,
   publishedAt: string | null,
   evidenceCategory: string | null,
 ): ArticleAttribution {
@@ -36,8 +61,18 @@ export function buildArticleAttribution(
       .filter((c): c is ContributorAttribution => c !== null);
   }
 
+  const authorsRaw = byRole("author");
+  const authors = primaryAuthorId
+    ? [...authorsRaw].sort((a, b) => {
+        if (a.userId === primaryAuthorId) return -1;
+        if (b.userId === primaryAuthorId) return 1;
+        return 0;
+      })
+    : authorsRaw;
+
   return {
-    authors: byRole("author"),
+    authors,
+    contributors: byRole("contributor"),
     reviewers: byRole("reviewer"),
     publishedAt,
     evidenceCategory,

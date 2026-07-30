@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
-import { formatClock, formatDistance } from "@/lib/format";
+import { formatDistance } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { raceDistanceMap } from "@/lib/race-distances";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";

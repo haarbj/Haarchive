@@ -8,6 +8,8 @@ import {
   type ArticleAdminState,
 } from "@/app/(app)/(protected)/admin/articles/actions";
 import { Button } from "@/components/ui/button";
+import { ConfirmButton } from "@/components/ui/confirm-button";
+import { FormError } from "@/components/ui/form-error";
 
 const TRANSITION_LABELS: Record<string, string> = {
   in_review: "Send back to review",
@@ -46,11 +48,7 @@ export function StatusPanel({
         ))}
       </form>
 
-      {state.error ? (
-        <p role="alert" className="mt-2 text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <FormError className="mt-2">{state.error}</FormError> : null}
       {state.success ? (
         <p role="status" className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Updated.
@@ -58,15 +56,13 @@ export function StatusPanel({
       ) : null}
 
       {canDelete ? (
-        <button
-          type="button"
-          onClick={() => {
-            if (confirm("Delete this draft? This can't be undone.")) void deleteArticleDraft(articleId);
-          }}
+        <ConfirmButton
+          action={() => deleteArticleDraft(articleId)}
+          confirmMessage="Delete this draft? This can't be undone."
+          label="Delete draft"
+          pendingLabel="Deleting…"
           className="mt-4 text-xs font-semibold text-red-700 dark:text-red-400"
-        >
-          Delete draft
-        </button>
+        />
       ) : null}
     </div>
   );

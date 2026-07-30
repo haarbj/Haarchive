@@ -7,15 +7,41 @@ import { ARTICLE_STATUS_LABELS } from "@/lib/articles/constants";
 import { buildArticleAttribution } from "@/lib/articles/attribution";
 import { isArticleAuthor } from "@/lib/articles/is-author";
 import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
+import { mapPublicCitationRow } from "@/lib/articles/citations";
 import { categoryMap, type Section } from "@/lib/sections";
+import { estimateReadingMinutes } from "@/lib/reading-time";
+import { ArticleHero } from "@/components/article-hero";
 import { ArticleLayout } from "@/components/article-layout";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
-import { Heading } from "@/components/ui/heading";
 
 type ContributorRow = { user_id: string; contributor_role: string; title_override: string | null };
 type ProfileRow = { id: string; display_name: string; avatar_url: string | null };
 type ContributorProfileRow = { user_id: string; title: string | null };
+
+// Which page linked here -- admin/articles/[id], contribute/articles/[id],
+// and contribute/review/[id] each pass their own `?from=` so "back" returns
+// to the actual queue the viewer came from, rather than being guessed from
+// role. Guessing from isAuthor/isAdmin alone broke for an admin previewing
+// their own article: they're both an admin AND the author, so role alone
+// can't tell whether they arrived from the admin queue or their own drafts.
+type PreviewOrigin = "admin" | "review" | "author";
+
+const BACK_HREF: Record<PreviewOrigin, (articleId: string) => string> = {
+  admin: (articleId) => `/admin/articles/${articleId}`,
+  review: (articleId) => `/contribute/review/${articleId}`,
+  author: (articleId) => `/contribute/articles/${articleId}`,
+};
+
+const BACK_LABEL: Record<PreviewOrigin, string> = {
+  admin: "article",
+  review: "review",
+  author: "draft",
+};
+
+function isPreviewOrigin(value: string | undefined): value is PreviewOrigin {
+  return value === "admin" || value === "review" || value === "author";
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -32,8 +58,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 // row, gated by permission instead of `status = 'published'`. Open to the
 // author, an assigned reviewer, or an admin -- the same three audiences
 // already split across the edit page and the review page.
-export default async function PreviewArticlePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PreviewArticlePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
+}) {
   const { id } = await params;
+  const { from } = await searchParams;
   const session = await getAppSession(); // non-null: contribute/layout.tsx already gated
   const admin = createServiceRoleClient();
 
@@ -56,11 +89,22 @@ export default async function PreviewArticlePage({ params }: { params: Promise<{
 
   const article = mapArticleRow(row);
 
-  const { data: contributors } = await admin
-    .from("article_contributors")
-    .select("user_id, contributor_role, title_override")
-    .eq("article_id", article.id)
-    .returns<ContributorRow[]>();
+  const [{ data: contributors }, { data: citationRows }] = await Promise.all([
+    admin
+      .from("article_contributors")
+      .select("user_id, contributor_role, title_override")
+      .eq("article_id", article.id)
+      .returns<ContributorRow[]>(),
+    // service-role, so this isn't gated by article_citations_select_
+    // published like the live page is -- a preview should show citations
+    // on a still-unpublished draft too.
+    admin
+      .from("article_citations")
+      .select("id, paper_title, authors, year, link_or_doi")
+      .eq("article_id", article.id)
+      .returns<{ id: string; paper_title: string; authors: string | null; year: number | null; link_or_doi: string | null }[]>(),
+  ]);
+  const citations = (citationRows ?? []).map(mapPublicCitationRow);
 
   const userIds = (contributors ?? []).map((c) => c.user_id);
   const [{ data: profiles }, { data: contributorProfiles }] = userIds.length
@@ -70,11 +114,16 @@ export default async function PreviewArticlePage({ params }: { params: Promise<{
       ])
     : [{ data: [] as ProfileRow[] }, { data: [] as ContributorProfileRow[] }];
 
+  // A still-unpublished draft has no real published_at yet -- since this
+  // page's whole premise is "exactly how it'll look once published,"
+  // showing today's date here simulates publishing it right now, rather
+  // than silently dropping the date line until it actually goes live.
   const attribution = buildArticleAttribution(
     contributors ?? [],
     profiles ?? [],
     contributorProfiles ?? [],
-    article.publishedAt,
+    article.primaryAuthorId,
+    article.publishedAt ?? new Date().toISOString(),
     article.evidenceCategory,
   );
 
@@ -88,7 +137,11 @@ export default async function PreviewArticlePage({ params }: { params: Promise<{
     content: article.content,
   };
 
-  const backHref = isAuthor ? `/contribute/articles/${article.id}` : `/contribute/review/${article.id}`;
+  // Falls back to the old role-based guess only when `from` is missing
+  // (e.g. a bookmarked or shared preview URL with no origin attached).
+  const origin: PreviewOrigin = isPreviewOrigin(from) ? from : isAuthor ? "author" : "review";
+  const backHref = BACK_HREF[origin](article.id);
+  const backLabel = BACK_LABEL[origin];
 
   return (
     <Container variant="content">
@@ -96,13 +149,22 @@ export default async function PreviewArticlePage({ params }: { params: Promise<{
         <strong>Preview</strong>: this is exactly how the article will look once published ({ARTICLE_STATUS_LABELS[article.status]} now). Not visible to readers yet.
       </div>
       <div className="mt-4">
-        <BackLink href={backHref}>Back to {isAuthor ? "draft" : "review"}</BackLink>
+        <BackLink href={backHref}>Back to {backLabel}</BackLink>
       </div>
-      <Heading>{previewSection.title}</Heading>
-      {previewSection.mission ? (
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{previewSection.mission}</p>
-      ) : null}
-      <ArticleLayout section={previewSection} category={parentCategory} content={previewSection.content ?? []} attribution={attribution} />
+      <ArticleHero
+        title={previewSection.title}
+        mission={article.subtitle}
+        coverImageUrl={article.coverImageUrl}
+        attribution={attribution}
+        readingMinutes={estimateReadingMinutes(article.content)}
+      />
+      <ArticleLayout
+        section={previewSection}
+        category={parentCategory}
+        content={previewSection.content ?? []}
+        attribution={attribution}
+        citations={citations}
+      />
     </Container>
   );
 }

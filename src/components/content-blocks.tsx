@@ -6,6 +6,7 @@ import { linkifyContent } from "@/lib/linkify";
 import { ContentCallout } from "@/components/content-callout";
 import { InlineCalculator } from "@/components/inline-calculators";
 import { PullQuote } from "@/components/pull-quote";
+import { textLinkClass } from "@/components/ui/text-link";
 
 type ContentBlocksProps = {
   content: ContentBlock[];
@@ -118,7 +119,7 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
                 {" "}
                 <Link
                   href={block.linkHref}
-                  className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+                  className={`font-semibold text-zinc-900 dark:text-white ${textLinkClass}`}
                 >
                   {block.linkText}
                 </Link>

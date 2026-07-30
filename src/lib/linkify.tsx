@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { glossaryTerms, type GlossaryTerm } from "@/lib/glossary";
 import { linkifySectionReferences } from "@/lib/section-linkify";
+import { textLinkClass } from "@/components/ui/text-link";
 
 type AliasEntry = { alias: string; term: GlossaryTerm };
 
@@ -72,7 +73,7 @@ export function linkifyText(
       <Link
         key={`glossary-${term.id}-${key++}`}
         href={term.href}
-        className="underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70"
+        className={textLinkClass}
       >
         {matchedText}
       </Link>,
@@ -103,8 +104,7 @@ export const BOLD_RE = /\*\*([^*]+)\*\*/;
 export const UNDERLINE_RE = /\+\+([^+]+)\+\+/;
 export const ITALIC_RE = /_([^_]+)_/;
 
-const LINK_CLASSNAME =
-  "underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70";
+const LINK_CLASSNAME = textLinkClass;
 
 type InlineMatch = {
   start: number;

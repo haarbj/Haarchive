@@ -7,7 +7,7 @@ type Tool = "pace" | "cv-threshold" | "tinman";
 
 const TOOL_LINK: Record<Tool, { href: string; label: string }> = {
   pace: { href: "/pace-calculator", label: "Pace & Heart Rate Calculator" },
-  "cv-threshold": { href: "/cv-threshold-calculator", label: "Threshold, CV & VO2max Pace Calculator" },
+  "cv-threshold": { href: "/cv-threshold-calculator", label: "Threshold, CV & VO2 Max Pace Calculator" },
   tinman: { href: "/tinman-calculator", label: "Tinman Running Calculator" },
 };
 

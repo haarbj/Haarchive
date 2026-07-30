@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { geocodeLabel } from "@/lib/geocode";
 import type { LocationSearch } from "@/lib/use-location-search";
+import { Button } from "@/components/ui/button";
 
 type LocationSearchFieldProps = {
   search: LocationSearch;
@@ -97,19 +98,12 @@ export function LocationSearchField({
             </div>
           )}
         </div>
-        <button
-          type="submit"
-          className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="submit" size="lg">
           Look up
-        </button>
-        <button
-          type="button"
-          onClick={search.attemptGeolocation}
-          className="rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/20 dark:text-zinc-200 dark:hover:bg-white/10"
-        >
+        </Button>
+        <Button type="button" variant="outline" size="lg" onClick={search.attemptGeolocation}>
           Use my location
-        </button>
+        </Button>
       </form>
       {message !== undefined && (
         <p className="mt-2 min-h-[1.25rem] text-xs text-zinc-600 dark:text-zinc-300">{message}</p>

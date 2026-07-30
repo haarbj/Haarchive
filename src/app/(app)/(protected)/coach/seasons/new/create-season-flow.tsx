@@ -13,6 +13,7 @@ import { addDays, diffDays, type SeasonPhaseDraft } from "@/lib/coaching-engine"
 import { formatDate } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 type Step = "setup" | "preview";
 
@@ -237,11 +238,7 @@ export function CreateSeasonFlow() {
           )}
         </div>
 
-        {error && (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {error}
-          </p>
-        )}
+        {error && <FormError>{error}</FormError>}
 
         <Button type="button" size="lg" onClick={handlePreview} disabled={isPending}>
           {isPending ? "Building preview…" : "Preview season"}
@@ -265,6 +262,7 @@ export function CreateSeasonFlow() {
                 <input
                   value={phase.displayName}
                   onChange={(e) => updatePhaseField(i, "displayName", e.target.value)}
+                  aria-label={`Phase ${i + 1} name`}
                   className={`${fieldClass} w-auto flex-1 min-w-40 font-medium`}
                 />
                 <span className="text-xs text-zinc-500 capitalize dark:text-zinc-400">({phase.phase})</span>
@@ -276,12 +274,14 @@ export function CreateSeasonFlow() {
                   type="date"
                   value={phase.endDate}
                   onChange={(e) => updatePhaseEndDate(i, e.target.value)}
+                  aria-label={`Phase ${i + 1} end date`}
                   className={`${dateFieldClass} w-auto py-1`}
                 />
               </div>
               <input
                 value={phase.primaryGoal}
                 onChange={(e) => updatePhaseField(i, "primaryGoal", e.target.value)}
+                aria-label={`Phase ${i + 1} primary goal`}
                 className={`${fieldClass} mt-2 text-xs`}
                 placeholder="Primary goal for this phase"
               />
@@ -316,12 +316,14 @@ export function CreateSeasonFlow() {
                 value={race.date}
                 disabled={race.isGoalRace}
                 onChange={(e) => updateRaceField(i, "date", e.target.value)}
+                aria-label={`Race ${i + 1} date`}
                 className={`${dateFieldClass} w-auto disabled:opacity-60`}
               />
               <input
                 value={race.name}
                 disabled={race.isGoalRace}
                 onChange={(e) => updateRaceField(i, "name", e.target.value)}
+                aria-label={`Race ${i + 1} name`}
                 className={`${fieldClass} flex-1 min-w-40 disabled:opacity-60`}
                 placeholder="Race name"
               />
@@ -350,11 +352,7 @@ export function CreateSeasonFlow() {
         </button>
       </Card>
 
-      {error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <FormError>{error}</FormError>}
 
       <div className="flex flex-wrap gap-3">
         <Button type="button" variant="outline" size="lg" onClick={() => setStep("setup")}>

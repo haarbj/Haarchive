@@ -439,9 +439,9 @@ export function PacePercentCalculator() {
           href="/cv-threshold-calculator"
           className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
         >
-          Threshold, CV &amp; VO2max Pace Calculator
+          Threshold, CV &amp; VO2 Max Pace Calculator
         </Link>{" "}
-        predicts threshold, CV, and VO2max paces (with uncertainty ranges) from a single race performance.
+        predicts threshold, CV, and VO2 max paces (with uncertainty ranges) from a single race performance.
       </p>
 
       <p className="text-xs text-zinc-600 dark:text-zinc-300">

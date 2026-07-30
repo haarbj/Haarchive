@@ -7,6 +7,7 @@ import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { addInjury, deleteInjury, updateInjury } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 const dateFieldClass = `${fieldClass} [&::-webkit-calendar-picker-indicator]:dark:invert`;
@@ -155,11 +156,7 @@ function EditInjuryForm({ injury, onCancel, onSaved }: { injury: InjuryRow; onCa
         <input type="hidden" name="injuryId" value={injury.id} />
         <InjuryFields baseId={baseId} today={today} defaults={injury} />
 
-        {state.error && (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
+        {state.error && <FormError>{state.error}</FormError>}
 
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={isPending}>
@@ -238,11 +235,7 @@ export function InjuriesSection({ injuries }: { injuries: InjuryRow[] }) {
         <form action={formAction} className="space-y-4 rounded-xl bg-black/[0.02] p-4 dark:bg-white/[0.03]">
           <InjuryFields baseId={baseId} today={today} />
 
-          {state.error && (
-            <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-              {state.error}
-            </p>
-          )}
+          {state.error && <FormError>{state.error}</FormError>}
 
           <Button type="submit" disabled={isPending}>
             {isPending ? "Adding…" : "Add injury"}

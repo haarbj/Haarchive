@@ -1613,7 +1613,7 @@ export function MarathonPacingCalculator() {
                   directionally useful, not lab-precise. Critical speed and vVO2max come from the same statistical
                   model behind the{" "}
                   <Link href="/cv-threshold-calculator" className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white">
-                    Threshold/CV/VO2max Calculator
+                    Threshold, CV & VO2 Max Pace Calculator
                   </Link>
                   , so its own domain and limitations apply here too.
                 </p>
@@ -1626,7 +1626,7 @@ export function MarathonPacingCalculator() {
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
         Want the training paces behind your critical speed number on their own? See the{" "}
         <Link href="/cv-threshold-calculator" className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white">
-          Threshold/CV/VO2max Calculator
+          Threshold, CV & VO2 Max Pace Calculator
         </Link>
         . For the physics behind grade and wind adjustments on their own, see the{" "}
         <Link href="/gap-calculator" className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white">

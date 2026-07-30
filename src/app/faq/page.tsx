@@ -9,6 +9,7 @@ import type { Question } from "@/lib/questions/types";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -59,7 +60,7 @@ export default async function FaqPage() {
       </p>
 
       {orderedGroups.length === 0 ? (
-        <p className="mt-10 text-zinc-600 dark:text-zinc-300">Nothing here yet.</p>
+        <EmptyState className="mt-10">Nothing here yet.</EmptyState>
       ) : (
         <div className="mt-10 space-y-10">
           {orderedGroups.map((group) => (

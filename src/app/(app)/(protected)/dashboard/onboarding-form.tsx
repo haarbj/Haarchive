@@ -12,6 +12,7 @@ import {
 } from "./form-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 type OnboardingFormProps = {
   // Team-connected athletes get their training plan from their coach, not
@@ -197,11 +198,7 @@ export function OnboardingForm({ teamConnected = false }: OnboardingFormProps) {
           </div>
         )}
 
-        {state.error && (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
+        {state.error && <FormError>{state.error}</FormError>}
 
         <Button type="submit" size="lg" disabled={isPending}>
           {isPending ? "Saving…" : "Save"}

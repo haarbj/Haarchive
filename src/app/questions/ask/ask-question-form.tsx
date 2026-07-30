@@ -8,6 +8,8 @@ import type { RetrievedExcerpt } from "@/lib/ai/retrieval";
 import { categories } from "@/lib/sections";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { SuccessPanel } from "@/components/ui/success-panel";
+import { FormError } from "@/components/ui/form-error";
 
 type AskQuestionFormProps = {
   sourceSectionSlug?: string;
@@ -39,18 +41,15 @@ export function AskQuestionForm({ sourceSectionSlug }: AskQuestionFormProps) {
 
   if (state.success) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 dark:border-emerald-400/30 dark:bg-emerald-400/5">
-        <p className="text-lg font-semibold text-zinc-900 dark:text-white">Thanks, that’s in the queue.</p>
-        <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
-          It’ll show up on the Questions page right away, and it factors into what gets written next.
-        </p>
+      <SuccessPanel heading="Thanks, that’s in the queue.">
+        <p>It’ll show up on the Questions page right away, and it factors into what gets written next.</p>
         <Link
           href="/questions"
           className="mt-4 inline-flex text-sm font-semibold underline decoration-black/20 underline-offset-2 hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70"
         >
           Back to Questions →
         </Link>
-      </div>
+      </SuccessPanel>
     );
   }
 
@@ -176,11 +175,7 @@ export function AskQuestionForm({ sourceSectionSlug }: AskQuestionFormProps) {
         <input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {state.error ? (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <FormError>{state.error}</FormError> : null}
 
       <Button type="submit" size="lg" disabled={isPending}>
         {isPending ? "Submitting…" : "Submit"}

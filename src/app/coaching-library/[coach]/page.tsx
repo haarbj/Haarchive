@@ -44,7 +44,7 @@ export default async function CoachRoutePage({ params }: CoachRouteParams) {
       <BackLink href="/coaching-library">Back to Coaching Library</BackLink>
       <Heading>
         {coach.name}
-        {coach.shortName ? <span className="text-zinc-400 dark:text-zinc-500"> ({coach.shortName})</span> : null}
+        {coach.shortName ? <span className="text-zinc-500 dark:text-zinc-400"> ({coach.shortName})</span> : null}
       </Heading>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{coach.oneLiner}</p>
       {coach.review ? (

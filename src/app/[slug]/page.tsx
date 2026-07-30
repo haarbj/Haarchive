@@ -13,9 +13,11 @@ import {
 } from "@/lib/sections";
 import { createClient } from "@/lib/db/server";
 import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
-import { buildArticleAttribution } from "@/lib/articles/attribution";
+import { buildArticleAttribution, type ArticleAttribution } from "@/lib/articles/attribution";
+import { mapPublicCitationRow, type PublicCitation } from "@/lib/articles/citations";
 import type { Article } from "@/lib/articles/types";
 import { formatDate } from "@/lib/format";
+import { estimateReadingMinutes } from "@/lib/reading-time";
 import { ContactPage } from "@/components/contact-page";
 import { CoachingLibraryHome } from "@/components/coaches/coaching-library-home";
 import { AthleteLibraryHome } from "@/components/athletes/athlete-library-home";
@@ -31,8 +33,8 @@ import { TrainingPlansHome } from "@/components/training-plans/training-plans-ho
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
+import { ArticleHero } from "@/components/article-hero";
 import { ArticleLayout } from "@/components/article-layout";
-import type { ArticleAttribution } from "@/components/article-byline";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
@@ -117,7 +119,7 @@ async function loadArticleAttribution(article: Article): Promise<ArticleAttribut
 
   const userIds = (contributors ?? []).map((c) => c.user_id);
   if (userIds.length === 0) {
-    return buildArticleAttribution([], [], [], article.publishedAt, article.evidenceCategory);
+    return buildArticleAttribution([], [], [], article.primaryAuthorId, article.publishedAt, article.evidenceCategory);
   }
 
   const [{ data: profiles }, { data: contributorProfiles }] = await Promise.all([
@@ -137,9 +139,27 @@ async function loadArticleAttribution(article: Article): Promise<ArticleAttribut
     contributors ?? [],
     profiles ?? [],
     contributorProfiles ?? [],
+    article.primaryAuthorId,
     article.publishedAt,
     article.evidenceCategory,
   );
+}
+
+// Narrow column list on purpose -- never selects notes/status/admin_notes/
+// submitted_by, which are internal editorial fields (see the
+// content_suggestions migration's own reasoning) and shouldn't reach a
+// public page even server-side. Relies on article_citations_select_
+// published (articles.sql's public-read migration) to scope this to the
+// current published article; RLS itself is what stops a draft's citations
+// from leaking here.
+async function loadArticleCitations(articleId: string): Promise<PublicCitation[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("article_citations")
+    .select("id, paper_title, authors, year, link_or_doi")
+    .eq("article_id", articleId)
+    .returns<{ id: string; paper_title: string; authors: string | null; year: number | null; link_or_doi: string | null }[]>();
+  return (data ?? []).map(mapPublicCitationRow);
 }
 
 export async function generateMetadata({
@@ -305,7 +325,10 @@ export default async function SectionPage({ params }: SectionPageProps) {
     notFound();
   }
 
-  const attribution = await loadArticleAttribution(article);
+  const [attribution, citations] = await Promise.all([
+    loadArticleAttribution(article),
+    loadArticleCitations(article.id),
+  ]);
   const parentCategory = categoryMap.get("writing-and-resources")!;
   // Every DB-backed article belongs to the Articles pipeline (see
   // /contribute/articles), never to the broader Writing & Resources
@@ -325,11 +348,20 @@ export default async function SectionPage({ params }: SectionPageProps) {
   return (
     <Container variant="content">
       <BackLink href={`/${articlesSection.slug}`}>Back to {articlesSection.title}</BackLink>
-      <Heading>{dbSection.title}</Heading>
-      {dbSection.mission ? (
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{dbSection.mission}</p>
-      ) : null}
-      <ArticleLayout section={dbSection} category={parentCategory} content={dbSection.content!} attribution={attribution} />
+      <ArticleHero
+        title={dbSection.title}
+        mission={article.subtitle}
+        coverImageUrl={article.coverImageUrl}
+        attribution={attribution}
+        readingMinutes={estimateReadingMinutes(article.content)}
+      />
+      <ArticleLayout
+        section={dbSection}
+        category={parentCategory}
+        content={dbSection.content!}
+        attribution={attribution}
+        citations={citations}
+      />
     </Container>
   );
 }

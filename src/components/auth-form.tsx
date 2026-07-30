@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import type { AuthActionState } from "@/app/(app)/auth-actions";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -67,14 +68,7 @@ export function AuthForm({
         />
       </div>
 
-      {state.error && (
-        <p
-          role="alert"
-          className="text-sm font-medium text-red-700 dark:text-red-400"
-        >
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
       {state.message && (
         <p
           role="status"

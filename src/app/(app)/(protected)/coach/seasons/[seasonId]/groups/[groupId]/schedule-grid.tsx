@@ -227,6 +227,7 @@ function GridCell({
           onChange={(e) => setText(e.target.value)}
           onBlur={commitEdit}
           onKeyDown={handleKeyDown}
+          aria-label="Add a session"
           placeholder="Add a session…"
           className={inputClass}
         />

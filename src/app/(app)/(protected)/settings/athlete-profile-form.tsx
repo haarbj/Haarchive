@@ -6,6 +6,7 @@ import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { updateAthleteProfile } from "./actions";
 import { ATHLETE_LEVELS, ATHLETE_LEVEL_LABELS, SEXES } from "@/lib/validation/athlete-profile";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -189,11 +190,7 @@ export function AthleteProfileForm({
         athletes on a team, your coach.
       </p>
 
-      {state.error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
       {state.success && (
         <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Saved.

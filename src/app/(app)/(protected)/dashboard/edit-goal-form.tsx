@@ -6,6 +6,7 @@ import { updateGoal } from "./actions";
 import { GOAL_DISTANCES, dateFieldClass, fieldClass, labelClass } from "./form-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 type Goal = {
   id: string;
@@ -106,11 +107,7 @@ export function EditGoalForm({ goal, onCancel, onSaved }: EditGoalFormProps) {
           </div>
         </div>
 
-        {state.error && (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
+        {state.error && <FormError>{state.error}</FormError>}
 
         <div className="flex items-center gap-4">
           <Button type="submit" size="lg" disabled={isPending}>

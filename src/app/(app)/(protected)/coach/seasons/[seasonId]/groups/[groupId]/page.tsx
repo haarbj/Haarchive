@@ -6,7 +6,7 @@ import { addDays } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { ensureGroupPlan } from "@/app/(app)/(protected)/coach/group-plans-actions";
-import { BackLink } from "@/components/back-link";
+import { BackLink } from "@/components/ui/back-link";
 import type { GroupDayEntries } from "./all-groups-day-view";
 import type { WeekRange, Workout } from "./schedule-builder";
 import { ViewToggle } from "./view-toggle";
@@ -144,8 +144,8 @@ export default async function GroupSchedulePage({ params }: PageProps) {
 
   return (
     <Container variant="dashboard">
-      <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
-      <Heading className="mt-4">{group.name}</Heading>
+      <BackLink href={`/coach/seasons/${seasonId}`}>{season.name}</BackLink>
+      <Heading>{group.name}</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {season.name}: build this group&rsquo;s week-by-week schedule.
       </p>

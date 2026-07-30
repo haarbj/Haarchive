@@ -10,7 +10,7 @@ import {
   type WorkoutPrescription,
 } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
-import { parseTimeToSeconds } from "@/lib/format";
+import { parseTimeToSeconds } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
 import { completeWorkoutSchema, generatePlanSchema } from "@/lib/validation/plan";
 

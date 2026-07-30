@@ -7,6 +7,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "Contributor Applications",
@@ -95,7 +96,7 @@ export default async function AdminContributorApplicationsPage() {
             </Card>
           ))
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">No applications yet.</p>
+          <EmptyState>No applications yet.</EmptyState>
         )}
       </div>
     </Container>

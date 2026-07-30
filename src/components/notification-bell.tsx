@@ -131,7 +131,7 @@ export function NotificationBell() {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : "Notifications"}
-        className="relative flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+        className="relative flex h-12 w-12 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
       >
         <svg className="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
@@ -189,7 +189,7 @@ export function NotificationBell() {
                       )}
                       <span className="min-w-0">
                         <span className="block">{n.content}</span>
-                        <span className="mt-0.5 block text-xs text-zinc-400 dark:text-zinc-500">
+                        <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
                           {formatRelativeTime(n.created_at)}
                           {href ? " · View" : ""}
                         </span>

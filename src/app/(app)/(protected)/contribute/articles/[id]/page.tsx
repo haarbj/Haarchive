@@ -116,7 +116,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
         {ARTICLE_STATUS_LABELS[article.status]} ·{" "}
         <Link
-          href={`/contribute/articles/${article.id}/preview`}
+          href={`/contribute/articles/${article.id}/preview?from=author`}
           className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
         >
           Preview

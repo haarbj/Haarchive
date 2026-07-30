@@ -63,7 +63,7 @@ export function SiteFooter() {
       </div>
 
       <div className="mx-auto mt-10 w-full max-w-chrome px-6">
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
           © {new Date().getFullYear()} The Haarchive.
         </p>
       </div>

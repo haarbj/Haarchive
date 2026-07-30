@@ -9,6 +9,8 @@ import { createArticleDraft, updateArticleDraft, type ArticleDraftState } from "
 import { ContentBlockEditor } from "./content-block-editor";
 import { CitationsEditor, type CitationDraft } from "./citations-editor";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
+import { ImageUrlField } from "@/components/ui/image-url-field";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -33,6 +35,7 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
   const [state, formAction, isPending] = useActionState<ArticleDraftState, FormData>(action, {});
   const [content, setContent] = useState<ContentBlock[]>(initial.content);
   const [citations, setCitations] = useState<CitationDraft[]>(initial.citations);
+  const [coverImageUrl, setCoverImageUrl] = useState(initial.coverImageUrl);
 
   return (
     <form action={formAction} className="space-y-8">
@@ -109,16 +112,10 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
 
         <div>
           <label htmlFor={`${baseId}-cover`} className={labelClass}>
-            Cover image URL
+            Cover image
           </label>
-          <input
-            id={`${baseId}-cover`}
-            name="coverImageUrl"
-            type="text"
-            defaultValue={initial.coverImageUrl}
-            placeholder="https://…"
-            className={fieldClass}
-          />
+          <ImageUrlField inputId={`${baseId}-cover`} value={coverImageUrl} onChange={setCoverImageUrl} placeholder="https://…" />
+          <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
         </div>
       </div>
 
@@ -142,11 +139,7 @@ export function ArticleEditorForm({ mode, articleId, initial }: Props) {
       <input type="hidden" name="contentJson" value={JSON.stringify(content)} />
       <input type="hidden" name="citationsJson" value={JSON.stringify(citations)} />
 
-      {state.error ? (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <FormError>{state.error}</FormError> : null}
       {state.success ? (
         <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Saved.

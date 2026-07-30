@@ -75,7 +75,7 @@ export function CoachingLibraryHome() {
                     <h3 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
                       {coach.name}
                       {coach.shortName ? (
-                        <span className="text-zinc-400 dark:text-zinc-500"> ({coach.shortName})</span>
+                        <span className="text-zinc-500 dark:text-zinc-400"> ({coach.shortName})</span>
                       ) : null}
                     </h3>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">{coach.yearsActive}</p>

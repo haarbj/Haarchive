@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/db/server";
-import { parseTimeToSeconds } from "@/lib/format";
+import { parseTimeToSeconds } from "@/lib/running-format";
 import { goalSchema, raceResultSchema, weeklyCheckinSchema } from "@/lib/validation/onboarding";
 import { mostRecentMonday } from "@/lib/week";
 

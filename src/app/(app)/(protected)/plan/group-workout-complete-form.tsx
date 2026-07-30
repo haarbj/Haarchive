@@ -4,6 +4,8 @@ import { useActionState, useId, useState, useTransition } from "react";
 
 import { deleteGroupWorkoutCompletion, logGroupWorkoutCompletion } from "./actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
+import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 // Mirrors WorkoutCard's completion form exactly (distance/time/HR/RPE/
 // notes) -- a coach-authored group session has no prescription to compare
@@ -75,13 +77,9 @@ export function GroupWorkoutCompleteForm({ workoutId, isRace = false }: { workou
         <input id={`${baseId}-notes`} name="notesInput" type="text" placeholder="How did it feel? Anything worth remembering?" className={fieldClass} />
       </div>
       <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="submit" disabled={isPending}>
           {isPending ? "Saving…" : isRace ? "Log your race result" : "Mark complete"}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => setExpanded(false)}
@@ -90,11 +88,7 @@ export function GroupWorkoutCompleteForm({ workoutId, isRace = false }: { workou
           Cancel
         </button>
       </div>
-      {state.error && (
-        <p role="alert" className="w-full text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError className="w-full">{state.error}</FormError>}
     </form>
   );
 }

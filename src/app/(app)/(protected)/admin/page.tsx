@@ -8,6 +8,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { CardLink } from "@/components/ui/card-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -148,7 +149,7 @@ export default async function AdminPage() {
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">No invites yet.</p>
+            <EmptyState className="mt-3">No invites yet.</EmptyState>
           )}
         </div>
       </div>

@@ -7,6 +7,7 @@ import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { RACE_DISTANCES } from "@/lib/race-distances";
 import { updateCommunityProfile } from "./actions";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -78,11 +79,7 @@ export function CommunityProfileForm({
         </div>
       </div>
 
-      {state.error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
       {state.success && (
         <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Saved.

@@ -20,6 +20,7 @@ import { fieldClass, labelClass } from "@/lib/form-styles";
 import { STATUS_LABELS, STATUS_ORDER, type Question } from "@/lib/questions/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 function isContentSuggestion(value: unknown): value is ContentSuggestion {
   return !!value && typeof value === "object" && "draftBody" in (value as object);
@@ -202,7 +203,7 @@ function EditForm({ question }: { question: Question }) {
         />
       </div>
 
-      {state.error ? <p role="alert" className="text-sm text-red-700 dark:text-red-400">{state.error}</p> : null}
+      {state.error ? <FormError>{state.error}</FormError> : null}
       {state.success ? <p className="text-sm text-emerald-700 dark:text-emerald-400">Saved.</p> : null}
 
       <Button type="submit" disabled={isPending}>
@@ -267,7 +268,7 @@ function AiAssistPanel({
         ) : null}
       </div>
 
-      {error ? <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <FormError className="mt-3">{error}</FormError> : null}
 
       {suggestion ? (
         <Card padding="sm" className="mt-5 space-y-4">
@@ -357,6 +358,7 @@ function MergePanel({ questionId }: { questionId: string }) {
       <input
         value={query}
         onChange={(e) => search(e.target.value)}
+        aria-label="Search for the question to merge into"
         placeholder="Search for the question to merge into…"
         className={`${fieldClass} mt-3 w-full`}
       />
@@ -383,6 +385,7 @@ function DangerZone({ questionId }: { questionId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   function archive() {
+    if (!window.confirm("Archive this question? It'll be hidden from the active list.")) return;
     startTransition(async () => {
       const result = await archiveQuestion(questionId);
       if ("error" in result && result.error) setError(result.error);
@@ -410,7 +413,7 @@ function DangerZone({ questionId }: { questionId: string }) {
           Delete (spam)
         </Button>
       </div>
-      {error ? <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-400">{error}</p> : null}
+      {error ? <FormError className="mt-3">{error}</FormError> : null}
     </div>
   );
 }

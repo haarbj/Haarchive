@@ -16,6 +16,7 @@ import { WorkoutLengthLine, WorkoutMetaLine } from "@/components/workout-summary
 import type { GroupDayEntries } from "./all-groups-day-view";
 import { WorkoutEntryForm } from "./workout-entry-form";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export type WeekRange = {
   weekIndex: number;
@@ -91,7 +92,7 @@ function WorkoutRow({
           <WorkoutLengthLine workout={workout} />
           {workout.notes && <p className="mt-0.5 text-xs text-amber-700 dark:text-amber-400">{workout.notes}</p>}
           {!workout.published_at && (
-            <p className="mt-0.5 text-xs font-medium text-zinc-400 dark:text-zinc-500">Not published</p>
+            <p className="mt-0.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">Not published</p>
           )}
         </div>
         <div aria-live="polite" className="-mr-2 -my-2 flex shrink-0 items-center gap-1 text-xs font-semibold">
@@ -130,8 +131,9 @@ function WorkoutRow({
               </label>
             ))}
           </div>
-          <button
+          <Button
             type="button"
+            size="sm"
             disabled={isPending || copyTargets.size === 0}
             onClick={() =>
               startTransition(async () => {
@@ -140,10 +142,10 @@ function WorkoutRow({
                 setCopyTargets(new Set());
               })
             }
-            className="mt-2 rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-zinc-900"
+            className="mt-2"
           >
             {isPending ? "Copying…" : "Copy"}
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -309,8 +311,9 @@ function WeekSection({
               </option>
             ))}
           </select>
-          <button
+          <Button
             type="button"
+            size="sm"
             disabled={isPending || !duplicateTarget}
             onClick={() =>
               startTransition(async () => {
@@ -319,10 +322,9 @@ function WeekSection({
                 refresh();
               })
             }
-            className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white disabled:opacity-60 dark:bg-white dark:text-zinc-900"
           >
             {isPending ? "Duplicating…" : "Duplicate"}
-          </button>
+          </Button>
         </div>
       )}
 

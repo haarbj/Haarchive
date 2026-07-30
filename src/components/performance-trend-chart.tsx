@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-import { formatClock, formatDate, formatDistance } from "@/lib/format";
+import { formatDate, formatDistance } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { parseIsoDateLocal, type TrendPoint } from "@/lib/performance-trend";
 
 const CHART_WIDTH = 640;

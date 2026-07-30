@@ -175,6 +175,43 @@ export async function updateArticleDraft(
   return { success: true };
 }
 
+export type ImageUploadState = { url?: string; error?: string };
+
+const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+
+// Lets a contributor use a photo they took themselves (no existing URL) --
+// same authorization gate as createArticleDraft, but doesn't require an
+// article to already exist since this is called mid-edit, before a draft
+// might even be saved yet.
+export async function uploadArticleImage(formData: FormData): Promise<ImageUploadState> {
+  const session = await getAppSession();
+  if (!session || (!session.isAdmin && !hasContentPermission(session.permissions, "content_contributor"))) {
+    return { error: "Not authorized." };
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) return { error: "No file provided." };
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { error: "Image is too large. Keep it under 8 MB." };
+  }
+
+  const extension = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+  const path = `${session.userId}/${crypto.randomUUID()}.${extension}`;
+
+  const admin = createServiceRoleClient();
+  const { error: uploadError } = await admin.storage
+    .from("article-images")
+    .upload(path, file, { contentType: file.type });
+  if (uploadError) return { error: uploadError.message };
+
+  const { data } = admin.storage.from("article-images").getPublicUrl(path);
+  return { url: data.publicUrl };
+}
+
 export type SubmitForReviewState = { error?: string; success?: boolean };
 
 export async function submitForReview(

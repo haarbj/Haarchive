@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/format";
 import type { MesocyclePhase, WorkoutType } from "@/lib/coaching-engine";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const ALL_WORKOUT_TYPES: WorkoutType[] = ["easy", "recovery", "long", "tempo", "vo2", "race", "strength"];
 
@@ -94,15 +95,11 @@ function PhaseEditForm({
         </div>
       </div>
 
-      {state.error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
 
       <div className="flex items-center gap-4">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Saving…" : "Save"}
+          {isPending ? "Saving…" : "Save changes"}
         </Button>
         <Button type="button" variant="ghost" onClick={onCancel}>
           Cancel

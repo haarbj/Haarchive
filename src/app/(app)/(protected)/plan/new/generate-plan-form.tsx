@@ -6,6 +6,7 @@ import { generatePlan } from "@/app/(app)/(protected)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 type GeneratePlanFormProps = {
   defaultCurrentWeeklyMileage?: number;
@@ -61,11 +62,7 @@ export function GeneratePlanForm({
         </select>
       </div>
 
-      {state.error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
 
       <Button type="submit" size="lg" disabled={isPending}>
         {isPending ? "Building your plan…" : "Generate my training plan"}

@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/db/server";
-import { formatClock } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { WorkoutLengthLine, WorkoutMetaLine } from "@/components/workout-summary-line";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { GroupWorkoutCompleteForm, UndoGroupCompletionButton } from "./group-workout-complete-form";
 import type { WorkoutType } from "@/lib/coaching-engine";
+import { Badge } from "@/components/ui/badge";
 
 type AthleteGoal = { race_name: string; distance_m: number; goal_time_s: number | null };
 
@@ -68,14 +69,14 @@ function GroupWorkoutRow({
             </p>
           )}
           {showPublishState && !workout.published_at && (
-            <p className="mt-0.5 text-xs font-medium text-zinc-400 dark:text-zinc-500">Not published</p>
+            <p className="mt-0.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">Not published</p>
           )}
           {completion && <CompletionSummary completion={completion} />}
         </div>
         {completion && (
-          <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+          <Badge tone="success" className="shrink-0">
             Completed
-          </span>
+          </Badge>
         )}
       </div>
       {showCompleteForm &&

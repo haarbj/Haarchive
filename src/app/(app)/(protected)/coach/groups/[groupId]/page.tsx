@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
-import { BackLink } from "@/components/back-link";
+import { BackLink } from "@/components/ui/back-link";
 import { DeleteGroupButton, MembershipRoster, RenameGroupForm } from "./group-detail-client";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -59,8 +59,8 @@ export default async function GroupDetailPage({ params }: GroupDetailPageProps) 
 
   return (
     <Container variant="dashboard">
-      <BackLink href="/coach/groups" label="Groups" />
-      <Heading className="mt-4">{group.name}</Heading>
+      <BackLink href="/coach/groups">Groups</BackLink>
+      <Heading>{group.name}</Heading>
 
       <Card padding="md" className="mt-10">
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">Rename</p>

@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 // references the same tokens for the same semantic reason (tip=sky,
 // warning=amber, research=violet, success=emerald), so a color choice made
 // once in globals.css now governs both a status pill and a callout box.
-export type BadgeTone = "neutral" | "tip" | "warning" | "research" | "success" | "error";
+export type BadgeTone = "neutral" | "tip" | "warning" | "research" | "success" | "error" | "race";
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
   neutral: "bg-zinc-500/10 text-zinc-700 dark:bg-zinc-400/10 dark:text-zinc-300",
@@ -15,6 +15,11 @@ const TONE_CLASSES: Record<BadgeTone, string> = {
   research: "bg-accent-research/10 text-accent-research",
   success: "bg-accent-success/10 text-accent-success",
   error: "bg-accent-error/10 text-accent-error",
+  // Not tied to a --accent-* token like the others -- "this is a race day,"
+  // the same rose used for a race workout's card border elsewhere
+  // (team-schedule-view.tsx), not a severity/status meaning the accent
+  // tokens are meant for.
+  race: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300",
 };
 
 type BadgeProps = {

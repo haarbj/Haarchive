@@ -1,14 +1,17 @@
 "use client";
 
-import { useActionState, useEffect, useId, useState, useTransition } from "react";
+import { useActionState, useEffect, useId, useState } from "react";
 
-import { formatClock, formatDate, formatDistance } from "@/lib/format";
+import { formatDate, formatDistance } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { RACE_DISTANCES } from "@/lib/race-distances";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { COURSE_TYPES } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { addRaceResult, deleteRaceResult, updateRaceResult } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ConfirmButton } from "@/components/ui/confirm-button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 const dateFieldClass = `${fieldClass} [&::-webkit-calendar-picker-indicator]:dark:invert`;
@@ -128,11 +131,7 @@ function EditRaceResultForm({
           </div>
         </div>
 
-        {state.error && (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
+        {state.error && <FormError>{state.error}</FormError>}
 
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={isPending}>
@@ -149,7 +148,6 @@ function EditRaceResultForm({
 
 function RaceResultCard({ result }: { result: RaceResultRow }) {
   const [editing, setEditing] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   if (editing) {
     return <EditRaceResultForm result={result} onCancel={() => setEditing(false)} onSaved={() => setEditing(false)} />;
@@ -171,14 +169,13 @@ function RaceResultCard({ result }: { result: RaceResultRow }) {
         >
           Edit
         </button>
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => startTransition(() => deleteRaceResult(result.id))}
+        <ConfirmButton
+          action={() => deleteRaceResult(result.id)}
+          confirmMessage="Remove this race result? This can't be undone."
+          label="Remove"
+          pendingLabel="Removing…"
           className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black disabled:opacity-50 dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
-        >
-          {isPending ? "Removing…" : "Remove"}
-        </button>
+        />
       </div>
     </Card>
   );
@@ -255,11 +252,7 @@ export function RaceResultsSection({ results }: { results: RaceResultRow[] }) {
             </div>
           </div>
 
-          {state.error && (
-            <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-              {state.error}
-            </p>
-          )}
+          {state.error && <FormError>{state.error}</FormError>}
 
           <Button type="submit" disabled={isPending}>
             {isPending ? "Adding…" : "Add race result"}

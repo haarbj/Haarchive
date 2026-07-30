@@ -23,7 +23,8 @@ import {
 import { computeAcwr } from "@/lib/acwr";
 import { predictSpeeds, selectTrainingPaces } from "@/lib/cv-threshold-math";
 import { cvThresholdModel } from "@/lib/cv-threshold-model-server";
-import { formatClock, formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
+import { formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { buildPerformanceTrend } from "@/lib/performance-trend";
 import { buildTrainingLoadSeries } from "@/lib/training-load";
 import { createClient } from "@/lib/db/server";

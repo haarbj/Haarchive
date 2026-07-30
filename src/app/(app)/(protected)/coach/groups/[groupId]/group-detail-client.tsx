@@ -10,6 +10,7 @@ import {
   renameGroup,
 } from "@/app/(app)/(protected)/coach/groups-actions";
 import { fieldClass } from "@/lib/form-styles";
+import { Button } from "@/components/ui/button";
 
 type Athlete = { id: string; display_name: string };
 
@@ -25,13 +26,9 @@ export function RenameGroupForm({ groupId, name }: { groupId: string; name: stri
         </label>
         <input id="rename-group" name="name" type="text" defaultValue={name} required className={`${fieldClass} w-64`} />
       </div>
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        {isPending ? "Saving…" : "Save"}
-      </button>
+      <Button type="submit" disabled={isPending}>
+        {isPending ? "Saving…" : "Save changes"}
+      </Button>
       {state.success && <span className="text-sm text-emerald-700 dark:text-emerald-400">Saved.</span>}
       {state.error && <span className="text-sm font-medium text-red-700 dark:text-red-400">{state.error}</span>}
     </form>
@@ -102,6 +99,8 @@ export function MembershipRoster({
         );
         if (!proceed) return;
       }
+    } else {
+      if (!window.confirm(`Remove ${athleteName} from this group?`)) return;
     }
     startTransition(async () => {
       if (isMember) {

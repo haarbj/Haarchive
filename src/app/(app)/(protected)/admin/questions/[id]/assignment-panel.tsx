@@ -11,6 +11,7 @@ import type { BasicUser } from "@/lib/admin/users";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export function AssignmentPanel({
   questionId,
@@ -86,7 +87,7 @@ export function AssignmentPanel({
           {isPending ? "Saving…" : "Save assignment"}
         </Button>
       </form>
-      {state.error ? <p role="alert" className="text-sm text-red-700 dark:text-red-400">{state.error}</p> : null}
+      {state.error ? <FormError>{state.error}</FormError> : null}
       {state.success ? <p className="text-sm text-emerald-700 dark:text-emerald-400">Saved.</p> : null}
 
       <div>
@@ -104,11 +105,7 @@ export function AssignmentPanel({
                 Copied into the public response above.
               </p>
             ) : null}
-            {promoteError ? (
-              <p role="alert" className="mt-2 text-sm text-red-700 dark:text-red-400">
-                {promoteError}
-              </p>
-            ) : null}
+            {promoteError ? <FormError className="mt-2">{promoteError}</FormError> : null}
           </>
         ) : (
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">No draft answer yet.</p>

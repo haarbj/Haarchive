@@ -88,6 +88,13 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
     name: nameById.get(c.user_id) ?? "Runner",
     role: c.contributor_role,
   }));
+  // Someone already assigned any role changes it via the dropdown on their
+  // own row (see contributors-panel.tsx's ContributorItem) -- re-adding
+  // them here would either silently no-op (same role) or bypass that
+  // dropdown for a role change, so they drop out of the "add a person"
+  // picker entirely once assigned.
+  const assignedUserIds = new Set(contributors.map((c) => c.userId));
+  const addableUsers = eligibleUsers.filter((u) => !assignedUserIds.has(u.id));
 
   return (
     <Container variant="dashboard">
@@ -108,7 +115,7 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
           </Link>
         ) : (
           <Link
-            href={`/contribute/articles/${article.id}/preview`}
+            href={`/contribute/articles/${article.id}/preview?from=admin`}
             className="text-sm font-semibold text-zinc-700 underline dark:text-zinc-200"
           >
             Preview →
@@ -136,7 +143,7 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
         <Card padding="md">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Contributors</h2>
           <div className="mt-3">
-            <ContributorsPanel articleId={article.id} contributors={contributors} users={eligibleUsers} />
+            <ContributorsPanel articleId={article.id} contributors={contributors} users={addableUsers} />
           </div>
         </Card>
 
@@ -147,6 +154,9 @@ export default async function AdminArticleDetailPage({ params }: { params: Promi
               <p key={index} className="text-sm text-zinc-600 dark:text-zinc-300">
                 <span className="font-semibold text-zinc-900 dark:text-white">{index + 1}. {block.type}</span>{" "}
                 {blockPreviewText(block)}
+                {block.type === "image" && !block.alt ? (
+                  <span className="ml-2 font-medium text-accent-warning">Missing alt text</span>
+                ) : null}
               </p>
             ))}
           </div>

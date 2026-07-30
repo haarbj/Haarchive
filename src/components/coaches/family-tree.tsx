@@ -32,7 +32,7 @@ function TreeNode({ node, isLast }: { node: FamilyTreeNode; isLast: boolean }) {
           <span className="font-medium text-zinc-600 dark:text-zinc-300">{node.name}</span>
         )}
         {node.alsoInfluencedBy && node.alsoInfluencedBy.length > 0 ? (
-          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
             (also influenced by {node.alsoInfluencedBy.join(", ")})
           </span>
         ) : null}

@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { reviewContributorApplication, type ReviewApplicationState } from "./actions";
 import { fieldClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export function ReviewApplicationForm({ id }: { id: string }) {
   const [state, formAction, isPending] = useActionState<ReviewApplicationState, FormData>(
@@ -22,11 +23,7 @@ export function ReviewApplicationForm({ id }: { id: string }) {
       <Button type="submit" name="status" value="rejected" variant="outline" size="sm" disabled={isPending}>
         Reject
       </Button>
-      {state.error ? (
-        <span role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </span>
-      ) : null}
+      {state.error ? <FormError as="span">{state.error}</FormError> : null}
     </form>
   );
 }

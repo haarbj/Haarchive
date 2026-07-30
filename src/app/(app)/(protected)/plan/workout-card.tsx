@@ -17,7 +17,9 @@ import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { ExplainWorkoutButton } from "./explain-workout-button";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 // Mirrors UndoGroupCompletionButton (group-workout-complete-form.tsx)
 // exactly, for an individually-generated plan's workout instead of a
@@ -77,9 +79,9 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
           {completion && <CompletionSummary completion={completion} />}
         </div>
         {completion && (
-          <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+          <Badge tone="success" className="shrink-0">
             Completed
-          </span>
+          </Badge>
         )}
       </div>
       {completion && (
@@ -161,9 +163,7 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
         </form>
       )}
       {state.error && (
-        <p role="alert" className="mt-2 text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
+        <FormError className="mt-2">{state.error}</FormError>
       )}
       {state.feedback && (
         <p className="mt-2 rounded-lg bg-black/[0.03] p-3 text-sm text-zinc-700 dark:bg-white/[0.05] dark:text-zinc-200">

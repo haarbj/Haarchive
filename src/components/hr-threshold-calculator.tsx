@@ -327,11 +327,11 @@ export function HrThresholdCalculator() {
                 <span aria-hidden="true" className="inline-block text-[10px] text-zinc-500 transition-transform group-open:rotate-90 dark:text-zinc-400">
                   ▶
                 </span>
-                For context: as a percentage of VO2max
+                For context: as a percentage of VO2 max
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  The same meta-analysis also estimated these thresholds as a percentage of VO2max: LT1 averages
+                  The same meta-analysis also estimated these thresholds as a percentage of VO2 max: LT1 averages
                   about {VO2MAX_THRESHOLD_ESTIMATE.lt1.meanPct.toFixed(0)}% ({VO2MAX_THRESHOLD_ESTIMATE.lt1.lowPct.toFixed(0)}–
                   {VO2MAX_THRESHOLD_ESTIMATE.lt1.highPct.toFixed(0)}% range, {VO2MAX_THRESHOLD_ESTIMATE.lt1.studies} studies),
                   and LT2 averages about {VO2MAX_THRESHOLD_ESTIMATE.lt2.meanPct.toFixed(0)}% (
@@ -339,7 +339,7 @@ export function HrThresholdCalculator() {
                   range, {VO2MAX_THRESHOLD_ESTIMATE.lt2.studies} studies). This calculator doesn&rsquo;t turn that into a
                   pace directly. See the{" "}
                   <Link href="/cv-threshold-calculator" className="underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white">
-                    Threshold, CV &amp; VO2max Pace Calculator
+                    Threshold, CV &amp; VO2 Max Pace Calculator
                   </Link>{" "}
                   for pace-based threshold estimates instead.
                 </p>
@@ -392,7 +392,7 @@ export function HrThresholdCalculator() {
           href="/cv-threshold-calculator"
           className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
         >
-          Threshold, CV &amp; VO2max Pace Calculator
+          Threshold, CV &amp; VO2 Max Pace Calculator
         </Link>
         .
       </p>

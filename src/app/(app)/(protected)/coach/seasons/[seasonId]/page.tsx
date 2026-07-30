@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { getAppSession } from "@/lib/auth/session";
-import { BackLink } from "@/components/back-link";
+import { BackLink } from "@/components/ui/back-link";
 import { PhaseEditor, type SeasonPhaseRow } from "./phase-editor";
 import { WeekEditor, type SeasonWeekRow } from "./week-editor";
 import { Card } from "@/components/ui/card";
@@ -65,8 +65,8 @@ export default async function SeasonDetailPage({ params }: SeasonDetailPageProps
 
   return (
     <Container variant="dashboard">
-      <BackLink href="/coach" label="Coach" />
-      <Heading className="mt-4">{season.name}</Heading>
+      <BackLink href="/coach">Coach</BackLink>
+      <Heading>{season.name}</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Building toward {season.goal_race_name} on {formatDate(season.goal_race_date)}.
       </p>

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import type { SearchEntry } from "@/lib/search-index";
 import { useSiteSearch } from "@/lib/search/use-site-search";
 import type { SiteSearchResults } from "@/lib/search/run-search";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type SiteSearchBoxProps = {
   // "header": a persistent, fixed-width input with a portaled dropdown --
@@ -175,7 +176,7 @@ export function SiteSearchBox({ variant, initialQuery = "", initialResults = nul
         placeholder="Search articles, workouts, tools..."
         aria-label="Search the Haarchive"
         autoComplete="off"
-        className={`${inputHeightClass} w-full rounded-full border border-black/10 bg-black/[0.03] py-2 pl-10 pr-10 text-sm text-zinc-900 transition placeholder:text-zinc-500 focus:border-black/20 focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-400 dark:focus:border-white/20 dark:focus:bg-zinc-900`}
+        className={`${inputHeightClass} w-full rounded-full border border-black/10 bg-black/[0.03] py-2 pl-10 pr-10 text-sm text-zinc-900 transition placeholder:text-zinc-500 focus:border-black/20 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-400 dark:focus:border-white/20 dark:focus:bg-zinc-900 dark:focus-visible:ring-white`}
       />
       {hasQuery ? (
         <button
@@ -283,8 +284,8 @@ function SearchResultsList({ hasQuery, matches, aiSuggestions, selectedIndex, on
   if (matches.length === 0 && aiSuggestions.length === 0) {
     return (
       <div className={layout === "page" ? "px-1 py-10 text-center" : "px-3 py-6 text-center"}>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">No results.</p>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <EmptyState>No results.</EmptyState>
+        <EmptyState className="mt-2">
           Not covered yet?{" "}
           <Link
             href="/questions/ask"
@@ -293,7 +294,7 @@ function SearchResultsList({ hasQuery, matches, aiSuggestions, selectedIndex, on
             Ask a question
           </Link>{" "}
           or suggest a topic.
-        </p>
+        </EmptyState>
       </div>
     );
   }
@@ -358,7 +359,7 @@ function SearchGroup({ entries, startIndex, selectedIndex, onSelect, onHover, la
             >
               <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">
                 {entry.title}
-                <span className="ml-2 font-normal text-zinc-400 dark:text-zinc-500">{entry.group}</span>
+                <span className="ml-2 font-normal text-zinc-500 dark:text-zinc-400">{entry.group}</span>
               </p>
               <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">{entry.subtitle}</p>
             </button>

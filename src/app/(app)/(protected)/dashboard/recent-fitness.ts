@@ -1,5 +1,5 @@
 import { predictRaceTime } from "@/lib/coaching-engine";
-import { parseTimeToSeconds } from "@/lib/format";
+import { parseTimeToSeconds } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
 
 // Mirrors the DistanceKey -> meters mapping in pace-calculator.tsx (that

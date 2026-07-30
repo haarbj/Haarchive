@@ -1,4 +1,4 @@
-import { formatClock } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
 import { AerobicDecouplingCheck } from "./aerobic-decoupling-check";
 

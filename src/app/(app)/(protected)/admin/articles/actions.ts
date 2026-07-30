@@ -55,6 +55,31 @@ export async function addArticleContributor(
   return { success: true };
 }
 
+// Changing someone's role in place -- e.g. an author added by mistake who
+// should really be a contributor -- rather than forcing a remove-then-
+// re-add through the "add a person" form below.
+export async function updateArticleContributorRole(
+  contributorRowId: string,
+  articleId: string,
+  role: string,
+): Promise<{ error?: string }> {
+  const session = await requireAdmin();
+  if (!session) return { error: "Not authorized." };
+  if (!(ARTICLE_CONTRIBUTOR_ROLES as readonly string[]).includes(role)) {
+    return { error: "Invalid role." };
+  }
+
+  const admin = createServiceRoleClient();
+  const { error } = await admin
+    .from("article_contributors")
+    .update({ contributor_role: role as ArticleContributorRole })
+    .eq("id", contributorRowId);
+  if (error) return { error: error.message };
+
+  revalidatePath(`/admin/articles/${articleId}`);
+  return {};
+}
+
 export async function removeArticleContributor(contributorRowId: string, articleId: string): Promise<void> {
   const session = await requireAdmin();
   if (!session) return;

@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 
 import { deleteGoal } from "./actions";
 import { EditGoalForm } from "./edit-goal-form";
-import { formatClock, formatDate, formatDistance } from "@/lib/format";
+import { formatDate, formatDistance } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 import { Card } from "@/components/ui/card";
 
 type Goal = {

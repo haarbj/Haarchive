@@ -1,10 +1,10 @@
 import { parseMarksToTree, type MarkNode } from "@/lib/inline-marks";
+import { textLinkClass } from "@/components/ui/text-link";
 
 // Same link styling linkify.tsx uses on the published page, so a link
 // looks like a link while editing too (just not clickable -- see the
 // `data-href` choice below).
-const LINK_CLASSNAME =
-  "underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70";
+const LINK_CLASSNAME = textLinkClass;
 // Dotted, not solid, matching linkify.tsx's <u> -- every real link here is
 // already a solid underline, so a plain <u> would look like a dead link.
 const UNDERLINE_CLASSNAME = "underline decoration-dotted underline-offset-2";

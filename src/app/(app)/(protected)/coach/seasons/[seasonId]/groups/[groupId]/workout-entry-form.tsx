@@ -14,6 +14,8 @@ import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-c
 import { MILE_METERS } from "@/lib/race-distances";
 import type { WorkoutType } from "@/lib/coaching-engine";
 import type { Workout } from "./schedule-builder";
+import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const WORKOUT_TYPES: WorkoutType[] = ["easy", "recovery", "long", "tempo", "vo2", "race", "strength"];
 
@@ -116,7 +118,7 @@ export function WorkoutEntryForm({
 
   async function handleSubmit() {
     setError(null);
-    if (!description.trim()) return setError("Enter a description for this session.");
+    if (!description.trim()) return setError("Enter a description for this workout.");
 
     const input: WorkoutInput = {
       id: existing?.id,
@@ -267,7 +269,7 @@ export function WorkoutEntryForm({
           value={explanation}
           onChange={(e) => setExplanation(e.target.value)}
           rows={3}
-          placeholder="Why this session, what to expect -- generate a starting point, then edit or clear it. Shown to athletes as-is if you keep it."
+          placeholder="Why this workout, what to expect -- generate a starting point, then edit or clear it. Shown to athletes as-is if you keep it."
           className={fieldClass}
         />
         {generateError && <p className="mt-1 text-xs font-medium text-red-700 dark:text-red-400">{generateError}</p>}
@@ -281,7 +283,7 @@ export function WorkoutEntryForm({
       {!existing && repeatCandidateDates.length > 0 && (
         <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-200">
           <input type="checkbox" checked={repeatWeekly} onChange={(e) => setRepeatWeekly(e.target.checked)} />
-          Repeat this session weekly for the rest of this phase ({repeatCandidateDates.length} more week
+          Repeat this workout weekly for the rest of this phase ({repeatCandidateDates.length} more week
           {repeatCandidateDates.length === 1 ? "" : "s"}, this group only)
         </label>
       )}
@@ -292,7 +294,7 @@ export function WorkoutEntryForm({
           onClick={() => setShowDistancePace(true)}
           className="text-sm font-semibold text-zinc-700 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-200 dark:decoration-white/20 dark:hover:decoration-white"
         >
-          Add a distance or pace for this session?
+          Add a distance or pace for this workout?
         </button>
       ) : (
         <div className="rounded-lg border border-black/10 p-3 dark:border-white/10">
@@ -357,7 +359,7 @@ export function WorkoutEntryForm({
         <div className="rounded-lg border border-black/10 p-3 dark:border-white/10">
           <p className={labelClass}>Also add to other groups</p>
           <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-            Separate by default -- check a group to give it this same session as its own entry (like an
+            Separate by default -- check a group to give it this same workout as its own entry (like an
             &ldquo;All&rdquo; row), editable independently afterward.
           </p>
           <div className="mt-2 flex flex-wrap gap-3">
@@ -375,21 +377,12 @@ export function WorkoutEntryForm({
         </div>
       )}
 
-      {error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <FormError>{error}</FormError>}
 
       <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
+        <Button type="button" onClick={handleSubmit} disabled={isPending}>
           {isPending ? "Saving…" : "Save"}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={onCancel}

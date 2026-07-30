@@ -4,6 +4,7 @@ import { useActionState } from "react";
 
 import { markContactMessageRead, type AdminMessageActionState } from "./actions";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export function MarkReadButton({ id, read }: { id: string; read: boolean }) {
   const [state, formAction, isPending] = useActionState<AdminMessageActionState, FormData>(
@@ -18,11 +19,7 @@ export function MarkReadButton({ id, read }: { id: string; read: boolean }) {
       <Button type="submit" variant="outline" size="sm" disabled={isPending}>
         {read ? "Mark unread" : "Mark read"}
       </Button>
-      {state.error ? (
-        <span role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </span>
-      ) : null}
+      {state.error ? <FormError as="span">{state.error}</FormError> : null}
     </form>
   );
 }

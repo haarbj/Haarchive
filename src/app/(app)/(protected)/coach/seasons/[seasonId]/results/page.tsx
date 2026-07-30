@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
-import { formatClock, formatDate } from "@/lib/format";
-import { BackLink } from "@/components/back-link";
+import { formatDate } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
+import { BackLink } from "@/components/ui/back-link";
 import { CompletionSummary, type CompletionDetail } from "@/app/(app)/(protected)/plan/completion-detail";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -62,8 +63,8 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
   if (!groupPlans || groupPlans.length === 0) {
     return (
       <Container variant="dashboard">
-        <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
-        <Heading className="mt-4">Race results</Heading>
+        <BackLink href={`/coach/seasons/${seasonId}`}>{season.name}</BackLink>
+        <Heading>Race results</Heading>
         <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-300">No group schedules for {season.name} yet.</p>
       </Container>
     );
@@ -141,8 +142,8 @@ export default async function SeasonResultsPage({ params }: ResultsPageProps) {
 
   return (
     <Container variant="dashboard">
-      <BackLink href={`/coach/seasons/${seasonId}`} label={season.name} />
-      <Heading className="mt-4">Race results</Heading>
+      <BackLink href={`/coach/seasons/${seasonId}`}>{season.name}</BackLink>
+      <Heading>Race results</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Logged results for {season.name}, against each athlete&rsquo;s own goal.
       </p>

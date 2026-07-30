@@ -11,6 +11,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { ListRow } from "@/components/ui/list-row";
 import { Heading } from "@/components/ui/heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = { title: "Questions Admin" };
 
@@ -108,7 +109,7 @@ export default async function AdminQuestionsPage({ searchParams }: AdminQuestion
 
       <div className="mt-6 space-y-2">
         {questions.length === 0 ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No questions yet.</p>
+          <EmptyState>No questions yet.</EmptyState>
         ) : (
           questions.map((question) => (
             <ListRow

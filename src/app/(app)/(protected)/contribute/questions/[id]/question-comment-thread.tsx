@@ -11,6 +11,8 @@ import {
 import { fieldClass as baseFieldClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ConfirmButton } from "@/components/ui/confirm-button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -54,14 +56,13 @@ export function QuestionCommentThread({
                     >
                       {c.resolved ? "Reopen" : "Mark resolved"}
                     </button>
-                    <button
-                      type="button"
-                      disabled={isToggling}
-                      onClick={() => startToggle(() => deleteQuestionComment(c.id, questionId))}
+                    <ConfirmButton
+                      action={() => deleteQuestionComment(c.id, questionId)}
+                      confirmMessage="Delete this comment? This can't be undone."
+                      label="Delete"
+                      pendingLabel="Deleting…"
                       className="text-xs font-semibold text-red-700 dark:text-red-400"
-                    >
-                      Delete
-                    </button>
+                    />
                   </div>
                 ) : null}
               </div>
@@ -76,12 +77,14 @@ export function QuestionCommentThread({
       {canComment ? (
         <form action={formAction} className="space-y-3">
           <input type="hidden" name="questionId" value={questionId} />
-          <textarea name="comment" rows={3} placeholder="Leave feedback on this draft…" className={fieldClass} />
-          {state.error ? (
-            <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-              {state.error}
-            </p>
-          ) : null}
+          <textarea
+            name="comment"
+            rows={3}
+            aria-label="Comment"
+            placeholder="Leave feedback on this draft…"
+            className={fieldClass}
+          />
+          {state.error ? <FormError>{state.error}</FormError> : null}
           <Button type="submit" disabled={isPending}>
             {isPending ? "Posting…" : "Add comment"}
           </Button>

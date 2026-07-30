@@ -8,6 +8,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "Messages",
@@ -73,7 +74,7 @@ export default async function AdminMessagesPage() {
             </Card>
           ))
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">No messages yet.</p>
+          <EmptyState>No messages yet.</EmptyState>
         )}
       </div>
     </Container>

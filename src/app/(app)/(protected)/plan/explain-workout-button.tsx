@@ -11,6 +11,7 @@ import {
   type MesocyclePhase,
   type WorkoutPrescription,
 } from "@/lib/coaching-engine";
+import { FormError } from "@/components/ui/form-error";
 
 function ExplanationField({ label, text }: { label: string; text: string }) {
   return (
@@ -94,11 +95,7 @@ export function ExplainWorkoutButton({ workoutId, phase, workoutKind, distanceBu
         {status === "loading" ? "Thinking…" : "Why this workout?"}
       </button>
 
-      {error && (
-        <p role="alert" className="mt-2 text-sm font-medium text-red-700 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <FormError className="mt-2">{error}</FormError>}
 
       {opened && (coaching || explanation) && (
         <div className="mt-2 max-w-prose space-y-2 text-sm">

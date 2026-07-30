@@ -4,6 +4,8 @@ import { useActionState } from "react";
 
 import { createGroup } from "@/app/(app)/(protected)/coach/groups-actions";
 import { fieldClass } from "@/lib/form-styles";
+import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export function CreateGroupForm() {
   const [state, formAction, isPending] = useActionState(createGroup, {});
@@ -23,18 +25,10 @@ export function CreateGroupForm() {
           className={`${fieldClass} w-64`}
         />
       </div>
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
+      <Button type="submit" disabled={isPending}>
         {isPending ? "Creating…" : "Create group"}
-      </button>
-      {state.error && (
-        <p role="alert" className="w-full text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      </Button>
+      {state.error && <FormError className="w-full">{state.error}</FormError>}
     </form>
   );
 }

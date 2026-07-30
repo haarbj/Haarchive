@@ -15,6 +15,7 @@ import Link from "next/link";
 
 import { headingId } from "@/lib/heading-id";
 import { sections } from "@/lib/sections";
+import { textLinkClass } from "@/components/ui/text-link";
 
 type ReferenceTarget = { phrase: string; href: string; sectionSlug: string };
 
@@ -112,7 +113,7 @@ export function linkifySectionReferences(text: string, currentSlug: string): Rea
       <Link
         key={`section-ref-${i}`}
         href={m.href}
-        className="underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:decoration-white/30 dark:hover:decoration-white/70"
+        className={textLinkClass}
       >
         {m.phrase}
       </Link>,

@@ -6,6 +6,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { CardLink } from "@/components/ui/card-link";
+import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
   title: "Contribute",
@@ -31,16 +32,8 @@ export default async function ContributePage() {
             Admin
           </span>
         )}
-        {isContributor && (
-          <span className="rounded-full border border-black/10 px-3 py-1 text-zinc-700 dark:border-white/10 dark:text-zinc-200">
-            Content Contributor
-          </span>
-        )}
-        {isReviewer && (
-          <span className="rounded-full border border-black/10 px-3 py-1 text-zinc-700 dark:border-white/10 dark:text-zinc-200">
-            Reviewer
-          </span>
-        )}
+        {isContributor && <Badge>Content Contributor</Badge>}
+        {isReviewer && <Badge>Reviewer</Badge>}
       </div>
 
       <div className="mt-10 space-y-4">

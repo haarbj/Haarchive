@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { updateDraftAnswer, type DraftAnswerState } from "@/app/(app)/(protected)/contribute/questions/actions";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -30,11 +31,7 @@ export function DraftAnswerForm({
         defaultValue={initialDraftAnswer}
         className={fieldClass}
       />
-      {state.error ? (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <FormError>{state.error}</FormError> : null}
       {state.success ? (
         <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Saved.

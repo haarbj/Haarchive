@@ -7,6 +7,8 @@ import { fieldClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { describePrescription, type WorkoutPrescription } from "@/lib/coaching-engine";
 import { formatRelativeTime } from "@/lib/format";
 import type { ProposedChange } from "@/app/api/coach/adapt-workout/route";
+import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 type AdaptWorkoutPanelProps = {
   workoutId: string;
@@ -112,7 +114,7 @@ export function AdaptWorkoutPanel({
 
   if (adaptedAt) {
     return (
-      <div className="mt-3 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/30">
+      <div className="mt-3 rounded-xl border-l-4 border-accent-warning/50 bg-accent-warning/5 px-5 py-4 text-sm">
         <p className="text-xs font-semibold tracking-wide text-amber-900/70 uppercase dark:text-amber-200/70">
           AI Coach
         </p>
@@ -141,11 +143,7 @@ export function AdaptWorkoutPanel({
         >
           {undoing ? "Undoing…" : "Undo"}
         </button>
-        {error && (
-          <p role="alert" className="mt-1.5 text-sm font-medium text-red-700 dark:text-red-400">
-            {error}
-          </p>
-        )}
+        {error && <FormError className="mt-1.5">{error}</FormError>}
       </div>
     );
   }
@@ -175,13 +173,9 @@ export function AdaptWorkoutPanel({
               className={`${fieldClass} min-w-0 flex-1`}
               autoFocus
             />
-            <button
-              type="submit"
-              disabled={status === "loading" || !message.trim()}
-              className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
+            <Button type="submit" disabled={status === "loading" || !message.trim()}>
               {status === "loading" ? "Thinking…" : "Send"}
-            </button>
+            </Button>
           </form>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {SUGGESTIONS.map((suggestion) => (
@@ -199,11 +193,7 @@ export function AdaptWorkoutPanel({
         </>
       )}
 
-      {error && (
-        <p role="alert" className="mt-2 text-sm font-medium text-red-700 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <FormError className="mt-2">{error}</FormError>}
 
       {(status === "reviewing" || status === "applying") && explanation && (
         <div className="mt-2 rounded-lg bg-black/[0.03] p-3 dark:bg-white/[0.05]">
@@ -218,14 +208,9 @@ export function AdaptWorkoutPanel({
                 {describePrescription(proposedChange.after)}
               </p>
               <div className="mt-2 flex gap-3">
-                <button
-                  type="button"
-                  onClick={handleApply}
-                  disabled={status === "applying"}
-                  className="rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-                >
+                <Button type="button" onClick={handleApply} disabled={status === "applying"}>
                   {status === "applying" ? "Applying…" : "Apply this change"}
-                </button>
+                </Button>
                 <button
                   type="button"
                   onClick={handleNeverMind}

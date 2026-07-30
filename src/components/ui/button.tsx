@@ -20,7 +20,8 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
   lg: "px-5 py-2.5 text-sm",
 };
 
-const BASE = "inline-flex items-center justify-center gap-1.5 rounded-pill font-semibold transition disabled:opacity-60";
+const BASE =
+  "inline-flex items-center justify-center gap-1.5 rounded-pill font-semibold transition disabled:opacity-60 outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 dark:focus-visible:ring-white dark:focus-visible:ring-offset-zinc-950";
 
 type CommonProps = {
   variant?: ButtonVariant;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { updateUserPermissions } from "./actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 type Props = {
   id: string;
@@ -59,14 +60,10 @@ export function UserPermissionsRow({
 
       <div className="mt-4 flex items-center gap-3">
         <Button type="submit" size="sm" disabled={isPending}>
-          {isPending ? "Saving…" : "Save"}
+          {isPending ? "Saving…" : "Save changes"}
         </Button>
         {state.success && <span className="text-sm text-emerald-700 dark:text-emerald-400">Saved.</span>}
-        {state.error && (
-          <span role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </span>
-        )}
+        {state.error && <FormError as="span">{state.error}</FormError>}
       </div>
     </Card>
   );

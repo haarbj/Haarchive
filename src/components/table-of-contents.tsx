@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { EmptyState } from "@/components/ui/empty-state";
+
 export type TocHeading = { id: string; text: string; level: 2 | 3 };
 
 export function TableOfContents({ headings }: { headings: TocHeading[] }) {
@@ -66,9 +68,7 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
         </a>
       ))}
       {filtered.length === 0 ? (
-        <p className="px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-          No matching sections.
-        </p>
+        <EmptyState className="px-3 py-1.5">No matching sections.</EmptyState>
       ) : null}
     </nav>
   );
@@ -81,7 +81,7 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
       placeholder="Search this page"
       aria-label="Search this page's table of contents"
       autoComplete="off"
-      className="mb-3 w-full rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-white/10 dark:bg-zinc-900 dark:text-white"
+      className="mb-3 w-full rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:border-white/10 dark:bg-zinc-900 dark:text-white dark:focus-visible:ring-white"
     />
   );
 

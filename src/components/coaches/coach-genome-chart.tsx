@@ -29,7 +29,7 @@ export function CoachGenomeChart({ genome, compact = false }: CoachGenomeChartPr
             key={key}
             tabIndex={0}
             title={description}
-            className="flex items-center gap-3 rounded-md transition hover:bg-black/[0.03] focus:bg-black/[0.03] focus:outline-none dark:hover:bg-white/[0.04] dark:focus:bg-white/[0.04]"
+            className="flex items-center gap-3 rounded-md transition hover:bg-black/[0.03] focus:bg-black/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:hover:bg-white/[0.04] dark:focus:bg-white/[0.04] dark:focus-visible:ring-white"
           >
             <span
               className={`shrink-0 text-zinc-600 dark:text-zinc-300 ${

@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { addAthleteToRoster } from "./actions";
 import { fieldClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export function AddAthleteForm() {
   const [state, formAction, isPending] = useActionState(addAthleteToRoster, {});
@@ -27,11 +28,7 @@ export function AddAthleteForm() {
       <Button type="submit" disabled={isPending}>
         {isPending ? "Adding…" : "Add to roster"}
       </Button>
-      {state.error && (
-        <p role="alert" className="w-full text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError className="w-full">{state.error}</FormError>}
       {state.success && (
         <p role="status" className="w-full text-sm font-medium text-emerald-700 dark:text-emerald-400">
           Added.

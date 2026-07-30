@@ -6,6 +6,7 @@ import { UserPermissionsRow } from "./user-permissions-row";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { EmptyState } from "@/components/ui/empty-state";
 import { fieldClass } from "@/lib/form-styles";
 
 export const metadata: Metadata = {
@@ -101,7 +102,7 @@ export default async function UsersPermissionsPage({
         {filtered.length > 0 ? (
           filtered.map((user) => <UserPermissionsRow key={user.id} {...user} />)
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">No users match that search.</p>
+          <EmptyState>No users match that search.</EmptyState>
         )}
       </div>
     </Container>

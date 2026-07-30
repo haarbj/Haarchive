@@ -5,18 +5,17 @@ import { useActionState } from "react";
 import { submitContactMessage } from "@/app/contact-actions";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { SuccessPanel } from "@/components/ui/success-panel";
+import { FormError } from "@/components/ui/form-error";
 
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContactMessage, {});
 
   if (state.success) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 dark:border-emerald-400/30 dark:bg-emerald-400/5">
-        <p className="text-lg font-semibold text-zinc-900 dark:text-white">Thanks for reaching out.</p>
-        <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
-          I read every message myself. I&rsquo;ll get back to you at the email you left.
-        </p>
-      </div>
+      <SuccessPanel heading="Thanks for reaching out.">
+        I read every message myself. I&rsquo;ll get back to you at the email you left.
+      </SuccessPanel>
     );
   }
 
@@ -58,11 +57,7 @@ export function ContactForm() {
         <input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {state.error ? (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <FormError>{state.error}</FormError> : null}
 
       <Button type="submit" size="lg" disabled={isPending}>
         {isPending ? "Sending…" : "Send message"}

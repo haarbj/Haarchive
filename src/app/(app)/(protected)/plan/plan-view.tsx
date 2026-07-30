@@ -16,6 +16,7 @@ import { describePrescription, workoutTypeLabel } from "./format-workout";
 import { TeamScheduleView } from "./team-schedule-view";
 import { WorkoutCard } from "./workout-card";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 
 type Mesocycle = {
@@ -58,9 +59,9 @@ function ReadOnlyWorkoutRow({ workout, completion }: { workout: WorkoutRow; comp
           {completion && <CompletionSummary completion={completion} />}
         </div>
         {completion && (
-          <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+          <Badge tone="success" className="shrink-0">
             Completed
-          </span>
+          </Badge>
         )}
       </div>
     </Card>

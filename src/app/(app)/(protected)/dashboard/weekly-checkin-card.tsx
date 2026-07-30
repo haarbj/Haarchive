@@ -6,6 +6,7 @@ import { submitWeeklyCheckin } from "./actions";
 import { fieldClass, labelClass } from "./form-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export type WeeklyCheckin = {
   fatigue: number;
@@ -116,11 +117,7 @@ export function WeeklyCheckinCard({ checkin }: { checkin: WeeklyCheckin | null }
             className={fieldClass}
           />
         </div>
-        {state.error && (
-          <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-            {state.error}
-          </p>
-        )}
+        {state.error && <FormError>{state.error}</FormError>}
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={isPending}>
             {isPending ? "Saving…" : "Save check-in"}

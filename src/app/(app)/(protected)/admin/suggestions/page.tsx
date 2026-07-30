@@ -11,6 +11,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const metadata: Metadata = {
   title: "Suggestions & Citations",
@@ -85,7 +86,7 @@ export default async function AdminSuggestionsPage() {
             </Card>
           ))
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">No suggestions yet.</p>
+          <EmptyState>No suggestions yet.</EmptyState>
         )}
       </div>
 

@@ -193,7 +193,7 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
           href="/cv-threshold-calculator"
           className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
         >
-          Threshold, CV &amp; VO2max Pace Calculator
+          Threshold, CV &amp; VO2 Max Pace Calculator
         </Link>{" "}
         can both help establish it.
       </p>

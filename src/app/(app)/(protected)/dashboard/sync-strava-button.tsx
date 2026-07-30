@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { syncStravaActivities } from "@/app/(app)/(protected)/dashboard/strava-actions";
+import { FormError } from "@/components/ui/form-error";
 
 export function SyncStravaButton() {
   const [state, formAction, isPending] = useActionState(syncStravaActivities, {});
@@ -16,11 +17,7 @@ export function SyncStravaButton() {
       >
         {isPending ? "Syncing…" : "Sync now"}
       </button>
-      {state.error && (
-        <p role="alert" className="text-xs font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
       {state.syncedCount !== undefined && !state.error && (
         <p className="text-xs text-zinc-600 dark:text-zinc-300">
           {state.syncedCount === 0

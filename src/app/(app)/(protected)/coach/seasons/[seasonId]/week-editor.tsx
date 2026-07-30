@@ -6,6 +6,8 @@ import { updateWeek } from "@/app/(app)/(protected)/coach/actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import { workoutTypeLabel } from "@/app/(app)/(protected)/plan/format-workout";
 import type { WorkoutType } from "@/lib/coaching-engine";
+import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 const ALL_WORKOUT_TYPES: WorkoutType[] = ["easy", "recovery", "long", "tempo", "vo2", "race", "strength"];
 
@@ -89,20 +91,12 @@ function WeekEditForm({
         ))}
       </div>
 
-      {state.error && (
-        <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError>{state.error}</FormError>}
 
       <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-full bg-zinc-900 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-zinc-700 disabled:opacity-60 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
-          {isPending ? "Saving…" : "Save"}
-        </button>
+        <Button type="submit" size="sm" disabled={isPending}>
+          {isPending ? "Saving…" : "Save changes"}
+        </Button>
         <button
           type="button"
           onClick={onCancel}

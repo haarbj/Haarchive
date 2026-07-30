@@ -6,19 +6,18 @@ import { submitContributorApplication } from "./actions";
 import { CONTRIBUTION_TYPES, CONTRIBUTION_TYPE_LABELS } from "@/lib/validation/contributor-application";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
+import { SuccessPanel } from "@/components/ui/success-panel";
+import { FormError } from "@/components/ui/form-error";
 
 export function ContributorApplicationForm() {
   const [state, formAction, isPending] = useActionState(submitContributorApplication, {});
 
   if (state.success) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 dark:border-emerald-400/30 dark:bg-emerald-400/5">
-        <p className="text-lg font-semibold text-zinc-900 dark:text-white">Thanks for applying.</p>
-        <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
-          I read every application myself. I&rsquo;ll follow up at the email you left once I&rsquo;ve had a
-          chance to review it.
-        </p>
-      </div>
+      <SuccessPanel heading="Thanks for applying.">
+        I read every application myself. I&rsquo;ll follow up at the email you left once I&rsquo;ve had a
+        chance to review it.
+      </SuccessPanel>
     );
   }
 
@@ -108,9 +107,7 @@ export function ContributorApplicationForm() {
       </div>
 
       {state.error ? (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
+        <FormError>{state.error}</FormError>
       ) : null}
 
       <Button type="submit" size="lg" disabled={isPending}>

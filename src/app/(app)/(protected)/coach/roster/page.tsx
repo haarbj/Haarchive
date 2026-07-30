@@ -5,7 +5,7 @@ import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { AddAthleteForm } from "./add-athlete-form";
 import { RemoveAthleteButton } from "./remove-athlete-button";
-import { BackLink } from "@/components/back-link";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -34,8 +34,8 @@ export default async function RosterPage() {
 
   return (
     <Container variant="dashboard">
-      <BackLink href="/coach" label="Coach" />
-      <Heading className="mt-4">Roster</Heading>
+      <BackLink href="/coach">Coach</BackLink>
+      <Heading>Roster</Heading>
       <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         Athletes who&rsquo;ve signed up with an @brophybroncos.org email join automatically. Anyone else who
         already has an account can be added directly below.

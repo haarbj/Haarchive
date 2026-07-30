@@ -406,7 +406,7 @@ export function CvThresholdCalculator() {
               learnMoreHref="/coaching-library/tom-schwartz"
             />
             <PaceRow
-              label="VO2max"
+              label="VO2 Max"
               description="The slowest pace that reliably drives VO2 up to its max, not a sprint, just the pace where the clock inevitably runs out."
               paceSeconds={speedToPaceSeconds(paces.vo2maxSpeedMS, outputUnit)}
               unit={outputUnit}
@@ -419,7 +419,7 @@ export function CvThresholdCalculator() {
                   : undefined
               }
               learnMoreHref="/exercise-physiology#vo2-max-is-two-adaptations-sharing-one-name"
-              safeModeNote={mode === "safe" ? "Safe estimate: intentionally faster, to reliably exceed VO2max." : undefined}
+              safeModeNote={mode === "safe" ? "Safe estimate: intentionally faster, to reliably exceed VO2 max." : undefined}
             />
           </div>
 
@@ -463,7 +463,7 @@ export function CvThresholdCalculator() {
                   from about 1,600 high school, college, adult, and master&rsquo;s runners, using the critical
                   speed model (the standard physiology method for separating sustainable from unsustainable
                   paces) as its outcome. A quantile regression surface over distance, time, and age predicts the
-                  10th, 50th, and 90th percentile of threshold, CV, and VO2max pace for a given performance,
+                  10th, 50th, and 90th percentile of threshold, CV, and VO2 max pace for a given performance,
                   which is why the result is a range, not one number: two runners with an identical race time can
                   have genuinely different training paces depending on how aerobically or anaerobically oriented
                   they are.
@@ -486,7 +486,7 @@ export function CvThresholdCalculator() {
                   steady state, a 50/50 shot isn&rsquo;t reliable. That&rsquo;s why threshold pace defaults to a{" "}
                   <strong>safe estimate</strong>: the 10th percentile of the threshold-speed distribution, slow
                   enough that roughly 90% of runners at that performance level are genuinely below threshold at
-                  it. VO2max pace uses the same logic in the other direction (the 90th percentile of speed, fast
+                  it. VO2 max pace uses the same logic in the other direction (the 90th percentile of speed, fast
                   enough that it reliably is unsustainable). CV pace doesn&rsquo;t get a &ldquo;safe&rdquo;
                   direction: it&rsquo;s defined as the 50/50 boundary itself, so it&rsquo;s always the median in
                   both modes. Switching to median estimate mode gives the 50th percentile for all three, closer
@@ -500,16 +500,16 @@ export function CvThresholdCalculator() {
                 <span aria-hidden="true" className="inline-block text-[10px] text-zinc-500 transition-transform group-open:rotate-90 dark:text-zinc-400">
                   ▶
                 </span>
-                Why VO2max pace is slower than you might expect
+                Why VO2 Max pace is slower than you might expect
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  Older calculators define &ldquo;VO2max pace&rdquo; as the speed reached at the end of a
+                  Older calculators define &ldquo;VO2 max pace&rdquo; as the speed reached at the end of a
                   lab-based treadmill ramp test, but that number is heavily dependent on the specific ramp
                   protocol used, and around half of runners (even elite ones) never actually reach a true VO2
                   plateau during one at all. Any pace faster than steady-state max will eventually drive VO2 to
                   its ceiling: it&rsquo;s just a question of how long that takes (a mile at mile pace, five kilometers
-                  at 5K pace). This calculator instead defines VO2max pace as the <em>slowest</em> pace that
+                  at 5K pace). This calculator instead defines VO2 max pace as the <em>slowest</em> pace that
                   reliably produces that outcome, which in practice comes out close to 5K pace rather than a much
                   faster, ramp-test-specific number.
                 </p>
@@ -546,7 +546,7 @@ export function CvThresholdCalculator() {
                       rel="noopener noreferrer"
                       className="text-zinc-900 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/30 dark:hover:decoration-white"
                     >
-                      threshold/CV/VO2max pace calculator
+                      threshold/CV/VO2 max pace calculator
                     </a>{" "}
                     (Running Writings, MIT licensed): same underlying model data, rebuilt with a plain-text
                     entry, an adjustable age input the original tool doesn&rsquo;t expose, and saved-result

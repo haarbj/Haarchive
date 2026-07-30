@@ -689,7 +689,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "advanced",
-        title: "💡 Think About This",
+        title: "Think about this",
         text: "These two findings sit next to each other on purpose: long, slow running is mentally taxing in a way sprints aren't, and it's also the volume that lets your stride self-optimize without conscious tinkering. If a long run leaves you mentally fried but you never let your form settle into its own rhythm (because you're consciously cueing your posture or footstrike the whole way) you may be fighting the exact adaptation the run was supposed to deliver. Save deliberate form cues for short, fresh strides; let long runs run themselves.",
       },
       {
@@ -974,7 +974,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "tip",
-        title: "🏃 Use the Long Run as a Full Dress Rehearsal, Not Just a Pace Rehearsal",
+        title: "Use the long run as a full dress rehearsal, not just a pace rehearsal",
         text: "The same long run that's carrying race-pace segments is also the natural place to test everything else that's hard to practice anywhere but race day: the exact shoes, the exact pre-run breakfast, the fueling and hydration schedule, and, if the goal race has a distinctive profile, a route chosen to mimic its terrain (a net-downhill start, a hilly middle third) rather than the flattest available loop. Treating a handful of long runs this way turns them into genuine dress rehearsals, where a bad outcome (a nutrition plan that doesn't sit well, a shoe that rubs) is useful information gathered weeks before it would otherwise be an expensive race-day surprise.",
       },
       { type: "heading", text: "Why Double Threshold Isn't the Marathon's Main Tool" },
@@ -1061,7 +1061,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "tip",
-        title: "🍬 When \"Processed\" Is the Right Choice",
+        title: "When \"processed\" is the right choice",
         text: "A few concrete cases where refined, fast-digesting food is the correct call, not a compromise:",
         items: [
           "Before a workout: a banana or a slice of white bread digests fast enough to be gone before you start; oatmeal loaded with nuts and fruit needs hours you may not have.",
@@ -1511,7 +1511,7 @@ export const sections: Section[] = [
           "Critical Velocity repeats: 4x2000m or 5x1 mile at roughly 10 seconds faster than half-marathon pace (10 seconds slower than marathon pace), with 60–90 second recoveries; attributed to coach Tom Schwartz, sometimes called \"broken tempo.\"",
         ],
       },
-      { type: "heading", text: "VO2max and Speed-Endurance Formats", level: 3 },
+      { type: "heading", text: "VO2 Max and Speed-Endurance Formats", level: 3 },
       {
         type: "list",
         items: [
@@ -2115,7 +2115,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "advanced",
-        title: "An Unresolved Disagreement: Which Fear Actually Holds Athletes Back More",
+        title: "An unresolved disagreement: which fear actually holds athletes back more",
         text: "The two hosts of the podcast this framework is drawn from have an explicit, on-air, unresolved disagreement about which fear more often limits a competitive athlete. Fear of failure is the more commonly discussed of the two: worry about falling short of a goal. Fear of success is the less intuitive counterpart: apprehension about the visibility, expectations, or responsibility that come with actually achieving a goal you're not fully sure you're ready to carry, sometimes pictured as vertigo at a mountaintop rather than fear of never reaching it. Neither host has settled the argument, and the more useful takeaway is probably that both are worth checking for in yourself, not that one is universally the real culprit.",
       },
       { type: "heading", text: "Naming the Apathy", level: 3 },
@@ -2331,7 +2331,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "tip",
-        title: "🎯 The Mile-22 Test",
+        title: "The mile-22 test",
         text: "Before finalizing a statement of purpose, imagine reciting it at the hardest point of your goal race: mile 22 of a marathon, the last lap of a 10K, the point in any effort where the outcome is genuinely in doubt and stopping would be easy. If it still means something there, it's doing its job. If it only sounds good on paper the week before the race, keep revising it.",
       },
       { type: "heading", text: "Applying This: Turning Belief Work Into a Weekly Habit" },
@@ -2720,7 +2720,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "mistake",
-        title: "Praise That Doesn't Do Anything",
+        title: "Praise that doesn't do anything",
         text: "Generic superlatives (\"great job,\" \"awesome run\") cost a coach nothing to say and, repeated often enough, teach an athlete to discount them entirely. Wooden's own substitute was almost boringly specific: naming exactly what was done well (\"that was the right decision to hold back on the hill\") rather than reaching for the biggest available adjective. Specific praise is harder to fake, which is precisely what makes it worth more when an athlete hears it.",
       },
       {
@@ -2787,7 +2787,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "takeaway",
-        title: "The Audit Worth Running Once a Season",
+        title: "The audit worth running once a season",
         text: "Any circumstance genuinely outside a coach's control (a bad facility, a short roster, a rough travel schedule) can quietly turn into an unconscious excuse for accepting less than full effort on everything that IS in the coach's control. The fix isn't pretending the real constraint doesn't exist; it's periodically asking which of the program's current limits have actually been tested recently, and which have simply gone unquestioned the longest.",
       },
       {
@@ -2879,7 +2879,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "tip",
-        title: "🔍 Telling Soreness From Something Worse",
+        title: "Telling soreness from something worse",
         text: "Three quick checks usually separate the two (a different distinction than tone vs. soreness below; this one is about soreness vs. injury):",
         items: [
           "Location: soreness is broad and muscle-wide, the whole quad or both calves evenly; an injury is usually a single spot you can press on and say \"right there.\"",
@@ -2934,7 +2934,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "mistake",
-        title: "\"Dr. Google\" Gets Running Injuries Wrong More Than It Gets Them Right",
+        title: "\"Dr. Google\" gets running injuries wrong more than it gets them right",
         text: "Two independent credentialed physical therapists featured on the show make the same point: searching symptoms online tends to anchor a runner on the most locally obvious diagnosis, when running injuries are frequently a kinetic-chain problem: pain showing up at one joint because a different one, often further up the chain, isn't doing its share of the work. Plantar fasciitis is a common example: the actual driver is sometimes upstream (hip or ankle mechanics), not a local foot problem, which is why foot-only treatment plans so often stall. There's also a provider-selection bias worth naming: a default referral straight to an orthopedic surgeon skews toward a surgical or imaging-first framing of a problem that a sports-credentialed physical therapist can often diagnose and address without either.",
       },
       {
@@ -3042,7 +3042,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "research",
-        title: "The Evidence Has Moved Since Roar Was Published",
+        title: "The evidence has moved since Roar was published",
         text: "A 2020 systematic review and meta-analysis pooled the available research on menstrual cycle phase and exercise performance in naturally cycling women and found the effect was, at most, trivial to small and inconsistent across studies: nowhere near reliable enough to justify a fixed, phase-based training prescription applied the same way to every athlete (McNulty et al., Sports Medicine, 2020). That doesn't mean the underlying physiology Sims describes is fabricated (heat regulation, plasma volume, and substrate use genuinely do shift across the cycle in ways later research confirms) but it does mean a rigid \"train hard in the follicular phase, back off in the luteal phase\" rule isn't well supported for most athletes. Sims herself has since walked the strongest version of the claim back in her own writing, arguing specifically that extended low-intensity aerobic (\"zone 2\") training builds mitochondrial and oxidative capacity less efficiently in women than in men, which is a narrower, more specific claim than the original phase-by-phase training calendar. The more defensible takeaway: track your own cycle and your own response to it rather than assuming the textbook pattern applies to you, and treat any phase-based adjustment as a personal experiment, not a universal rule.",
       },
       {
@@ -3061,7 +3061,7 @@ export const sections: Section[] = [
       {
         type: "callout",
         variant: "mistake",
-        title: "A Common Myth, and What Actually Matters",
+        title: "A common myth, and what actually matters",
         text: "\"Keep your heart rate under 140 bpm\" was widely repeated pregnancy advice for years and isn't well supported as a hard ceiling: the more relevant concern is sustained time near the top of your effort range, which can bring on dizziness from temporarily reduced blood flow, not a specific number. A More Precise Way to Find Your Zones: The Talk Test in How to Start Running is a more useful guide than a fixed heart-rate cap through pregnancy.",
       },
       {
@@ -3214,9 +3214,9 @@ export const sections: Section[] = [
   },
   {
     slug: "cv-threshold-calculator",
-    title: "Threshold, CV & VO2max Pace Calculator",
+    title: "Threshold, CV & VO2 Max Pace Calculator",
     mission:
-      "Predict threshold, critical velocity, and VO2max training paces (with uncertainty ranges, not just one number) from a single 800m-10K performance.",
+      "Predict threshold, critical velocity, and VO2 max training paces (with uncertainty ranges, not just one number) from a single 800m-10K performance.",
     topics: ["Statistically-grounded pace prediction", "Safe vs. median estimates", "Age-adjusted"],
     category: "tools",
   },

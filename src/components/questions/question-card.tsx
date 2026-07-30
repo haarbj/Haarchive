@@ -6,6 +6,7 @@ import { linkifyContent } from "@/lib/linkify";
 import type { Question } from "@/lib/questions/types";
 import { StatusBadge } from "@/components/questions/status-badge";
 import { UpvoteButton } from "@/components/questions/upvote-button";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
 type QuestionCardProps = {
@@ -30,16 +31,8 @@ export function QuestionCard({ question, upvoted }: QuestionCardProps) {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={question.status} />
-          {question.type === "topic_suggestion" ? (
-            <span className="inline-flex items-center rounded-full bg-black/5 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
-              Topic Suggestion
-            </span>
-          ) : null}
-          {categoryLabel ? (
-            <span className="inline-flex items-center rounded-full bg-black/5 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-zinc-600 dark:bg-white/10 dark:text-zinc-300">
-              {categoryLabel}
-            </span>
-          ) : null}
+          {question.type === "topic_suggestion" ? <Badge>Topic Suggestion</Badge> : null}
+          {categoryLabel ? <Badge>{categoryLabel}</Badge> : null}
         </div>
 
         {linked ? (

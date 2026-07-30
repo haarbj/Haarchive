@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { PlanView } from "@/app/(app)/(protected)/plan/plan-view";
-import { BackLink } from "@/components/back-link";
+import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 
 export const metadata: Metadata = {
@@ -31,8 +31,8 @@ export default async function AthleteDetailPage({ params }: AthleteDetailPagePro
 
   return (
     <Container variant="dashboard">
-      <BackLink href="/coach/roster" label="Roster" />
-      <p className="mt-4 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+      <BackLink href="/coach/roster">Roster</BackLink>
+      <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
         Coaching view
       </p>
       <div className="mt-1">

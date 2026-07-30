@@ -6,6 +6,7 @@ import type { ContentBlock, ListItem } from "@/lib/sections";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ImageUrlField } from "@/components/ui/image-url-field";
 import { FormattableEditable, InlineFormattableField } from "./formattable-editable";
 
 const fieldClass = `w-full ${baseFieldClass}`;
@@ -296,26 +297,7 @@ export function ContentBlockEditor({
               )}
 
               {block.type === "image" && (
-                <div className="space-y-2">
-                  <input
-                    className={fieldClass}
-                    value={block.url}
-                    onChange={(e) => update(index, { ...block, url: e.target.value })}
-                    placeholder="Image URL"
-                  />
-                  <input
-                    className={fieldClass}
-                    value={block.alt ?? ""}
-                    onChange={(e) => update(index, { ...block, alt: e.target.value || undefined })}
-                    placeholder="Alt text"
-                  />
-                  <input
-                    className={fieldClass}
-                    value={block.caption ?? ""}
-                    onChange={(e) => update(index, { ...block, caption: e.target.value || undefined })}
-                    placeholder="Caption (optional)"
-                  />
-                </div>
+                <ImageBlockFields block={block} onChange={(next) => update(index, next)} />
               )}
             </div>
           </Card>
@@ -328,6 +310,37 @@ export function ContentBlockEditor({
           />
         </div>
       ))}
+    </div>
+  );
+}
+
+// Lets a contributor pick a photo straight off their device -- not every
+// image has an existing URL to paste. The URL field stays alongside it
+// (rather than being replaced) so reusing an already-hosted image is still
+// one paste, not a mandatory re-upload.
+function ImageBlockFields({
+  block,
+  onChange,
+}: {
+  block: Extract<ContentBlock, { type: "image" }>;
+  onChange: (block: ContentBlock) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <ImageUrlField value={block.url} onChange={(url) => onChange({ ...block, url })} />
+      <input
+        className={fieldClass}
+        value={block.alt ?? ""}
+        onChange={(e) => onChange({ ...block, alt: e.target.value || undefined })}
+        aria-label="Alt text"
+        placeholder="Alt text (describe the image for screen readers)"
+      />
+      <input
+        className={fieldClass}
+        value={block.caption ?? ""}
+        onChange={(e) => onChange({ ...block, caption: e.target.value || undefined })}
+        placeholder="Caption (optional)"
+      />
     </div>
   );
 }
@@ -416,6 +429,7 @@ function StringListEditor({
             type="button"
             onClick={() => move(i, -1)}
             disabled={i === 0}
+            aria-label="Move item up"
             className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
           >
             ↑
@@ -424,6 +438,7 @@ function StringListEditor({
             type="button"
             onClick={() => move(i, 1)}
             disabled={i === items.length - 1}
+            aria-label="Move item down"
             className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
           >
             ↓
@@ -510,6 +525,7 @@ function ListItemsEditor({
                 type="button"
                 onClick={() => moveItem(i, -1)}
                 disabled={i === 0}
+                aria-label="Move item up"
                 className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
               >
                 ↑
@@ -518,6 +534,7 @@ function ListItemsEditor({
                 type="button"
                 onClick={() => moveItem(i, 1)}
                 disabled={i === items.length - 1}
+                aria-label="Move item down"
                 className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
               >
                 ↓
@@ -552,6 +569,7 @@ function ListItemsEditor({
                       type="button"
                       onClick={() => moveSubItem(i, j, -1)}
                       disabled={j === 0}
+                      aria-label="Move sub-item up"
                       className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
                     >
                       ↑
@@ -560,6 +578,7 @@ function ListItemsEditor({
                       type="button"
                       onClick={() => moveSubItem(i, j, 1)}
                       disabled={j === subItems.length - 1}
+                      aria-label="Move sub-item down"
                       className="text-xs font-semibold text-zinc-600 disabled:opacity-30 dark:text-zinc-300"
                     >
                       ↓

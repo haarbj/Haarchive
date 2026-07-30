@@ -6,6 +6,7 @@ import { fieldClass } from "@/lib/form-styles";
 import { createCoachInvite } from "./actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 
 export function CreateInviteForm() {
   const [state, formAction, isPending] = useActionState(createCoachInvite, {});
@@ -40,11 +41,7 @@ export function CreateInviteForm() {
         </Button>
       </form>
 
-      {state.error && (
-        <p role="alert" className="mt-3 text-sm font-medium text-red-700 dark:text-red-400">
-          {state.error}
-        </p>
-      )}
+      {state.error && <FormError className="mt-3">{state.error}</FormError>}
 
       {state.inviteUrl && (
         <div className="mt-3 rounded-lg bg-black/[0.03] p-3 dark:bg-white/[0.05]">
