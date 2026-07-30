@@ -10,6 +10,9 @@ import { FormattableEditable, InlineFormattableField } from "./formattable-edita
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
+// "calculator" is deliberately excluded here -- it's a hand-authored-only
+// block type (see the ContentBlock union in lib/sections.ts), so it never
+// appears as an option a contributor can add.
 const BLOCK_TYPES: ContentBlock["type"][] = ["heading", "paragraph", "list", "quote", "callout", "image"];
 const BLOCK_LABELS: Record<ContentBlock["type"], string> = {
   heading: "Heading",
@@ -18,6 +21,7 @@ const BLOCK_LABELS: Record<ContentBlock["type"], string> = {
   quote: "Quote",
   callout: "Callout",
   image: "Image",
+  calculator: "Calculator",
 };
 const CALLOUT_VARIANTS = ["tip", "mistake", "research", "takeaway", "advanced"] as const;
 
@@ -35,6 +39,10 @@ function defaultBlockFor(type: ContentBlock["type"]): ContentBlock {
       return { type: "callout", variant: "tip", text: "" };
     case "image":
       return { type: "image", url: "" };
+    case "calculator":
+      // Unreachable via the UI -- BLOCK_TYPES excludes "calculator", so this
+      // case only exists to satisfy the exhaustive switch.
+      return { type: "calculator", calculatorId: "training-heart-rate" };
   }
 }
 

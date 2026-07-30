@@ -8,5 +8,6 @@ export function blockPreviewText(block: ContentBlock): string {
     return block.items.map((item) => (typeof item === "string" ? item : item.text)).join(" · ");
   }
   if (block.type === "image") return block.url;
+  if (block.type === "calculator") return "";
   return block.text ?? "";
 }

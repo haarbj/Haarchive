@@ -4,6 +4,7 @@ import type { ContentBlock } from "@/lib/sections";
 import { headingId } from "@/lib/heading-id";
 import { linkifyContent } from "@/lib/linkify";
 import { ContentCallout } from "@/components/content-callout";
+import { InlineCalculator } from "@/components/inline-calculators";
 import { PullQuote } from "@/components/pull-quote";
 
 type ContentBlocksProps = {
@@ -91,6 +92,9 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
               ) : null}
             </figure>
           );
+        }
+        if (block.type === "calculator") {
+          return <InlineCalculator key={index} calculatorId={block.calculatorId} />;
         }
         if (block.type === "callout") {
           return (

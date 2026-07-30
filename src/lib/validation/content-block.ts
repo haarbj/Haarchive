@@ -1,8 +1,12 @@
 import { z } from "zod";
 
-// Mirrors the ContentBlock union in src/lib/sections.ts exactly -- this is
-// what validates the JSON blob the block editor serializes into a hidden
-// form field (see contribute/articles/content-block-editor.tsx).
+// Mirrors the ContentBlock union in src/lib/sections.ts -- with one
+// deliberate exception: "calculator" is a hand-authored-only block type
+// (see components/inline-calculators) and is intentionally left out here so
+// a contributor can never submit one through the article editor (see
+// contribute/articles/content-block-editor.tsx, which also excludes it from
+// BLOCK_TYPES). This is what validates the JSON blob the block editor
+// serializes into a hidden form field.
 export const calloutVariantSchema = z.enum(["tip", "mistake", "research", "takeaway", "advanced"]);
 
 function isHttpUrl(value: string): boolean {
