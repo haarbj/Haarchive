@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Dark-mode-only site: layout.tsx hardcodes the .dark class onto <html> (no
+   toggle, no OS media-query check), so every dark: utility below always
+   wins over its light-mode counterpart, on every device. Class-based rather
+   than deleting the light-mode classes outright -- same visual result with
+   a far smaller, lower-risk diff than stripping dark: from every file. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Design tokens. Everything in the @theme block below turns into a real
    Tailwind utility class automatically (bg-surface, rounded-card,
    shadow-card, max-w-dashboard, gap-md, ...) -- this is what makes the
@@ -39,6 +46,8 @@
   --accent-research: #8b5cf6;
   --accent-success: #10b981;
   --accent-error: #dc2626;
+  --accent-forest: #166534;
+  --accent-navy: #172554;
 
   /* Tailwind v4 has no extensible theme namespace for z-index (unlike
      spacing/color/radius/shadow/container, which all generated real
@@ -68,6 +77,8 @@
   --color-accent-research: var(--accent-research);
   --color-accent-success: var(--accent-success);
   --color-accent-error: var(--accent-error);
+  --color-accent-forest: var(--accent-forest);
+  --color-accent-navy: var(--accent-navy);
 
   /* Explicit "mobile" cutoff -- Tailwind's default sm(640)/md(768)/lg(1024)
      scale already covers tablet/desktop, but nothing marks the phone-width
@@ -108,24 +119,27 @@
   --container-article-prose: 72ch;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #09090b;
-    --foreground: #f4f4f5;
+/* Dark-mode token overrides. Gated on the .dark class, which layout.tsx now
+   hardcodes onto <html> unconditionally -- see the @custom-variant comment
+   above. */
+:root.dark {
+  --background: #09090b;
+  --foreground: #f4f4f5;
 
-    --surface: #18181b;
-    --surface-muted: #27272a;
-    --hairline: rgb(255 255 255 / 10%);
-    --heading: #ffffff;
-    --body-text: #d4d4d8;
-    --muted: #a1a1aa;
+  --surface: #18181b;
+  --surface-muted: #27272a;
+  --hairline: rgb(255 255 255 / 10%);
+  --heading: #ffffff;
+  --body-text: #d4d4d8;
+  --muted: #a1a1aa;
 
-    --accent-tip: #38bdf8;
-    --accent-warning: #fbbf24;
-    --accent-research: #a78bfa;
-    --accent-success: #34d399;
-    --accent-error: #f87171;
-  }
+  --accent-tip: #38bdf8;
+  --accent-warning: #fbbf24;
+  --accent-research: #a78bfa;
+  --accent-success: #34d399;
+  --accent-error: #f87171;
+  --accent-forest: #4ade80;
+  --accent-navy: #60a5fa;
 }
 
 body {

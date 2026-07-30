@@ -37,7 +37,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    // "dark" is hardcoded, not conditional -- the site is dark-mode-only by
+    // design (light mode looked bad), so every dark: utility across the app
+    // should always win. No toggle, no system-preference check, no client
+    // script: this is the one true state, rendered server-side.
+    <html lang="en" className="h-full antialiased dark">
       <body className="min-h-full bg-stone-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
         <SiteHeader />
         <main>{children}</main>
