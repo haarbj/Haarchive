@@ -5,6 +5,7 @@ import { useState, useTransition, type ChangeEvent } from "react";
 import { uploadArticleImage } from "@/app/(app)/(protected)/contribute/articles/actions";
 import { fieldClass as baseFieldClass } from "@/lib/form-styles";
 import { FormError } from "@/components/ui/form-error";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -23,15 +24,17 @@ type ImageUrlFieldProps = {
 export function ImageUrlField({ value, onChange, inputId, placeholder = "Image URL" }: ImageUrlFieldProps) {
   const [isUploading, startUpload] = useTransition();
   const [uploadError, setUploadError] = useState<string | null>(null);
+  // A freshly-picked file (a blob: object URL, revoked once the modal
+  // closes) or the already-uploaded `value` (re-cropping a photo that's
+  // already been saved) -- either way, cropping happens before anything
+  // is uploaded, never after.
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
+  function uploadBlob(blob: Blob) {
     setUploadError(null);
     startUpload(async () => {
       const formData = new FormData();
-      formData.set("file", file);
+      formData.set("file", blob, "cropped.jpg");
       const result = await uploadArticleImage(formData);
       if (result.error) {
         setUploadError(result.error);
@@ -39,6 +42,19 @@ export function ImageUrlField({ value, onChange, inputId, placeholder = "Image U
       }
       if (result.url) onChange(result.url);
     });
+  }
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploadError(null);
+    setCropSrc(URL.createObjectURL(file));
+  }
+
+  function closeCropModal() {
+    if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
   }
 
   return (
@@ -68,11 +84,31 @@ export function ImageUrlField({ value, onChange, inputId, placeholder = "Image U
       </div>
       {uploadError && <FormError>{uploadError}</FormError>}
       {value ? (
-        // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL, not a local/optimized asset
-        <img
-          src={value}
-          alt=""
-          className="max-h-40 rounded-lg border border-black/10 object-cover dark:border-white/10"
+        <div className="flex items-end gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL, not a local/optimized asset */}
+          <img
+            src={value}
+            alt=""
+            className="max-h-40 rounded-lg border border-black/10 object-cover dark:border-white/10"
+          />
+          <button
+            type="button"
+            onClick={() => setCropSrc(value)}
+            disabled={isUploading}
+            className="text-xs font-semibold text-zinc-600 underline decoration-black/20 underline-offset-2 hover:decoration-black disabled:opacity-60 dark:text-zinc-300 dark:decoration-white/20 dark:hover:decoration-white"
+          >
+            Crop
+          </button>
+        </div>
+      ) : null}
+      {cropSrc ? (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          onCancel={closeCropModal}
+          onConfirm={(blob) => {
+            closeCropModal();
+            uploadBlob(blob);
+          }}
         />
       ) : null}
     </div>
