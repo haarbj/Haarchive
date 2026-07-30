@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { categoryMap, resolveLinkedSection } from "@/lib/sections";
 import { formatRelativeTime } from "@/lib/format";
+import { linkifyContent } from "@/lib/linkify";
 import type { Question } from "@/lib/questions/types";
 import { StatusBadge } from "@/components/questions/status-badge";
 import { UpvoteButton } from "@/components/questions/upvote-button";
@@ -71,7 +72,7 @@ export function QuestionCard({ question, upvoted }: QuestionCardProps) {
 
         {question.isFaq && question.adminResponse ? (
           <p className="mt-2 rounded-lg border-l-4 border-emerald-500/50 bg-emerald-500/5 px-3 py-2 text-sm leading-6 text-zinc-700 dark:border-emerald-400/40 dark:bg-emerald-400/5 dark:text-zinc-300">
-            {question.adminResponse}
+            {linkifyContent(question.adminResponse, "", new Set())}
           </p>
         ) : null}
 

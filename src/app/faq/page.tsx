@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
+import { linkifyContent } from "@/lib/linkify";
 import { categories } from "@/lib/sections";
 import { mapQuestionRow } from "@/lib/questions/map-row";
 import type { Question } from "@/lib/questions/types";
@@ -73,7 +74,7 @@ export default async function FaqPage() {
                       {faq.title}
                     </summary>
                     <p className="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
-                      {faq.adminResponse}
+                      {faq.adminResponse ? linkifyContent(faq.adminResponse, "", new Set()) : null}
                     </p>
                     {faq.linkedSectionSlug ? (
                       <Link
