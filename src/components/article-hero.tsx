@@ -76,26 +76,34 @@ export function ArticleHero({ title, mission, coverImageUrl, attribution, readin
         </div>
       </div>
 
-      <div className="text-sm text-zinc-500 sm:text-right dark:text-zinc-400">
-        {publishedAt ? <p>{formatDate(publishedAt.slice(0, 10))}</p> : null}
-        <p>{readingMinutes} min read</p>
-      </div>
+      {/* One line, not two stacked <p>s -- matches the reading-time/date
+          format already used on the article preview card in
+          [slug]/page.tsx, and avoids the two lines butting up against each
+          other with no gap between them (every other line in this credits
+          block has a deliberate mt-*; these didn't). */}
+      <p className="text-sm text-zinc-500 sm:text-right dark:text-zinc-400">
+        {readingMinutes} min read
+        {publishedAt ? ` · ${formatDate(publishedAt.slice(0, 10))}` : ""}
+      </p>
     </div>
   );
 
   if (coverImageUrl) {
     return (
       <div className="mt-8 overflow-hidden rounded-card border border-black/10 dark:border-white/10">
-        <div className="relative">
-          {/* aspect-video (16:9) rather than a fixed height per breakpoint
-              (the previous h-72/h-96/h-[440px] steps): a fixed height
-              against a fluid width means the visible crop actually drifted
-              as the viewport resized, and it couldn't be matched by
-              anything else on the site. One ratio, reused verbatim on the
-              Articles-index card below, means a photo cropped once (see
-              ImageCropModal) looks the same wherever it appears. */}
+        {/* aspect-video (16:9) only from sm: up. Below that, a fixed 16:9
+            box is too short for a long title at mobile width -- the title
+            wraps to more lines than the box has room for, and since it's
+            absolutely positioned inside that box, the overflow gets clipped
+            instead of pushing the box taller. On mobile the text block is
+            back in normal flow (no sm:absolute) so it drives the box's
+            height itself; min-h-64 is just a floor so a short title doesn't
+            leave a token sliver of image above it. The image is absolute
+            inset-0 at every breakpoint so it always fills however tall that
+            ends up being, sm:aspect-video and all. */}
+        <div className="relative min-h-64 sm:aspect-video">
           {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL, not a local/optimized asset */}
-          <img src={coverImageUrl} alt="" className="aspect-video w-full object-cover" />
+          <img src={coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
           {/* Never fades to fully transparent -- the top of the image stays
               tinted at 40% instead of bare, so a title that wraps to more
               lines than expected doesn't run out of contrast floor. Matches
@@ -103,7 +111,7 @@ export function ArticleHero({ title, mission, coverImageUrl, attribution, readin
               just tied to the site's own near-black instead of a brand
               color Haarchive doesn't have. */}
           <div className="absolute inset-0 bg-gradient-to-t from-black to-black/40" />
-          <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10">
+          <div className="relative p-6 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-10">
             {evidenceLabel ? <Badge tone="research">{evidenceLabel}</Badge> : null}
             <Heading className={`text-white text-balance sm:text-5xl ${evidenceLabel ? "mt-3" : ""}`}>{title}</Heading>
             {mission ? <p className="mt-3 max-w-3xl text-base text-white/80 sm:text-lg">{mission}</p> : null}

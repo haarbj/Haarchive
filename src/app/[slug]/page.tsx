@@ -39,6 +39,8 @@ import { PaceCalculator } from "@/components/pace-calculator";
 import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
 import { ArticleHero } from "@/components/article-hero";
 import { ArticleLayout } from "@/components/article-layout";
+import { ToolCard } from "@/components/tool-card";
+import { TOOL_VISUALS } from "@/lib/tool-visuals";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
@@ -270,19 +272,24 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
         </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {members.map((member: Section) => (
-            <CardLink key={member.slug} href={`/${member.slug}`}>
-              <h2 className="text-xl font-semibold tracking-tight">
-                {member.title}
-              </h2>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-                {member.mission}
-              </p>
-              <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
-                View section →
-              </span>
-            </CardLink>
-          ))}
+          {members.map((member: Section) => {
+            const visual = TOOL_VISUALS[member.slug];
+            return visual ? (
+              <ToolCard key={member.slug} href={`/${member.slug}`} title={member.title} mission={member.mission} visual={visual} />
+            ) : (
+              <CardLink key={member.slug} href={`/${member.slug}`}>
+                <h2 className="text-xl font-semibold tracking-tight">
+                  {member.title}
+                </h2>
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                  {member.mission}
+                </p>
+                <span className="mt-4 inline-flex text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+                  View section →
+                </span>
+              </CardLink>
+            );
+          })}
         </div>
       </Container>
     );
