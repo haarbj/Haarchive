@@ -23,6 +23,9 @@ const timeline: {
   photoAlt?: string;
   photoLabel?: string;
   photoCompactLabel?: string;
+  // Root-relative path once a real file exists under public/homepage/ --
+  // omitted keeps that stop on the ImageSlot placeholder.
+  photoSrc?: string;
 }[] = [
   {
     label: "Brophy College Prep, Arizona",
@@ -30,13 +33,21 @@ const timeline: {
     photoAlt: "Brody Haar racing for Brophy College Prep",
     photoLabel: "High school era -- racing or training in Brophy colors, Flagstaff altitude camp if available.",
     photoCompactLabel: "Brophy",
+    // timeline-brophy.jpg exists in public/homepage/ but is the school's
+    // official crest, not a photo of Brody -- held back per an explicit
+    // call (institutional trademark + a mismatch with this section's
+    // documentary-photo intent), not an oversight. Swap in once a real
+    // photo exists.
   },
   {
     label: "Run22",
     note: "During COVID lockdowns junior year, with nowhere left to train together in person, I built an online community for runners in my graduating class on Strava. Run22 grew to nearly 400 members across 26 states, trading training questions and encouragement. It was the first time I noticed I liked the coaching and community side of the sport as much as the racing itself.",
-    photoAlt: "The Run22 Strava community",
+    photoAlt: "The Run22 logo",
     photoLabel: "A screenshot of the Run22 Strava group, or a solo-training photo from the COVID lockdown era.",
     photoCompactLabel: "Run22",
+    // A logo, not a photo -- an explicit exception, since it's Brody's own
+    // community's mark rather than a third party's, unlike Brophy/Vanderbilt.
+    photoSrc: "/homepage/timeline-run22.jpg",
   },
   {
     label: "Vanderbilt, SEC cross country",
@@ -46,6 +57,10 @@ const timeline: {
     photoAlt: "Brody Haar racing SEC cross country for Vanderbilt",
     photoLabel: "Racing in Vanderbilt colors -- a cross country meet, ideally one that shows the SEC-level field.",
     photoCompactLabel: "Vanderbilt",
+    // timeline-vanderbilt.jpg exists in public/homepage/ but is the
+    // university's official athletic mark -- held back on purpose (a
+    // licensed trademark, not Brody's to publish without clearance, and
+    // the same documentary-photo mismatch as Brophy above).
   },
   {
     label: "Stepping off the plan",
@@ -54,16 +69,21 @@ const timeline: {
   {
     label: "Marathon training, on my own terms",
     note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. I'd skipped enough of it in the lead-up that an injury three weeks out left me broken down by the second half of the race, which had nothing to do with how I paced it. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
-    photoAlt: "Brody Haar at the Nashville Marathon",
+    photoAlt: "Brody Haar crossing the finish line at the Nashville Rock 'n' Roll Marathon in Brophy colors",
     photoLabel: "Race day or a long-run training moment from the Nashville marathon buildup.",
     photoCompactLabel: "Marathon",
+    photoSrc: "/homepage/timeline-marathon.jpg",
   },
   {
     label: "Coaching, and this archive",
     note: "I started by coaching a handful of Run22 members directly, and now coach the Vanderbilt Run Club through full and half marathon training. Alongside that, years of reading Lydiard, Daniels, Canova, and physiology papers side by side, trying to find where they agreed, and writing all of it down so I wouldn't have to re-derive it every time.",
-    photoAlt: "Brody Haar coaching the Vanderbilt Run Club",
+    // Alt text describes the actual photo, not the aspirational "coaching"
+    // framing -- it doesn't depict coaching (used anyway, per an explicit
+    // call), so the alt text shouldn't claim it does.
+    photoAlt: "Brody Haar seated on stone steps with a duffel bag",
     photoLabel: "Actively coaching -- a workout on the track, a race on the sideline, not a posed shot.",
     photoCompactLabel: "Coaching",
+    photoSrc: "/homepage/timeline-coaching.jpg",
   },
 ];
 
@@ -277,6 +297,13 @@ export function AboutPage() {
                       aspect="square"
                       alt={stop.photoAlt}
                       label={stop.photoLabel}
+                      src={stop.photoSrc}
+                      // Overrides ImageSlot's default `sizes` (tuned for a
+                      // half/full-viewport image) -- this renders at a
+                      // fixed ~64px regardless of viewport, so the default
+                      // would make next/image fetch a far larger source
+                      // than ever gets displayed.
+                      sizes="64px"
                     />
                   </div>
                 ) : null}
