@@ -92,6 +92,14 @@ type ImageSlotProps = {
   // off the wrong part -- shifting this is cheaper than re-cropping the
   // source file itself. Defaults to center, i.e. plain object-cover.
   objectPosition?: string;
+  // "cover" (default) fills the aspect box exactly, cropping whichever
+  // edge doesn't match -- fine for a photo with room to spare at the
+  // edges, wrong for anything where every edge is real content (a full
+  // page of handwriting, a UI screenshot, a stack of books each with a
+  // legible title). "contain" scales the whole image to fit inside the
+  // box with no cropping at all -- some letterbox space on one axis is
+  // the tradeoff, never a cut-off word.
+  fit?: "cover" | "contain";
 };
 
 // The one component every future homepage image goes through. Layout,
@@ -125,6 +133,7 @@ export function ImageSlot({
   compactLabel,
   bordered,
   objectPosition,
+  fit = "cover",
 }: ImageSlotProps) {
   const aspectClass = ASPECT_CLASSES[aspect];
   const isBordered = bordered ?? KIND_BORDERED_BY_DEFAULT[kind];
@@ -173,7 +182,7 @@ export function ImageSlot({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-card ${isBordered ? "border border-white/10" : ""} ${aspectClass} ${className}`}
+      className={`relative overflow-hidden rounded-card ${fit === "contain" ? "bg-zinc-950" : ""} ${isBordered ? "border border-white/10" : ""} ${aspectClass} ${className}`}
     >
       <Image
         src={src}
@@ -182,7 +191,7 @@ export function ImageSlot({
         sizes={sizes}
         priority={priority}
         loading={priority ? undefined : "lazy"}
-        className="object-cover"
+        className={fit === "contain" ? "object-contain" : "object-cover"}
         style={objectPosition ? { objectPosition } : undefined}
       />
     </div>

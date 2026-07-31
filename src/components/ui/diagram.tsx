@@ -52,7 +52,7 @@ export function Diagram({ children, alt, aspect = "video", label, className = ""
     <div
       role="img"
       aria-label={alt}
-      className={`relative flex items-center justify-center overflow-hidden rounded-card bg-zinc-950 p-6 ${aspectClass} ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden rounded-card bg-zinc-950 p-4 ${aspectClass} ${className}`}
     >
       {children}
     </div>

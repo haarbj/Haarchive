@@ -210,11 +210,14 @@ export function AboutPage() {
         {/* A real result (18:30 5K -> Mile/10K equivalents, the actual
             written guidance), not placeholder zeros -- captured directly
             from the live results card, cropped to just that card.
-            aspect="wide" (21:9), not "video" (16:9) -- the source screenshot
-            is itself ~2:1, wider than 16:9, so a 16:9 box was cropping the
-            left/right edges and cutting into the card's own text ("ENTERED
-            PERFORMANCE" sits close to the card's left padding). 21:9 crops
-            top/bottom instead, where there's padding to spare.
+            fit="contain", not the default "cover" -- every edge of this
+            screenshot is real content (the card's own text runs close to
+            its own padding on every side), so any crop at all was cutting
+            into something, whichever aspect ratio it was forced into.
+            contain guarantees the whole card is always visible, at the
+            cost of a little letterbox space on one axis -- bg-zinc-950
+            (set automatically by ImageSlot when fit="contain") keeps that
+            space from reading as a layout bug.
             No colored frame -- tried one (padding + tinted border) to signal
             "this is an image," but the results card already has its own
             ring styling baked into the captured pixels, and the two borders
@@ -225,7 +228,8 @@ export function AboutPage() {
           <Figure caption="A real result from the Pace & Heart Rate Calculator.">
             <ImageSlot
               kind="screenshot"
-              aspect="wide"
+              aspect="video"
+              fit="contain"
               label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
               alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
               src="/homepage/calculator-screenshot.png"
@@ -276,18 +280,26 @@ export function AboutPage() {
             color still holds (no red/yellow/green "too much / too little /
             just right" like some published versions of this chart use --
             that's a second idea, not this one). */}
-        {/* mt-4, not the mt-8 every other slot on this page uses -- the
-            diagram's own container already adds p-6, and the SVG's own
-            phase-label row leaves another ~45px of headroom before the
-            curve itself starts, so mt-8 on top of both stacked into a
-            visibly large gap under the last paragraph. */}
-        <div className="mt-4 max-w-[66ch]">
+        {/* mt-2, not the mt-8 every other slot on this page uses -- the
+            diagram's own container adds its own padding (p-4, reduced from
+            p-6 -- see diagram.tsx) and the SVG's own phase-label row leaves
+            further headroom before the curve itself starts, so anything
+            more than a small nudge here stacked into a visibly large gap
+            under the last paragraph. mt-4 alone still wasn't tight enough. */}
+        <div className="mt-2 max-w-[66ch]">
           <Figure caption="Illustrative, not measured data. A workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows, and fades if nothing follows it.">
             <Diagram
               aspect="video"
               alt="A line diagram of the supercompensation curve: performance dips during training, recovers past its starting level during rest (supercompensation), then fades during detraining if not followed by another training stimulus"
             >
-              <svg viewBox="0 0 640 360" className="h-full w-full" role="presentation">
+              {/* viewBox starts at y=30, not y=0 -- nothing in this diagram
+                  renders above y=45 (the phase labels), so the top 30 units
+                  were pure empty margin baked into the SVG's own coordinate
+                  space, on top of the container's own padding and the mt-2
+                  above it. Cropping the viewBox (not the content) removes
+                  that margin without touching any coordinate below it --
+                  the bottom edge (360) is unchanged, only the top moved. */}
+              <svg viewBox="0 30 640 330" className="h-full w-full" role="presentation">
                 {/* Phase bands -- shaded only where something is actively
                     happening (Training, Supercompensation); Before/Recovery/
                     Detraining stay unshaded so the two active phases read as
@@ -473,18 +485,18 @@ export function AboutPage() {
           practice.
         </p>
 
-        {/* aspect="video" -- re-cropped to landscape (3005x1952, ~16:9-ish)
-            since the original upload; full column width now that it's wide
-            rather than a narrow width-constrained portrait box. Plain
-            center crop (no objectPosition override) -- an 80%-biased crop
-            overcorrected and cut off the top books instead. Center isn't
-            perfect (a real crop of the source file would be, if this
-            still bothers on review) but it's the safer default. */}
+        {/* fit="contain", not "cover" -- every crop attempt (plain center,
+            then an objectPosition bias) ended up cutting off a title at
+            one end or the other, because the stack fills almost the
+            entire frame top-to-bottom with real, legible content on every
+            book. contain shows the whole photo, full stack included, with
+            a little letterbox space left/right instead of any crop. */}
         <div className="mt-8 max-w-[66ch]">
           <Figure>
             <ImageSlot
               kind="archival"
               aspect="video"
+              fit="contain"
               label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
               alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
               src="/homepage/how-i-learn-books.jpg"
@@ -557,13 +569,17 @@ export function AboutPage() {
             legible page over a posed photo. max-w-md is still well short
             of the full text column, but big enough that the day-by-day
             entries are actually readable, not just recognizable as "a
-            document." */}
+            document." fit="contain" -- the source photo's own ratio
+            (2397x3627, ~0.66) doesn't exactly match aspect="portrait"
+            (3/4, 0.75), and a cover-crop was clipping a line of entries at
+            the bottom; contain shows the entire page instead. */}
         <div className="mt-8 max-w-[66ch]">
           <div className="w-full max-w-md">
             <Figure>
               <ImageSlot
                 kind="archival"
                 aspect="portrait"
+                fit="contain"
                 label="Brody's own training log from coach Mike Scannell -- a real page, handwritten annotations legible if possible. Emphasizes the coaching relationship and the idea of structured reflection, not a posed photo."
                 alt="A week of daily entries from Brody Haar's handwritten training log -- date, workout, location, distance, and comments for each day"
                 src="/homepage/coaching-training-log.jpg"
