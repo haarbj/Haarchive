@@ -404,8 +404,11 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
                       above the headline), so the top needs its own fade
                       too, not just the bottom-anchored one the headline
                       sits on. Same "never fully transparent" reasoning as
-                      ArticleHero's own scrim either way. */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+                      ArticleHero's own scrim either way. Lighter than that
+                      one (45/70 vs. 60/80): a cover that's already dark --
+                      a stylized illustration, a night photo -- was reading
+                      as "no image at all" under the stronger version. */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
                   <div className="pointer-events-none relative flex h-full w-full flex-col justify-between p-4">
                     <div className="pointer-events-auto space-y-1.5">
                       {/* h-7 + flex-wrap + overflow-hidden, not just

@@ -25,7 +25,7 @@ export function ToolCard({ href, title, mission, visual }: ToolCardProps) {
   return (
     <Link
       href={href}
-      className="group block rounded-card border border-white/10 bg-zinc-900 p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover"
+      className="group block rounded-card border border-white/10 bg-zinc-900 p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover sm:p-6"
     >
       <span
         className="inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:-translate-y-0.5"
@@ -39,9 +39,13 @@ export function ToolCard({ href, title, mission, visual }: ToolCardProps) {
             icon fill contrast. */}
         <Icon aria-hidden="true" strokeWidth={1.5} className="h-5 w-5" style={{ color: accentFrom }} />
       </span>
-      <h2 className="mt-4 text-xl font-semibold tracking-tight text-white">{title}</h2>
-      <p className="mt-2 text-sm text-zinc-300">{mission}</p>
-      <span className="mt-4 inline-flex text-sm font-semibold text-zinc-300 transition group-hover:text-white">
+      <h2 className="mt-3 text-xl font-semibold tracking-tight text-white sm:mt-4">{title}</h2>
+      {/* line-clamp-2, not the full mission -- at one column on a phone,
+          10 of these full-length descriptions made the Tools index a long
+          scroll for what's meant to be a quick jump to a calculator. The
+          full description is one tap away on the tool's own page. */}
+      <p className="mt-2 line-clamp-2 text-sm text-zinc-300">{mission}</p>
+      <span className="mt-3 inline-flex text-sm font-semibold text-zinc-300 transition group-hover:text-white sm:mt-4">
         Open tool →
       </span>
     </Link>

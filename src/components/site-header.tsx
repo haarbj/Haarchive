@@ -82,10 +82,20 @@ export function SiteHeader() {
 
   const learnActive = isLearnPath(pathname);
   const toolsActive = isToolsPath(pathname);
+  // /search already has its own full-width search input with results inline
+  // below it -- the header's copy (mobile row + desktop bar) would just be
+  // a second, visually-identical input stacked right above it.
+  const isSearchPage = pathname === "/search";
 
   return (
-    <header className="sticky top-0 z-[var(--z-header)] border-b border-black/5 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-zinc-950/90">
-      <div className="mx-auto flex w-full max-w-chrome items-center justify-between px-6 py-4">
+    <header
+      className={`border-b border-black/5 dark:border-white/10 md:sticky md:inset-auto md:z-[var(--z-header)] md:flex-none md:overflow-visible md:bg-white/90 md:backdrop-blur md:dark:bg-zinc-950/90 ${
+        mobileOpen
+          ? "fixed inset-0 z-[var(--z-modal)] flex flex-col overflow-y-auto bg-white dark:bg-zinc-950"
+          : "sticky top-0 z-[var(--z-header)] bg-white/90 backdrop-blur dark:bg-zinc-950/90"
+      }`}
+    >
+      <div className="mx-auto flex w-full max-w-chrome shrink-0 items-center justify-between px-6 py-4">
         {/* Logo and primary nav cluster together on the left -- with only
             two real destinations (Learn, Tools) plus the account menu,
             stretching them to opposite ends of the bar (the old layout)
@@ -184,10 +194,15 @@ export function SiteHeader() {
             cluster and the account menu -- justify-between on the outer
             row then has nothing left to redistribute, so this sits exactly
             in the gap that used to just be empty. Hidden on mobile, where
-            search instead lives as a row inside the accordion menu below. */}
-        <div className="hidden flex-1 justify-center px-6 md:flex">
-          <SiteSearchBox variant="header" onNavigate={closeAll} />
-        </div>
+            search instead lives as a row inside the accordion menu below.
+            Skipped entirely on /search, which already has its own
+            full-width input with results inline below it -- this one would
+            just be a second, visually-identical box stacked above it. */}
+        {!isSearchPage && (
+          <div className="hidden flex-1 justify-center px-6 md:flex">
+            <SiteSearchBox variant="header" onNavigate={closeAll} />
+          </div>
+        )}
 
         <div className="hidden items-center gap-3 md:flex">
           <Link
@@ -234,18 +249,28 @@ export function SiteHeader() {
       </div>
 
       {/* Persistent on mobile too -- search specifically must never be
-          something a visitor has to open the hamburger to find. */}
-      <div className="border-t border-black/5 px-6 py-3 md:hidden dark:border-white/10">
-        <SiteSearchBox variant="header" onNavigate={closeAll} />
-      </div>
+          something a visitor has to open the hamburger to find. shrink-0
+          keeps it at its natural height once the header becomes a fixed,
+          full-viewport flex column below (see mobileOpen branch above) --
+          only the menu list itself (flex-1 below) should grow to fill and
+          scroll the remaining space. Skipped on /search -- see the
+          isSearchPage comment above. */}
+      {!isSearchPage && (
+        <div className="shrink-0 border-t border-black/5 px-6 py-3 md:hidden dark:border-white/10">
+          <SiteSearchBox variant="header" onNavigate={closeAll} />
+        </div>
+      )}
 
-      {/* Mobile menu */}
-      <div
-        className={`overflow-hidden border-t border-black/5 transition-[max-height] duration-300 md:hidden dark:border-white/10 ${
-          mobileOpen ? "max-h-[80vh]" : "max-h-0 border-t-0"
-        }`}
-      >
-        <div className="max-h-[80vh] overflow-y-auto px-6 py-4">
+      {/* Mobile menu -- a true full-viewport panel now (the header itself
+          becomes `fixed inset-0` above when mobileOpen), not an inline
+          accordion that just pushed the rest of the page down and left it
+          visible/scrollable right underneath. flex-1 + overflow-y-auto
+          fills and scrolls exactly the remaining space below the chrome
+          and search rows; hidden outright when closed, rather than
+          max-h-0'd, since there's no longer a height transition to animate
+          it through. */}
+      <div className={`min-h-0 border-t border-black/5 md:hidden dark:border-white/10 ${mobileOpen ? "flex-1 overflow-y-auto" : "hidden"}`}>
+        <div className="px-6 py-4">
           <div className="border-b border-black/5 dark:border-white/10">
             <div className="flex items-center justify-between py-3">
               <span className={`text-sm font-medium ${learnActive ? "text-zinc-950 dark:text-white" : "text-zinc-900 dark:text-white"}`}>
@@ -275,38 +300,29 @@ export function SiteHeader() {
               </button>
             </div>
 
+            {/* Category names only -- not every section under every
+                category too. That used to make this the exact "expose
+                nearly every subsection" problem: tapping Learn once dumped
+                the entire site map (~40 links) in one flat list. Each
+                category's own landing page (/foundations, /the-science, …)
+                already lists its sections cleanly -- that page *is* the
+                drill-down step, so the nav doesn't need to reproduce it. */}
             <div
               className={`overflow-hidden transition-[max-height] duration-200 ${
-                mobileLearnOpen ? "max-h-[48rem]" : "max-h-0"
+                mobileLearnOpen ? "max-h-[28rem]" : "max-h-0"
               }`}
             >
-              <div className="space-y-4 pb-4 pl-3">
-                {learnCategories.map((category) => {
-                  const members = sectionsInCategory(category.slug);
-                  return (
-                    <div key={category.slug}>
-                      <Link
-                        href={`/${category.slug}`}
-                        onClick={closeAll}
-                        className="text-sm font-semibold text-zinc-900 dark:text-white"
-                      >
-                        {category.title}
-                      </Link>
-                      <div className="mt-1.5 flex flex-col gap-1">
-                        {members.map((member) => (
-                          <Link
-                            key={member.slug}
-                            href={`/${member.slug}`}
-                            onClick={closeAll}
-                            className="rounded-lg px-2 py-1.5 text-sm text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
-                          >
-                            {member.title}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="flex flex-col pb-2">
+                {learnCategories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={`/${category.slug}`}
+                    onClick={closeAll}
+                    className="rounded-lg px-2 py-3 text-sm font-medium text-zinc-700 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+                  >
+                    {category.title}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

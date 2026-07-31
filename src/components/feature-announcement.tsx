@@ -85,7 +85,13 @@ export function FeatureAnnouncement({
             </span>
           ) : null}
           {badge ? (
-            <span className="shrink-0 rounded-full border border-white/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-zinc-400 uppercase">
+            // Hidden below sm -- badge + a long title easily wraps to its
+            // own line on a narrow phone (this row is flex-wrap), pushing
+            // the whole banner to 3 stacked lines before the actual page
+            // heading even starts. The badge is a nice-to-have label, not
+            // the point; dropping it on the smallest screens keeps this a
+            // quick single line most of the time.
+            <span className="hidden shrink-0 rounded-full border border-white/15 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-zinc-400 uppercase sm:inline-block">
               {badge}
             </span>
           ) : null}
@@ -105,11 +111,16 @@ export function FeatureAnnouncement({
           </Link>
 
           {dismissible ? (
+            // h-9 w-9, not the glyph's own tiny box -- a p-1 pad around a
+            // 14px icon was roughly a 22px tap target, well under any
+            // reasonable touch-safety minimum. -mr-2 pulls the button's own
+            // padding back so it doesn't visually shift the row's right
+            // edge now that the tap target itself is bigger.
             <button
               type="button"
               onClick={dismiss}
               aria-label="Dismiss announcement"
-              className="rounded p-1 text-zinc-600 transition hover:text-zinc-300"
+              className="-mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded text-zinc-600 transition hover:text-zinc-300"
             >
               <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
