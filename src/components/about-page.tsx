@@ -30,14 +30,10 @@ const timeline: {
   {
     label: "Brophy College Prep, Arizona",
     note: "Four years of racing under Mike Scannell: the coach who took Grant Fisher from a sub-4 mile to Olympic medals in the 5,000m and 10,000m. I started as one of the slower runners on the team freshman year; the turning point was the summer after, spent training through Flagstaff's altitude, and I came back sophomore year a different runner. By senior year that had grown into roughly 70 miles a week of altitude training each summer, a state championship junior year (Brophy's first in 17 years), and a First-Team state medal senior year. What actually stuck, though, was the physiology and psychology I picked up from Scannell and camps like Project Gold and Anasazi, before I had the language for either.",
-    photoAlt: "Brody Haar racing for Brophy College Prep",
+    photoAlt: "Brody Haar wearing a state championship medal at an AIA meet in Brophy colors",
     photoLabel: "High school era -- racing or training in Brophy colors, Flagstaff altitude camp if available.",
     photoCompactLabel: "Brophy",
-    // timeline-brophy.jpg exists in public/homepage/ but is the school's
-    // official crest, not a photo of Brody -- held back per an explicit
-    // call (institutional trademark + a mismatch with this section's
-    // documentary-photo intent), not an oversight. Swap in once a real
-    // photo exists.
+    photoSrc: "/homepage/timeline-brophy.jpg",
   },
   {
     label: "Run22",
@@ -45,8 +41,9 @@ const timeline: {
     photoAlt: "The Run22 logo",
     photoLabel: "A screenshot of the Run22 Strava group, or a solo-training photo from the COVID lockdown era.",
     photoCompactLabel: "Run22",
-    // A logo, not a photo -- an explicit exception, since it's Brody's own
-    // community's mark rather than a third party's, unlike Brophy/Vanderbilt.
+    // The one logo in this progression rather than a photo -- Run22 is
+    // Brody's own community, not a third-party mark, so it's a deliberate
+    // exception to the "photo, not logo" rule the other stops follow.
     photoSrc: "/homepage/timeline-run22.jpg",
   },
   {
@@ -54,13 +51,10 @@ const timeline: {
     note: "Studying applied math, computer science, German, and engineering management while training at a Division I level. It didn't go how I expected: a rigid, anaerobic-heavy program left me plateaued and anxious instead of improving, and by sophomore year I walked away from the team entirely.",
     linkHref: "/the-onus-to-quit",
     linkText: "Read the full story in Articles",
-    photoAlt: "Brody Haar racing SEC cross country for Vanderbilt",
+    photoAlt: "Brody Haar racing at the NCAA Cross Country South Region Championships in Vanderbilt colors",
     photoLabel: "Racing in Vanderbilt colors -- a cross country meet, ideally one that shows the SEC-level field.",
     photoCompactLabel: "Vanderbilt",
-    // timeline-vanderbilt.jpg exists in public/homepage/ but is the
-    // university's official athletic mark -- held back on purpose (a
-    // licensed trademark, not Brody's to publish without clearance, and
-    // the same documentary-photo mismatch as Brophy above).
+    photoSrc: "/homepage/timeline-vanderbilt.jpg",
   },
   {
     label: "Stepping off the plan",
