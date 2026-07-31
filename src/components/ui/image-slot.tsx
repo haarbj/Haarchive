@@ -87,6 +87,11 @@ type ImageSlotProps = {
   // slots should just take the kind's default rather than deciding this
   // per instance.
   bordered?: boolean;
+  // CSS object-position (e.g. "50% 30%"), for when the subject isn't
+  // centered in the source photo and object-cover's default 50%/50% crops
+  // off the wrong part -- shifting this is cheaper than re-cropping the
+  // source file itself. Defaults to center, i.e. plain object-cover.
+  objectPosition?: string;
 };
 
 // The one component every future homepage image goes through. Layout,
@@ -119,6 +124,7 @@ export function ImageSlot({
   compact = false,
   compactLabel,
   bordered,
+  objectPosition,
 }: ImageSlotProps) {
   const aspectClass = ASPECT_CLASSES[aspect];
   const isBordered = bordered ?? KIND_BORDERED_BY_DEFAULT[kind];
@@ -169,7 +175,16 @@ export function ImageSlot({
     <div
       className={`relative overflow-hidden rounded-card ${isBordered ? "border border-white/10" : ""} ${aspectClass} ${className}`}
     >
-      <Image src={src} alt={alt} fill sizes={sizes} priority={priority} loading={priority ? undefined : "lazy"} className="object-cover" />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
+        className="object-cover"
+        style={objectPosition ? { objectPosition } : undefined}
+      />
     </div>
   );
 }

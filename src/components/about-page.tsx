@@ -143,6 +143,12 @@ export function AboutPage() {
           title="Why Running Is Valuable for Everyone"
           description="Running scales perfectly across ambition: the same physiology that produces an Olympic champion is what makes an easy run worth doing at all. A good place to start if you’re new here."
           ctaLabel="Read the essay →"
+          // The article's own cover_image_url (queried directly from the
+          // articles table) -- hardcoded rather than fetched at render time
+          // since this component is otherwise entirely hand-authored,
+          // static content (the timeline/influences arrays below are the
+          // same). Update this if that article's cover image ever changes.
+          imageUrl="https://ngfdyupjoeobdwxevmuo.supabase.co/storage/v1/object/public/article-images/44bd11c7-a5c5-4df9-bd82-a1c07b537d6f/e73b9be4-731c-4a7a-8ba9-34dfd52034f3.jpg"
         />
 
         <a
@@ -203,16 +209,27 @@ export function AboutPage() {
 
         {/* A real result (18:30 5K -> Mile/10K equivalents, the actual
             written guidance), not placeholder zeros -- captured directly
-            from the live results card, cropped to just that card. */}
+            from the live results card, cropped to just that card.
+            aspect="wide" (21:9), not "video" (16:9) -- the source screenshot
+            is itself ~2:1, wider than 16:9, so a 16:9 box was cropping the
+            left/right edges and cutting into the card's own text ("ENTERED
+            PERFORMANCE" sits close to the card's left padding). 21:9 crops
+            top/bottom instead, where there's padding to spare.
+            The colored frame (padding + tinted background + border) is
+            deliberate: without it, a card-shaped screenshot of a card-shaped
+            UI reads as an embedded live calculator, not a picture of one --
+            the frame is what tells a reader "this is an image." */}
         <div className="mt-8 max-w-[66ch]">
           <Figure>
-            <ImageSlot
-              kind="screenshot"
-              aspect="video"
-              label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
-              alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
-              src="/homepage/calculator-screenshot.png"
-            />
+            <div className="rounded-card border border-accent-tip/25 bg-accent-tip/[0.06] p-3">
+              <ImageSlot
+                kind="screenshot"
+                aspect="wide"
+                label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
+                alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
+                src="/homepage/calculator-screenshot.png"
+              />
+            </div>
           </Figure>
         </div>
       </section>
@@ -251,20 +268,51 @@ export function AboutPage() {
             color, thin line art), not a raster file, so it costs nothing
             to ship and inherits dark mode through the site's own
             --accent-research/--muted/--heading custom properties rather
-            than baked-in colors. The supercompensation curve: two
-            stress-then-adaptation cycles trending upward, the same shape
-            "start with the mechanism" is describing in the prose above --
-            a workout is a deliberate dip, not just a stimulus, and the
-            adaptation only shows up if the rest afterward actually
-            happens. */}
+            than baked-in colors. Redrawn with named phase bands (Before /
+            Training / Recovery / Supercompensation / Detraining) after the
+            first version's plain workout/adaptation labels tested as too
+            sparse against reference diagrams -- the bands are what make
+            this legible as a *sequence*, not just a wiggle. Single accent
+            color still holds (no red/yellow/green "too much / too little /
+            just right" like some published versions of this chart use --
+            that's a second idea, not this one). */}
         <div className="mt-8 max-w-[66ch]">
-          <Figure caption="The supercompensation curve: a workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows.">
+          <Figure caption="Illustrative, not measured data. A workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows, and fades if nothing follows it.">
             <Diagram
               aspect="video"
-              alt="A line diagram showing two cycles of workout-induced fatigue followed by adaptation above the starting fitness level, trending upward over time"
+              alt="A line diagram of the supercompensation curve: performance dips during training, recovers past its starting level during rest (supercompensation), then fades during detraining if not followed by another training stimulus"
             >
               <svg viewBox="0 0 640 360" className="h-full w-full" role="presentation">
-                {/* Baseline -- starting fitness level */}
+                {/* Phase bands -- shaded only where something is actively
+                    happening (Training, Supercompensation); Before/Recovery/
+                    Detraining stay unshaded so the two active phases read as
+                    the point of the chart. */}
+                <rect x="140" y="55" width="120" height="275" fill="var(--accent-research)" opacity="0.07" />
+                <rect x="380" y="55" width="80" height="275" fill="var(--accent-research)" opacity="0.07" />
+
+                {/* Phase divider lines */}
+                {[140, 260, 380, 460].map((x) => (
+                  <line key={x} x1={x} y1="55" x2={x} y2="330" stroke="var(--muted)" strokeWidth="1" opacity="0.2" />
+                ))}
+
+                {/* Phase labels */}
+                <text x="100" y="45" fontSize="13" fontWeight="600" textAnchor="middle" fill="var(--muted)" fontFamily="inherit">
+                  Before
+                </text>
+                <text x="200" y="45" fontSize="13" fontWeight="600" textAnchor="middle" fill="var(--heading)" fontFamily="inherit">
+                  Training
+                </text>
+                <text x="320" y="45" fontSize="13" fontWeight="600" textAnchor="middle" fill="var(--muted)" fontFamily="inherit">
+                  Recovery
+                </text>
+                <text x="420" y="45" fontSize="13" fontWeight="600" textAnchor="middle" fill="var(--heading)" fontFamily="inherit">
+                  Supercompensation
+                </text>
+                <text x="530" y="45" fontSize="13" fontWeight="600" textAnchor="middle" fill="var(--muted)" fontFamily="inherit">
+                  Detraining
+                </text>
+
+                {/* Baseline -- starting performance level */}
                 <line
                   x1="60"
                   y1="220"
@@ -276,47 +324,41 @@ export function AboutPage() {
                   opacity="0.6"
                 />
                 <text x="60" y="238" fontSize="13" fill="var(--muted)" fontFamily="inherit">
-                  starting fitness
+                  starting level
                 </text>
 
-                {/* The curve itself: stress dip, adaptation peak, repeated
-                    once more and trending upward -- two cycles is enough to
-                    show the pattern without cluttering a "simple" diagram. */}
+                {/* The curve: flat, then a dip through Training, a recovery
+                    back past baseline, a peak at Supercompensation, and a
+                    decline through Detraining -- showing the adaptation
+                    fades if nothing follows it, not just that it happened
+                    once. */}
                 <path
-                  d="M 60 220 C 90 240, 110 270, 140 270 C 170 270, 200 160, 240 160 C 270 160, 290 200, 320 200 C 350 200, 380 100, 420 100 C 460 100, 500 80, 560 70"
+                  d="M 60 220 C 100 220, 140 250, 170 275 C 195 292, 205 292, 230 280 C 260 260, 290 235, 320 220 C 350 200, 390 165, 420 150 C 440 140, 450 135, 460 135 C 490 137, 520 150, 550 168 C 570 180, 585 190, 600 195"
                   fill="none"
                   stroke="var(--accent-research)"
-                  strokeWidth="2"
+                  strokeWidth="2.25"
                   strokeLinecap="round"
                 />
 
-                {/* Markers at each dip (workout) and peak (adaptation) */}
-                <circle cx="140" cy="270" r="4" fill="var(--accent-research)" />
-                <circle cx="320" cy="200" r="4" fill="var(--accent-research)" />
-                <circle cx="240" cy="160" r="4" fill="var(--accent-research)" />
-                <circle cx="420" cy="100" r="4" fill="var(--accent-research)" />
-
-                <text x="140" y="298" fontSize="13" textAnchor="middle" fill="var(--muted)" fontFamily="inherit">
-                  workout
-                </text>
-                <text x="240" y="140" fontSize="13" textAnchor="middle" fill="var(--heading)" fontFamily="inherit">
-                  adaptation
-                </text>
+                {/* Markers at the two named moments the labels above call
+                    out: the low point of the dip, and the peak. */}
+                <circle cx="210" cy="288" r="4" fill="var(--accent-research)" />
+                <circle cx="460" cy="135" r="4" fill="var(--accent-research)" />
 
                 {/* Axes */}
-                <text x="600" y="345" fontSize="13" textAnchor="end" fill="var(--muted)" fontFamily="inherit">
+                <text x="600" y="352" fontSize="13" textAnchor="end" fill="var(--muted)" fontFamily="inherit">
                   time →
                 </text>
                 <text
                   x="30"
-                  y="140"
+                  y="195"
                   fontSize="13"
                   textAnchor="middle"
                   fill="var(--muted)"
                   fontFamily="inherit"
-                  transform="rotate(-90, 30, 140)"
+                  transform="rotate(-90, 30, 195)"
                 >
-                  fitness
+                  performance
                 </text>
               </svg>
             </Diagram>
@@ -428,7 +470,12 @@ export function AboutPage() {
 
         {/* aspect="video" -- re-cropped to landscape (3005x1952, ~16:9-ish)
             since the original upload; full column width now that it's wide
-            rather than a narrow width-constrained portrait box. */}
+            rather than a narrow width-constrained portrait box.
+            objectPosition shifts the crop window down: default center
+            cropping (top/bottom, since the source is proportionally taller
+            than a 16:9 box) was clipping the bottom book's title while
+            leaving empty desk/wall visible above the top book -- biasing
+            toward the bottom keeps the whole stack in frame. */}
         <div className="mt-8 max-w-[66ch]">
           <Figure>
             <ImageSlot
@@ -437,6 +484,7 @@ export function AboutPage() {
               label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
               alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
               src="/homepage/how-i-learn-books.jpg"
+              objectPosition="50% 80%"
             />
           </Figure>
         </div>
@@ -500,9 +548,15 @@ export function AboutPage() {
             Brody's own training log from Mike Scannell, his real coach,
             named earlier in "My Story." Same "emphasize the idea" goal,
             zero rights question, more honestly tied to his own story than
-            a historical Lydiard document would have been. */}
+            a historical Lydiard document would have been.
+            w-48/w-56 (the original size) turned out too small to actually
+            read the handwriting -- the whole point of using a real,
+            legible page over a posed photo. max-w-md is still well short
+            of the full text column, but big enough that the day-by-day
+            entries are actually readable, not just recognizable as "a
+            document." */}
         <div className="mt-8 max-w-[66ch]">
-          <div className="w-48 sm:w-56">
+          <div className="w-full max-w-md">
             <Figure>
               <ImageSlot
                 kind="archival"
