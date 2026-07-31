@@ -6,26 +6,44 @@ import { FeaturedEssay } from "@/components/featured-essay";
 import { PullQuote } from "@/components/pull-quote";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { ImageSlot } from "@/components/ui/image-slot";
 
 const timeline: {
   label: string;
   note: string;
   linkHref?: string;
   linkText?: string;
+  // A progression of small photos across the timeline, not one portrait --
+  // per-stop guidance for whoever sources them, plus a short label for the
+  // compact placeholder (see ImageSlot's compactLabel). Omitted on
+  // "Stepping off the plan" on purpose: that stop is about reading, not a
+  // place or moment with its own photo.
+  photoAlt?: string;
+  photoLabel?: string;
+  photoCompactLabel?: string;
 }[] = [
   {
     label: "Brophy College Prep, Arizona",
     note: "Four years of racing under Mike Scannell: the coach who took Grant Fisher from a sub-4 mile to Olympic medals in the 5,000m and 10,000m. I started as one of the slower runners on the team freshman year; the turning point was the summer after, spent training through Flagstaff's altitude, and I came back sophomore year a different runner. By senior year that had grown into roughly 70 miles a week of altitude training each summer, a state championship junior year (Brophy's first in 17 years), and a First-Team state medal senior year. What actually stuck, though, was the physiology and psychology I picked up from Scannell and camps like Project Gold and Anasazi, before I had the language for either.",
+    photoAlt: "Brody Haar racing for Brophy College Prep",
+    photoLabel: "High school era -- racing or training in Brophy colors, Flagstaff altitude camp if available.",
+    photoCompactLabel: "Brophy",
   },
   {
     label: "Run22",
     note: "During COVID lockdowns junior year, with nowhere left to train together in person, I built an online community for runners in my graduating class on Strava. Run22 grew to nearly 400 members across 26 states, trading training questions and encouragement. It was the first time I noticed I liked the coaching and community side of the sport as much as the racing itself.",
+    photoAlt: "The Run22 Strava community",
+    photoLabel: "A screenshot of the Run22 Strava group, or a solo-training photo from the COVID lockdown era.",
+    photoCompactLabel: "Run22",
   },
   {
     label: "Vanderbilt, SEC cross country",
     note: "Studying applied math, computer science, German, and engineering management while training at a Division I level. It didn't go how I expected: a rigid, anaerobic-heavy program left me plateaued and anxious instead of improving, and by sophomore year I walked away from the team entirely.",
     linkHref: "/the-onus-to-quit",
     linkText: "Read the full story in Articles",
+    photoAlt: "Brody Haar racing SEC cross country for Vanderbilt",
+    photoLabel: "Racing in Vanderbilt colors -- a cross country meet, ideally one that shows the SEC-level field.",
+    photoCompactLabel: "Vanderbilt",
   },
   {
     label: "Stepping off the plan",
@@ -34,10 +52,16 @@ const timeline: {
   {
     label: "Marathon training, on my own terms",
     note: "My first marathon, in Nashville, is where bodyweight strength work earned a permanent spot in how I build a buildup. I'd skipped enough of it in the lead-up that an injury three weeks out left me broken down by the second half of the race, which had nothing to do with how I paced it. Endurance without strength is a plan with a hole in it, and that's shaped how I train and coach ever since.",
+    photoAlt: "Brody Haar at the Nashville Marathon",
+    photoLabel: "Race day or a long-run training moment from the Nashville marathon buildup.",
+    photoCompactLabel: "Marathon",
   },
   {
     label: "Coaching, and this archive",
     note: "I started by coaching a handful of Run22 members directly, and now coach the Vanderbilt Run Club through full and half marathon training. Alongside that, years of reading Lydiard, Daniels, Canova, and physiology papers side by side, trying to find where they agreed, and writing all of it down so I wouldn't have to re-derive it every time.",
+    photoAlt: "Brody Haar coaching the Vanderbilt Run Club",
+    photoLabel: "Actively coaching -- a workout on the track, a race on the sideline, not a posed shot.",
+    photoCompactLabel: "Coaching",
   },
 ];
 
@@ -160,6 +184,15 @@ export function AboutPage() {
             .
           </p>
         </div>
+
+        <div className="mt-8 max-w-[66ch]">
+          <ImageSlot
+            kind="screenshot"
+            aspect="video"
+            label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
+            alt="Pace & Heart Rate Calculator results panel"
+          />
+        </div>
       </section>
 
       {/* Why This Exists */}
@@ -190,6 +223,15 @@ export function AboutPage() {
             reason about it instead of just following it.
           </p>
         </div>
+
+        <div className="mt-8 max-w-[66ch]">
+          <ImageSlot
+            kind="diagram"
+            aspect="video"
+            label="A simple line diagram of one mechanism this site explains well (e.g. the adaptation curve, or aerobic/anaerobic energy pathways). Single accent color on a dark background, not a glossy 3D render -- this is the one slot doing the most work to say research archive, not fitness brand."
+            alt="Diagram illustrating a core training-adaptation mechanism"
+          />
+        </div>
       </section>
 
       {/* My Story */}
@@ -205,28 +247,52 @@ export function AboutPage() {
           about.
         </p>
 
+        {/* A small photo per stop, not one portrait -- the progression
+            itself (Brophy -> Run22 -> Vanderbilt -> Marathon -> Coaching)
+            is the point, the same way the timeline's own text already
+            moves stop to stop. compact ImageSlots since five of these in a
+            row need to be quick visual notes, not five repeated
+            paragraphs of guidance -- the full guidance for each still
+            lives in the timeline array above and in
+            public/homepage/README.md. */}
         <ol className="mt-10 space-y-8 border-l border-black/10 pl-6 dark:border-white/10">
           {timeline.map((stop) => (
             <li key={stop.label} className="relative">
               <span className="absolute top-1.5 -left-[29px] h-2.5 w-2.5 rounded-full bg-zinc-900 dark:bg-white" />
-              <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
-                {stop.label}
-              </h3>
-              <p className="mt-1 max-w-[62ch] text-zinc-600 dark:text-zinc-300">
-                {stop.note}
-                {stop.linkHref ? (
-                  <>
-                    {" "}
-                    <Link
-                      href={stop.linkHref}
-                      className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
-                    >
-                      {stop.linkText}
-                    </Link>
-                    .
-                  </>
+              <div className={stop.photoAlt ? "flex items-start gap-4" : undefined}>
+                {stop.photoAlt && stop.photoLabel ? (
+                  <div className="w-14 shrink-0 sm:w-16">
+                    <ImageSlot
+                      compact
+                      compactLabel={stop.photoCompactLabel}
+                      kind="photo"
+                      aspect="square"
+                      alt={stop.photoAlt}
+                      label={stop.photoLabel}
+                    />
+                  </div>
                 ) : null}
-              </p>
+                <div>
+                  <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+                    {stop.label}
+                  </h3>
+                  <p className="mt-1 max-w-[62ch] text-zinc-600 dark:text-zinc-300">
+                    {stop.note}
+                    {stop.linkHref ? (
+                      <>
+                        {" "}
+                        <Link
+                          href={stop.linkHref}
+                          className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+                        >
+                          {stop.linkText}
+                        </Link>
+                        .
+                      </>
+                    ) : null}
+                  </p>
+                </div>
+              </div>
             </li>
           ))}
         </ol>
@@ -311,7 +377,24 @@ export function AboutPage() {
           </p>
         </div>
 
+        {/* Archival material, not a portrait of Lydiard -- a notebook page,
+            handwritten workout, or physiology sketch emphasizes the idea
+            over the person, and reads as a research archive rather than a
+            coaching-brand bio photo. Sized like a real supporting image
+            (not avatar-scale), since a document needs to be legible enough
+            to read as a document, not just recognized as a face would be. */}
         <div className="mt-8 max-w-[66ch]">
+          <div className="w-48 sm:w-56">
+            <ImageSlot
+              kind="archival"
+              aspect="portrait"
+              label="A notebook page, handwritten workout, or physiology sketch -- Lydiard's own or a period-appropriate equivalent. Emphasizes the idea, not a portrait of the person. Needs a usage-rights check if sourced from an existing archive."
+              alt="A handwritten training notebook page from the Lydiard era"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 max-w-[66ch]">
           <PullQuote
             text={
               'None of the American way: the guy with "Coach" on his back, a clipboard and a stopwatch in his hands, shoving kids through repetitions until they are falling down with fatigue... They had all had the competitive edge drilled out of them.'
