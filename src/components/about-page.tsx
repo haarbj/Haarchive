@@ -358,6 +358,21 @@ export function AboutPage() {
           practice.
         </p>
 
+        {/* aspect="portrait", not "video" -- the actual photo is a vertical
+            stack (3:4, a near-exact match), and a width constraint keeps a
+            portrait crop from dominating the section at full column width. */}
+        <div className="mt-8 w-56 sm:w-64">
+          <Figure>
+            <ImageSlot
+              kind="archival"
+              aspect="portrait"
+              label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
+              alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
+              src="/homepage/how-i-learn-books.jpg"
+            />
+          </Figure>
+        </div>
+
         <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
           {influences.map((influence) => (
             <div key={influence.name}>
@@ -411,15 +426,22 @@ export function AboutPage() {
             over the person, and reads as a research archive rather than a
             coaching-brand bio photo. Sized like a real supporting image
             (not avatar-scale), since a document needs to be legible enough
-            to read as a document, not just recognized as a face would be. */}
+            to read as a document, not just recognized as a face would be.
+            Better than the original plan (source a period-appropriate
+            Lydiard artifact, with the rights questions that implies):
+            Brody's own training log from Mike Scannell, his real coach,
+            named earlier in "My Story." Same "emphasize the idea" goal,
+            zero rights question, more honestly tied to his own story than
+            a historical Lydiard document would have been. */}
         <div className="mt-8 max-w-[66ch]">
           <div className="w-48 sm:w-56">
             <Figure>
               <ImageSlot
                 kind="archival"
                 aspect="portrait"
-                label="A notebook page, handwritten workout, or physiology sketch -- Lydiard's own or a period-appropriate equivalent. Emphasizes the idea, not a portrait of the person. Needs a usage-rights check if sourced from an existing archive."
-                alt="A handwritten training notebook page from the Lydiard era"
+                label="Brody's own training log from coach Mike Scannell -- a real page, handwritten annotations legible if possible. Emphasizes the coaching relationship and the idea of structured reflection, not a posed photo."
+                alt="A week of daily entries from Brody Haar's handwritten training log -- date, workout, location, distance, and comments for each day"
+                src="/homepage/coaching-training-log.jpg"
               />
             </Figure>
           </div>

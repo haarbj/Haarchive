@@ -20,7 +20,10 @@ sizing, spacing) is already built and won't need to move.
 - Every real (non-placeholder) image should be wrapped in `<Figure>`
   (`src/components/ui/figure.tsx`) once it exists, so it can carry a
   `caption`/`attribution` in the one consistent style -- already wired up
-  around all three slots below, just with no caption text yet.
+  around the diagram, books, training log, and screenshot slots below
+  (not the timeline photos, which are small inline thumbnails where the
+  surrounding prose already provides context), just with no caption text
+  written yet.
 
 ## Manifest
 
@@ -32,7 +35,8 @@ sizing, spacing) is already built and won't need to move.
 | `timeline-vanderbilt.jpg`       | "My Story" (timeline, stop 3)       | **Wired up** | square  | Brody racing at the NCAA Cross Country South Region Championships in Vanderbilt colors -- a real photo, clean match for the original guidance. (Same correction as Brophy above -- not the university's logo.) |
 | `timeline-marathon.jpg`         | "My Story" (timeline, stop 5)       | **Wired up** | square  | Brody crossing the finish line at the Nashville Rock 'n' Roll Marathon in Brophy colors. Clean match for the original guidance. |
 | `timeline-coaching.jpg`         | "My Story" (timeline, stop 6)       | **Wired up** | square  | Doesn't literally depict coaching (a candid shot, not an action photo) -- used anyway per an explicit call. Alt text describes what's actually shown rather than claiming it's a coaching moment. |
-| `lydiard-archival.*`            | "Coaching Philosophy"               | Not started | portrait | A notebook page, handwritten workout, or physiology sketch -- Lydiard's own or a period-appropriate equivalent. Emphasizes the idea, not a portrait of the person. Needs a usage-rights check if sourced from an existing archive. |
+| `how-i-learn-books.jpg`         | "How I Learn"                       | **Wired up** | portrait | A real photo of the actual coaching/running books, sized as a supporting image rather than full column width. Note: a second, blurred stack of unrelated career-prep books (PM interview prep, etc.) is visible in the background -- left in per an explicit call after being flagged; crop tighter if that's ever unwanted. |
+| `coaching-training-log.jpg`     | "Coaching Philosophy"               | **Wired up** | portrait | Brody's own training log from coach Mike Scannell, replacing the original plan (a Lydiard-era artifact, which would have needed a rights check Brody's own document doesn't). A real, legible page -- no "holding it" issue since it's a flat shot of the page alone. |
 | `calculator-screenshot.*`       | "Tools & Accounts"                  | Not started | video   | A real, cropped screenshot of a calculator's results panel (Pace & Heart Rate is the obvious pick, since it's the one named in that section's own copy). Framed plainly -- no browser chrome, no device mockup. Hold off until that calculator's own UI is finalized. |
 
 Five separate small photos for "My Story," not one portrait -- the
