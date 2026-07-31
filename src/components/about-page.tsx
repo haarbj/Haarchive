@@ -215,21 +215,21 @@ export function AboutPage() {
             left/right edges and cutting into the card's own text ("ENTERED
             PERFORMANCE" sits close to the card's left padding). 21:9 crops
             top/bottom instead, where there's padding to spare.
-            The colored frame (padding + tinted background + border) is
-            deliberate: without it, a card-shaped screenshot of a card-shaped
-            UI reads as an embedded live calculator, not a picture of one --
-            the frame is what tells a reader "this is an image." */}
+            No colored frame -- tried one (padding + tinted border) to signal
+            "this is an image," but the results card already has its own
+            ring styling baked into the captured pixels, and the two borders
+            nested together read as a rendering glitch, not a deliberate
+            frame. A caption does the same "this is a picture" job through
+            text instead, without a second border competing with the first. */}
         <div className="mt-8 max-w-[66ch]">
-          <Figure>
-            <div className="rounded-card border border-accent-tip/25 bg-accent-tip/[0.06] p-3">
-              <ImageSlot
-                kind="screenshot"
-                aspect="wide"
-                label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
-                alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
-                src="/homepage/calculator-screenshot.png"
-              />
-            </div>
+          <Figure caption="A real result from the Pace & Heart Rate Calculator.">
+            <ImageSlot
+              kind="screenshot"
+              aspect="wide"
+              label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
+              alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
+              src="/homepage/calculator-screenshot.png"
+            />
           </Figure>
         </div>
       </section>
@@ -276,7 +276,12 @@ export function AboutPage() {
             color still holds (no red/yellow/green "too much / too little /
             just right" like some published versions of this chart use --
             that's a second idea, not this one). */}
-        <div className="mt-8 max-w-[66ch]">
+        {/* mt-4, not the mt-8 every other slot on this page uses -- the
+            diagram's own container already adds p-6, and the SVG's own
+            phase-label row leaves another ~45px of headroom before the
+            curve itself starts, so mt-8 on top of both stacked into a
+            visibly large gap under the last paragraph. */}
+        <div className="mt-4 max-w-[66ch]">
           <Figure caption="Illustrative, not measured data. A workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows, and fades if nothing follows it.">
             <Diagram
               aspect="video"
@@ -470,12 +475,11 @@ export function AboutPage() {
 
         {/* aspect="video" -- re-cropped to landscape (3005x1952, ~16:9-ish)
             since the original upload; full column width now that it's wide
-            rather than a narrow width-constrained portrait box.
-            objectPosition shifts the crop window down: default center
-            cropping (top/bottom, since the source is proportionally taller
-            than a 16:9 box) was clipping the bottom book's title while
-            leaving empty desk/wall visible above the top book -- biasing
-            toward the bottom keeps the whole stack in frame. */}
+            rather than a narrow width-constrained portrait box. Plain
+            center crop (no objectPosition override) -- an 80%-biased crop
+            overcorrected and cut off the top books instead. Center isn't
+            perfect (a real crop of the source file would be, if this
+            still bothers on review) but it's the safer default. */}
         <div className="mt-8 max-w-[66ch]">
           <Figure>
             <ImageSlot
@@ -484,7 +488,6 @@ export function AboutPage() {
               label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
               alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
               src="/homepage/how-i-learn-books.jpg"
-              objectPosition="50% 80%"
             />
           </Figure>
         </div>
