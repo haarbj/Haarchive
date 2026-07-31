@@ -96,10 +96,18 @@ type ImageSlotProps = {
   // edge doesn't match -- fine for a photo with room to spare at the
   // edges, wrong for anything where every edge is real content (a full
   // page of handwriting, a UI screenshot, a stack of books each with a
-  // legible title). "contain" scales the whole image to fit inside the
-  // box with no cropping at all -- some letterbox space on one axis is
-  // the tradeoff, never a cut-off word.
+  // legible title). "contain" scales the whole image to fit inside a
+  // still-fixed-shape box, letterboxed on whichever axis doesn't match --
+  // no crop, but still not the image's own real proportions.
   fit?: "cover" | "contain";
+  // The real, honest fix for "every edge is real content": don't force
+  // any box shape at all. Pass the source file's actual pixel dimensions
+  // and the image renders at its own natural aspect ratio, scaled to fill
+  // the available width -- no crop, no letterboxing, no forced shape.
+  // `aspect` and `fit` are ignored for the real-image render when this is
+  // set (the empty-state placeholder still needs *a* box shape to reserve
+  // space before the real dimensions are known, so it keeps using `aspect`).
+  naturalSize?: { width: number; height: number };
 };
 
 // The one component every future homepage image goes through. Layout,
@@ -134,6 +142,7 @@ export function ImageSlot({
   bordered,
   objectPosition,
   fit = "cover",
+  naturalSize,
 }: ImageSlotProps) {
   const aspectClass = ASPECT_CLASSES[aspect];
   const isBordered = bordered ?? KIND_BORDERED_BY_DEFAULT[kind];
@@ -176,6 +185,28 @@ export function ImageSlot({
             </div>
           )}
         </div>
+      </div>
+    );
+  }
+
+  if (naturalSize) {
+    // No `fill`, no forced aspect box -- explicit width/height (the
+    // source's real pixel dimensions) let next/image compute the correct
+    // ratio, and h-auto/w-full scale it responsively while preserving
+    // that ratio exactly. The box takes the image's own shape instead of
+    // the other way around.
+    return (
+      <div className={`overflow-hidden rounded-card ${isBordered ? "border border-white/10" : ""} ${className}`}>
+        <Image
+          src={src}
+          alt={alt}
+          width={naturalSize.width}
+          height={naturalSize.height}
+          sizes={sizes}
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
+          className="h-auto w-full"
+        />
       </div>
     );
   }

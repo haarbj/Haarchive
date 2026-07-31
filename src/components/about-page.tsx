@@ -210,14 +210,12 @@ export function AboutPage() {
         {/* A real result (18:30 5K -> Mile/10K equivalents, the actual
             written guidance), not placeholder zeros -- captured directly
             from the live results card, cropped to just that card.
-            fit="contain", not the default "cover" -- every edge of this
-            screenshot is real content (the card's own text runs close to
-            its own padding on every side), so any crop at all was cutting
-            into something, whichever aspect ratio it was forced into.
-            contain guarantees the whole card is always visible, at the
-            cost of a little letterbox space on one axis -- bg-zinc-950
-            (set automatically by ImageSlot when fit="contain") keeps that
-            space from reading as a layout bug.
+            naturalSize (1184x596, the file's real dimensions), not a
+            forced aspect box -- every edge of this screenshot is real
+            content, so both "cover" (crops) and "contain" (letterboxes
+            inside a box shape that still isn't this image's own shape)
+            were compromises. naturalSize renders it at its own real
+            proportions, full width, no crop and no empty bars.
             No colored frame -- tried one (padding + tinted border) to signal
             "this is an image," but the results card already has its own
             ring styling baked into the captured pixels, and the two borders
@@ -228,8 +226,7 @@ export function AboutPage() {
           <Figure caption="A real result from the Pace & Heart Rate Calculator.">
             <ImageSlot
               kind="screenshot"
-              aspect="video"
-              fit="contain"
+              naturalSize={{ width: 1184, height: 596 }}
               label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
               alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
               src="/homepage/calculator-screenshot.png"
@@ -485,18 +482,17 @@ export function AboutPage() {
           practice.
         </p>
 
-        {/* fit="contain", not "cover" -- every crop attempt (plain center,
-            then an objectPosition bias) ended up cutting off a title at
-            one end or the other, because the stack fills almost the
-            entire frame top-to-bottom with real, legible content on every
-            book. contain shows the whole photo, full stack included, with
-            a little letterbox space left/right instead of any crop. */}
+        {/* naturalSize (3005x1952, the file's real dimensions), not a
+            forced aspect box -- every crop attempt (plain center, an
+            objectPosition bias, then "contain" inside a 16:9 box) either
+            cut off a title or left the image looking artificially
+            letterboxed. naturalSize renders the whole photo at its own
+            real proportions, full width, no crop and no forced shape. */}
         <div className="mt-8 max-w-[66ch]">
           <Figure>
             <ImageSlot
               kind="archival"
-              aspect="video"
-              fit="contain"
+              naturalSize={{ width: 3005, height: 1952 }}
               label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
               alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
               src="/homepage/how-i-learn-books.jpg"
@@ -569,17 +565,18 @@ export function AboutPage() {
             legible page over a posed photo. max-w-md is still well short
             of the full text column, but big enough that the day-by-day
             entries are actually readable, not just recognizable as "a
-            document." fit="contain" -- the source photo's own ratio
-            (2397x3627, ~0.66) doesn't exactly match aspect="portrait"
-            (3/4, 0.75), and a cover-crop was clipping a line of entries at
-            the bottom; contain shows the entire page instead. */}
+            document." naturalSize (2397x3627, the file's real dimensions),
+            not a forced aspect box -- the source's own ratio (~0.66)
+            doesn't exactly match aspect="portrait" (3/4, 0.75), and even
+            "contain" inside that box left it looking artificially
+            letterboxed; naturalSize renders the whole page at its own
+            real shape. */}
         <div className="mt-8 max-w-[66ch]">
           <div className="w-full max-w-md">
             <Figure>
               <ImageSlot
                 kind="archival"
-                aspect="portrait"
-                fit="contain"
+                naturalSize={{ width: 2397, height: 3627 }}
                 label="Brody's own training log from coach Mike Scannell -- a real page, handwritten annotations legible if possible. Emphasizes the coaching relationship and the idea of structured reflection, not a posed photo."
                 alt="A week of daily entries from Brody Haar's handwritten training log -- date, workout, location, distance, and comments for each day"
                 src="/homepage/coaching-training-log.jpg"
