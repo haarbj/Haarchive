@@ -201,13 +201,17 @@ export function AboutPage() {
           </p>
         </div>
 
+        {/* A real result (18:30 5K -> Mile/10K equivalents, the actual
+            written guidance), not placeholder zeros -- captured directly
+            from the live results card, cropped to just that card. */}
         <div className="mt-8 max-w-[66ch]">
           <Figure>
             <ImageSlot
               kind="screenshot"
               aspect="video"
               label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
-              alt="Pace & Heart Rate Calculator results panel"
+              alt="Pace & Heart Rate Calculator results panel showing an entered performance of 18:30 for a cross country 5K, with estimated equivalent mile and 10K times"
+              src="/homepage/calculator-screenshot.png"
             />
           </Figure>
         </div>
@@ -243,15 +247,79 @@ export function AboutPage() {
         </div>
 
         {/* Diagram, not ImageSlot -- this is the priority visual type per
-            the visual system doc, meant to be hand-authored inline SVG
-            (one accent color, thin line art) rather than a raster file. */}
+            the visual system doc: hand-authored inline SVG (one accent
+            color, thin line art), not a raster file, so it costs nothing
+            to ship and inherits dark mode through the site's own
+            --accent-research/--muted/--heading custom properties rather
+            than baked-in colors. The supercompensation curve: two
+            stress-then-adaptation cycles trending upward, the same shape
+            "start with the mechanism" is describing in the prose above --
+            a workout is a deliberate dip, not just a stimulus, and the
+            adaptation only shows up if the rest afterward actually
+            happens. */}
         <div className="mt-8 max-w-[66ch]">
-          <Figure>
+          <Figure caption="The supercompensation curve: a workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows.">
             <Diagram
               aspect="video"
-              label="A simple line diagram of one mechanism this site explains well (e.g. the adaptation curve, or aerobic/anaerobic energy pathways). Single accent color on a dark background, not a glossy 3D render -- this is the one slot doing the most work to say research archive, not fitness brand."
-              alt="Diagram illustrating a core training-adaptation mechanism"
-            />
+              alt="A line diagram showing two cycles of workout-induced fatigue followed by adaptation above the starting fitness level, trending upward over time"
+            >
+              <svg viewBox="0 0 640 360" className="h-full w-full" role="presentation">
+                {/* Baseline -- starting fitness level */}
+                <line
+                  x1="60"
+                  y1="220"
+                  x2="600"
+                  y2="220"
+                  stroke="var(--muted)"
+                  strokeWidth="1.25"
+                  strokeDasharray="4 5"
+                  opacity="0.6"
+                />
+                <text x="60" y="238" fontSize="13" fill="var(--muted)" fontFamily="inherit">
+                  starting fitness
+                </text>
+
+                {/* The curve itself: stress dip, adaptation peak, repeated
+                    once more and trending upward -- two cycles is enough to
+                    show the pattern without cluttering a "simple" diagram. */}
+                <path
+                  d="M 60 220 C 90 240, 110 270, 140 270 C 170 270, 200 160, 240 160 C 270 160, 290 200, 320 200 C 350 200, 380 100, 420 100 C 460 100, 500 80, 560 70"
+                  fill="none"
+                  stroke="var(--accent-research)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+
+                {/* Markers at each dip (workout) and peak (adaptation) */}
+                <circle cx="140" cy="270" r="4" fill="var(--accent-research)" />
+                <circle cx="320" cy="200" r="4" fill="var(--accent-research)" />
+                <circle cx="240" cy="160" r="4" fill="var(--accent-research)" />
+                <circle cx="420" cy="100" r="4" fill="var(--accent-research)" />
+
+                <text x="140" y="298" fontSize="13" textAnchor="middle" fill="var(--muted)" fontFamily="inherit">
+                  workout
+                </text>
+                <text x="240" y="140" fontSize="13" textAnchor="middle" fill="var(--heading)" fontFamily="inherit">
+                  adaptation
+                </text>
+
+                {/* Axes */}
+                <text x="600" y="345" fontSize="13" textAnchor="end" fill="var(--muted)" fontFamily="inherit">
+                  time →
+                </text>
+                <text
+                  x="30"
+                  y="140"
+                  fontSize="13"
+                  textAnchor="middle"
+                  fill="var(--muted)"
+                  fontFamily="inherit"
+                  transform="rotate(-90, 30, 140)"
+                >
+                  fitness
+                </text>
+              </svg>
+            </Diagram>
           </Figure>
         </div>
       </section>
@@ -358,14 +426,14 @@ export function AboutPage() {
           practice.
         </p>
 
-        {/* aspect="portrait", not "video" -- the actual photo is a vertical
-            stack (3:4, a near-exact match), and a width constraint keeps a
-            portrait crop from dominating the section at full column width. */}
-        <div className="mt-8 w-56 sm:w-64">
+        {/* aspect="video" -- re-cropped to landscape (3005x1952, ~16:9-ish)
+            since the original upload; full column width now that it's wide
+            rather than a narrow width-constrained portrait box. */}
+        <div className="mt-8 max-w-[66ch]">
           <Figure>
             <ImageSlot
               kind="archival"
-              aspect="portrait"
+              aspect="video"
               label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
               alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
               src="/homepage/how-i-learn-books.jpg"
