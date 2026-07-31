@@ -27,12 +27,27 @@ export type ImageSlotAspect = "video" | "portrait" | "square" | "wide";
 
 // video (16:9) matches the article/tool card convention already used
 // elsewhere; portrait and square cover a founder/coach photo; wide is for
-// a full-bleed section break, should one ever earn its place.
-const ASPECT_CLASSES: Record<ImageSlotAspect, string> = {
+// a full-bleed section break, should one ever earn its place. Exported so
+// Diagram (a separate component for hand-authored inline SVG, not a file
+// through this one) can share the exact same aspect-ratio scale.
+export const ASPECT_CLASSES: Record<ImageSlotAspect, string> = {
   video: "aspect-video",
   portrait: "aspect-[3/4]",
   square: "aspect-square",
   wide: "aspect-[21/9]",
+};
+
+// Per the visual system's border rule: a screenshot or archival scan
+// usually has its own busy/light internal background and needs a hairline
+// edge to read as a distinct image against the page; a photo, portrait, or
+// diagram usually has enough natural contrast against the dark ground on
+// its own. Still overridable per call site via the `bordered` prop below.
+const KIND_BORDERED_BY_DEFAULT: Record<ImageSlotKind, boolean> = {
+  photo: false,
+  portrait: false,
+  diagram: false,
+  screenshot: true,
+  archival: true,
 };
 
 type ImageSlotProps = {
@@ -68,6 +83,10 @@ type ImageSlotProps = {
   // each need their own short identifier ("Brophy", "Run22", ...), not
   // the same generic word repeated five times.
   compactLabel?: string;
+  // Overrides KIND_BORDERED_BY_DEFAULT for this one call site -- most
+  // slots should just take the kind's default rather than deciding this
+  // per instance.
+  bordered?: boolean;
 };
 
 // The one component every future homepage image goes through. Layout,
@@ -99,8 +118,10 @@ export function ImageSlot({
   className = "",
   compact = false,
   compactLabel,
+  bordered,
 }: ImageSlotProps) {
   const aspectClass = ASPECT_CLASSES[aspect];
+  const isBordered = bordered ?? KIND_BORDERED_BY_DEFAULT[kind];
 
   if (!src) {
     const Icon = KIND_ICONS[kind];
@@ -145,7 +166,9 @@ export function ImageSlot({
   }
 
   return (
-    <div className={`relative overflow-hidden rounded-card ${aspectClass} ${className}`}>
+    <div
+      className={`relative overflow-hidden rounded-card ${isBordered ? "border border-white/10" : ""} ${aspectClass} ${className}`}
+    >
       <Image src={src} alt={alt} fill sizes={sizes} priority={priority} loading={priority ? undefined : "lazy"} className="object-cover" />
     </div>
   );

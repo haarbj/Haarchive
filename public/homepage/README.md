@@ -11,11 +11,22 @@ passing `src="/homepage/<filename>"` to the matching `<ImageSlot>` call --
 that's the only code change. Everything else (aspect ratio, responsive
 sizing, spacing) is already built and won't need to move.
 
+**Two exceptions to "a file lands here":**
+- The "Why This Exists" diagram is a `<Diagram>` (`src/components/ui/diagram.tsx`),
+  not an `<ImageSlot>` -- it's meant to be hand-authored inline SVG passed
+  as its `children`, not a file in this folder. See the visual system doc
+  for why (zero asset weight, exact dark-mode color control via the site's
+  own `--accent-*` custom properties).
+- Every real (non-placeholder) image should be wrapped in `<Figure>`
+  (`src/components/ui/figure.tsx`) once it exists, so it can carry a
+  `caption`/`attribution` in the one consistent style -- already wired up
+  around all three slots below, just with no caption text yet.
+
 ## Manifest
 
 | File (planned)              | Slot (in about-page.tsx)          | Aspect  | Guidance                                                                                                                                                                     |
 | ---------------------------- | ----------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `mechanism-diagram.*`         | "Why This Exists"                   | video   | A simple line diagram of one mechanism this site explains well (e.g. the adaptation curve, or aerobic/anaerobic energy pathways). Single accent color line art on a dark background, not a glossy 3D render -- this is the one slot doing the most work to say "research archive," not "fitness brand." Diagrams like this one are the priority visual type for the site going forward, ahead of photography -- see the visual-system phase for where else they belong. |
+| *(inline SVG, no file)*       | "Why This Exists" (`<Diagram>`)     | video   | A simple line diagram of one mechanism this site explains well (e.g. the adaptation curve, or aerobic/anaerobic energy pathways). Single accent color line art (`stroke="var(--accent-research)"` or similar) on a dark background, not a glossy 3D render -- this is the one slot doing the most work to say "research archive," not "fitness brand." Diagrams like this one are the priority visual type for the site going forward, ahead of photography -- see the visual-system doc for where else they belong. |
 | `timeline-brophy.*`           | "My Story" (timeline, stop 1)       | square  | High school era -- racing or training in Brophy colors, Flagstaff altitude camp if available.                                                                              |
 | `timeline-run22.*`            | "My Story" (timeline, stop 2)       | square  | A screenshot of the Run22 Strava group, or a solo-training photo from the COVID lockdown era.                                                                               |
 | `timeline-vanderbilt.*`       | "My Story" (timeline, stop 3)       | square  | Racing in Vanderbilt colors -- a cross country meet, ideally one that shows the SEC-level field.                                                                            |

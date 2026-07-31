@@ -5,6 +5,8 @@ import { FeatureAnnouncementLoader as FeatureAnnouncement } from "@/components/f
 import { FeaturedEssay } from "@/components/featured-essay";
 import { PullQuote } from "@/components/pull-quote";
 import { Container } from "@/components/ui/container";
+import { Diagram } from "@/components/ui/diagram";
+import { Figure } from "@/components/ui/figure";
 import { Heading } from "@/components/ui/heading";
 import { ImageSlot } from "@/components/ui/image-slot";
 
@@ -186,12 +188,14 @@ export function AboutPage() {
         </div>
 
         <div className="mt-8 max-w-[66ch]">
-          <ImageSlot
-            kind="screenshot"
-            aspect="video"
-            label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
-            alt="Pace & Heart Rate Calculator results panel"
-          />
+          <Figure>
+            <ImageSlot
+              kind="screenshot"
+              aspect="video"
+              label="A real, cropped screenshot of a calculator's results panel -- the Pace & Heart Rate Calculator is the obvious pick, since it's the one named in the copy above. Framed plainly: no browser chrome, no device mockup."
+              alt="Pace & Heart Rate Calculator results panel"
+            />
+          </Figure>
         </div>
       </section>
 
@@ -224,13 +228,17 @@ export function AboutPage() {
           </p>
         </div>
 
+        {/* Diagram, not ImageSlot -- this is the priority visual type per
+            the visual system doc, meant to be hand-authored inline SVG
+            (one accent color, thin line art) rather than a raster file. */}
         <div className="mt-8 max-w-[66ch]">
-          <ImageSlot
-            kind="diagram"
-            aspect="video"
-            label="A simple line diagram of one mechanism this site explains well (e.g. the adaptation curve, or aerobic/anaerobic energy pathways). Single accent color on a dark background, not a glossy 3D render -- this is the one slot doing the most work to say research archive, not fitness brand."
-            alt="Diagram illustrating a core training-adaptation mechanism"
-          />
+          <Figure>
+            <Diagram
+              aspect="video"
+              label="A simple line diagram of one mechanism this site explains well (e.g. the adaptation curve, or aerobic/anaerobic energy pathways). Single accent color on a dark background, not a glossy 3D render -- this is the one slot doing the most work to say research archive, not fitness brand."
+              alt="Diagram illustrating a core training-adaptation mechanism"
+            />
+          </Figure>
         </div>
       </section>
 
@@ -385,12 +393,14 @@ export function AboutPage() {
             to read as a document, not just recognized as a face would be. */}
         <div className="mt-8 max-w-[66ch]">
           <div className="w-48 sm:w-56">
-            <ImageSlot
-              kind="archival"
-              aspect="portrait"
-              label="A notebook page, handwritten workout, or physiology sketch -- Lydiard's own or a period-appropriate equivalent. Emphasizes the idea, not a portrait of the person. Needs a usage-rights check if sourced from an existing archive."
-              alt="A handwritten training notebook page from the Lydiard era"
-            />
+            <Figure>
+              <ImageSlot
+                kind="archival"
+                aspect="portrait"
+                label="A notebook page, handwritten workout, or physiology sketch -- Lydiard's own or a period-appropriate equivalent. Emphasizes the idea, not a portrait of the person. Needs a usage-rights check if sourced from an existing archive."
+                alt="A handwritten training notebook page from the Lydiard era"
+              />
+            </Figure>
           </div>
         </div>
 
