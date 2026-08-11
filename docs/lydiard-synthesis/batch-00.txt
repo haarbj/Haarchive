@@ -1,0 +1,2 @@
+1	resources/Lydiard/Lydiard Part 2 Principles.pdf
+2	resources/Lydiard/Lydiard Part 3 Aerobic System.pdf

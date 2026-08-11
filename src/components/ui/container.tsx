@@ -16,7 +16,7 @@ import type { ElementType, ReactNode } from "react";
 //     plan). Denser than content, still roomy enough for cards and tables.
 //   - narrow: a form with some supporting content around it (generate a
 //     plan/season, an error state, "ask a question").
-//   - auth: a single-column form and nothing else (sign in/up, settings).
+//   - auth: a single-column form and nothing else (sign in/up, pending).
 export type ContainerVariant = "content" | "dashboard" | "narrow" | "auth";
 
 // Literal strings, not interpolated -- Tailwind's static scanner needs to

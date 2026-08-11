@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
+import { canonicalUrl } from "@/lib/canonical";
 import { formatDistance } from "@/lib/format";
 import { formatClock } from "@/lib/running-format";
 import { raceDistanceMap } from "@/lib/race-distances";
@@ -47,7 +48,7 @@ async function loadPersonalRecords(userId: string): Promise<PersonalRecordRow[]>
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const result = await loadCommunityMember(id);
-  return { title: result?.profile.display_name ?? "Runner" };
+  return { title: result?.profile.display_name ?? "Runner", ...canonicalUrl(`/community/${id}`) };
 }
 
 export default async function CommunityMemberPage({ params }: { params: Promise<{ id: string }> }) {

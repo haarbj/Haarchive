@@ -7,12 +7,15 @@ import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
 import { isArticleAuthor } from "@/lib/articles/is-author";
 import { loadTagOptions } from "@/lib/articles/tag-options";
+import { blockPreviewText } from "@/lib/articles/block-preview";
 import type { ContentBlock } from "@/lib/sections";
 import { ArticleEditorForm } from "@/app/(app)/(protected)/contribute/articles/article-editor-form";
 import { SubmitForReviewButton } from "./submit-for-review-button";
 import type { CitationDraft } from "@/app/(app)/(protected)/contribute/articles/citations-editor";
-import { CommentThread, type CommentWithAuthor } from "@/app/(app)/(protected)/contribute/review/comment-thread";
+import { BlockComments } from "@/app/(app)/(protected)/contribute/review/comment-thread";
+import { groupCommentsByBlock, type CommentWithAuthor } from "@/app/(app)/(protected)/contribute/review/group-comments";
 import { BackLink } from "@/components/ui/back-link";
+import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -110,6 +113,7 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
   };
 
   const canEdit = session!.isAdmin || article.status === "draft" || article.status === "in_review";
+  const { byBlock, general } = groupCommentsByBlock(comments);
 
   return (
     <Container variant="narrow">
@@ -128,8 +132,36 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
       {comments.length > 0 ? (
         <div className="mt-8">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Reviewer feedback</h2>
-          <div className="mt-4">
-            <CommentThread articleId={article.id} content={article.content ?? []} comments={comments} canModerate={false} canReply={false} />
+          {/* Grouped by the block each comment is actually about, with that
+              block's own preview text shown right above it -- previously
+              this was one flat list, so knowing which block a comment
+              referred to meant scrolling down to the editor to find "Block
+              5" and count. */}
+          <div className="mt-4 space-y-3">
+            {Array.from(byBlock.entries())
+              .sort(([a], [b]) => a - b)
+              .map(([index, blockComments]) => {
+                const block = (article.content ?? [])[index];
+                return (
+                  <Card key={index} padding="sm">
+                    <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+                      Block {index + 1} · {block?.type}
+                    </p>
+                    {block ? <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">{blockPreviewText(block)}</p> : null}
+                    <div className="mt-3 border-t border-black/5 pt-3 dark:border-white/10">
+                      <BlockComments articleId={article.id} blockIndex={index} comments={blockComments} canModerate={false} canReply={false} />
+                    </div>
+                  </Card>
+                );
+              })}
+            {general.length > 0 ? (
+              <Card padding="sm">
+                <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">General comments</p>
+                <div className="mt-3">
+                  <BlockComments articleId={article.id} blockIndex={null} comments={general} canModerate={false} canReply={false} />
+                </div>
+              </Card>
+            ) : null}
           </div>
         </div>
       ) : null}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { athletes, athleteMap } from "@/lib/athletes/data";
+import { canonicalUrl } from "@/lib/canonical";
 import { AthletePage } from "@/components/athletes/athlete-page";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: AthleteRouteParams): Promise<
   return {
     title: athlete.name,
     description: athlete.oneLiner,
+    ...canonicalUrl(`/athlete-library/${slug}`),
     openGraph: { title: athlete.name, description: athlete.oneLiner, images: ["/opengraph-image.png"] },
     twitter: { title: athlete.name, description: athlete.oneLiner, images: ["/opengraph-image.png"] },
   };

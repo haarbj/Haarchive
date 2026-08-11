@@ -15,6 +15,7 @@ import {
   type Section,
 } from "@/lib/sections";
 import { createClient } from "@/lib/db/server";
+import { canonicalUrl } from "@/lib/canonical";
 import { mapArticleRow, type ArticleRow } from "@/lib/articles/map-row";
 import { buildArticleAttribution, type ArticleAttribution } from "@/lib/articles/attribution";
 import { ARTICLE_TYPE_LABELS, type ArticleType } from "@/lib/articles/constants";
@@ -40,6 +41,7 @@ import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
 import { ArticleHero } from "@/components/article-hero";
 import { ArticleLayout } from "@/components/article-layout";
 import { ToolCard } from "@/components/tool-card";
+import { CATEGORY_VISUALS } from "@/lib/category-visuals";
 import { TOOL_VISUALS } from "@/lib/tool-visuals";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
@@ -197,16 +199,31 @@ async function loadArticleCitations(articleId: string): Promise<PublicCitation[]
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: SectionPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const { tag: activeTag } = await searchParams;
   const section = sectionMap.get(slug);
   const category = categoryMap.get(slug);
   const entry = section ?? category;
+
+  // A `?tag=` filtered view (only the "articles" index actually uses this,
+  // but the rule is harmless and correct for any slug) is a subset of its
+  // own base page's content, not a distinct page -- it never gets its own
+  // canonical, and never gets indexed separately, regardless of which
+  // section it's on. The canonical below already points back to the clean
+  // `/${slug}` URL either way; this adds the stronger, explicit signal on
+  // top of it. See docs/seo-audit.md section 6.
+  const tagFilterRobots: Pick<Metadata, "robots"> = activeTag
+    ? { robots: { index: false, follow: true } }
+    : {};
 
   if (entry) {
     return {
       title: entry.title,
       description: entry.mission,
+      ...canonicalUrl(`/${slug}`),
+      ...tagFilterRobots,
       openGraph: {
         title: entry.title,
         description: entry.mission,
@@ -235,6 +252,7 @@ export async function generateMetadata({
   return {
     title: article.title,
     description,
+    ...canonicalUrl(`/${slug}`),
     openGraph: {
       type: "article",
       title: article.title,
@@ -260,10 +278,24 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
   // Category landing page
   if (category) {
     const members = sectionsInCategory(category.slug);
+    const categoryVisual = CATEGORY_VISUALS[category.slug];
 
     return (
       <Container variant="content">
         <BackLink href="/">Back to home</BackLink>
+        {categoryVisual ? (
+          // Same chip as the homepage's "What You'll Find Here" list
+          // (about-page.tsx) -- carries that same icon through to the
+          // category's own landing page instead of the list being the only
+          // place it appears.
+          <span
+            aria-hidden="true"
+            className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
+            style={{ backgroundImage: `linear-gradient(135deg, ${categoryVisual.accentFrom}26, ${categoryVisual.accentTo}40)` }}
+          >
+            <categoryVisual.icon aria-hidden="true" strokeWidth={1.5} className="h-6 w-6" style={{ color: categoryVisual.accentFrom }} />
+          </span>
+        ) : null}
         <Heading>
           {category.title}
         </Heading>

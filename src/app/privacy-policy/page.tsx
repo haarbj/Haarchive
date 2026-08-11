@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonicalUrl } from "@/lib/canonical";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "How The Haarchive collects, uses, and protects your information.",
+  ...canonicalUrl("/privacy-policy"),
 };
 
 const backLinkClass =

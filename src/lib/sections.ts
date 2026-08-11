@@ -54,7 +54,7 @@ export const categories: Category[] = [
     slug: "tools",
     title: "Tools",
     mission:
-      "Interactive calculators for training, pacing, and race-day conditions.",
+      "Interactive calculators and guidance for training, pacing, and race-day conditions.",
   },
 ];
 
@@ -237,6 +237,15 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Cliff Cushman was a 400m hurdler who won Olympic silver in Rome in 1960 and spent the next four years chasing gold. At the 1964 Olympic Trials, he fell on the fifth hurdle and missed the team. Instead of retreating from it, he wrote an open letter to his hometown newspaper, addressed to the young people who might have watched him fall on television. He didn't want their sympathy. He wanted them to set their own goals and pursue them with the same honesty he'd brought to running: \"get up, pick the cinders out of your wounds, and take one more step.\" Cushman was declared missing in action over Vietnam two years later, and officially declared dead in 1975. The letter outlived him, and it's still shared for the same reason he wrote it: not because falling doesn't cost you something, but because what you do immediately after is the only part still in your control.",
       },
+      { type: "heading", text: "A Shoe-Factory Dropout Who Became His Own Guinea Pig" },
+      {
+        type: "paragraph",
+        text: "Arthur Lydiard didn't come to coaching through any formal path. He left school at 16 during the Depression to work in a shoe factory, boxed and played rugby as a young man, and only started taking running seriously after a training partner, a club president named Jack Dolan, took a fit-feeling 27-year-old Lydiard on an ordinary 5-mile jog that left him completely wrecked. The question that stuck with him afterward wasn't how he'd feel at 47 if 5 miles did that to him at 27; it was why a supposedly fit man's body had failed that badly in the first place. He started experimenting on himself, found the era's standard training schedules too conservative to answer the question, and over the next 15 years pushed his own weekly mileage as high as 250 miles to find out empirically what a human body could actually absorb and adapt to. He had no coaching credential and no physiology degree behind any of it; the physiology came later, from scientists explaining after the fact why what he'd already found through trial and error kept working (Lydiard, Athletic Training, 1999 Lecture Tour).",
+      },
+      {
+        type: "paragraph",
+        text: "The first outside proof came almost by accident. Lawrie King, a runner Lydiard had been quietly coaching for two years, won a provincial 2-mile title by 80 meters, a result decisive enough that it made Lydiard a coach whether he'd set out to be one or not. Within a decade his method had produced Murray Halberg and Peter Snell, both Olympic champions at Rome in 1960, and it kept working once he started exporting it: eight months in Mexico produced the country's first credible Olympic-distance contenders, and 19 months coaching in Finland, a country whose own coaches had turned into what he called \"interval junkies\" and were initially reluctant to change anything, ended with Lasse Viren winning the 5,000m/10,000m double at both the 1972 and 1976 Olympics. A shoe-factory dropout with no formal training became, by the end of his life, one of the most copied distance-running coaches in history, not because he started with a theory, but because he was willing to run 250 miles in a week to find out if the theory would even hold (Lydiard, Athletic Training, 1999 Lecture Tour).",
+      },
       { type: "heading", text: "How Jogging Became a Worldwide Movement" },
       {
         type: "paragraph",
@@ -276,6 +285,11 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "Lorraine Moller made a Commonwealth Games 800m final at eighteen, an age-group record that still stands. She won 16 major international marathons, including Boston, took Olympic marathon bronze at 37, and ran her fourth and final Olympics at 41: the only woman to run every Olympic women's marathon of the 20th century. Longevity like that isn't an accident of genetics so much as two decades of declining to stop (Moller, On the Wings of Mercury, 2008).",
+      },
+      { type: "heading", text: "A Marathon, Ten Weeks Before a World Record" },
+      {
+        type: "paragraph",
+        text: "In the middle of his 1961-62 buildup, Peter Snell, an 800m runner, entered an ordinary marathon. He led through 20 miles, faded, was reduced to walking by mile 24, and finished in 2:41 fully depleted; that same afternoon, playing a casual game of social cricket, he was bowled out after three balls, later saying his vision was obscured and he had no coordination left at all. Nobody watching that afternoon would have guessed what it was actually building toward. Ten weeks later, on January 27, 1962, Snell ran 3:54.4 for the mile, a world record, and less than a year after that he took the 800m/1500m Olympic double. The marathon wasn't a mistake in his preparation or a race he happened to also run. Under Lydiard's system it was training: a single continuous effort long enough to exhaust slow-twitch glycogen stores and force fast-twitch fibers into service, developing aerobic-endurance characteristics inside fibers that would later be asked to close an 800m at full speed (Livingstone, in Moller, Running Times, 2009). Peter Snell, later a career exercise physiologist himself, put the underlying principle plainly decades afterward: \"The core of Lydiard training is the quantity and quality of the base training...long, moderate-pace running is anabolic whereas high-intensity demanding training is catabolic. Thus the base is critical to prevention of overtraining.\"",
       },
     ],
   },
@@ -565,7 +579,9 @@ export const sections: Section[] = [
       { type: "heading", text: "Applying This: How Much Base, and for How Long" },
       {
         type: "paragraph",
-        text: "None of the adaptations on this page happen quickly, which is exactly why \"how much base do I actually need\" has a real, if unwelcome, answer: think in months and years, not weeks. A runner new to the sport, or returning from a long break, gets the most value from simply accumulating easy volume with no hard days at all for a stretch: there's nothing yet for intervals to sharpen. A more experienced runner still needs a real aerobic block before each competitive season, even though their capillary and mitochondrial density won't fall back to zero between seasons the way it did the first time. The signal that the base is actually working isn't how far you can run. It's whether a pace that used to feel moderately hard now feels genuinely easy at the same heart rate. That's the deflection-point shift described above showing up in daily training, and it's a better readiness check than mileage alone.",
+        text: "None of the adaptations on this page happen quickly, which is exactly why \"how much base do I actually need\" has a real, if unwelcome, answer: think in months and years, not weeks. A runner new to the sport, or returning from a long break, gets the most value from simply accumulating easy volume with no hard days at all for a stretch: there's nothing yet for intervals to sharpen. A more experienced runner still needs a real aerobic block before each competitive season, even though their capillary and mitochondrial density won't fall back to zero between seasons the way it did the first time. The signal that the base is actually working isn't how far you can run. It's whether a pace that used to feel moderately hard now feels genuinely easy at the same heart rate. That's the deflection-point shift described above showing up in daily training, and it's a better readiness check than mileage alone. For what the evidence says about how much of a week should stay at that genuinely easy effort once the base exists, see",
+        linkHref: "/mostly-easy-genuinely-hard",
+        linkText: "The Case for Mostly Easy, Genuinely Hard Training",
       },
       {
         type: "callout",
@@ -649,7 +665,9 @@ export const sections: Section[] = [
       { type: "heading", text: "Applying This: Building Your Own Intensity-Distribution Week", level: 3 },
       {
         type: "paragraph",
-        text: "Taken together, this cluster of research answers a question most runners never formalize: what should this week's mix of easy and hard actually look like? The honest answer isn't a single magic ratio. It's a strong default (roughly 80% low intensity, 20% moderate-to-high) that's easy to drift away from in both directions. The most common drift is toward the middle: threshold-paced running that feels productive without being either genuinely easy or genuinely hard. The fix isn't complicated, just uncomfortable to commit to: make your easy days honestly easy and your hard days honestly hard, and let the gravitational pull toward comfortable-but-mediocre threshold work be the thing you actively guard against, not the default you fall into.",
+        text: "Taken together, this cluster of research answers a question most runners never formalize: what should this week's mix of easy and hard actually look like? The honest answer isn't a single magic ratio. It's a strong default (roughly 80% low intensity, 20% moderate-to-high) that's easy to drift away from in both directions. The most common drift is toward the middle: threshold-paced running that feels productive without being either genuinely easy or genuinely hard. The fix isn't complicated, just uncomfortable to commit to: make your easy days honestly easy and your hard days honestly hard, and let the gravitational pull toward comfortable-but-mediocre threshold work be the thing you actively guard against, not the default you fall into. For why that default shouldn't be read as a precise physiological law, see",
+        linkHref: "/mostly-easy-genuinely-hard",
+        linkText: "The Case for Mostly Easy, Genuinely Hard Training",
       },
       {
         type: "callout",
@@ -777,6 +795,15 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The 220-minus-age formula for max heart rate is a population average, and individuals routinely fall far outside it. In one dataset of 37 trained cyclists tested under identical lab conditions, only 11 had a measured peak heart rate within 3 beats of their age-predicted number; 12 were off by 10 beats or more. Heart rate is still genuinely useful: it's objective, easy to log daily, and the relationship between heart rate and lactate threshold stays remarkably stable over time. But it drifts with heat, fatigue, and caffeine, and it says almost nothing meaningful during a short maximal interval. Treat a heart rate zone as a loose guide calibrated to how the effort actually feels, not a number to chase for its own sake.",
       },
+      { type: "heading", text: "Heart Rate Variability as a Threshold Signal" },
+      {
+        type: "paragraph",
+        text: "Hearts don't beat in a perfectly even rhythm even at rest; the slight variation between one beat and the next is heart rate variability (HRV), and it carries real information about the state of the autonomic nervous system beyond what a bare pulse number does. A specific way of analyzing HRV, called DFA-alpha1 (detrended fluctuation analysis of the fractal correlation properties of the beat-to-beat pattern), has been validated as a real-time marker of the first ventilatory threshold: the same physiological boundary a lab test measures directly via gas exchange. Values above roughly 0.75 correspond to low-intensity, comfortably aerobic effort; values at or below 0.75 mark the shift into moderate-to-high intensity. Bruce Rogers (University of Central Florida) first identified this correlate, and a validation study comparing it against both retrospective lab-grade HRV analysis and a real laboratory ventilatory-threshold test found strong agreement across all three methods (Rogers et al.; Altini, cited in Fitzgerald, 80/20 Endurance).",
+      },
+      {
+        type: "paragraph",
+        text: "The advantage over a fixed heart-rate zone isn't just convenience. HRV is a more direct read on physiological demand than heart rate alone, it can be estimated continuously during a session rather than requiring a separate lab or field test, and it isn't thrown off by the same things that throw off a fixed heart-rate number: cardiac drift, heat, sleep debt, and the general day-to-day physiological noise a static zone can't account for all shift the raw heart-rate-to-effort relationship, but a DFA-alpha1-based threshold estimate adjusts with the athlete in real time instead of silently going stale. It's also transferable across aerobic modalities (running, cycling, cross-country skiing) in a way a running-specific pace zone isn't. The practical cost is real, though: the calculation needs a chest strap (not a wrist-based optical sensor) and dedicated software to compute in real time, so it's a tool for an athlete who wants to go deeper, not a replacement for the talk test or a threshold time trial as a starting point.",
+      },
       { type: "heading", text: "How Many Zones Do You Actually Need?" },
       {
         type: "paragraph",
@@ -862,6 +889,15 @@ export const sections: Section[] = [
         title: "\"Readiness\" and \"training status\" scores are built for a population, not for you",
         text: "Modern wearables increasingly layer an algorithmic interpretation (a \"recovery score,\" a \"training status\" label like unproductive or productive) on top of the raw data they collect. These scores are calibrated against a broad population and have no way of knowing an athlete's actual training intent: a deliberately hard week in a race-specific phase can trigger the same \"overreaching\" flag as genuine, unplanned overtraining, because the algorithm can't distinguish a planned stimulus from an accidental one. The raw underlying data (resting heart rate trend, HRV trend, sleep duration) is more useful than the platform's interpretive label built on top of it, precisely because a coach or the athlete themselves can weigh it against context the algorithm doesn't have access to. Treat a proprietary readiness score as one more data point to note, not as a verdict to act on automatically.",
       },
+      { type: "heading", text: "Who Overrules Whom: The Athlete or the Device" },
+      {
+        type: "paragraph",
+        text: "An athlete's relationship with a training device breaks down the same way any relationship does: moments arise where what the device says is at odds with the athlete's own read on what's actually happening. Heart rate is probably the richest source of that friction: a watch reading \"hard\" while an effort feels easy, or the reverse. Every one of those disagreements gets resolved one of two ways, either the athlete overrides the device and trusts their own perception, or the athlete defers to the device and overrides their own perception instead. Research on device usage during workouts and races has found that higher-performing endurance athletes are consistently more selective about which device features and real-time data they actually act on, effectively parenting their fitness tracker rather than being parented by it, while lower-performing athletes tend to run the relationship in reverse (Diotaiuti et al., Psychology, 2020, cited in Fitzgerald, 80/20 Endurance).",
+      },
+      {
+        type: "paragraph",
+        text: "Two things explain the split. First, performance limits in endurance sport are set by perception as much as by physiology: an athlete who feels they can't continue is right regardless of what a device's number says, since the device is only ever measuring a proxy for the thing that actually matters. Every athlete needs enough self-trust to act on their own limits when the two disagree, and athletes with a well-developed sense of self-trust tend to be more equally self-trusting across situations, while athletes who are more dependent on outside validation generally look to their device for that same reassurance and become subservient to it. Second, and following from the first: higher-performing athletes are more likely to be the ones who override the device, precisely because they're the ones who already have the self-trust to do it. For a self-coached athlete especially, a fitness device is largely standing in for a coach, but most consumer devices aren't built to teach or instruct the way an effective human coach does; they mostly just report numbers back. Until that changes, the practical fix is a deliberate stance: treat overruling the device as the explicit goal whenever it disagrees with your own perception, not the exception.",
+      },
       { type: "heading", text: "What's Worth Tracking, Consistently" },
       {
         type: "list",
@@ -884,6 +920,147 @@ export const sections: Section[] = [
           "Don't train threshold sessions to the textbook 4 mmol/L benchmark: most trained runners' real threshold sits closer to 2.3–3.0 mmol/L, and the gap is large enough to mean chronic overreaching if ignored.",
           "Pick one load-tracking method (session RPE × duration is the simplest) and stay consistent with it for months: the trend line matters far more than precision on any single day.",
         ],
+      },
+    ],
+  },
+  {
+    slug: "what-a-race-result-can-tell-you",
+    title: "What One Race Result Can (and Can't) Tell You",
+    mission:
+      "A single race time is one observed outcome, and every prediction tool built from it necessarily assumes more about you than that number actually contains. What that means for how much to trust a predicted pace.",
+    topics: ["Where the prediction models come from", "Why identical race times can mean different runners", "What a single input can't see"],
+    category: "the-science",
+    lastUpdated: "2026-08-06",
+    content: [
+      { type: "heading", text: "One Number, Many Assumptions" },
+      {
+        type: "paragraph",
+        text: "A race result is one observed performance: a distance covered in a time, nothing more directly measured than that. A prediction tool takes that single outcome and infers substantially more from it, other race times, training paces, physiological thresholds, than the result itself actually contains. That's not a flaw in the idea. It's the whole point: a formula that couldn't infer more than it was given would be useless. But every inference carries assumptions about the runner who produced that result, and those assumptions are where three genuinely different, genuinely reasonable models can look at the identical input and return different numbers. Understanding what a predicted pace actually knows about you, and what it's guessing at, matters more than picking the \"correct\" one.",
+      },
+      { type: "heading", text: "Where These Formulas Actually Come From" },
+      {
+        type: "paragraph",
+        text: "The oldest of the three traces to a single 1981 paper: engineer Pete Riegel analyzed world records across a huge span of distances and found they followed a consistent power-law relationship between distance and time (Riegel, American Scientist, 1981). That relationship, one equation, fit once to the outer limit of human performance, is still the formula behind race-time predictions today.",
+        linkHref: "/pace-calculator",
+        linkText: "Pace & Heart Rate Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The statistical model behind this site's threshold and VO2 max predictions takes a different approach entirely: instead of one equation fit to world records, it's fit across a large population of real, ordinary runners' race results, ages, and training paces, and it deliberately returns a range rather than a single number. That range is the model being honest about a real fact: two runners with an identical race result don't always have an identical threshold pace, and a percentile-based estimate says so instead of hiding it behind false precision.",
+        linkHref: "/cv-threshold-calculator",
+        linkText: "Threshold, CV & VO2 Max Pace Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The third traces to one coach's own public tool: independently reverse-engineered from Tom Schwartz's calculator by collecting real input/output pairs and statistically fitting the relationship between them, without reading or copying any of the original tool's code. It answers the same underlying question through a third, separately-built lens.",
+        linkHref: "/tinman-calculator",
+        linkText: "Tinman Running Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "A fourth thread runs alongside all three without being one of them: Jack Daniels' VDOT, a single number derived from a recent race result that maps onto five named training paces, popularized the entire idea that one result could responsibly generate a full set of training paces. VDOT itself isn't the model behind any calculator on this site, but the idea it established, one result in, a coherent set of paces out, is the shape every model here still follows.",
+      },
+      {
+        type: "paragraph",
+        text: "None of the three is scientifically superior to the others. They're genuinely different approaches (a formula fit to world-record outliers, a statistical model fit to a large ordinary population, an independently reverse-engineered curve from one coach's own tool) built to answer a related but not identical question, and there's no reason to expect three independent approaches to converge on the same number every time.",
+      },
+      { type: "heading", text: "Same Race Time, Different Runner" },
+      {
+        type: "paragraph",
+        text: "Consider an 18:00 5K runner. The average threshold pace among runners at that exact performance level is roughly 6:08/mile, but at that pace, any individual 18:00 5K runner has close to a 50/50 chance of actually being at or under threshold, not reliably under it. The reason isn't measurement error: it's that an 18:00 5K can be run by a more aerobically-oriented runner or a more anaerobically-oriented one, and those two runners genuinely have different real threshold paces despite an identical result on the clock. That's why this site's statistical model defaults to a safe estimate (roughly the 10th percentile of the threshold-speed distribution) rather than the average: a number slow enough that most runners at that performance level are genuinely below threshold at it, not just typically.",
+      },
+      {
+        type: "paragraph",
+        text: "There's a real physiological reason two runners can hit the same result through different routes. VO2 max itself is really two separable adaptations sharing one name: a pure aerobic contribution built by low-intensity volume over years, and a separate anaerobic-chemistry contribution built specifically by time spent at 95-100% of VO2 max pace. Two runners can arrive at a similar race result with a different balance of the two, which is a plausible part of why the same finish time doesn't imply the same threshold pace, alongside training history, event specificity, and everything else a single race result can't distinguish.",
+        linkHref: "/exercise-physiology#vo2-max-is-two-adaptations-sharing-one-name",
+        linkText: "VO2 Max Is Two Adaptations Sharing One Name",
+      },
+      { type: "heading", text: "How Much Error Is Actually Normal?" },
+      {
+        type: "paragraph",
+        text: "This is worth being honest about rather than reassuring about. The Tinman model has a real, published validation: tested against roughly 3,400 real predictions spanning 100m to the marathon, it holds a median error under 0.2 seconds and a worst case around one second. That's the model being internally consistent with the public calculator it was built from, not a measure of how well it predicts any individual runner's actual physiology.",
+      },
+      {
+        type: "paragraph",
+        text: "The Riegel formula and the statistical threshold model don't have an equivalent published accuracy figure on this site. That's not an oversight to smooth over: Riegel's formula was fit once to world records and has never been validated here against a large population of ordinary runners' actual outcomes, and the statistical model's own accuracy is better expressed by the width of its percentile range than by a single error number. A model can be precise on its own terms, exactly reproducing the relationship it was built from, while still being limited by how much any one race result can tell it about the runner who ran it. Those are two different kinds of uncertainty, and only the first one shows up as a clean error statistic.",
+      },
+      { type: "heading", text: "What a Prediction Can't See" },
+      {
+        type: "paragraph",
+        text: "Two runners with the same recent race time but very different training histories shouldn't necessarily run the same training week, and a prediction built from that one result has no way to know the difference. This is true across all three models, not just one of them: even a model built specifically to show a range instead of one number is still working from population patterns for runners who ran a similar time, not from your own training log. A predicted pace is a genuinely useful starting point precisely because it's built from real data and real relationships, not a verdict, because the one thing none of these models can see is everything about you that didn't show up in that single race result.",
+      },
+      { type: "heading", text: "Where to Go From Here" },
+      {
+        type: "paragraph",
+        text: "For the practical question of which of these tools to actually use, see Which Pace Calculator Should I Use? For each model's own full methodology, including the exact formulas, data, and validation behind it, the individual Pace & Heart Rate, Threshold, CV & VO2 Max Pace, and Tinman Running calculators remain the authoritative source.",
+        linkHref: "/choosing-a-pace-calculator",
+        linkText: "Which Pace Calculator Should I Use?",
+      },
+    ],
+  },
+  {
+    slug: "mostly-easy-genuinely-hard",
+    title: "The Case for Mostly Easy, Genuinely Hard Training",
+    mission:
+      "Why the evidence points toward training concentrated at two intensities, mostly easy and genuinely hard, and why the exact ratio matters less than the distribution itself.",
+    topics: ["The mechanism behind easy volume", "What elite training logs actually show", "Why the middle intensity is a trap"],
+    category: "the-science",
+    lastUpdated: "2026-08-06",
+    content: [
+      { type: "heading", text: "How Much Should Be Easy, How Much Should Be Hard?" },
+      {
+        type: "paragraph",
+        text: "Every runner eventually asks some version of the same question: how much of this should be easy, and how much should be hard? It sounds like a scheduling problem, a matter of filling in a weekly calendar, but easy and hard aren't just labels for how a session felt. They put genuinely different stresses on the body and trigger genuinely different adaptations, which is exactly why the answer isn't a single number handed down from authority. It's worth actually walking through what each intensity is doing, and what the evidence says about how they should be combined, before landing anywhere near a ratio.",
+      },
+      { type: "heading", text: "What an Easy Run Is Actually Doing" },
+      {
+        type: "paragraph",
+        text: "Easy running builds the oxygen-delivery and energy-conversion machinery inside working muscle: the fine-scale network that gets oxygen-rich blood to muscle cells, and the cellular pathways that turn that oxygen into usable energy. None of that growth happens during the run itself; it happens during the recovery that follows a stress the body can actually absorb, which is why sustained, genuinely low-intensity volume, not occasional hard effort, is the primary stimulus for it. The same volume also pushes out how much of an effort a runner can fuel on fat before switching over to limited carbohydrate stores, extending the runway before those stores run out.",
+      },
+      {
+        type: "paragraph",
+        text: "That mechanism is worked through in full, including the specific adaptation windows a long run passes through and what the capillary difference between trained and untrained muscle actually looks like, in 60,000 Miles of Plumbing.",
+        linkHref: "/the-aerobic-base#60-000-miles-of-plumbing",
+        linkText: "60,000 Miles of Plumbing",
+      },
+      { type: "heading", text: "What the Research Actually Shows" },
+      {
+        type: "paragraph",
+        text: "Separately from the mechanism, there's a real, observed pattern in how elite endurance athletes actually train. A 2014 study of 12 cross-country skiing and biathlon Olympic gold medalists found roughly 90% of their training volume was done at low intensity, with only a small fraction spent at threshold or above, even heading directly into the Games (Tønnessen et al., PLOS ONE, 2014). A published breakdown of Eliud Kipchoge's training log in the 41 days before his 2017 Berlin Marathon world-record attempt showed the same shape at the individual-session level: 34 of 59 sessions were easy runs.",
+      },
+      {
+        type: "paragraph",
+        text: "That training isn't just mostly easy, it's concentrated at two distinct effort levels, roughly 65% and 90% of VO2 max, with comparatively little time spent in the zone between them. That middle ground sits right around lactate threshold, and it's a real trap: threshold-paced running feels productive and sustainable enough that it's easy to drift there by default, even though it accumulates fatigue faster than easy running while building fitness no faster than genuinely hard intervals do.",
+        linkHref: "/research-library#two-poles-not-a-straight-line",
+        linkText: "Two Poles, Not a Straight Line",
+      },
+      { type: "heading", text: "Why Mechanism and Evidence Aren't the Same Claim" },
+      {
+        type: "paragraph",
+        text: "It's tempting to treat these two threads as one continuous proof: the mechanism explains why easy volume matters, elite logs show it dominates training, therefore the exact split those logs show is the physiologically correct answer. That's a step further than either thread actually supports. The mechanism explains why genuinely easy volume and genuinely hard work are both doing real, separate jobs, building the aerobic delivery system on one hand, raising the ceiling that system can eventually reach on the other, but it doesn't by itself dictate a precise ratio between the two. The elite training-log evidence is a real, observed pattern, not a physiological law derived from first principles: it describes what a specific group of highly-trained athletes actually did, which is informative but not the same kind of claim as a mechanism. The research on this site's own pages is explicit about that gap: polarized and 80/20 distributions are strong defaults, not settled science, and at least one study found the best results came from athletes who trained with roughly equal amounts of moderate- and high-intensity work rather than a strict polarized split.",
+      },
+      { type: "heading", text: "So What About 80/20?" },
+      {
+        type: "paragraph",
+        text: "80/20 is a useful shorthand for a real pattern, not a rule with a precise, universal number behind it. The evidence supports training concentrated toward two poles, genuinely easy and genuinely hard, with the middle actively avoided rather than defaulted into. It doesn't support treating 80% and 20% as exact targets to hit every single week, or treating a week that comes in at 75/25 or 85/15 as a mistake. The distribution is the lesson: mostly easy, genuinely hard, and very little spent drifting comfortably in between. The specific percentage is a memorable approximation of that shape, not the shape itself.",
+      },
+      { type: "heading", text: "What This Means for a Runner" },
+      {
+        type: "paragraph",
+        text: "Easy running occupies most of a well-built week because it's doing something hard running structurally can't: building the aerobic delivery system that everything else eventually depends on, at a recovery cost low enough to repeat almost daily. Hard sessions still matter, and matter specifically, because once that base exists, further easy volume alone stops raising the ceiling: only genuinely hard, well-targeted work keeps extending it from there. \"More hard\" isn't automatically better, because a week's finite recovery budget spent hovering at threshold produces less of either adaptation than the same time spent honestly easy or honestly hard. The useful habit isn't hitting an exact ratio every week. It's noticing when an easy day has quietly drifted too close to threshold, and when a hard day is being run hard enough to actually be hard.",
+      },
+      { type: "heading", text: "Where to Go Deeper" },
+      {
+        type: "paragraph",
+        text: "For the complete physiological mechanism, including the specific adaptation windows a long run passes through and what a trained heart does differently, see the full page.",
+        linkHref: "/the-aerobic-base",
+        linkText: "The Aerobic Base",
+      },
+      {
+        type: "paragraph",
+        text: "For the complete research picture, including how much elite training volume has changed over time, why longer and slightly easier intervals often out-perform short brutal ones, and where a strict polarized split doesn't hold up, see the full page.",
+        linkHref: "/research-library",
+        linkText: "Research Library",
       },
     ],
   },
@@ -996,6 +1173,26 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A more useful question than pace splits: how long can this athlete actually think clearly under race stress? Mental fatigue tends to hit early, so if all the concentration gets spent in the first mile, there's nothing left for the finish. The fix is to bookend the effort (a controlled open, a quiet middle third that conserves mental energy, and a hard, deliberate close) decided before the start. Changing strategy mid-race rarely works. See Mental Attitude During the Race in Sports Psychology for the fuller in-race checklist this fits inside of.",
       },
+      { type: "heading", text: "Set a Pace Goal, Not Just a Time Goal" },
+      {
+        type: "paragraph",
+        text: "A finish-time goal is really a pace goal wearing a disguise, and treating it as a pace question first avoids a common trap: chasing a round number (a sub-3, a sub-40) that isn't actually anchored to anything the athlete has demonstrated. Start from the fastest pace you can honestly sustain for the distance, not the other way around: if a 6:36/mile pace feels like the honest current limit for 10 kilometers, an ambition to \"break 40:00\" (6:26/mile) is a different, faster goal than the pace evidence supports, and needs either more training to earn or an adjustment before race day, not just more willpower on the day itself. Key workouts and B races (see below) are the practical tool for estimating a goal pace at a distance you haven't recently tested, since pure fitness testing gives an incremental read on current ability, not a guarantee about what a specific future race day will produce (Fitzgerald, 80/20 Endurance).",
+      },
+      { type: "heading", text: "The Price Is Right Approach to Pacing" },
+      {
+        type: "paragraph",
+        text: "On the game show The Price Is Right, contestants bid on a prize, and the winning bid is whichever one comes closest to the actual value without going over: overbidding by even a dollar is an automatic loss, while underbidding by a wide margin still has a chance to win. Marathon pacing runs on the same logic. Committing to a pace slightly slower than the fastest you could theoretically sustain (bidding a bit conservatively) costs only a small, controlled amount of time if it turns out you had more in the tank. Committing to a pace faster than you can actually hold (overbidding) risks the wall: a blow-up in the final miles that costs vastly more time than the conservative approach ever would have. The costs aren't symmetric, which is exactly why a slightly conservative opening pace is the better default whenever there's real uncertainty about current fitness, not a sign of insufficient ambition (Fitzgerald, 80/20 Endurance).",
+      },
+      { type: "heading", text: "Pacing Is a Trained Skill, Not a Calculation" },
+      {
+        type: "paragraph",
+        text: "Runners who pace well aren't doing more math mid-race than runners who pace poorly; they're paying closer attention to their own effort perceptions, consistently, across many past efforts, until reading those perceptions accurately becomes close to automatic. The skill resembles judging whether you can clear a gap by jumping it: an experienced jumper doesn't calculate the distance, they draw on a felt sense of their own ability built from many past jumps, and a runner mid-race is doing the same thing, tacitly assessing the sustainability of their current effort against a large bank of remembered efforts that did or didn't hold up. That's also why pacing mistakes are a normal, necessary part of getting better at it rather than a sign pacing can't be learned: each one is a data point (this level of effort with this much distance left in the tank didn't hold up) that sharpens the next read, the same conditional-learning process that builds any tacit skill through repetition (Fitzgerald, 80/20 Endurance).",
+      },
+      { type: "heading", text: "Choosing B Races for a Season", level: 3 },
+      {
+        type: "paragraph",
+        text: "A season built around one A race still benefits from B races: shorter tune-up efforts that test fitness, add race experience, and reward the training block with a result along the way, without disrupting the buildup toward the actual goal race. Schedule a B race in a lower-volume week, ideally one already built into the plan as a recovery week, so racing it doesn't cost extra disruption on top of what the taper for the A race will already ask for. Keep a B race shorter than the A race, or occasionally the same distance at a lower level of intensity; avoid racing too often in the same cycle, and avoid a B race too close to peak fitness, since either mistakes recovery time the A race actually needs for a result that was never the real goal (Fitzgerald, 80/20 Endurance).",
+      },
       { type: "heading", text: "Race-Day Checklist" },
       {
         type: "list",
@@ -1103,6 +1300,15 @@ export const sections: Section[] = [
         variant: "tip",
         title: "📋 Before Your Next Long Run",
         text: "Pick one specific number to test, not a vague intention to \"fuel better.\" If you're currently taking 30 g/h, plan for 40–45 g/h on your next long run and see how your gut handles it. That's a real, checkable experiment: \"eat more during long runs\" isn't.",
+      },
+      { type: "heading", text: "Small and Frequent Beats One Big Dose: The Carbohydrate Drip", level: 3 },
+      {
+        type: "paragraph",
+        text: "Once total carbohydrate-per-hour is dialed in, how that total gets split up during a session still matters. A study out of the University of Bath and the University of Nottingham compared well-trained runners consuming 5 grams of sucrose every 5 minutes against the same runners consuming an equal total, 75 grams, in one single dose partway through a treadmill run to exhaustion at moderately high intensity. On average, the small-frequent-dose protocol let runners last 105.6 minutes versus 96.4 minutes for the one-big-dose protocol, and not every runner benefited equally: the effect was largest in runners whose stored carbohydrate use was reduced the most by frequent intake, suggesting the mechanism is genuine glycogen sparing, not just a psychological or gut-comfort effect (cited in Fitzgerald, 80/20 Endurance).",
+      },
+      {
+        type: "paragraph",
+        text: "The study's own protocol (a sip every 5 minutes) is more frequent than how most runners actually fuel a race, closer to 20–25 grams every 30 minutes from a gel. A practical middle ground worth testing in training: rather than carrying gels, carry diluted sports drink in a soft flask and take small, frequent sips at aid stations or on a fixed interval, aiming for the same hourly total a gel-based plan would deliver, just spread thinner across the hour instead of arriving in occasional large boluses. The tradeoff is logistical, not physiological: a drip approach demands more frequent, smaller actions during a race rather than a few large ones, which is worth rehearsing in training before committing to it on race day, per the gut-training guidance above.",
       },
       { type: "heading", text: "Short, Hard Efforts and the Carbohydrate Mouth Rinse", level: 3 },
       {
@@ -1222,6 +1428,15 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "The two findings aren't actually in conflict once the mechanism is clear: burning fat requires meaningfully more oxygen per unit of usable energy than burning carbohydrate does, so a fat-adapted athlete has a bigger fuel tank but a less efficient engine at any given oxygen supply: a fine trade at the low, steady intensities common in ultra-distance racing, and a bad one whenever pace pushes into race-pace or high-intensity territory. The practical read: low-carbohydrate training may suit very long, low-intensity efforts where the fuel-tank size matters more than efficiency, but for anything from 5K through marathon pace (where oxygen efficiency is the actual limiter) the evidence favors staying fueled on carbohydrate, not restricting it (see the carbohydrate strategy above for how much and when).",
+      },
+      { type: "heading", text: "Intermittent Fasting: A Similar Tradeoff, With a Worse Deal" },
+      {
+        type: "paragraph",
+        text: "Time-restricted eating (a fixed daily eating window, commonly 16 hours fasted / 8 hours eating) is sometimes framed as a shortcut to leaner, more efficient running. A UC Davis study (Tovar et al.) tested this directly: 27 male runners each completed four weeks of 16:8 time-restricted eating and four weeks of normal eating (in randomized order), eating the same total food on both schedules, with only the timing different. Body fat dropped modestly on the restricted-eating schedule (16.8% to 15.8%) with no change on the normal schedule, but 10K time-trial performance improved by about the same small amount on both schedules. Losing body fat is supposed to make a runner faster, all else equal, so the honest read of that null result is that something about time-restricted eating quietly worked against running economy hard enough to cancel out the benefit of getting leaner, not that fat loss simply didn't help.",
+      },
+      {
+        type: "paragraph",
+        text: "The study authors' proposed mechanism: reduced carbohydrate availability during the fasted window suppresses the catecholamine response (the hormonal signal that drives glycogen breakdown and lactate formation during hard effort), which would blunt exactly the kind of high-intensity output a 10K time trial demands, more so at shorter, harder efforts than at longer, easier ones. Two competing effects, in other words, were live at once: a real fat-loss benefit and a real glycolytic-capacity cost, netting out close to a wash over four weeks (Tovar et al., cited in Fitzgerald, 80/20 Endurance). If time-restricted eating is genuinely useful for an individual runner's body composition, it's worth being honest that it may be trading away some of the very capacity that composition change is supposed to unlock, rather than assuming leaner automatically means faster: see Low-Carbohydrate, High-Fat Diets above for the same basic tradeoff (a real metabolic benefit that doesn't automatically translate to better racing) showing up from a different diet manipulation.",
       },
       { type: "heading", text: "Race-Day and DIY Fueling" },
       { type: "heading", text: "Carb Loading Before a Long Race", level: 3 },
@@ -1410,6 +1625,25 @@ export const sections: Section[] = [
         variant: "mistake",
         title: "Ease into hill work: it doesn't feel hard while it's doing the damage",
         text: "Hill sessions are deceptive: the effort feels moderate in the moment because the work bouts are short, which makes it tempting to jump straight to a full session. Start with fewer reps and a gentler grade than seems necessary, especially in the first couple of weeks, and expect to feel unexpectedly stiff or fatigued for a day or two afterward even when the session itself felt manageable: that lag is normal and not a sign to push harder next time. Anyone carrying old scar tissue or a healed-but-not-fully-remodeled injury in the legs should be more conservative still, since hill work loads exactly the tissue that kind of injury tends to sit in (Livingstone, Healthy Intelligent Training).",
+      },
+      { type: "heading", text: "Technique Comes Before Energy Systems" },
+      {
+        type: "paragraph",
+        text: "Lydiard's public reputation is almost entirely about volume: miles in the bank, hills, aerobic base. What tends to get left out is that he wouldn't start any of that until a runner's technique was sound. \"Once the nature of the activity and the fundamentals of technique are achieved, we can add the endurance and strength to get the optimal results out of the athlete,\" he wrote. \"Correct technique applies to every event because, if you have any kind of fault in your technique or in the equipment you are using, you cannot capitalize on your fitness, however good that is.\" He wasn't a natural authority on biomechanics himself; by his own account he came to it by watching what worked on his athletes and only later hearing physiologists explain why. But the sequencing was deliberate: technique first, because volume built on top of a real flaw doesn't fix the flaw, it just lets the athlete cover more ground while making it (Lydiard, Running to the Top).",
+      },
+      { type: "heading", text: "Running Tall, Not Sitting in a Bucket" },
+      {
+        type: "paragraph",
+        text: "\"A lot of people run like they're sitting in a bucket,\" Lydiard said. \"When their knees are bent, they can't get power and stride. To get power, you have to avoid that running posture...you have to run tall.\" The cue he built around it was a straight, upright spine over the hips rather than a collapsed, seated one, on the reasoning that a flexed hip and dropped chest shorten the distance a runner can actually drive force into the ground. A second, related cue described the difference between two ways of absorbing a footstrike: \"Thud\" (a hard, flat-footed heel strike that stops forward momentum on every stride and has to be actively restarted) versus \"Spring\" (an elastic, forefoot-loaded landing that stores and returns energy instead of killing it). Neither cue is a full technique overhaul on its own, but both point at the same underlying idea: posture and footstrike aren't neutral, cosmetic details layered on top of fitness. They decide how much of that fitness actually reaches the ground.",
+      },
+      { type: "heading", text: "What Lydiard Actually Wanted From a Shoe" },
+      {
+        type: "paragraph",
+        text: "\"In my early days, we ran in canvas shoes,\" Lydiard said. \"They were ideally flexible and we just put some extra rubber on the soles. We didn't get plantar fasciitis, we didn't pronate or supinate, we might have lost a bit of skin from the rough canvas when we were running marathons but, generally speaking, we didn't have foot problems.\" His own description of an ideal shoe, repeated well into the era of built-up, heavily cushioned trainers: \"very flexible, little more than a second layer of skin, if that is possible...if you could just attach a rubber sole to your foot, with nothing on the top, you'd have the perfect running shoe.\" He trained and raced in the same pair rather than switching to something heavier for daily miles, reasoning those shoes \"got to be more like slipper than the hi-tech monsters they're producing these days,\" and he was openly skeptical that an expensive, heavily engineered shoe bought any real protection: \"paying several hundred dollars for the latest in hi-tech running shoes is no guarantee you'll avoid any of these injuries and can even guarantee that you will suffer from them in one form or the other.\"",
+      },
+      {
+        type: "paragraph",
+        text: "The same logic extended to arch support. \"They'll flex at the joint of the foot all right but not at the arch, where flexing is a natural foot function,\" he said of rigid-soled shoes. \"Put a board under each foot of an athlete and he couldn't even walk properly, let alone run, but that's very much how some of these running shoes affect the arches.\" Orthotics got the same skepticism, on the same grounds: \"the orthotics are for the shoes, not the feet\" (Lydiard, Running to the Top). None of this is an argument for barefoot running specifically. Lydiard himself trained on hard, traction-friendly surfaces rather than soft or minimalist ones, and his athletes wore shoes, just flexible ones. The actual claim is narrower and still holds up: a shoe rigid enough to override the foot's own natural mechanics doesn't protect those mechanics, it just prevents them from working (Borg, Champions Everywhere).",
       },
       { type: "heading", text: "Matching Interval Pace to Real Fitness, Not Aspiration" },
       {
@@ -1952,6 +2186,34 @@ export const sections: Section[] = [
       {
         type: "paragraph",
         text: "A 2017 Oxford Brookes study (Morris & O'Leary) sharpens the training implication further, and corrects a claim that used to sit on this page: it isn't just sustained discomfort that builds pain tolerance, it's intensity specifically. Two groups trained for six weeks to the same fitness gains (VO2 max, lactate threshold): one via medium-intensity continuous cycling, one via high-intensity intervals matched for total work. Pain tolerance rose 41% in the interval group and didn't move at all in the continuous group, despite equal fitness gains, and the interval group's performance gains on a time-to-exhaustion test outstripped the continuous group's by a wide margin (148% vs. 38% in one comparison) despite that identical fitness improvement. The corrected version of the training implication: hard interval sessions are doing something for suffering tolerance that long steady efforts, however uncomfortable, don't reliably reproduce, which is a real, separate reason to keep interval work in a program beyond its VO2 max and threshold benefits (see Where the Two Camps Actually Converge in Exercise Physiology for the effort-vs-pain distinction this rests on, and Belief Effects below for how far a trained tolerance for discomfort can actually be pushed). Cyclist Jens Voigt, famous for talking himself through pain during his 2014 Hour Record attempt with the mantra \"Shut up, legs!\", is as good a one-line summary of trained tolerance as any: not the absence of pain, but a practiced refusal to let it end the effort early.",
+      },
+      { type: "heading", text: "Mental Toughness Is Fire Insurance, Not a Foundation" },
+      {
+        type: "paragraph",
+        text: "At the 1982 Ironman World Championship, Julie Moss had a comfortable lead with less than two miles left when her body began to shut down; she crawled across the finish line, and the broadcast of that collapse is often credited with helping turn Ironman into the sport it is today. But the woman who passed Moss for the win in those final yards, Kathleen McCartney, is barely remembered, because she finished on her feet, with her fitness and training intact. Mental toughness and mental fitness aren't the same thing. Mental toughness is the ability to push through a physical challenge that outstrips what training actually prepared the body for; mental fitness is exercise capacity as limited and regulated by the brain, built the same way physical fitness is, through training. Mental fitness is foundational; mental toughness is not. If you've trained properly, you shouldn't need much of it. Too many athletes lean on mental toughness as a substitute for physical fitness, while the best athletes do everything they can to avoid ever having to call on it at all (Fitzgerald, 80/20 Endurance).",
+      },
+      {
+        type: "paragraph",
+        text: "James Lawrence, the \"Iron Cowboy,\" set the world record for most Ironman-distance triathlons in consecutive days: 50, in 50 states, in 50 days. Much of the coverage of that streak focused on his mental toughness, which was real. But of all 50 days, his fastest was day 50, and he crossed that final finish line with a smile. He may not have made it to day 10 without real mental toughness, but he wouldn't have made it to day 50 at all without the physical fitness underneath it: discipline, planning, and proper training were the actual foundation, and toughness was just one tool available on top of it, called on only when it was genuinely needed. To a professional endurance athlete, mental toughness is like fire insurance: by all means have it, but train hard enough that you pray you never need it.",
+      },
+      { type: "heading", text: "Growth Mindset vs. Fixed Mindset" },
+      {
+        type: "paragraph",
+        text: "Psychologist Carol Dweck's research distinguishes two beliefs athletes hold about their own abilities. A fixed mindset treats intelligence and talent as essentially set traits, which makes a hard challenge feel like a threat: a bad result is evidence of a permanent limit, so fixed-mindset athletes tend to avoid challenges that might expose one. A growth mindset treats ability as something built through effort, which flips a hard challenge into an opportunity: whether the outcome is good or bad, a growth-minded athlete sees a stimulus for improvement rather than a verdict on their ceiling. In one study, Dweck's team looked at the combined effects of poverty and mindset on academic achievement in Chilean schoolchildren: poorer children were less likely than their wealthier peers to hold a growth mindset, but the poorer children who did hold one performed as well in school as the wealthiest students in the study, an 80th-percentile-income level of performance from children in the bottom 10% of family income (Dweck, Mindset: The New Psychology of Success, cited in Fitzgerald, TrainingPeaks Coach Blog). A separate experiment with four-year-olds ruled out the obvious alternative explanation, that greater ability itself is what produces a growth mindset rather than the other way around: given a choice between redoing an easy puzzle or trying a harder one, growth-minded kids chose the harder puzzle more often, with no measurable difference in the two groups' actual puzzle-solving ability beforehand.",
+      },
+      {
+        type: "paragraph",
+        text: "Three practical ways to shift a fixed-mindset athlete toward a growth mindset, useful for a coach and worth recognizing in your own self-talk if you coach yourself: redefine the purpose of a hard workout before it starts as a stimulus for improvement, not a test of current ability, so the workout's value doesn't depend on hitting a number; praise effort, adherence, and good decision-making rather than raw performance, since fixed-mindset athletes read praise for a good performance as proof ability is fixed and become more resistant to a harder challenge afterward, while praise for effort reinforces that ability is something built; and use process-focused mantras during a workout that's triggering performance anxiety rather than outcome-focused ones. Three worth keeping in a back pocket: \"just do the work\" (the benefit of a session comes from doing it, not from how it felt or how well it went), \"it doesn't have to happen today\" (a corrective against measuring today's session against a future race-day standard it was never meant to meet), and \"check the box and move on\" (not every session is a transcendent breakthrough, and treating a merely-fine one as a disappointment just adds frustration on top of a session that already did its job) (Fitzgerald, TrainingPeaks Coach Blog).",
+      },
+      { type: "heading", text: "Racing With a Mastery Mindset" },
+      {
+        type: "paragraph",
+        text: "Mastery is a mindset focused on the process of getting better, with outcome goals serving as a facilitator of that process rather than the actual point of it. A mastery-minded athlete would genuinely rather be stretched in the process of losing than win a race that didn't ask anything of them, and gets more satisfaction from making the best of a bad day than from a good result that happened only because the day went their way. The clearest practical marker of a mastery mindset: sucking at something initially, whether that's racing marathons or anything else, reads as a reason to keep trying, not a reason to switch to something else (Fitzgerald, 80/20 Endurance).",
+      },
+      { type: "heading", text: "Redefining Success Away From the Outcome" },
+      {
+        type: "paragraph",
+        text: "Two days after finishing third at the 2020 Chicago Marathon in 2:27:19, well short of the American record she'd been targeting, Sara Hall posted this to Twitter: \"Committed 100% to the goal. Suffered through my best training I've ever done. Showed up healthy, excited, confident. Executed the plan. Fought till the end. Honestly, I really wanted to win this one. But I have to say 'Mission accomplished.'\" Most endurance athletes struggle to separate success from goal achievement; Hall's tweet is a clean example of doing exactly that. Define success by two questions instead of the result itself: did I make good decisions, and did I try as hard as I could? Answer yes to both and you succeed regardless of whether you hit your stated goal, since the goal itself was always partly at the mercy of factors outside your control, a course, the weather, another athlete's performance, not a pure referendum on preparation or effort (Fitzgerald, 80/20 Endurance).",
       },
       { type: "heading", text: "Goal Setting" },
       {
@@ -2666,6 +2928,16 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Basketball coach John Wooden, whose UCLA teams won ten national championships in twelve years, ran practice for the exact same reason: by his own account, his teaching job was finished by the time competition started, so a locker-room speech minutes beforehand was never going to make up ground that should already have been covered. Before UCLA's first national championship game, his entire pregame talk covered where the team should stand for the national anthem and how they should carry themselves once the final buzzer sounded, not one word about the opponent, because by then there was nothing left to teach (Wooden, Wooden on Leadership).",
       },
+      { type: "heading", text: "\"Response Regulated, Not Number Regulated\"" },
+      {
+        type: "paragraph",
+        text: "The popular version of Lydiard is a rigid mileage system: hit the number, whatever it takes. His own coaching staff pushed back on that reading directly, framing his actual method as \"Response Regulated by the individual athlete, not Number Regulated.\" A schedule on paper is a starting hypothesis about what a given athlete needs, not a contract to be fulfilled regardless of how the athlete is actually responding to it: two runners on the identical plan can need genuinely different adjustments, and a coach who enforces the number over the response is coaching the plan instead of the person in front of them (Lydiard Foundation, First Steps).",
+      },
+      { type: "heading", text: "Anaerobic Training Doesn't Build Speed. It Counteracts It." },
+      {
+        type: "paragraph",
+        text: "Olympic medalist John Davies, who trained under Lydiard and later helped teach the system to other coaches, stated one of the method's more counterintuitive claims as bluntly as it can be stated: \"It is a fallacy that anaerobic training develops speed. It in fact counteracts speed.\" His broader guidance follows from that one line: once anaerobic work starts, it has to continue on a real schedule or the adaptation is lost, it takes only 10 to 12 weeks to reach its ceiling, and it's a mistake to introduce it during the conditioning phase at all, before the aerobic base that's supposed to support it actually exists. A useful, specific rule for pacing an anaerobic block once it does start: after roughly three weeks of heavier volume-based anaerobic work, decide in week four whether to back off toward shorter, sharper sessions or hold the volume, rather than defaulting to more of the same by inertia (Davies, in Lydiard, Athletic Training, 1999 Lecture Tour). Ron Daws, an Olympic marathoner coached in the same lineage, put the underlying caution in one memorable line worth keeping in mind whenever a plan on paper looks convincing: \"Good training and bad training look exactly the same on paper.\"",
+      },
       { type: "heading", text: "Call Yourself a Teacher, Not Just a Coach" },
       {
         type: "paragraph",
@@ -2862,6 +3134,15 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A few options worth knowing by name: pool running with a flotation vest (AquaJogger is the common brand) lets an injured runner mimic an overground stride closely enough to hold fitness through an injury that rules out impact entirely; uphill treadmill walking is an easy way to reach a genuine Zone 1–2 heart rate response indoors, something flat outdoor walking rarely produces; and elliptical-style machines like the ElliptiGO reproduce roughly 90–95% of running's effective bodyweight loading, which is why runners who use them for supplemental training can treat the volume as close to equivalent rather than purely supplemental. Whatever the modality, cross-training only replaces a missed run if it's dosed the same way that run would have been: an easy day gets an easy cross-training session, a tempo effort gets the same duration at the same relative intensity, not just whatever feels good that day. A sensible weekly ceiling across running and cross-training combined is around 13 total sessions; even a runner fully committed to the sport rarely needs more than 6 or 7 of those to actually be runs. Many coaches also recommend at least one cross-training session a week even for uninjured runners, purely so the body and mind already have a comfortable fallback in place the day an injury forces the issue, rather than improvising one for the first time under stress.",
       },
+      { type: "heading", text: "Rest vs. Recovery: Doing Less, Not Necessarily Doing Nothing" },
+      {
+        type: "paragraph",
+        text: "A rest day (no formal workout at all) and recovery (processing the fatigue built up by prior training) get used interchangeably, but a full rest day is only one way to get recovery, not the definition of it. Often, doing meaningfully less than usual is enough: a runner averaging 6 miles a day can process a week's worth of accumulated fatigue with a 3-mile day, not necessarily a day off entirely. Physical therapists use the term \"relative rest\" for resting one part of the body while training around it (running on an uninjured leg while an injured knee heals); the same term applies just as well to recovering from ordinary training fatigue by doing less than normal rather than nothing at all, and the fitter an athlete is, the further that principle can be pushed: some elite marathoners go weeks at a stretch without a single full day off running (Fitzgerald, 80/20 Endurance).",
+      },
+      {
+        type: "paragraph",
+        text: "A specific case worth flagging alongside the cross-training modality guidance above: a triathlete (or any runner with access to swimming) can use swimming as relative rest specifically from running, precisely because it's both nonimpact and comparatively arms-driven rather than legs-driven, giving the legs a real break while the athlete still trains. That's a different question from which modality builds running fitness (see Cross-Training That Actually Carries Over above, where cycling's alternating-leg mechanics transfer to running performance better than swimming's do) — the two claims aren't in conflict, they're answering different questions: swimming is the better choice when the goal is giving the legs a break while still training something, cycling is the better choice when the goal is training running-specific fitness through a nonimpact modality. One study even found that inserting a swim between two hard runs accelerated recovery from the first run more than resting outright between them did, a real exception to the general rule that a \"recovery\" session's main job is providing training stimulus without impeding recovery, not promoting recovery directly.",
+      },
       { type: "heading", text: "Strength Training Actually Needs a Schedule" },
       {
         type: "paragraph",
@@ -3034,7 +3315,21 @@ export const sections: Section[] = [
           "If energy availability has been low, expect recovery to happen in stages: energy status improves in weeks, menstrual function in months, bone density in years. Feeling better isn't the same as being fully recovered.",
         ],
       },
-      { type: "heading", text: "Training Across the Menstrual Cycle" },
+      {
+        type: "paragraph",
+        text: "For training considerations specific to a particular life stage, see [Training Across the Menstrual Cycle](/training-across-the-menstrual-cycle), [Pregnancy and Postpartum Running](/pregnancy-and-postpartum-running), and [Training Through the Decades](/training-through-the-decades).",
+      },
+    ],
+  },
+  {
+    slug: "training-across-the-menstrual-cycle",
+    title: "Training Across the Menstrual Cycle",
+    mission:
+      "How training and fueling interact with the menstrual cycle -- what the research actually supports, and where popular phase-based frameworks have outrun the evidence.",
+    topics: ["Phase-based training frameworks", "What the evidence actually shows", "Fueling and recovery-window adjustments"],
+    category: "recovery-and-fueling",
+    lastUpdated: "2026-08-06",
+    content: [
       {
         type: "paragraph",
         text: "Exercise physiologist Stacy Sims popularized a phase-based framework for training around the menstrual cycle in her book Roar: the roughly two-week follicular phase (from the first day of a period until ovulation), when estrogen and progesterone are both low, versus the roughly two-week luteal phase after ovulation, when both hormones rise. Her proposed pattern: better heat tolerance, easier carbohydrate use, and less muscle breakdown in the follicular phase, versus a harder time dissipating heat, higher core temperature, greater sodium loss, and faster muscle breakdown in the luteal phase, plus a temporary drop in blood plasma volume, which reduces the blood's oxygen-carrying capacity to working muscle. The headline case cited for the model is Paula Radcliffe's 2002 Chicago Marathon world record, run while menstruating, in the low-hormone phase the framework identifies as advantageous (Sims, Roar, 2016).",
@@ -3051,9 +3346,28 @@ export const sections: Section[] = [
       },
       {
         type: "paragraph",
-        text: "One point is not in dispute: a missing period (amenorrhea) is not a sign of fitness, and it is not something to induce or tolerate in pursuit of a lighter, faster-looking body. It's a core diagnostic marker of Relative Energy Deficiency in Sport (RED-S) above: see that section for the full framework and recovery timeline. Any coach or athlete treating a lost period as a convenient side effect of hard training, rather than a signal to investigate energy availability, has the causation backwards.",
+        text: "One point is not in dispute: a missing period (amenorrhea) is not a sign of fitness, and it is not something to induce or tolerate in pursuit of a lighter, faster-looking body. It's a core diagnostic marker of Relative Energy Deficiency in Sport (RED-S) in Recovery: see that section for the full framework and recovery timeline. Any coach or athlete treating a lost period as a convenient side effect of hard training, rather than a signal to investigate energy availability, has the causation backwards.",
       },
-      { type: "heading", text: "Pregnancy and Postpartum Running" },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "The research behind menstrual-cycle-phase training protocols is weaker than early popular frameworks suggested: track your own response rather than assuming a fixed follicular/luteal pattern applies to you.",
+          "A missing period is never a sign of fitness: treat it as a RED-S red flag requiring investigation, not a tolerable side effect of hard training.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "pregnancy-and-postpartum-running",
+    title: "Pregnancy and Postpartum Running",
+    mission:
+      "Real physiological and safety considerations for training through pregnancy and returning to running postpartum, from vena cava compression to pelvic-floor recovery.",
+    topics: ["Training through pregnancy", "Postpartum return to running", "Real physiological considerations"],
+    category: "recovery-and-fueling",
+    lastUpdated: "2026-08-06",
+    content: [
       {
         type: "paragraph",
         text: "Current clinical guidance treats regular aerobic exercise during an uncomplicated pregnancy as something to encourage, not merely tolerate: associated with a lower risk of gestational diabetes, excessive weight gain, and delivery complications, with no evidence of harm to a healthy pregnancy (ACOG Committee Opinion No. 804, 2020). There's no universal week-by-week cutoff for when a healthy, experienced runner has to stop: some keep running deep into the third trimester, others develop symptoms (shin pain, pelvic discomfort, dizziness) that call for stopping months earlier, and the difference often comes down to the individual pregnancy rather than a fixed rule. What does matter is finding an OB or midwife who understands athletic baselines: a competitive runner's naturally low resting heart rate and blood pressure can look abnormal on a standard chart to a provider unfamiliar with trained athletes, triggering unnecessary alarm.",
@@ -3078,7 +3392,25 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Standard postpartum clearance to return to exercise is a 6-week checkup, though the right timeline still depends on the individual delivery and how it went. A few postpartum realities are worth naming plainly, because they're common but rarely discussed openly: urinary leakage while running postpartum is frequent, but it is not something to accept as a permanent cost of having given birth: pelvic-floor physical therapy resolves it in most cases, whether the birth was 6 weeks or 6 years ago. Diastasis recti, a separation of the abdominal muscles, is very common in pregnancy and, somewhat counterintuitively, shows up more, not less, in women who were very fit beforehand, since a strong rectus resists stretching until it separates outright rather than gradually giving way; it's addressed through targeted core rehab restoring functional strength, not through cosmetic exercises alone. A prolapse (descent of the bladder or vaginal wall) is a more serious, distinct red flag from ordinary postpartum discomfort, usually treatable through pelvic-floor physical therapy rather than surgery, but it's a reason to see a specialist promptly, not to push through. The common thread across all of it: \"getting your body back\" is the wrong frame. A postpartum runner's pelvis and core have a new baseline, not a full return to a prior one, and training from that new baseline, rather than measuring against the old one, is what actually works.",
       },
-      { type: "heading", text: "Training Through the Decades" },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Pregnancy and postpartum running have real, specific physiological considerations (vena cava compression, joint laxity, pelvic-floor function, diastasis recti) that a general training framework doesn't cover: find a provider who understands athletic baselines.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "training-through-the-decades",
+    title: "Training Through the Decades",
+    mission:
+      "Why VO2 max decline with age is driven more by muscle loss than heart function, and what that means for recovery spacing and strength training as a masters runner.",
+    topics: ["Why VO2 max declines with age", "Recovery spacing by decade", "The case for starting strength work early"],
+    category: "recovery-and-fueling",
+    lastUpdated: "2026-08-06",
+    content: [
       {
         type: "paragraph",
         text: "VO2 max reliably declines with age, but the mechanism matters for what to do about it. The decline is driven more by peripheral factors (shrinking muscle mass reducing how much oxygen the muscle can actually extract and use) than by central factors like heart rate; maximum heart rate does drop gradually, but stroke volume (how much blood the heart pumps per beat) holds up fairly well into a runner's 50s and 60s with continued training. That distinction matters because it points to the fix: strength training that preserves muscle mass offsets more of the age-related VO2 max decline than any amount of extra aerobic volume can on its own. Fast-twitch muscle fiber loss with age is largely irreversible once it happens, while slow-twitch fiber loss can be meaningfully offset by resistance training, which is the practical case for starting serious strength work in your 30s, before the losses begin, rather than waiting until an aging-related slowdown is already underway.",
@@ -3101,9 +3433,6 @@ export const sections: Section[] = [
         variant: "takeaway",
         title: "Key Takeaways",
         items: [
-          "The research behind menstrual-cycle-phase training protocols is weaker than early popular frameworks suggested: track your own response rather than assuming a fixed follicular/luteal pattern applies to you.",
-          "A missing period is never a sign of fitness: treat it as a RED-S red flag requiring investigation, not a tolerable side effect of hard training.",
-          "Pregnancy and postpartum running have real, specific physiological considerations (vena cava compression, joint laxity, pelvic-floor function, diastasis recti) that a general training framework doesn't cover: find a provider who understands athletic baselines.",
           "Aging-related VO2 max decline is driven more by muscle loss than heart function: strength training, started well before decline is visible, is the highest-leverage countermeasure available.",
         ],
       },
@@ -3251,6 +3580,108 @@ export const sections: Section[] = [
       "Mile-by-mile marathon pacing built from real terrain, weather, and fatigue physiology -- not a preset pace table. Upload a course, pick a strategy and risk tolerance, and get paces, fueling, and an explanation for every mile.",
     topics: ["Terrain- and weather-adjusted pacing", "Glycogen and durability tracking", "Course-adaptive strategies"],
     category: "tools",
+  },
+  {
+    slug: "choosing-a-pace-calculator",
+    title: "Which Pace Calculator Should I Use?",
+    mission:
+      "Three of this site's calculators predict training paces from one recent race result and can legitimately disagree. Here's what each one actually does, and which of the other tools is answering a different question entirely.",
+    topics: ["Riegel vs. statistical vs. fatigue-curve models", "When each approach fits", "What the other calculators actually do instead"],
+    category: "tools",
+    lastUpdated: "2026-08-06",
+    content: [
+      { type: "heading", text: "You Ran a Race. Now Three Calculators Disagree." },
+      {
+        type: "paragraph",
+        text: "Enter the same recent race result into the Pace & HR Calculator, the Threshold, CV & VO2 Max Pace Calculator, and the Tinman Running Calculator, and you'll get three different sets of training paces back. That's expected, not a sign that one of them is broken. Each one is answering a version of the same question, predict your other paces from this one race, with a genuinely different model, and different models can legitimately land on different numbers from identical input. This page explains what each model actually does, when to reach for which one, and which of this site's other calculators are answering a completely different question and shouldn't be compared to these three at all.",
+      },
+      { type: "heading", text: "Three Different Models, Not Three Opinions" },
+      {
+        type: "paragraph",
+        text: "The Pace & HR Calculator predicts race times across distances using Pete Riegel's endurance formula, a simple, widely-used power-law relationship between distance and time built from an analysis of world records. It's the fastest of the three to reason about: one equation, one number back, most reliable comparing distances of a similar character (roughly 5K through the marathon) rather than bridging all the way down to the mile.",
+        linkHref: "/pace-calculator",
+        linkText: "Pace & Heart Rate Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The Threshold, CV & VO2 Max Pace Calculator instead fits a statistical model across a large dataset of race distances, times, and ages, and deliberately returns a range rather than one number, a safe estimate and a median estimate, so the prediction is honest about its own uncertainty instead of implying false precision.",
+        linkHref: "/cv-threshold-calculator",
+        linkText: "Threshold, CV & VO2 Max Pace Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The Tinman Running Calculator was independently reverse-engineered from Tom Schwartz's own public running calculator, and returns a performance rating, thirty equivalent race predictions, and paces for all thirteen of his named training zones. Its output is shaped specifically around Tinman's own zone system, not a generic pace table, which matters most if that's the system you're actually training inside.",
+        linkHref: "/tinman-calculator",
+        linkText: "Tinman Running Calculator",
+      },
+      { type: "heading", text: "Why They Don't Agree, and Why That's Not a Bug" },
+      {
+        type: "paragraph",
+        text: "All three tools answer a related but not identical question, using methods that were built independently of each other. A power-law formula fit to world records, a statistical model fit to a large population dataset, and a curve reverse-engineered from one coach's own calculator have no reason to converge on the exact same number for every input, the same way three different coaches reading the same race result wouldn't all write down an identical training plan. Treat a divergence between them as three honest answers to slightly different questions, not as a tiebreaker to resolve.",
+        linkHref: "/what-a-race-result-can-tell-you",
+        linkText: "What One Race Result Can (and Can't) Tell You",
+      },
+      { type: "heading", text: "When Each One Actually Fits" },
+      {
+        type: "list",
+        items: [
+          "Riegel (Pace & Heart Rate Calculator): the fastest, simplest default when you just want a reasonable pace target and don't need the model to explain its own confidence.",
+          "The statistical model (Threshold, CV & VO2 Max Pace Calculator): worth the extra step when you want the prediction to show a range instead of one falsely precise number, especially near the edges of what a formula can reliably predict.",
+          "Tinman's fatigue curve (Tinman Running Calculator): the right fit specifically for a runner already training inside Tom Schwartz's own thirteen-zone system, since the output is built for that system rather than a generic one.",
+        ],
+      },
+      { type: "heading", text: "What the Other Tools Actually Do Instead" },
+      {
+        type: "paragraph",
+        text: "The rest of this site's calculators aren't a fourth, fifth, and sixth opinion on the same question. Each one answers something genuinely different, and comparing its output to the three models above is comparing answers to different questions.",
+      },
+      {
+        type: "paragraph",
+        text: "The Race Pace Calculator does no prediction at all: it's a straight conversion between a goal race time and the pace required to run it, for any distance or split unit.",
+        linkHref: "/race-pace-calculator",
+        linkText: "Race Pace Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The Pace Percent Calculator is also pure conversion, not prediction: it finds a workout pace as a percentage of a reference pace you already have, the percentage-based method Renato Canova and other coaches use to prescribe intervals.",
+        linkHref: "/pace-percent-calculator",
+        linkText: "Pace Percent Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The GAP Calculator adjusts a pace you already have for the hill you're actually running, rather than predicting fitness from a race result.",
+        linkHref: "/gap-calculator",
+        linkText: "GAP Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The Environmental Performance Calculator does the same thing for heat, humidity, wind, and elevation instead of grade.",
+        linkHref: "/environmental-calculator",
+        linkText: "Environmental Performance Calculator",
+      },
+      {
+        type: "paragraph",
+        text: "The LT1 & LT2 Heart Rate Reference Ranges tool is a population reference, not a personal prediction: it shows where those thresholds typically fall on a heart rate monitor from a real meta-analysis, not a number derived from your own race result.",
+        linkHref: "/hr-threshold-calculator",
+        linkText: "LT1 & LT2 Heart Rate Reference Ranges",
+      },
+      {
+        type: "paragraph",
+        text: "The Marathon Pacing Calculator isn't a fourth competing model, it's downstream of one: it uses the same statistical fitness model behind the Threshold, CV & VO2 Max Pace Calculator as one input, combined with real terrain and weather physics, to simulate mile-by-mile race-day pacing rather than predict a set of training paces.",
+        linkHref: "/marathon-pacing-calculator",
+        linkText: "Marathon Pacing Calculator",
+      },
+      {
+        type: "callout",
+        variant: "takeaway",
+        title: "Key Takeaways",
+        items: [
+          "Pace & HR, CV-Threshold, and Tinman all predict training paces from one recent race result, using three genuinely different methods, so disagreement between them is expected, not a sign one is wrong.",
+          "Riegel is the fastest default, the statistical model is the most honest about its own uncertainty, and Tinman's curve is built specifically for Tom Schwartz's own thirteen-zone system.",
+          "Race Pace and Pace Percent are conversion tools, not predictions. GAP and Environmental adjust for terrain and weather. HR Threshold is a population reference. Marathon Pacing simulates race day using one of the three models as an input, it doesn't compete with it.",
+        ],
+      },
+    ],
   },
 ];
 

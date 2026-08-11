@@ -74,7 +74,7 @@ export default async function SettingsPage() {
     ]);
 
   return (
-    <Container variant="auth">
+    <Container variant="dashboard">
       <Heading variant="compact">
         Settings
       </Heading>

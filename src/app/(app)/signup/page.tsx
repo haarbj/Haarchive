@@ -11,6 +11,7 @@ import { FormError } from "@/components/ui/form-error";
 
 export const metadata: Metadata = {
   title: "Sign up",
+  robots: { index: false, follow: false },
 };
 
 type SignupPageProps = {

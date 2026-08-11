@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { TRAINING_PLANS, trainingPlanMap } from "@/lib/training-plans/data";
+import { canonicalUrl } from "@/lib/canonical";
 import { PlanPage } from "@/components/training-plans/plan-page";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: PlanRouteParams): Promise<Met
   return {
     title,
     description,
+    ...canonicalUrl(`/training-plans/${slug}`),
     openGraph: { title, description, images: ["/opengraph-image.png"] },
     twitter: { title, description, images: ["/opengraph-image.png"] },
   };

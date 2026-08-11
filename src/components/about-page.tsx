@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CATEGORY_VISUALS } from "@/lib/category-visuals";
 import { categories } from "@/lib/sections";
 import { FeatureAnnouncementLoader as FeatureAnnouncement } from "@/components/feature-announcement-loader";
 import { FeaturedEssay } from "@/components/featured-essay";
@@ -718,34 +719,54 @@ export function AboutPage() {
             A growing knowledge base
           </h2>
           <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            The site is organized into six standing categories, each one a
+            The site is organized into eight standing categories, each one a
             question I keep adding answers to rather than a folder of one-off
             posts:
           </p>
 
           <div className="mt-8 divide-y divide-black/5 dark:divide-white/10">
-            {categories.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/${category.slug}`}
-                className="group -mx-2 flex items-start justify-between gap-6 rounded-lg px-2 py-5 transition hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
-                    {category.title}
-                  </h3>
-                  <p className="mt-1 max-w-xl text-zinc-600 dark:text-zinc-300">
-                    {category.mission}
-                  </p>
-                </div>
-                <span
-                  aria-hidden="true"
-                  className="mt-1 shrink-0 text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-950 dark:text-zinc-400 dark:group-hover:text-white"
+            {categories.map((category) => {
+              const visual = CATEGORY_VISUALS[category.slug];
+              return (
+                <Link
+                  key={category.slug}
+                  href={`/${category.slug}`}
+                  className="group -mx-2 flex items-start justify-between gap-6 rounded-lg px-2 py-5 transition hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
                 >
-                  →
-                </span>
-              </Link>
-            ))}
+                  <div className="flex items-start gap-4">
+                    {visual ? (
+                      // Low-alpha gradient wash, not a solid fill -- same
+                      // technique as FeaturedTool's icon tile, chosen because
+                      // this row (unlike ToolCard's always-dark card) sits
+                      // directly on the page's own light/dark background, so
+                      // the chip needs to read on both without its own
+                      // separate dark: variant.
+                      <span
+                        aria-hidden="true"
+                        className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:-translate-y-0.5"
+                        style={{ backgroundImage: `linear-gradient(135deg, ${visual.accentFrom}26, ${visual.accentTo}40)` }}
+                      >
+                        <visual.icon aria-hidden="true" strokeWidth={1.5} className="h-5 w-5" style={{ color: visual.accentFrom }} />
+                      </span>
+                    ) : null}
+                    <div>
+                      <h3 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+                        {category.title}
+                      </h3>
+                      <p className="mt-1 max-w-xl text-zinc-600 dark:text-zinc-300">
+                        {category.mission}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    className="mt-1 shrink-0 text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-950 dark:text-zinc-400 dark:group-hover:text-white"
+                  >
+                    →
+                  </span>
+                </Link>
+              );
+            })}
           </div>
 
           <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">

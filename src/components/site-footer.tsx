@@ -49,6 +49,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/release-notes" className={linkClass}>
+                Release Notes
+              </Link>
+            </li>
+            <li>
               <Link href="/contact" className={linkClass}>
                 Contact
               </Link>

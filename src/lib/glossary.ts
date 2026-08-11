@@ -27,8 +27,12 @@ export const glossaryTerms: GlossaryTerm[] = [
   },
   {
     id: "double-threshold",
-    aliases: ["double threshold training", "double threshold"],
-    href: "/coaching-library#norwegian-threshold-training-living-at-the-edge-of-the-threshold",
+    // Consolidated with the former separate "norwegian-threshold-training"
+    // term (Phase 2D) -- both resolved to the same coach page, and keeping
+    // them as two term ids meant two separate links could fire on the same
+    // page (even the same sentence) for what's really one destination.
+    aliases: ["Norwegian Threshold Training", "double threshold training", "double threshold"],
+    href: "/coaching-library/norwegian-system",
   },
   {
     id: "cardiac-drift",
@@ -67,22 +71,30 @@ export const glossaryTerms: GlossaryTerm[] = [
   },
   {
     id: "super-compensation",
+    // Was "/training-philosophy#why-response-regulated-recovery-actually-works"
+    // -- that heading no longer exists (training-philosophy is now a bespoke
+    // component, not sections.ts content). Repointed (Phase 2D) to the real
+    // heading that actually explains supercompensation: The Adaptation
+    // Curve on The Aerobic Base, directly above the paragraph containing
+    // this exact term ("That's super-compensation, and it's the whole
+    // mechanism behind why training works").
     aliases: ["super-compensation", "supercompensation"],
-    href: "/training-philosophy#why-response-regulated-recovery-actually-works",
-  },
-  {
-    id: "altitude-training",
-    aliases: ["altitude training"],
-    href: "/coaching-library#joe-vigil-altitude-biomechanics-and-the-whole-athlete",
-  },
-  {
-    id: "eighty-twenty",
-    aliases: ["80/20 Rule", "80/20 rule"],
-    href: "/coaching-library#polarized-training-80-20-the-one-i-lean-on-most",
+    href: "/the-aerobic-base#the-adaptation-curve",
   },
   {
     id: "polarized-training",
-    aliases: ["polarized training"],
+    // Consolidated with the former separate "eighty-twenty" term (Phase 3)
+    // -- that one pointed at "/coaching-library#polarized-training-80-20-
+    // the-one-i-lean-on-most", a dead anchor traced back to a personal "How
+    // I Learn" blurb on about-page.tsx ("The one I lean on most: roughly
+    // 80% of training time easy, 20% genuinely hard...") that was never a
+    // real heading. "80/20" is the same concept this term already
+    // correctly explains -- Research Library's own numbers ("roughly 90%
+    // of training volume... at low intensity," "roughly 65% and 90% of
+    // VO2max") are the research-grade version of the same split -- so
+    // rather than invent a new destination, the working synonym now
+    // resolves through the entry that already had a real one.
+    aliases: ["polarized training", "80/20 Rule", "80/20 rule"],
     href: "/research-library#polarized-training-what-elite-endurance-athletes-actually-do",
   },
   {
@@ -148,7 +160,7 @@ export const glossaryTerms: GlossaryTerm[] = [
   {
     id: "vdot",
     aliases: ["VDOT"],
-    href: "/coaching-library#jack-daniels-precision-through-pace-zones",
+    href: "/coaching-library/daniels",
   },
   {
     id: "steady-state",
@@ -255,6 +267,11 @@ export const glossaryTerms: GlossaryTerm[] = [
     href: "/for-coaches",
   },
   {
+    id: "training-plans-page",
+    aliases: ["Training Plans"],
+    href: "/training-plans",
+  },
+  {
     id: "mental-attitude-during-the-race",
     aliases: ["Mental Attitude During the Race"],
     href: "/sports-psychology#mental-attitude-during-the-race",
@@ -273,11 +290,6 @@ export const glossaryTerms: GlossaryTerm[] = [
     id: "letting-go-of-the-outcome",
     aliases: ["Letting Go of the Outcome"],
     href: "/sports-psychology#letting-go-of-the-outcome",
-  },
-  {
-    id: "norwegian-threshold-training",
-    aliases: ["Norwegian Threshold Training"],
-    href: "/coaching-library#norwegian-threshold-training-living-at-the-edge-of-the-threshold",
   },
   {
     id: "the-wheel",
@@ -328,5 +340,58 @@ export const glossaryTerms: GlossaryTerm[] = [
     id: "where-your-beliefs-actually-came-from",
     aliases: ["Where Your Beliefs Actually Came From"],
     href: "/goal-setting#where-your-beliefs-actually-came-from",
+  },
+  // Coach names -- links the first genuine narrative-prose mention of each
+  // coach (not bibliography/citation-list entries, which cite a book title
+  // and author, not the coach as a subject) to their real Coaching Library
+  // profile. Only coaches with a real prose mention get an entry here; see
+  // Phase 2B notes for why Pete Pfitzinger and "Norwegian System" (the
+  // exact phrase) don't have one.
+  {
+    id: "arthur-lydiard",
+    aliases: ["Arthur Lydiard"],
+    href: "/coaching-library/lydiard",
+  },
+  {
+    id: "tom-schwartz",
+    aliases: ["Tom Schwartz"],
+    href: "/coaching-library/tom-schwartz",
+  },
+  {
+    id: "renato-canova",
+    aliases: ["Renato Canova: Marathon-Specific Density", "Renato Canova"],
+    href: "/coaching-library/canova",
+  },
+  {
+    id: "joe-vigil",
+    // Consolidated with the former separate "altitude-training" term
+    // (Phase 2D) -- same reasoning as the double-threshold consolidation
+    // above: both resolved to /coaching-library/vigil, so both could fire
+    // in the same paragraph for the same destination.
+    aliases: ["Joe Vigil: Altitude, Biomechanics, and the Whole Athlete", "altitude training", "Joe Vigil"],
+    href: "/coaching-library/vigil",
+  },
+  // Athlete names -- same "genuine narrative prose only" rule as the coach
+  // names above. Deena Kastor and Moses Mosop both have real Athlete
+  // Library pages too, but the only place either is named in sections.ts
+  // is a UI topics tag list (not linkifyable prose), so neither gets an
+  // entry here (Phase 2E re-verified this).
+  {
+    id: "peter-snell",
+    aliases: ["Peter Snell"],
+    href: "/athlete-library/peter-snell",
+  },
+  {
+    id: "jakob-ingebrigtsen",
+    // The only sections.ts prose mention is plural ("the Norwegian system
+    // that produced the Ingebrigtsens and the Blummenfelt/Iden triathlon
+    // program," workout-library) -- genuinely about the family's results
+    // under that system, not a passing mention, and Jakob is the one
+    // brother with a real Athlete Library page (his own philosophyNarrative
+    // opens "the clearest real-world example of the Norwegian System
+    // actually applied," and his signatureTraining already links back to
+    // this exact workout-library heading).
+    aliases: ["Ingebrigtsens"],
+    href: "/athlete-library/jakob-ingebrigtsen",
   },
 ];

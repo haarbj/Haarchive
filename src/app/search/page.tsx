@@ -7,7 +7,19 @@ import { SiteSearchBox } from "@/components/site-search";
 import { runSiteSearch } from "@/lib/search/run-search";
 
 export const metadata: Metadata = {
-  title: "Search | The Haarchive",
+  // Plain "Search", not "Search | The Haarchive" -- the root layout's
+  // title.template (src/app/layout.tsx) already appends " | The Haarchive"
+  // to every plain-string title; the old value here was doubling up to
+  // "Search | The Haarchive | The Haarchive" in the actual rendered <title>.
+  title: "Search",
+  // Search-result pages have no unique content of their own to rank on --
+  // the same query can return wildly different result sets over time as
+  // content changes, and there's no canonical single URL to consolidate
+  // to. `follow: true` so a crawler can still reach whatever the results
+  // link to; `index: false` so the /search URL itself, for any query,
+  // never competes with the real pages it's pointing at. See
+  // docs/seo-audit.md section 5.
+  robots: { index: false, follow: true },
 };
 
 type SearchPageProps = {

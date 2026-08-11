@@ -9,6 +9,7 @@ import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Sign in",
+  robots: { index: false, follow: false },
 };
 
 export default function LoginPage() {

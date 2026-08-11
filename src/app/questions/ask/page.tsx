@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { sectionMap } from "@/lib/sections";
+import { canonicalUrl } from "@/lib/canonical";
 import { AskQuestionForm } from "@/app/questions/ask/ask-question-form";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -9,6 +10,7 @@ import { Heading } from "@/components/ui/heading";
 export const metadata: Metadata = {
   title: "Ask a Question",
   description: "Ask a question, or suggest a topic you'd like to see covered in The Haarchive.",
+  ...canonicalUrl("/questions/ask"),
 };
 
 type AskPageProps = {

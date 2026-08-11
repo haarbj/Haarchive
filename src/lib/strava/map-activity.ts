@@ -27,6 +27,10 @@ export type WorkoutCompletionFields = {
 export function mapToWorkoutCompletion(activity: StravaActivity): WorkoutCompletionFields {
   return {
     actual_distance_m: Math.round(activity.distance),
+    // moving_time, not elapsed_time -- deliberate: elapsed_time counts
+    // whatever Strava's auto-pause skipped (a traffic light, an aid
+    // station, a dropped GPS signal) against actual_time_s, which drags
+    // actual pace down with time the runner wasn't actually running.
     actual_time_s: Math.round(activity.moving_time),
     avg_hr: activity.average_heartrate ? Math.round(activity.average_heartrate) : null,
     strava_activity_id: activity.id,

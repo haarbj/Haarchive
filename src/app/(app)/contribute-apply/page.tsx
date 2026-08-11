@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ContributorApplicationForm } from "./contributor-application-form";
+import { canonicalUrl } from "@/lib/canonical";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -8,6 +9,7 @@ import { Heading } from "@/components/ui/heading";
 export const metadata: Metadata = {
   title: "Apply to Contribute",
   description: "Apply to write articles, answer reader questions, or review submissions for the Haarchive.",
+  ...canonicalUrl("/contribute-apply"),
 };
 
 // Deliberately a sibling of (protected)/contribute, not nested under it --

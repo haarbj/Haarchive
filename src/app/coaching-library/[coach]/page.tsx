@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { coaches, coachMap } from "@/lib/coaches/data";
+import { canonicalUrl } from "@/lib/canonical";
 import { CoachPage } from "@/components/coaches/coach-page";
 import { VerifiedBadge } from "@/components/coaches/verified-badge";
 import { BackLink } from "@/components/ui/back-link";
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: CoachRouteParams): Promise<Me
   return {
     title: coach.name,
     description: coach.oneLiner,
+    ...canonicalUrl(`/coaching-library/${slug}`),
     openGraph: { title: coach.name, description: coach.oneLiner, images: ["/opengraph-image.png"] },
     twitter: { title: coach.name, description: coach.oneLiner, images: ["/opengraph-image.png"] },
   };

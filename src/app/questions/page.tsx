@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getAppSession } from "@/lib/auth/session";
 import { getAnonIdReadOnly } from "@/lib/anon-id";
 import { createClient } from "@/lib/db/server";
+import { canonicalUrl } from "@/lib/canonical";
 import { mapQuestionRow } from "@/lib/questions/map-row";
 import type { Question } from "@/lib/questions/types";
 import { QuestionCard } from "@/components/questions/question-card";
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
   title: "Questions",
   description:
     "Ask a question, suggest a topic, or upvote what you'd like to see covered next in The Haarchive.",
+  ...canonicalUrl("/questions"),
 };
 
 const BUCKET_LIMIT = 6;

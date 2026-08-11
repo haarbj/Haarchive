@@ -125,6 +125,11 @@ export const coaches: Coach[] = [
         myth: "Lydiard ignored speed work.",
         reality: "The system has a dedicated anaerobic and speed phase: it's sequenced after the base, not absent from it.",
       },
+      {
+        myth: "Lydiard was against strength training.",
+        reality:
+          "He was skeptical specifically of gym-based weight lifting for distance runners, not of strength work itself: his own athletes did calisthenics and hill bounding, and his objection to machine lifting was about specificity, not strength as a goal. \"Throw those weights into Tokyo Bay and come run with me\" was aimed at a gym routine disconnected from running, not at strength training in general.",
+      },
     ],
     criticisms: [
       {
@@ -228,6 +233,19 @@ export const coaches: Coach[] = [
         kind: "interview",
         description: "Rare direct footage of Lydiard describing his own methods in his own words, preserved in New Zealand's Olympic history archives.",
       },
+      {
+        title: "Arthur Lydiard's Athletic Training",
+        author: "Arthur Lydiard, prepared by Nobuya Hashizume & Steve Bobenhouse",
+        kind: "lecture",
+        description: "A guide prepared for Lydiard's 1999 Brooks/American Track & Field lecture tour: first-person Lydiard on his own biography, the reverse-periodization scheduling algorithm, and race-day specifics, distinct from Running to the Top.",
+      },
+      {
+        title: "\"Why I Prescribe Marathons for Milers\"",
+        author: "Arthur Lydiard",
+        publication: "Sports Illustrated, 1962",
+        kind: "article",
+        description: "Lydiard's own magazine account of why marathon-distance running builds the aerobic base behind his milers' and middle-distance runners' speed, published two years after Rome, with named contemporaries (Bannister, Cerutty, Bowerman, and others) reacting to the method in a sidebar.",
+      },
     ],
     notableAthletes: [
       {
@@ -260,6 +278,12 @@ export const coaches: Coach[] = [
         whyRepresentative: "Olympic bronze (1960), the result that first proved Lydiard's methods scaled from track distances to the marathon.",
         relationship: "coached",
       },
+      {
+        name: "John Walker",
+        events: "1500m / Mile",
+        whyRepresentative: "The first man under 3:50 for the mile (1975), trained not by Lydiard directly but by Arch Jelley, a coach who applied Lydiard's aerobic-first principles at the same Owairaka Athletic Club: evidence the system outlived and outscaled its own founder's direct involvement.",
+        relationship: "influenced",
+      },
     ],
     decisionScenarios: [
       {
@@ -288,6 +312,25 @@ export const coaches: Coach[] = [
       {
         title: "Race Approaching",
         steps: ["Reduce volume sharply", "Keep the legs fresh with short efforts", "Race"],
+      },
+      {
+        title: "Managing an Anaerobic Block",
+        question: {
+          question: "Has the athlete completed three weeks of the current anaerobic phase?",
+          outcomes: [
+            {
+              condition: "No",
+              steps: ["Continue the block as planned: anaerobic development needs consistent, uninterrupted volume to take hold, not stop-start dabbling"],
+            },
+            {
+              condition: "Yes",
+              steps: [
+                "Decide in week four whether to hold volume or shift toward shorter, sharper sessions, rather than defaulting to more of the same by inertia",
+                "Anaerobic capacity peaks within about 10-12 weeks of dedicated work: track where the athlete actually sits in that window, not just how the sessions feel",
+              ],
+            },
+          ],
+        },
       },
       {
         title: "What's Actually Limiting This Athlete?",
@@ -366,6 +409,9 @@ export const coaches: Coach[] = [
       { label: "Workout Library", href: "/workout-library" },
       { label: "Exercise Physiology", href: "/exercise-physiology" },
       { label: "Training Plans", href: "/training-plans" },
+      { label: "Training Philosophy", href: "/training-philosophy" },
+      { label: "Marathon Training", href: "/marathon-training" },
+      { label: "Recovery", href: "/recovery" },
     ],
   },
 
@@ -672,6 +718,8 @@ export const coaches: Coach[] = [
       { label: "Workout Library", href: "/workout-library" },
       { label: "Training Plans", href: "/training-plans" },
       { label: "Threshold, CV & VO2 Max Pace Calculator", href: "/cv-threshold-calculator" },
+      { label: "Pace & Heart Rate Calculator", href: "/pace-calculator" },
+      { label: "What One Race Result Can (and Can't) Tell You", href: "/what-a-race-result-can-tell-you" },
     ],
   },
 
@@ -1271,6 +1319,7 @@ export const coaches: Coach[] = [
       { label: "Sports Psychology", href: "/sports-psychology" },
       { label: "Exercise Physiology", href: "/exercise-physiology" },
       { label: "Strength Training", href: "/strength-training" },
+      { label: "Workout Library", href: "/workout-library" },
     ],
   },
 
@@ -1686,6 +1735,7 @@ export const coaches: Coach[] = [
       { label: "Exercise Physiology", href: "/exercise-physiology" },
       { label: "Training Plans", href: "/training-plans" },
       { label: "Threshold, CV & VO2 Max Pace Calculator", href: "/cv-threshold-calculator" },
+      { label: "Tinman Running Calculator", href: "/tinman-calculator" },
     ],
   },
 
@@ -1987,6 +2037,7 @@ export const coaches: Coach[] = [
       { label: "Workout Library", href: "/workout-library" },
       { label: "Nutrition & Fueling", href: "/nutrition-and-fueling" },
       { label: "Training Plans", href: "/training-plans" },
+      { label: "Marathon Training", href: "/marathon-training" },
     ],
   },
 
@@ -2291,6 +2342,7 @@ export const coaches: Coach[] = [
       { label: "Training Plans", href: "/training-plans" },
       { label: "Research Library", href: "/research-library" },
       { label: "Threshold, CV & VO2 Max Pace Calculator", href: "/cv-threshold-calculator" },
+      { label: "Data & Analytics", href: "/data-and-analytics" },
     ],
   },
 ];

@@ -194,7 +194,12 @@ export function TrainingPhilosophyPage() {
           system disagrees with the others about which constraint matters most, when, and for whom. The
           question worth answering isn&rsquo;t which coach is right. It&rsquo;s <em>why</em> each one
           prescribes what they prescribe: the belief about the body underneath the workout. That belief is
-          what actually determines whether a method fits you, not its medal count.
+          what actually determines whether a method fits you, not its medal count. The full case for each
+          coach&rsquo;s system, in their own logic, lives in the{" "}
+          <Link href="/coaching-library" className={linkClass}>
+            Coaching Library
+          </Link>
+          .
         </p>
       </section>
 

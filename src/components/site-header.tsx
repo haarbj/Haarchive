@@ -136,17 +136,36 @@ export function SiteHeader() {
               </button>
 
               <div
-                className={`absolute left-0 top-full w-[720px] overflow-hidden pt-3 transition-[max-height,opacity] duration-200 ${
-                  learnOpen ? "max-h-[32rem] opacity-100" : "pointer-events-none max-h-0 opacity-0"
+                className={`absolute left-0 top-full w-[840px] pt-3 transition-[max-height,opacity] duration-200 ${
+                  learnOpen ? "max-h-[80rem] opacity-100" : "pointer-events-none max-h-0 overflow-hidden opacity-0"
                 }`}
               >
-                {/* CSS multi-column, not a grid -- categories range from 1
-                    to 6 sections, and a fixed 3-column grid forces every
-                    row to the height of its tallest cell, leaving ragged
-                    gaps under the shorter ones. break-inside-avoid keeps
-                    each category's heading+list together as one block
-                    while the browser packs blocks into balanced-height
-                    columns, like a newspaper layout. */}
+                {/* CSS multi-column, not a grid -- categories vary widely in
+                    member count (as few as 1, as many as 8), and a fixed
+                    3-column grid forces every row to the height of its
+                    tallest cell, leaving ragged gaps under the shorter
+                    ones. break-inside-avoid keeps each category's
+                    heading+list together as one block while the browser
+                    packs blocks into balanced-height columns, like a
+                    newspaper layout -- this scales to any future category
+                    size without needing another manual update here.
+
+                    Still three columns, not two: three keeps the panel
+                    short by spreading content horizontally rather than
+                    stacking it -- two columns fixed the wrapping but made
+                    the whole menu noticeably taller, trading one problem
+                    for another. Widened the panel itself instead (720px
+                    -> 840px) so each column still gets meaningfully more
+                    room than the original ~200px lane that caused the
+                    wrapping in the first place. The parent's open-state
+                    max-height is set well past any realistic content
+                    height (80rem) purely so the CSS transition has a
+                    concrete number to animate toward for the slide-down
+                    open animation -- it's not a real content cap and
+                    there's deliberately no scroll behavior on open; if a
+                    future category grows enough to approach that ceiling,
+                    raise the number rather than introducing a scrollbar
+                    here. */}
                 <div className="columns-3 gap-x-6 rounded-2xl border border-black/10 bg-white p-6 shadow-dropdown dark:border-white/10 dark:bg-zinc-900">
                   {learnCategories.map((category) => {
                     const members = sectionsInCategory(category.slug);

@@ -1,0 +1,2 @@
+1	resources/Lydiard/Lydiard Part 4 Fast Twitch Systems.pdf
+2	resources/Lydiard/Lydiard Part 5 Intensities Applications.pdf

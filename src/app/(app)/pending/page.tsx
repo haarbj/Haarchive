@@ -9,6 +9,7 @@ import { Heading } from "@/components/ui/heading";
 
 export const metadata: Metadata = {
   title: "Access pending",
+  robots: { index: false, follow: false },
 };
 
 // Sibling of login/signup, deliberately outside (protected) -- it must stay

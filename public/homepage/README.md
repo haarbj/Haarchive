@@ -48,6 +48,7 @@ the default `aspect` + `cover` for a normal photo.
 | `coaching-training-log.jpg`     | "Coaching Philosophy"               | **Wired up** | `naturalSize` | Brody's own training log from coach Mike Scannell, replacing the original plan (a Lydiard-era artifact, which would have needed a rights check Brody's own document doesn't). Sized at `max-w-md` (up from `w-48/w-56`) so the handwriting is actually readable. Renders at its own real proportions (2397×3627, `naturalSize`) -- neither "cover" nor "contain" inside `aspect="portrait"` matched the source's own ~0.66 ratio cleanly. |
 | `calculator-screenshot.png`     | "Tools & Accounts"                  | **Wired up** | `naturalSize` | Captured directly from the live Pace & Heart Rate Calculator (Playwright, 640px viewport) rather than supplied as a file -- a real result (18:30 5K), no browser chrome. Renders at its own real proportions (1184×596, `naturalSize`) -- every edge of this card is real text running close to its own padding, so any forced box (cover *or* contain, at any aspect ratio) was either cropping something or adding visible letterbox bars. No colored frame -- tried one (tinted border + background) to signal "this is an image," but the results card already has its own ring styling baked into the captured pixels, and the two borders nested together read as a rendering glitch. A short `Figure` caption does that job instead, through text. PNG, not JPEG: it's a UI screenshot, and PNG keeps the text edges crisp. |
 | *(external URL, no file)*       | Homepage hero ("Featured essay" CTA) | **Wired up** | -- | Not a `public/homepage/` asset -- reuses "Why Running Is Valuable for Everyone"'s own `cover_image_url` (queried from the `articles` table), via a new `imageUrl` prop on `FeaturedEssay`. Hardcoded in about-page.tsx; update it if that article's cover image ever changes. |
+| *(lucide-react icons, no file)* | "What You'll Find Here" category list | **Wired up** | -- | One small tinted icon chip per category, same technique as `/tools`' `ToolCard` (`src/lib/tool-visuals.ts`) but its own map keyed by category slug: `src/lib/category-visuals.ts` (`CATEGORY_VISUALS`). Uses a low-alpha gradient wash (not a solid fill) for the chip background, since this row sits directly on the page's own light/dark background rather than a card that's always dark like `ToolCard`'s. |
 
 Five separate small photos for "My Story," not one portrait -- the
 progression itself (Brophy → Run22 → Vanderbilt → Marathon → Coaching) is
@@ -61,17 +62,6 @@ worth knowing it's adding real weight to the git history if that ever
 matters.
 
 ## Recommended, not yet wired up
-
-One more spot would benefit from imagery but isn't built as an
-`<ImageSlot>` placeholder yet, since it's closer to a design decision than
-a drop-in asset:
-
-- **"What You'll Find Here" category list** -- a small icon per category
-  (reusing the exact pattern already shipped on `/tools`: `lucide-react`
-  icon in a small tinted chip, one restrained accent color per category,
-  never a full-color wash) would give the six categories a visual identity
-  without any photography at all. See `src/lib/tool-visuals.ts` and
-  `src/components/tool-card.tsx` for the pattern to copy.
 
 The "How I Learn" influences grid (Seiler, Daniels, Canova, Vigil,
 Magness) was previously considered for the same avatar-photo treatment as

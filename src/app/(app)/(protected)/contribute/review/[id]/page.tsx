@@ -7,7 +7,8 @@ import { createServiceRoleClient } from "@/lib/db/service-role";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
 import { blockPreviewText } from "@/lib/articles/block-preview";
 import type { ContentBlock } from "@/lib/sections";
-import { CommentThread, type CommentWithAuthor } from "@/app/(app)/(protected)/contribute/review/comment-thread";
+import { BlockComments } from "@/app/(app)/(protected)/contribute/review/comment-thread";
+import { groupCommentsByBlock, type CommentWithAuthor } from "@/app/(app)/(protected)/contribute/review/group-comments";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -68,6 +69,8 @@ export default async function ReviewArticlePage({ params }: { params: Promise<{ 
     isOwn: c.user_id === session!.userId,
   }));
 
+  const { byBlock, general } = groupCommentsByBlock(comments);
+
   return (
     <Container variant="content">
       <BackLink href="/contribute/review">Back to Review Queue</BackLink>
@@ -82,6 +85,13 @@ export default async function ReviewArticlePage({ params }: { params: Promise<{ 
         </Link>
       </p>
 
+      {/* Each block's own feedback renders directly beneath it -- comments
+          used to live in one flat list at the bottom of the page, entirely
+          separate from the block list above, which meant correlating a
+          comment with the block it was about meant scrolling back and
+          forth. Grouping by block here means a reviewer never has to leave
+          the block they're looking at to comment on it or read what's
+          already been said about it. */}
       <div className="mt-8 space-y-3">
         {article.content.map((block, index) => (
           <Card key={index} padding="sm">
@@ -89,18 +99,29 @@ export default async function ReviewArticlePage({ params }: { params: Promise<{ 
               Block {index + 1} · {block.type}
             </p>
             <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-200">{blockPreviewText(block)}</p>
+            <div className="mt-3 border-t border-black/5 pt-3 dark:border-white/10">
+              <BlockComments
+                articleId={article.id}
+                blockIndex={index}
+                comments={byBlock.get(index) ?? []}
+                canModerate={session!.isAdmin}
+                canReply
+              />
+            </div>
           </Card>
         ))}
       </div>
 
       <div className="mt-10">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Comments</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">General comments</h2>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Not tied to any one block.</p>
         <div className="mt-4">
-          <CommentThread
+          <BlockComments
             articleId={article.id}
-            content={article.content}
-            comments={comments}
+            blockIndex={null}
+            comments={general}
             canModerate={session!.isAdmin}
+            canReply
           />
         </div>
       </div>

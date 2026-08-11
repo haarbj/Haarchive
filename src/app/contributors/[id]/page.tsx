@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
+import { canonicalUrl } from "@/lib/canonical";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -57,7 +58,7 @@ async function loadPublishedArticlesByAuthor(userId: string): Promise<PublishedA
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const result = await loadContributor(id);
-  return { title: result?.profile.display_name ?? "Contributor" };
+  return { title: result?.profile.display_name ?? "Contributor", ...canonicalUrl(`/contributors/${id}`) };
 }
 
 export default async function ContributorPage({ params }: { params: Promise<{ id: string }> }) {

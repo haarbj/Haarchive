@@ -51,6 +51,10 @@ export const athletes: Athlete[] = [
         description: "A roughly 22-mile hilly loop through Auckland's Waitakere Ranges that Lydiard's squad, Snell included, used as a weekly long-run staple during the base phase: one of the most specifically documented sessions in Lydiard's whole system. Snell's own account of finishing it is unsentimental: \"Stupid, blind determination forced me on, reeling along the streets until, somehow, I made the Halberg home.\"",
         workoutLibraryHref: "/workout-library#three-ways-lydiard-used-a-hill",
       },
+      {
+        name: "The Mid-Buildup Marathon",
+        description: "In the middle of his 1961-62 buildup, Snell entered an ordinary marathon: led through 20 miles, faded, and was reduced to walking by mile 24, finishing in 2:41 fully depleted. Ten weeks later, on January 27, 1962, he ran 3:54.4 for the mile, a world record. The marathon wasn't a detour from his 800m/1500m training, it was part of it: a single continuous effort long enough to exhaust slow-twitch glycogen stores and force fast-twitch fibers into aerobic-endurance service ahead of the record.",
+      },
     ],
     physiologicalEmphasis: ["aerobicBase", "neuromuscularPower", "runningEconomy", "mentalPerformance"],
     mentalApproachSummary: [

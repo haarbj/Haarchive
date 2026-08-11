@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
+import { canonicalUrl } from "@/lib/canonical";
 import { linkifyContent } from "@/lib/linkify";
 import { categories } from "@/lib/sections";
 import { mapQuestionRow } from "@/lib/questions/map-row";
@@ -14,6 +15,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 export const metadata: Metadata = {
   title: "FAQ",
   description: "Answers to the questions readers ask most often about The Haarchive's training content.",
+  ...canonicalUrl("/faq"),
 };
 
 export default async function FaqPage() {
