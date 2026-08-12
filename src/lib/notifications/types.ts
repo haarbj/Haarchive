@@ -7,4 +7,7 @@ export type NotificationType =
   | "suggestion_reviewed"
   | "citation_reviewed"
   | "application_reviewed"
-  | "article_status_changed";
+  | "article_status_changed"
+  | "user_signed_up"
+  | "question_submitted"
+  | "contributor_application_submitted";

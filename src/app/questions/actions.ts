@@ -7,6 +7,7 @@ import { getOrCreateAnonId } from "@/lib/anon-id";
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { retrieveRelevantContent, type RetrievedExcerpt } from "@/lib/ai/retrieval";
+import { notifyAdmins } from "@/lib/notifications/create-notification";
 import { sections } from "@/lib/sections";
 import { submitQuestionSchema } from "@/lib/validation/questions";
 
@@ -76,6 +77,12 @@ export async function submitQuestion(
     .single();
 
   if (error) return { error: error.message };
+
+  await notifyAdmins({
+    type: "question_submitted",
+    content: `New ${parsed.data.type === "topic_suggestion" ? "topic suggestion" : "question"} submitted: "${parsed.data.title}"`,
+    relatedEntityId: data.id,
+  });
 
   revalidatePath("/questions");
   return { success: true, questionId: data.id };

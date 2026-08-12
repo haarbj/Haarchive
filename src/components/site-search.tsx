@@ -11,10 +11,10 @@ import type { SiteSearchResults } from "@/lib/search/run-search";
 import { EmptyState } from "@/components/ui/empty-state";
 
 type SiteSearchBoxProps = {
-  // "header": a persistent, fixed-width input with a portaled dropdown --
-  // used in both the desktop bar and the always-visible mobile search row
-  // (never hidden behind the hamburger). "page": a full-width input on
-  // /search with results rendered inline below it, no dropdown.
+  // "header": a fixed-width input with a portaled dropdown -- used in the
+  // desktop bar (always mounted) and the mobile search row (mounted only
+  // while toggled open via the header's search icon). "page": a full-width
+  // input on /search with results rendered inline below it, no dropdown.
   variant: "header" | "page";
   initialQuery?: string;
   initialResults?: SiteSearchResults | null;

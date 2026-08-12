@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
+import { notifyAdmins } from "@/lib/notifications/create-notification";
 import { signInSchema, signUpSchema } from "@/lib/validation/auth";
 
 export type AuthActionState = {
@@ -33,6 +34,16 @@ export async function signUp(
       message: "Check your email to confirm your account before signing in.",
     };
   }
+
+  // Confirmation-required signups are notified later, from the
+  // /auth/callback exchange that actually completes them -- notifying here
+  // too would double-fire for that path. This branch only runs once email
+  // confirmation is off (or already satisfied), so it's this account's one
+  // and only completion.
+  await notifyAdmins({
+    type: "user_signed_up",
+    content: `New signup: ${data.user?.email ?? parsed.data.email}`,
+  });
 
   redirect("/dashboard");
 }

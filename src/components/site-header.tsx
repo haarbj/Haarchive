@@ -38,17 +38,20 @@ const topLevelActiveClass = "text-zinc-950 dark:text-white";
 export function SiteHeader() {
   const pathname = usePathname();
   const [learnOpen, setLearnOpen] = useState(false);
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Global so ⌘K/Ctrl+K jumps to search from anywhere on the site, not just
   // while the header itself has focus -- preventDefault stops the browser's
   // own Ctrl+K (Firefox's address-bar search) from firing alongside it.
-  // Queries both the desktop and mobile search inputs (both are always
-  // mounted -- only one is ever visible per Tailwind's responsive display
-  // classes) and focuses whichever one actually has layout, since
-  // offsetParent is null for anything the current breakpoint hides.
+  // Queries every mounted search input and focuses whichever one actually
+  // has layout (offsetParent is null for anything the current breakpoint,
+  // or the mobile search toggle, currently hides). If none are visible --
+  // mobile with the search row collapsed -- open it instead; the focus
+  // effect below picks it up once it's actually mounted.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (!((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) return;
@@ -57,13 +60,25 @@ export function SiteHeader() {
       for (const input of inputs) {
         if (input.offsetParent !== null) {
           input.focus();
-          break;
+          return;
         }
       }
+      setMobileSearchOpen(true);
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!mobileSearchOpen) return;
+    const inputs = document.querySelectorAll<HTMLInputElement>("[data-site-search-input]");
+    for (const input of inputs) {
+      if (input.offsetParent !== null) {
+        input.focus();
+        break;
+      }
+    }
+  }, [mobileSearchOpen]);
 
   const openLearn = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -71,17 +86,33 @@ export function SiteHeader() {
   };
 
   const scheduleClose = () => {
-    closeTimer.current = setTimeout(() => setLearnOpen(false), 150);
+    closeTimer.current = setTimeout(() => {
+      setLearnOpen(false);
+      setActiveCategorySlug(null);
+    }, 150);
   };
 
   const closeAll = () => {
     setLearnOpen(false);
+    setActiveCategorySlug(null);
     setMobileOpen(false);
     setMobileLearnOpen(false);
+    setMobileSearchOpen(false);
   };
 
   const learnActive = isLearnPath(pathname);
   const toolsActive = isToolsPath(pathname);
+  const currentCategorySlug = learnCategories.find(
+    (category) =>
+      pathname === `/${category.slug}` ||
+      sectionsInCategory(category.slug).some((member) => pathname === `/${member.slug}`),
+  )?.slug;
+  // Which category's sections the flyout pane shows: whatever's hovered/
+  // focused right now, falling back to the category the visitor is
+  // currently reading, falling back to the first category so the pane is
+  // never blank the instant the menu opens.
+  const displayedCategorySlug = activeCategorySlug ?? currentCategorySlug ?? learnCategories[0]?.slug;
+  const displayedCategory = learnCategories.find((category) => category.slug === displayedCategorySlug);
   // /search already has its own full-width search input with results inline
   // below it -- the header's copy (mobile row + desktop bar) would just be
   // a second, visually-identical input stacked right above it.
@@ -136,64 +167,73 @@ export function SiteHeader() {
               </button>
 
               <div
-                className={`absolute left-0 top-full w-[840px] pt-3 transition-[max-height,opacity] duration-200 ${
-                  learnOpen ? "max-h-[80rem] opacity-100" : "pointer-events-none max-h-0 overflow-hidden opacity-0"
+                className={`absolute left-0 top-full pt-3 transition-[max-height,opacity] duration-200 ${
+                  learnOpen ? "max-h-[40rem] opacity-100" : "pointer-events-none max-h-0 overflow-hidden opacity-0"
                 }`}
               >
-                {/* CSS multi-column, not a grid -- categories vary widely in
-                    member count (as few as 1, as many as 8), and a fixed
-                    3-column grid forces every row to the height of its
-                    tallest cell, leaving ragged gaps under the shorter
-                    ones. break-inside-avoid keeps each category's
-                    heading+list together as one block while the browser
-                    packs blocks into balanced-height columns, like a
-                    newspaper layout -- this scales to any future category
-                    size without needing another manual update here.
-
-                    Still three columns, not two: three keeps the panel
-                    short by spreading content horizontally rather than
-                    stacking it -- two columns fixed the wrapping but made
-                    the whole menu noticeably taller, trading one problem
-                    for another. Widened the panel itself instead (720px
-                    -> 840px) so each column still gets meaningfully more
-                    room than the original ~200px lane that caused the
-                    wrapping in the first place. The parent's open-state
-                    max-height is set well past any realistic content
-                    height (80rem) purely so the CSS transition has a
-                    concrete number to animate toward for the slide-down
-                    open animation -- it's not a real content cap and
-                    there's deliberately no scroll behavior on open; if a
-                    future category grows enough to approach that ceiling,
-                    raise the number rather than introducing a scrollbar
-                    here. */}
-                <div className="columns-3 gap-x-6 rounded-2xl border border-black/10 bg-white p-6 shadow-dropdown dark:border-white/10 dark:bg-zinc-900">
-                  {learnCategories.map((category) => {
-                    const members = sectionsInCategory(category.slug);
-                    return (
-                      <div key={category.slug} className="mb-6 break-inside-avoid">
+                {/* Two-pane hover flyout, not a flat list of every category's
+                    every section at once: the left pane is just the 7
+                    category names (fixed height regardless of how many
+                    categories exist -- a 9th or 20th is one more row, not
+                    more width), and hovering/focusing one swaps the right
+                    pane to that category's own sections. This is what
+                    replaced the old single-panel version, which had to fit
+                    every category's full section list simultaneously and
+                    kept needing rebalancing (columns, width, height) as
+                    titles got longer -- a category's section count no
+                    longer affects the *left* pane's size at all, and the
+                    right pane only ever holds one category's worth of rows
+                    (at most 8 today), which is why it doesn't need the
+                    scroll/height gymnastics the old version did. */}
+                <div className="flex overflow-hidden rounded-2xl border border-black/10 bg-white shadow-dropdown dark:border-white/10 dark:bg-zinc-900">
+                  <div className="w-56 shrink-0 space-y-0.5 border-r border-black/10 p-3 dark:border-white/10">
+                    {learnCategories.map((category) => {
+                      const isDisplayed = category.slug === displayedCategorySlug;
+                      return (
                         <Link
+                          key={category.slug}
                           href={`/${category.slug}`}
                           onClick={closeAll}
-                          className="text-sm font-semibold text-zinc-900 transition hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+                          onMouseEnter={() => setActiveCategorySlug(category.slug)}
+                          onFocus={() => setActiveCategorySlug(category.slug)}
+                          className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                            isDisplayed
+                              ? "bg-black/5 text-zinc-950 dark:bg-white/10 dark:text-white"
+                              : "text-zinc-700 hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+                          }`}
                         >
                           {category.title}
+                          <svg className="h-3.5 w-3.5 shrink-0 opacity-50" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                            <path
+                              d="M7.5 5L12.5 10L7.5 15"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
                         </Link>
-                        <ul className="mt-2 space-y-1.5">
-                          {members.map((member) => (
-                            <li key={member.slug}>
-                              <Link
-                                href={`/${member.slug}`}
-                                onClick={closeAll}
-                                className="text-sm text-zinc-500 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
-                              >
-                                {member.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
+
+                  <div className="w-64 shrink-0 p-3">
+                    {displayedCategory && (
+                      <ul className="space-y-0.5">
+                        {sectionsInCategory(displayedCategory.slug).map((member) => (
+                          <li key={member.slug}>
+                            <Link
+                              href={`/${member.slug}`}
+                              onClick={closeAll}
+                              className="block rounded-lg px-3 py-2 text-sm text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+                            >
+                              {member.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -213,7 +253,8 @@ export function SiteHeader() {
             cluster and the account menu -- justify-between on the outer
             row then has nothing left to redistribute, so this sits exactly
             in the gap that used to just be empty. Hidden on mobile, where
-            search instead lives as a row inside the accordion menu below.
+            there's no comparable spare width -- search there is a toggled
+            icon instead (see the mobile search button + row below).
             Skipped entirely on /search, which already has its own
             full-width input with results inline below it -- this one would
             just be a second, visually-identical box stacked above it. */}
@@ -245,36 +286,64 @@ export function SiteHeader() {
           <AuthStatus />
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((v) => !v)}
-          className="flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-black/5 md:hidden dark:hover:bg-white/10"
-        >
-          <span className="relative block h-4 w-5">
-            <span
-              className={`absolute left-0 top-0 h-0.5 w-5 bg-current transition ${mobileOpen ? "translate-y-[7px] rotate-45" : ""}`}
-            />
-            <span
-              className={`absolute left-0 top-[7px] h-0.5 w-5 bg-current transition ${mobileOpen ? "opacity-0" : ""}`}
-            />
-            <span
-              className={`absolute left-0 top-[14px] h-0.5 w-5 bg-current transition ${mobileOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
-            />
-          </span>
-        </button>
+        {/* Mobile search toggle + hamburger, grouped -- search used to be a
+            permanently-visible row under the header on every mobile page,
+            which ate a full row of vertical space whether or not a visitor
+            wanted it ("gets in the way too much" on small screens). It's
+            still one tap away, never buried inside the hamburger menu
+            itself, just collapsed to an icon until tapped. Opening either
+            one closes the other -- they'd otherwise fight for the same
+            space right under the header. */}
+        <div className="flex items-center gap-1 md:hidden">
+          {!isSearchPage && (
+            <button
+              type="button"
+              aria-label={mobileSearchOpen ? "Close search" : "Open search"}
+              aria-expanded={mobileSearchOpen}
+              onClick={() => {
+                setMobileSearchOpen((v) => !v);
+                setMobileOpen(false);
+              }}
+              className="flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-black/5 dark:hover:bg-white/10"
+            >
+              <svg className="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M17 17L13.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
+
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => {
+              setMobileOpen((v) => !v);
+              setMobileSearchOpen(false);
+            }}
+            className="flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <span className="relative block h-4 w-5">
+              <span
+                className={`absolute left-0 top-0 h-0.5 w-5 bg-current transition ${mobileOpen ? "translate-y-[7px] rotate-45" : ""}`}
+              />
+              <span
+                className={`absolute left-0 top-[7px] h-0.5 w-5 bg-current transition ${mobileOpen ? "opacity-0" : ""}`}
+              />
+              <span
+                className={`absolute left-0 top-[14px] h-0.5 w-5 bg-current transition ${mobileOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
+              />
+            </span>
+          </button>
+        </div>
       </div>
 
-      {/* Persistent on mobile too -- search specifically must never be
-          something a visitor has to open the hamburger to find. shrink-0
-          keeps it at its natural height once the header becomes a fixed,
-          full-viewport flex column below (see mobileOpen branch above) --
-          only the menu list itself (flex-1 below) should grow to fill and
-          scroll the remaining space. Skipped on /search -- see the
-          isSearchPage comment above. */}
-      {!isSearchPage && (
+      {/* Toggled, not persistent -- see the mobile search button above.
+          shrink-0 keeps it at its natural height if the header becomes a
+          fixed, full-viewport flex column below (mobileOpen branch above),
+          though in practice the two states are kept mutually exclusive.
+          Skipped on /search -- see the isSearchPage comment above. */}
+      {!isSearchPage && mobileSearchOpen && (
         <div className="shrink-0 border-t border-black/5 px-6 py-3 md:hidden dark:border-white/10">
           <SiteSearchBox variant="header" onNavigate={closeAll} />
         </div>

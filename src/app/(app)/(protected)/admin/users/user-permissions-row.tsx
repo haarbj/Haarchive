@@ -6,6 +6,7 @@ import Link from "next/link";
 import { updateUserPermissions } from "./actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { FormError } from "@/components/ui/form-error";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
   contentContributor: boolean;
   reviewer: boolean;
   trainingDashboardAccess: boolean;
+  isAdmin: boolean;
 };
 
 export function UserPermissionsRow({
@@ -24,6 +26,7 @@ export function UserPermissionsRow({
   contentContributor,
   reviewer,
   trainingDashboardAccess,
+  isAdmin,
 }: Props) {
   const [state, formAction, isPending] = useActionState(updateUserPermissions, {});
 
@@ -32,7 +35,13 @@ export function UserPermissionsRow({
       <input type="hidden" name="userId" value={id} />
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-semibold text-zinc-900 dark:text-white">{displayName}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-zinc-900 dark:text-white">{displayName}</p>
+            {/* Read-only -- admin is never grantable from this form, see the
+                page's own copy above. Shown so the new Admin filter pill has
+                a visible reason a row matched it. */}
+            {isAdmin && <Badge tone="research">Admin</Badge>}
+          </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-300">{email}</p>
         </div>
         <Link

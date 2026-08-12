@@ -36,6 +36,15 @@ function notificationHref(type: NotificationType, relatedEntityId: string | null
   if (type === "suggestion_reviewed") {
     return "/contribute/suggestions";
   }
+  if (type === "user_signed_up") {
+    return "/admin/users";
+  }
+  if (type === "contributor_application_submitted") {
+    return "/admin/contributor-applications";
+  }
+  if (type === "question_submitted") {
+    return relatedEntityId ? `/admin/questions/${relatedEntityId}` : "/admin/questions";
+  }
   return null;
 }
 

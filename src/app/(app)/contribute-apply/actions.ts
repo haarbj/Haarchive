@@ -3,6 +3,7 @@
 import { getAppSession } from "@/lib/auth/session";
 import { getOrCreateAnonId } from "@/lib/anon-id";
 import { createServiceRoleClient } from "@/lib/db/service-role";
+import { notifyAdmins } from "@/lib/notifications/create-notification";
 import { submitContributorApplicationSchema } from "@/lib/validation/contributor-application";
 
 const RATE_LIMIT_WINDOW_HOURS = 24;
@@ -62,6 +63,11 @@ export async function submitContributorApplication(
   });
 
   if (error) return { error: error.message };
+
+  await notifyAdmins({
+    type: "contributor_application_submitted",
+    content: `New contributor application from ${parsed.data.name}.`,
+  });
 
   return { success: true };
 }
