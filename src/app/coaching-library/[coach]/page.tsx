@@ -8,6 +8,11 @@ import { VerifiedBadge } from "@/components/coaches/verified-badge";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { ReadingProgressBar } from "@/components/reading-progress-bar";
+import { logLearningEvent } from "@/app/learning-actions";
+import { getKnowledgeCheckForTopic } from "@/app/knowledge-check-actions";
+import { conceptAnchorsForTopic } from "@/lib/mastery/concept-anchors";
+import { KnowledgeCheck } from "@/components/learning/knowledge-check";
 
 type CoachRouteParams = {
   params: Promise<{ coach: string }>;
@@ -41,8 +46,30 @@ export default async function CoachRoutePage({ params }: CoachRouteParams) {
   const coach = coachMap.get(slug);
   if (!coach) notFound();
 
+  // Individual coach pages aren't their own learning Topic (sections.ts /
+  // taxonomy.ts only seed the "coaching-library" index page as one) -- real
+  // reading of any coach's page counts as engagement with that shared
+  // Coaching Library topic, which is also where its curated Concepts
+  // (double-threshold, periodization, vdot) actually live.
+  const conceptAnchors = conceptAnchorsForTopic("coaching-library");
+  // Same "coaching-library" topic as above, for the same reason -- a
+  // knowledge check answered from any coach's page counts toward the one
+  // shared topic. Mirrors article-layout.tsx's own wiring exactly; this
+  // route predates that pattern and was missed when it was added, which
+  // meant coaching-library's own knowledge checks (once seeded) would have
+  // had no page to actually render on.
+  const knowledgeCheck = await getKnowledgeCheckForTopic("coaching-library");
+
   return (
     <Container variant="content">
+      <ReadingProgressBar
+        targetId="article-content"
+        onView={logLearningEvent.bind(null, "coaching-library", "content_viewed")}
+        onDeepScroll={logLearningEvent.bind(null, "coaching-library", "content_engaged")}
+        conceptAnchors={conceptAnchors}
+        onConceptSeen={logLearningEvent.bind(null, "coaching-library", "concept_engaged")}
+      />
+
       <BackLink href="/coaching-library">Back to Coaching Library</BackLink>
       <Heading>
         {coach.name}
@@ -55,7 +82,15 @@ export default async function CoachRoutePage({ params }: CoachRouteParams) {
         </div>
       ) : null}
 
-      <CoachPage coach={coach} />
+      <div id="article-content">
+        <CoachPage coach={coach} />
+      </div>
+
+      {knowledgeCheck ? (
+        <div className="mt-10">
+          <KnowledgeCheck question={knowledgeCheck} topicTitle="Coaching Library" />
+        </div>
+      ) : null}
     </Container>
   );
 }

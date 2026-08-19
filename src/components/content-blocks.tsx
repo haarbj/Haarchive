@@ -30,6 +30,13 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
   // fresh per render, never shared across renders.
   const linkedTermIds = new Set<string>();
 
+  // Every block's rendered root carries data-block-index (its position in
+  // `content`), read (never written) by the notes feature's selection
+  // capture (src/lib/notes/use-text-selection.ts) to know which block a
+  // highlight was made in. It's only ever a resolution *hint* there -- see
+  // src/lib/notes/anchor.ts -- so this stays a plain, stable, declarative
+  // attribute rather than something that has to stay perfectly in sync.
+
   return (
     <>
       {content.map((block, index) => {
@@ -39,6 +46,7 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
             <h3
               key={index}
               id={headingId(block.text)}
+              data-block-index={index}
               className="scroll-mt-24 pt-4 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white"
             >
               {block.text}
@@ -47,6 +55,7 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
             <h2
               key={index}
               id={headingId(block.text)}
+              data-block-index={index}
               className="scroll-mt-24 border-t border-black/5 pt-8 text-2xl font-semibold tracking-tight text-zinc-900 first:border-t-0 first:pt-0 dark:border-white/10 dark:text-white"
             >
               {block.text}
@@ -55,7 +64,7 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
         }
         if (block.type === "list") {
           return (
-            <ul key={index} className="space-y-3">
+            <ul key={index} data-block-index={index} className="space-y-3">
               {block.items.map((item, itemIndex) => {
                 const text = typeof item === "string" ? item : item.text;
                 const subItems = typeof item === "string" ? [] : item.items;
@@ -76,11 +85,15 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
           );
         }
         if (block.type === "quote") {
-          return <PullQuote key={index} text={block.text} attribution={block.attribution} />;
+          return (
+            <div key={index} data-block-index={index}>
+              <PullQuote text={block.text} attribution={block.attribution} />
+            </div>
+          );
         }
         if (block.type === "image") {
           return (
-            <figure key={index}>
+            <figure key={index} data-block-index={index}>
               {/* Arbitrary contributor-pasted URL, not a local/optimized asset -- see contributor-profile-form.tsx */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -95,24 +108,29 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
           );
         }
         if (block.type === "calculator") {
-          return <InlineCalculator key={index} calculatorId={block.calculatorId} />;
+          return (
+            <div key={index} data-block-index={index}>
+              <InlineCalculator calculatorId={block.calculatorId} />
+            </div>
+          );
         }
         if (block.type === "callout") {
           return (
-            <ContentCallout
-              key={index}
-              variant={block.variant}
-              title={block.title}
-              text={block.text ? linkifyContent(block.text, sectionSlug, linkedTermIds) : undefined}
-              items={block.items?.map((item) => linkifyContent(item, sectionSlug, linkedTermIds))}
-              collapsed={block.collapsed}
-              linkHref={block.linkHref}
-              linkText={block.linkText}
-            />
+            <div key={index} data-block-index={index}>
+              <ContentCallout
+                variant={block.variant}
+                title={block.title}
+                text={block.text ? linkifyContent(block.text, sectionSlug, linkedTermIds) : undefined}
+                items={block.items?.map((item) => linkifyContent(item, sectionSlug, linkedTermIds))}
+                collapsed={block.collapsed}
+                linkHref={block.linkHref}
+                linkText={block.linkText}
+              />
+            </div>
           );
         }
         return (
-          <p key={index}>
+          <p key={index} data-block-index={index}>
             {linkifyContent(block.text, sectionSlug, linkedTermIds)}
             {block.linkHref && block.linkText ? (
               <>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/db/server";
+import { logLearningEvent } from "@/app/learning-actions";
 
 export type SaveCalculationResult = {
   status: "success" | "error";
@@ -33,6 +34,14 @@ export async function saveCalculation(
   if (error) {
     return { status: "error", message: error.message };
   }
+
+  // Saving a result is a deliberate, post-computation action -- a real
+  // "tool_used" learning signal, unlike merely opening the calculator page
+  // (which fires nothing). calculatorType already equals the matching
+  // topic's slug for every calculator (see src/lib/mastery/taxonomy.ts),
+  // so no translation is needed. No-ops silently if it isn't (e.g. a
+  // calculator not yet seeded as a topic).
+  await logLearningEvent(calculatorType, "tool_used");
 
   revalidatePath("/dashboard");
   return { status: "success" };

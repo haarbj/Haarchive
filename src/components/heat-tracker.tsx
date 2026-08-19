@@ -8,6 +8,7 @@ import { LocationSearchField } from "@/components/location-search-field";
 import type { LocationMeta } from "@/lib/geocode";
 import { cToF, estimateWBGT, HEAT_ZONES, heatGuidance, heatZoneFor, type HeatZone, type HeatZoneName } from "@/lib/heat-physics";
 import { useLocationSearch } from "@/lib/use-location-search";
+import { logLearningEvent } from "@/app/learning-actions";
 
 type ZoneStyle = {
   textClass: string;
@@ -195,6 +196,11 @@ export function HeatTracker() {
         setSeries(nextSeries);
         setMeta({ lat, lon, label });
         setMessage(`Showing ${label}`);
+        // heat-tracker has no SaveCalculationButton (see
+        // pace-calculator-actions.ts) -- a successfully resolved location
+        // search is its own deliberate, applied use of the tool. No-ops
+        // silently for anonymous visitors, same as every other signal.
+        void logLearningEvent("heat-tracker", "tool_used");
       } catch (error) {
         setMessage(
           error instanceof Error

@@ -6,6 +6,13 @@ import { getAppSession } from "@/lib/auth/session";
 import { GoalCard, type FitnessEstimate } from "@/app/(app)/(protected)/dashboard/goal-card";
 import { OnboardingForm } from "@/app/(app)/(protected)/dashboard/onboarding-form";
 import { equivalentPerformances } from "@/app/(app)/(protected)/dashboard/recent-fitness";
+import { LearningOnboardingSlot } from "@/components/learning/learning-onboarding-slot";
+import { LearningProgress, type TopicProgressRow } from "@/components/learning/learning-progress";
+import { recommendNextTopic, type Orientation, type TopicProgress } from "@/lib/mastery/recommend";
+import { computeMastery, type MasteryEvent, type MasteryLevel } from "@/lib/mastery/algorithm";
+import { explainMastery } from "@/lib/mastery/mastery-explanation";
+import { hasReadableContent } from "@/lib/mastery/readable-content";
+import { getKnowledgeCheckCounts } from "@/app/knowledge-check-actions";
 import { StravaConnection, type LatestStravaActivity } from "@/app/(app)/(protected)/dashboard/strava-connection";
 import { WeeklyCheckinCard, type WeeklyCheckin } from "@/app/(app)/(protected)/dashboard/weekly-checkin-card";
 import { DeleteSavedCalculationButton } from "@/app/(app)/(protected)/dashboard/delete-saved-calculation-button";
@@ -84,6 +91,21 @@ type CompletionForLoad = {
   actual_time_s: number;
 };
 
+type LearningPreferencesRow = {
+  orientation: string | null;
+  interest_category_slugs: string[] | null;
+  onboarding_completed_at: string | null;
+  onboarding_skipped_at: string | null;
+};
+
+type MasteryRow = {
+  topic_id: string;
+  score: number;
+  level: MasteryLevel;
+  last_event_at: string | null;
+  topics: { slug: string; title: string } | null;
+};
+
 type Mesocycle = {
   phase: MesocyclePhase;
   start_date: string;
@@ -131,6 +153,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     { data: completionsForLoad },
     { data: completionsForAcwr },
     { data: weeklyCheckin },
+    { data: learningPreferences },
+    { data: userTopicMastery },
   ] = await Promise.all([
     supabase
       .from("goals")
@@ -185,11 +209,95 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .select("fatigue, soreness, sleep_quality, stress, notes")
       .eq("week_start", mostRecentMonday(new Date()))
       .maybeSingle<WeeklyCheckin>(),
+    supabase
+      .from("learning_preferences")
+      .select("orientation, interest_category_slugs, onboarding_completed_at, onboarding_skipped_at")
+      .maybeSingle<LearningPreferencesRow>(),
+    supabase
+      .from("user_topic_mastery")
+      .select("topic_id, score, level, last_event_at, topics(slug, title)")
+      .order("last_event_at", { ascending: false })
+      .returns<MasteryRow[]>(),
   ]);
 
   const primaryGoal = goals?.[0] ?? null;
   const stravaConnected = !!stravaAccount;
   const hasTrainingPlan = !!trainingPlan;
+
+  const showLearningOnboarding =
+    !learningPreferences?.onboarding_completed_at && !learningPreferences?.onboarding_skipped_at;
+  const learningProgressRows = (userTopicMastery ?? []).filter((row) => row.topics);
+  // A user_topic_mastery row only ever exists once recomputeTopicMastery()
+  // has run, which only happens right after a real learning_events insert
+  // (see learning-actions.ts) -- so this slug list is exactly "topics with
+  // at least one real engagement," reused as-is for the Continue Learning
+  // card's "Start with" vs "Continue" label rather than a second query.
+  const engagedTopicSlugs = learningProgressRows.map((row) => row.topics!.slug);
+  const learningRecommendation = recommendNextTopic(
+    (learningPreferences?.orientation ?? null) as Orientation | null,
+    learningProgressRows.map((row): TopicProgress => ({ topicSlug: row.topics!.slug, level: row.level })),
+    learningPreferences?.interest_category_slugs ?? [],
+  );
+  const topLearningProgressRows = learningProgressRows.slice(0, 5);
+  // Includes the recommended topic's own slug -- ContinueLearning's
+  // "Knowledge check available" indicator reuses this same count map
+  // rather than a second query, even when that topic isn't one of the
+  // (at most 5) rows LearningProgress itself shows below.
+  const knowledgeCheckCountSlugs = Array.from(
+    new Set([...topLearningProgressRows.map((row) => row.topics!.slug), learningRecommendation.topicSlug]),
+  );
+  // A fresh per-topic explanation ("why is this at this level") needs the
+  // full breakdown computeMastery already derives internally -- the cached
+  // user_topic_mastery row only stores score+level, not that breakdown, so
+  // this recomputes it from the same event history rather than inventing a
+  // second scoring path. Bounded to the <=5 topics already shown here, not
+  // the user's whole history.
+  const explanationTopicIds = topLearningProgressRows.map((row) => row.topic_id);
+  // Phase 9 audit fix: this and getKnowledgeCheckCounts are independent of
+  // each other (both depend only on the earlier Promise.all's own results,
+  // not on one another) but used to run as two separate sequential awaits
+  // -- folded into one Promise.all, the same pattern already applied to
+  // ArticleLayout and Library.
+  const [knowledgeCheckCounts, { data: eventsForExplanation }] = await Promise.all([
+    getKnowledgeCheckCounts(knowledgeCheckCountSlugs),
+    supabase
+      .from("learning_events")
+      .select("topic_id, event_type, concept_id, created_at, metadata")
+      .in("topic_id", explanationTopicIds.length > 0 ? explanationTopicIds : ["00000000-0000-0000-0000-000000000000"]),
+  ]);
+
+  const explanationEventsByTopicId = new Map<string, MasteryEvent[]>();
+  for (const e of eventsForExplanation ?? []) {
+    const list = explanationEventsByTopicId.get(e.topic_id) ?? [];
+    list.push({
+      eventType: e.event_type as string,
+      conceptId: e.concept_id as string | null,
+      createdAt: e.created_at as string,
+      metadata: e.metadata as Record<string, unknown> | null,
+    });
+    explanationEventsByTopicId.set(e.topic_id, list);
+  }
+
+  const shownLearningProgress: TopicProgressRow[] = topLearningProgressRows.map((row) => {
+    const slug = row.topics!.slug;
+    const fullResult = computeMastery(explanationEventsByTopicId.get(row.topic_id) ?? []);
+    return {
+      slug,
+      title: row.topics!.title,
+      level: row.level,
+      explanation: explainMastery({
+        ...fullResult,
+        hasKnowledgeChecksAvailable: (knowledgeCheckCounts[slug] ?? 0) > 0,
+        // Phase 4.1 audit fix (extracted to a shared helper in Phase 5.1
+        // so the Library's own Continue Reading filter can't drift apart
+        // from this same definition -- see readable-content.ts's own
+        // comment for the full "content array vs. real content_viewed
+        // wiring" reasoning).
+        hasReadableContent: hasReadableContent(slug),
+      }),
+    };
+  });
+  const moreLearningTopicsCount = Math.max(0, learningProgressRows.length - shownLearningProgress.length);
 
   const mostRecentRace = raceResults?.[0] ?? null;
   const recentRaceResults = raceResults?.slice(0, 5) ?? null;
@@ -348,6 +456,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <div className="mt-10 space-y-8">
         {!primaryGoal && <OnboardingForm teamConnected={!!session?.athleteTeamId} />}
 
+        <LearningOnboardingSlot
+          initialShowOnboarding={showLearningOnboarding}
+          recommendation={learningRecommendation}
+          knowledgeCheckCounts={knowledgeCheckCounts}
+          engagedTopicSlugs={engagedTopicSlugs}
+        />
+
         {hasTrainingPlan && (
           <Card padding="md" emphasis>
             <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
@@ -495,6 +610,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             )}
           </div>
         </div>
+
+        <LearningProgress topics={shownLearningProgress} moreCount={moreLearningTopicsCount} />
 
         {trainingLoad.length >= 2 && (
           <div>

@@ -49,16 +49,40 @@
   --accent-forest: #166534;
   --accent-navy: #172554;
 
+  /* Raw R G B triplet twin of --accent-tip, for exactly one purpose: the
+     note-exact-highlight wash/outline below needs to blend accent-tip at a
+     low, translucent alpha over arbitrary article content (running text,
+     links, list markers) rather than paint it as an opaque fill -- and
+     CSS has no way to pull the components back out of a hex var() to feed
+     rgb(... / alpha%). Kept a single extra token, not a new accent color:
+     reuses the same tip/pointer-style accent already used for "here's
+     where to look" callouts elsewhere on the site, rather than inventing a
+     new hue for "this is the passage you came back for." */
+  --accent-tip-rgb: 14 165 233;
+
   /* Tailwind v4 has no extensible theme namespace for z-index (unlike
      spacing/color/radius/shadow/container, which all generated real
      utilities below) -- these stay plain custom properties, consumed via
-     arbitrary-value syntax (z-[var(--z-header)]) at each of the 5 call
-     sites instead of a named z-* utility. */
+     arbitrary-value syntax (z-[var(--z-header)]) at each call site instead
+     of a named z-* utility. --z-tooltip sits above --z-modal since a
+     tooltip (see ui/tooltip.tsx) needs to render above controls that live
+     inside the Notes drawer, e.g. its own Close button. */
   --z-header: 10;
   --z-toc: 20;
   --z-dropdown: 30;
   --z-modal: 40;
+  --z-tooltip: 45;
   --z-toast: 50;
+
+  /* Mutated directly on document.documentElement by article-notes.tsx
+     while the desktop Notes side panel is open (see that file), consumed
+     by article-layout.tsx's xl:pr-[var(--notes-reserved-width)] on the
+     TOC/content grid. The drawer is a fixed overlay, not a layout
+     participant, so without this the article's own prose column doesn't
+     know to narrow -- real article text was measured overlapping the open
+     panel at common laptop widths before this existed. Zero everywhere
+     else on the site. */
+  --notes-reserved-width: 0px;
 }
 
 @theme inline {
@@ -140,6 +164,8 @@
   --accent-error: #f87171;
   --accent-forest: #4ade80;
   --accent-navy: #60a5fa;
+
+  --accent-tip-rgb: 56 189 248;
 }
 
 body {
@@ -175,4 +201,76 @@ html {
 
 .animate-fade-in {
   animation: fade-in 400ms ease-out;
+}
+
+/* "Here is the passage" -- a brief, non-persistent flash on a content
+   block, applied and removed imperatively by
+   src/lib/notes/navigate-to-source.ts when a note's quoted passage is
+   clicked. A plain background-color fade rather than layout-affecting
+   properties (padding/margin) so nothing around it visibly shifts. Same
+   reduced-motion convention as the html { scroll-behavior } rule above:
+   reduced-motion gets an instant, static tint instead of the animated
+   fade -- still a real signal, just not a moving one -- and JS clears the
+   class after a fixed duration either way, so this file never needs to
+   know which case applied. */
+@keyframes note-source-pulse {
+  0% {
+    background-color: rgb(255 255 255 / 0%);
+  }
+  12% {
+    background-color: rgb(255 255 255 / 10%);
+  }
+  100% {
+    background-color: rgb(255 255 255 / 0%);
+  }
+}
+
+.note-source-pulse {
+  animation: note-source-pulse 1.6s ease-out;
+  border-radius: var(--radius-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-source-pulse {
+    animation: none;
+    background-color: rgb(255 255 255 / 8%);
+  }
+}
+
+/* "This exact thought" -- wraps the precise range of text a note's
+   selected_text resolves to inside its source block (see
+   src/lib/notes/navigate-to-source.ts's applyExactHighlight), a level more
+   specific than the block-wide note-source-pulse above (both run together:
+   the pulse marks "you're in the right neighborhood," this marks the exact
+   passage). Deliberately not a flat yellow highlighter-style fill --
+   background wash *and* a thin inset outline, both a translucent accent-tip
+   rather than a solid color, so it reads as "the exact spot," not
+   "everything highlighter-yellow." The wash alone measures ~9.6-11.4:1 for
+   underlying text at these alpha values against both the panel and page
+   background, so normal article text and links inside it stay fully
+   readable. A short ease-in rather than a pulse/loop: this needs to be
+   noticed once, not draw the eye repeatedly the way the source block's own
+   pulse does. */
+@keyframes note-exact-highlight-in {
+  from {
+    background-color: rgb(var(--accent-tip-rgb) / 0%);
+    box-shadow: inset 0 0 0 1px rgb(var(--accent-tip-rgb) / 0%);
+  }
+  to {
+    background-color: rgb(var(--accent-tip-rgb) / 22%);
+    box-shadow: inset 0 0 0 1px rgb(var(--accent-tip-rgb) / 60%);
+  }
+}
+
+.note-exact-highlight {
+  background-color: rgb(var(--accent-tip-rgb) / 22%);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-tip-rgb) / 60%);
+  border-radius: 0.2em;
+  animation: note-exact-highlight-in 350ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-exact-highlight {
+    animation: none;
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import Link from "next/link";
 
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -14,6 +14,7 @@ import {
 } from "@/lib/training-plans/template";
 import type { RawWorkout, TrainingPlan } from "@/lib/training-plans/types";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
+import { logLearningEvent } from "@/app/learning-actions";
 
 type PersistedState = {
   targetPeakInput: string;
@@ -43,6 +44,15 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
     String(Math.round(plan.referencePeakWeeklyMiles)),
   );
   const [unit, setUnit] = usePersistedField<DistanceUnit>(persisted?.unit, "mi");
+
+  // A real, deliberate use of the tool -- not opening the page, not every
+  // keystroke while typing, just the moment a visitor settles on a target
+  // peak that's actually different from the plan's own default (fires on
+  // blur, once per mount; content_viewed/tool_used both have a DB-level
+  // "once ever" unique index anyway, see concept-anchors.ts's sibling
+  // idempotency notes, so this ref is a courtesy against redundant calls,
+  // not the actual anti-inflation mechanism).
+  const hasLoggedCustomizationRef = useRef(false);
 
   useEffect(() => {
     try {
@@ -78,6 +88,12 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
               min={0}
               value={targetPeakInput}
               onChange={(event) => setTargetPeakInput(event.target.value)}
+              onBlur={() => {
+                if (hasLoggedCustomizationRef.current || !targetPeakValid) return;
+                if (targetPeak === Math.round(plan.referencePeakWeeklyMiles)) return;
+                hasLoggedCustomizationRef.current = true;
+                void logLearningEvent("training-plans", "tool_used");
+              }}
               className={`w-28 ${fieldClass}`}
             />
           </div>

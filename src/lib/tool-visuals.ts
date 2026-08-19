@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, CloudSun, Compass, Flag, Gauge, HeartPulse, Mountain, Percent, Route, Thermometer } from "lucide-react";
+import { Activity, CloudSun, Compass, Flag, Gauge, HeartPulse, Mountain, Percent, Route, Scale, Thermometer } from "lucide-react";
 
 export type ToolVisual = {
   icon: LucideIcon;
@@ -27,4 +27,10 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   "hr-threshold-calculator": { icon: HeartPulse, accentFrom: "#ef4444", accentTo: "#f43f5e" },
   "tinman-calculator": { icon: Compass, accentFrom: "#6366f1", accentTo: "#172554" },
   "marathon-pacing-calculator": { icon: Route, accentFrom: "#06b6d4", accentTo: "#2563eb" },
+  // Deliberately muted, not vivid like every other chip here -- this page
+  // is a guide about the tools, not a tool itself, so it borrows the exact
+  // slate tone CATEGORY_VISUALS already uses for the "Tools" category chip
+  // (category-visuals.ts) instead of inventing a new vivid accent that
+  // would make it read as an eleventh calculator.
+  "choosing-a-pace-calculator": { icon: Scale, accentFrom: "#94a3b8", accentTo: "#475569" },
 };

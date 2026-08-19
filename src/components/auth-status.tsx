@@ -114,6 +114,9 @@ function AccountMenu({
               ) : null}
             </div>
           ))}
+          <Link href="/library" onClick={closeAndNavigate} className={menuItemClass}>
+            Library
+          </Link>
           <Link href="/settings" onClick={closeAndNavigate} className={menuItemClass}>
             Settings
           </Link>

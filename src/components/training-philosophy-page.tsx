@@ -3,6 +3,10 @@ import Link from "next/link";
 import { headingId } from "@/lib/heading-id";
 import { Card } from "@/components/ui/card";
 import { PullQuote } from "@/components/pull-quote";
+import { ReadingProgressBar } from "@/components/reading-progress-bar";
+import { logLearningEvent } from "@/app/learning-actions";
+import { getKnowledgeCheckForTopic } from "@/app/knowledge-check-actions";
+import { KnowledgeCheck } from "@/components/learning/knowledge-check";
 
 const eyebrowClass = "text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500";
 const h2Class = "mt-3 scroll-mt-24 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white";
@@ -163,9 +167,28 @@ const NOT_LIST = [
 // reference documentation, so it replaces the generic ContentBlock/
 // ArticleLayout renderer entirely (no TOC, no chapter nav), the same way
 // ContactPage and the calculators do.
-export function TrainingPhilosophyPage() {
+export async function TrainingPhilosophyPage() {
+  // Phase 4 finding: this page had two real, grounded knowledge-check
+  // questions seeded for it but no KnowledgeCheck wiring at all -- the
+  // exact same "seeded but unreachable" bug Phase 3 found and fixed for
+  // coaching-library, just caught before shipping this time instead of
+  // after. null for a topic with no curated questions; renders nothing
+  // below in that case (see getKnowledgeCheckForTopic's own comment).
+  const knowledgeCheck = await getKnowledgeCheckForTopic("training-philosophy");
+
   return (
     <>
+      {/* This page bypasses ArticleLayout entirely (see the comment above),
+          so it wires its own reading signal locally rather than through
+          [slug]/page.tsx's shared sectionTools branch, which also renders
+          calculators and index pages that shouldn't get a prose
+          content_viewed/content_engaged signal the same way an essay should. */}
+      <ReadingProgressBar
+        targetId="article-content"
+        onView={logLearningEvent.bind(null, "training-philosophy", "content_viewed")}
+        onDeepScroll={logLearningEvent.bind(null, "training-philosophy", "content_engaged")}
+      />
+      <div id="article-content">
       <section className={sectionClass}>
         <p className={eyebrowClass}>The Problem</p>
         <h2 id={headingId("Many Systems, One Destination")} className={h2Class}>
@@ -246,7 +269,10 @@ export function TrainingPhilosophyPage() {
           </div>
 
           <div>
-            <h3 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+            <h3
+              id={headingId("Individualization matters")}
+              className="scroll-mt-24 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white"
+            >
               Individualization matters
             </h3>
             <p className={proseClass}>
@@ -266,7 +292,10 @@ export function TrainingPhilosophyPage() {
           </div>
 
           <div>
-            <h3 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+            <h3
+              id={headingId("Consistency beats perfection")}
+              className="scroll-mt-24 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white"
+            >
               Consistency beats perfection
             </h3>
             <p className={proseClass}>
@@ -327,6 +356,13 @@ export function TrainingPhilosophyPage() {
       <section className={sectionClass}>
         <PullQuote text="The goal of this site isn't to convince you one philosophy is correct. It's to help you understand why different philosophies work, when they work, and how to think critically about training." />
       </section>
+      </div>
+
+      {knowledgeCheck ? (
+        <div className="mt-10">
+          <KnowledgeCheck question={knowledgeCheck} topicTitle="Training Philosophy" />
+        </div>
+      ) : null}
     </>
   );
 }

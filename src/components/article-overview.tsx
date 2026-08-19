@@ -12,6 +12,12 @@ type ArticleOverviewProps = {
   readingMinutes: number;
   sectionCount: number;
   lastUpdated?: string;
+  // Quiet discovery signal for the knowledge check that (if one exists)
+  // renders at the bottom of this same page -- so a reader who navigates
+  // via the TOC and never scrolls to the very end still knows one exists.
+  // Omitted (not a badge/callout) when false, matching every other stat
+  // here, which is also conditionally rendered rather than shown empty.
+  hasKnowledgeCheck?: boolean;
 };
 
 export function ArticleOverview({
@@ -20,6 +26,7 @@ export function ArticleOverview({
   readingMinutes,
   sectionCount,
   lastUpdated,
+  hasKnowledgeCheck,
 }: ArticleOverviewProps) {
   const formattedDate = lastUpdated
     ? new Date(`${lastUpdated}T00:00:00`).toLocaleDateString("en-US", {
@@ -62,6 +69,12 @@ export function ArticleOverview({
           <div className="flex items-center gap-1.5">
             <dt className="text-zinc-500 dark:text-zinc-400">Last updated</dt>
             <dd className="font-semibold text-zinc-900 dark:text-white">{formattedDate}</dd>
+          </div>
+        ) : null}
+        {hasKnowledgeCheck ? (
+          <div className="flex items-center gap-1.5">
+            <dt className="text-zinc-500 dark:text-zinc-400">Includes</dt>
+            <dd className="font-semibold text-zinc-900 dark:text-white">A knowledge check</dd>
           </div>
         ) : null}
       </Card>

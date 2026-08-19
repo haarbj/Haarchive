@@ -242,6 +242,67 @@ export const glossaryTerms: GlossaryTerm[] = [
     aliases: ["plasma osmolality"],
     href: "/nutrition-and-fueling#what-the-body-actually-monitors-isn-t-water-volume",
   },
+  // Phase 4 (content coverage expansion) -- concepts added to give
+  // marathon-training, how-to-start-running, training-philosophy, and
+  // workout-library a real, resolvable concept anchor for the first time,
+  // grounded in each page's own existing prose (see each topic's Concept
+  // in taxonomy.ts for why this specific heading, not a generic term).
+  {
+    id: "medium-long-run",
+    // Not "medium-long run" itself -- that generic phrase also appears in
+    // 5k-training's and for-coaches' own, unrelated weekly-structure prose
+    // (verified by direct grep), which would auto-link an unrelated
+    // mention on a different page straight to this one. The week's-most-
+    // skipped-session framing is this page's own distinctive phrase and
+    // appears nowhere else in sections.ts.
+    aliases: ["the week's most skipped session"],
+    href: "/marathon-training#the-medium-long-run-the-week-s-most-skipped-session",
+  },
+  {
+    id: "marathon-pace-paradox",
+    // Same reasoning as medium-long-run above: bare "marathon pace" is a
+    // generic phrase used in at least 3 other, unrelated sections.ts
+    // contexts (data-and-analytics, nutrition-and-fueling, workout-library's
+    // workout catalog) -- verified by direct grep. This heading's own
+    // distinctive phrasing doesn't collide anywhere else.
+    aliases: ["doesn't belong in most of your training"],
+    href: "/marathon-training#why-marathon-pace-doesn-t-belong-in-most-of-your-training",
+  },
+  {
+    id: "buildup-cycle-length",
+    aliases: ["marathon buildup"],
+    href: "/marathon-training#how-long-a-buildup-should-actually-be",
+  },
+  {
+    id: "beginner-progression",
+    aliases: ["beginner progression"],
+    href: "/how-to-start-running#the-beginner-progression-stage-by-stage",
+  },
+  {
+    id: "training-heart-rate-formula",
+    aliases: ["training heart rate"],
+    href: "/how-to-start-running#finding-your-training-heart-rate",
+  },
+  {
+    id: "individualization",
+    aliases: ["individualization"],
+    href: "/training-philosophy#individualization-matters",
+  },
+  {
+    id: "consistency-beats-perfection",
+    aliases: ["consistency beats perfection"],
+    href: "/training-philosophy#consistency-beats-perfection",
+  },
+  {
+    id: "advanced-periodization",
+    aliases: ["advanced periodization", "clustering quality work"],
+    href: "/workout-library#advanced-periodization-clustering-quality-work-instead-of-spreading-it-out",
+  },
+  {
+    id: "matching-interval-pace",
+    aliases: ["matching interval pace"],
+    href: "/workout-library#matching-interval-pace-to-real-fitness-not-aspiration",
+  },
   // Whole-page references -- lets a bare mention of a page's title anywhere
   // in prose (as opposed to a specific heading on it) still link somewhere,
   // without needing a dedicated entry for every passing "see Sports

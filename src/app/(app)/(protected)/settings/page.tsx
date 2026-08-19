@@ -9,6 +9,8 @@ import { CommunityProfileForm } from "@/app/(app)/(protected)/settings/community
 import { RaceResultsSection, type RaceResultRow } from "@/app/(app)/(protected)/settings/race-results-section";
 import { InjuriesSection, type InjuryRow } from "@/app/(app)/(protected)/settings/injuries-section";
 import { SettingsForm } from "@/app/(app)/(protected)/settings/settings-form";
+import { LearningInterestsForm } from "@/app/(app)/(protected)/settings/learning-interests-form";
+import type { LearningInterestCategory, LearningOrientation } from "@/lib/validation/learning";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 
@@ -44,12 +46,23 @@ type CommunityProfile = {
   favorite_distances: string[];
 };
 
+type LearningPreferences = {
+  orientation: LearningOrientation | null;
+  interest_category_slugs: LearningInterestCategory[];
+};
+
 export default async function SettingsPage() {
   const session = await getAppSession(); // non-null: (protected)/layout.tsx already redirected otherwise
   const supabase = await createClient();
 
-  const [{ data: profile }, { data: athleteProfile }, { data: communityProfile }, { data: raceResults }, { data: injuries }] =
-    await Promise.all([
+  const [
+    { data: profile },
+    { data: athleteProfile },
+    { data: communityProfile },
+    { data: raceResults },
+    { data: injuries },
+    { data: learningPreferences },
+  ] = await Promise.all([
       supabase.from("profiles").select("display_name, units, avatar_url").single<Profile>(),
       supabase
         .from("athlete_profiles")
@@ -71,6 +84,10 @@ export default async function SettingsPage() {
         .select("id, injury_type, body_part, start_date, end_date, severity, affects_training, notes")
         .order("start_date", { ascending: false })
         .returns<InjuryRow[]>(),
+      supabase
+        .from("learning_preferences")
+        .select("orientation, interest_category_slugs")
+        .maybeSingle<LearningPreferences>(),
     ]);
 
   return (
@@ -120,6 +137,17 @@ export default async function SettingsPage() {
           initialBio={communityProfile?.bio ?? ""}
           initialLocation={communityProfile?.location ?? ""}
           initialFavoriteDistances={communityProfile?.favorite_distances ?? []}
+        />
+      </div>
+
+      <h2 className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">Learning interests</h2>
+      <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+        What you told us when you got started -- used to recommend what to read next. Change it anytime.
+      </p>
+      <div className="mt-8">
+        <LearningInterestsForm
+          initialOrientation={learningPreferences?.orientation ?? null}
+          initialInterestCategorySlugs={learningPreferences?.interest_category_slugs ?? []}
         />
       </div>
 
