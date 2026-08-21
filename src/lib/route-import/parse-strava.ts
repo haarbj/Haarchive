@@ -6,7 +6,11 @@
 import type { StravaStreamSet } from "@/lib/strava/client";
 import type { ParsedRoute, RoutePoint } from "@/lib/route-import/types";
 
-export function stravaStreamsToRoute(streams: StravaStreamSet, startTimeIso: string | null = null): ParsedRoute {
+export function stravaStreamsToRoute(
+  streams: StravaStreamSet,
+  startTimeIso: string | null = null,
+  movingTimeS: number | null = null,
+): ParsedRoute {
   const pointCount = streams.time?.length ?? streams.latlng?.length ?? streams.altitude?.length ?? 0;
   if (pointCount === 0) {
     throw new Error("This activity doesn't have GPS or elevation data to import.");
@@ -27,5 +31,8 @@ export function stravaStreamsToRoute(streams: StravaStreamSet, startTimeIso: str
   // timestamp), unlike GPX/TCX/FIT -- the activity's own start time is
   // passed in from the summary Strava already returned when listing
   // activities, rather than being derivable from the streams themselves.
-  return { points, source: "strava", startTimeIso };
+  // movingTimeS is passed through the same way -- see ParsedRoute's own
+  // comment on why route-summary.ts prefers it over the elapsed-time
+  // stream's own last timestamp.
+  return { points, source: "strava", startTimeIso, movingTimeS };
 }

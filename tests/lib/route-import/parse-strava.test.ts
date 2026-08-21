@@ -30,4 +30,12 @@ describe("stravaStreamsToRoute", () => {
   it("throws a descriptive error when every stream is empty", () => {
     expect(() => stravaStreamsToRoute({})).toThrow(/gps or elevation data/i);
   });
+
+  it("passes movingTimeS through onto the returned route, defaulting to null", () => {
+    const withMovingTime = stravaStreamsToRoute({ altitude: [100, 100], time: [0, 60] }, null, 55);
+    expect(withMovingTime.movingTimeS).toBe(55);
+
+    const withoutMovingTime = stravaStreamsToRoute({ altitude: [100, 100], time: [0, 60] });
+    expect(withoutMovingTime.movingTimeS).toBeNull();
+  });
 });

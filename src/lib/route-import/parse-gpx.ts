@@ -24,5 +24,5 @@ export function parseGpx(xmlText: string): ParsedRoute {
     };
   });
 
-  return { points, source: "gpx", startTimeIso: elapsed.startTimeIso };
+  return { points, source: "gpx", startTimeIso: elapsed.startTimeIso, movingTimeS: null };
 }

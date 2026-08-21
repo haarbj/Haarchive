@@ -27,5 +27,5 @@ export function parseTcx(xmlText: string): ParsedRoute {
     };
   });
 
-  return { points, source: "tcx", startTimeIso: elapsed.startTimeIso };
+  return { points, source: "tcx", startTimeIso: elapsed.startTimeIso, movingTimeS: null };
 }

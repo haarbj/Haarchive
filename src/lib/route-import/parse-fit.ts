@@ -40,5 +40,5 @@ export async function parseFit(buffer: ArrayBuffer): Promise<ParsedRoute> {
     elapsedSeconds: elapsed.elapsedSecondsFor(record.timestamp),
   }));
 
-  return { points, source: "fit", startTimeIso: elapsed.startTimeIso };
+  return { points, source: "fit", startTimeIso: elapsed.startTimeIso, movingTimeS: null };
 }

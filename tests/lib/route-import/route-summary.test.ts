@@ -34,6 +34,7 @@ describe("summarizeRoute", () => {
     const route: ParsedRoute = {
       source: "gpx",
       startTimeIso: null,
+      movingTimeS: null,
       points: [
         { lat: 0, lon: 0, elevationM: null, elapsedSeconds: 0 },
         { lat: 0, lon: 0.01, elevationM: null, elapsedSeconds: 10 },
@@ -50,6 +51,7 @@ describe("summarizeRoute", () => {
     const route: ParsedRoute = {
       source: "gpx",
       startTimeIso: "2026-07-13T12:00:00.000Z",
+      movingTimeS: null,
       points: [
         { lat: 10, lon: 20, elevationM: null, elapsedSeconds: 0 },
         { lat: 12, lon: 22, elevationM: null, elapsedSeconds: 10 },
@@ -65,6 +67,7 @@ describe("summarizeRoute", () => {
     const route: ParsedRoute = {
       source: "gpx",
       startTimeIso: null,
+      movingTimeS: null,
       points: [{ lat: null, lon: null, elevationM: 100, elapsedSeconds: 0 }],
     };
     const summary = summarizeRoute(route);
@@ -76,6 +79,7 @@ describe("summarizeRoute", () => {
     const route: ParsedRoute = {
       source: "gpx",
       startTimeIso: null,
+      movingTimeS: null,
       points: [
         { lat: null, lon: null, elevationM: 100, elapsedSeconds: 0 },
         { lat: null, lon: null, elevationM: 100.3, elapsedSeconds: 1 }, // sub-threshold jitter
@@ -94,6 +98,7 @@ describe("summarizeRoute", () => {
     const route: ParsedRoute = {
       source: "gpx",
       startTimeIso: null,
+      movingTimeS: null,
       points: [
         { lat: null, lon: null, elevationM: 100, elapsedSeconds: 0 },
         { lat: null, lon: null, elevationM: 110, elapsedSeconds: 10 },
@@ -107,7 +112,7 @@ describe("summarizeRoute", () => {
 
   it("returns zeros for a route with no usable points", () => {
     const route: ParsedRoute = { source: "gpx",
-      startTimeIso: null, points: [] };
+      startTimeIso: null, movingTimeS: null, points: [] };
     const summary = summarizeRoute(route);
     expect(summary.totalDistanceM).toBe(0);
     expect(summary.elevationGainM).toBe(0);
@@ -120,6 +125,7 @@ describe("summarizeRoute", () => {
     const route: ParsedRoute = {
       source: "gpx",
       startTimeIso: null,
+      movingTimeS: null,
       points: [
         { lat: null, lon: null, elevationM: null, elapsedSeconds: 0 },
         { lat: null, lon: null, elevationM: null, elapsedSeconds: 42 },
@@ -127,5 +133,40 @@ describe("summarizeRoute", () => {
       ],
     };
     expect(summarizeRoute(route).totalTimeSeconds).toBe(42);
+  });
+
+  // REGRESSION: a Strava-sourced route used to report total time as the
+  // elapsed-time stream's last timestamp, which includes any time stopped
+  // that the recording device didn't auto-pause through (e.g. at a light
+  // or water stop) -- overstating actual run time relative to Strava's own
+  // moving_time, the same field map-activity.ts already deliberately uses
+  // for logged workouts. summarizeRoute must prefer movingTimeS when a
+  // route carries one (Strava only), not the elapsed-time stream.
+  it("REGRESSION: prefers Strava's own moving_time over the elapsed-time stream's last timestamp", () => {
+    const route: ParsedRoute = {
+      source: "strava",
+      startTimeIso: null,
+      movingTimeS: 1500, // e.g. paused for 2 minutes at a light -- moving_time excludes that
+      points: [
+        { lat: 0, lon: 0, elevationM: null, elapsedSeconds: 0 },
+        { lat: 0, lon: 0.01, elevationM: null, elapsedSeconds: 1620 }, // elapsed (wall-clock) time: 27 minutes
+      ],
+    };
+    const summary = summarizeRoute(route);
+    expect(summary.totalTimeSeconds).toBe(1500);
+    expect(summary.totalTimeSeconds).not.toBe(1620);
+  });
+
+  it("falls back to the elapsed-time stream when movingTimeS is null (GPX/TCX/FIT, or a Strava activity Strava didn't report one for)", () => {
+    const route: ParsedRoute = {
+      source: "strava",
+      startTimeIso: null,
+      movingTimeS: null,
+      points: [
+        { lat: 0, lon: 0, elevationM: null, elapsedSeconds: 0 },
+        { lat: 0, lon: 0.01, elevationM: null, elapsedSeconds: 1620 },
+      ],
+    };
+    expect(summarizeRoute(route).totalTimeSeconds).toBe(1620);
   });
 });

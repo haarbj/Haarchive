@@ -27,4 +27,16 @@ export type ParsedRoute = {
    * to redo a location+date lookup.
    */
   startTimeIso: string | null;
+  /**
+   * Strava's own `moving_time` for this activity (seconds), when the
+   * source is Strava -- null for every other source. Strava's stream data
+   * only carries elapsed-seconds-since-start per point, which includes any
+   * time stopped at a light, water stop, etc. that the recording device
+   * didn't auto-pause through; `moving_time` is Strava's own, more
+   * accurate accounting of actual running time, already used the same way
+   * for logging a completed workout (see map-activity.ts's own comment on
+   * why elapsed_time is deliberately avoided there). route-summary.ts
+   * prefers this over the elapsed-time stream when it's present.
+   */
+  movingTimeS: number | null;
 };

@@ -97,7 +97,7 @@ export function RouteImportPanel({
   async function handleSelectActivity(activity: StravaActivitySummary) {
     setStatus("loading");
     setMessage(`Fetching ${activity.name}…`);
-    const result = await fetchActivityRoute(activity.id, activity.startTimeIso);
+    const result = await fetchActivityRoute(activity.id, activity.startTimeIso, activity.movingTimeS);
     if ("error" in result) {
       setStatus("error");
       setMessage(result.error);

@@ -109,7 +109,12 @@ export function summarizeRoute(route: ParsedRoute): RouteSummary {
     }
   }
 
-  const totalTimeSeconds = lastElapsedSeconds(points) ?? 0;
+  // Strava's own moving_time (when available) is the more accurate figure
+  // -- the elapsed-time stream's last timestamp includes any time stopped
+  // that the recording device didn't auto-pause through. GPX/TCX/FIT have
+  // no such scalar (route.movingTimeS is null for them), so they still
+  // fall back to the stream-derived total, same as before.
+  const totalTimeSeconds = route.movingTimeS ?? lastElapsedSeconds(points) ?? 0;
 
   return {
     totalDistanceM,

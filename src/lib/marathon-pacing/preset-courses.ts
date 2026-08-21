@@ -191,7 +191,7 @@ export function buildPresetRoute(course: PresetCourse): ParsedRoute {
     const lonDeg = (distanceM / EARTH_RADIUS_M) * (180 / Math.PI);
     points.push({ lat: 0, lon: lonDeg, elevationM: elevationAtMile(course.waypoints, mile), elapsedSeconds: null });
   }
-  return { points, source: "gpx", startTimeIso: null };
+  return { points, source: "gpx", startTimeIso: null, movingTimeS: null };
 }
 
 /** Sanity-checks that a preset's synthetic route resolves to a real marathon distance -- exported for tests, not used at runtime. */

@@ -86,13 +86,14 @@ export async function listRecentRunActivities(): Promise<ActionResult<{ activiti
 export async function fetchActivityRoute(
   activityId: number,
   startTimeIso: string | null = null,
+  movingTimeS: number | null = null,
 ): Promise<ActionResult<{ route: ParsedRoute }>> {
   const tokenResult = await getRefreshedAccessToken();
   if ("error" in tokenResult) return tokenResult;
 
   try {
     const streams = await fetchActivityStreams(tokenResult.accessToken, activityId);
-    return { route: stravaStreamsToRoute(streams, startTimeIso) };
+    return { route: stravaStreamsToRoute(streams, startTimeIso, movingTimeS) };
   } catch (error) {
     if (error instanceof Error && error.message.includes("GPS or elevation data")) {
       return { error: error.message };
