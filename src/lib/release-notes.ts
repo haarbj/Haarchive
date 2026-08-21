@@ -8,6 +8,28 @@
 // left out entirely. The goal is "what would a returning reader or
 // contributor actually notice changed," not a mirror of the commit log.
 //
+// This file is the single canonical source of release history -- there is
+// no separate CHANGELOG.md, no GitHub Releases pipeline, and nothing else
+// generates or duplicates this data (see docs/release-documentation-
+// investigation.md for the full reasoning). README.md's own
+// RELEASE_STATUS block is generated FROM this file, one direction only --
+// never edit that block by hand, and never let anything but this file
+// decide what counts as a release.
+//
+// Is a change worth an entry? Ask "would a returning reader or
+// contributor actually notice this changed" -- not "did a commit happen."
+// Generally yes: a new feature, tool, or content system; a substantial UX
+// or navigation change; a bug fix a real user would have hit and noticed;
+// a security fix; a meaningful reliability/performance change.
+// Generally no: typo/copy fixes, formatting-only changes, internal
+// refactors with no visible behavior change, test-only changes, dependency
+// bumps with no user-visible effect, documentation-only changes (this
+// header included), or a small admin-only UI tweak nobody outside the
+// team would notice. When unsure, prefer leaving it out -- a short, honest
+// page beats a noisy one. This same rule is restated briefly in CLAUDE.md
+// so a session that hasn't opened this file yet still sees it before
+// committing.
+//
 // Format for a new entry, going forward:
 //   - `date`: the day it actually shipped (ISO YYYY-MM-DD), not when work
 //     on it started. If several related commits landed across a few days
@@ -29,6 +51,48 @@ export type ReleaseNote = {
 };
 
 export const releaseNotes: ReleaseNote[] = [
+  {
+    date: "2026-08-21",
+    headline: "The Environmental Performance Calculator got more accurate on hilly routes, and can now factor in altitude",
+    detail:
+      "Uploaded routes with a lot of short climbs and descents were being under-costed, since the model only looked at each mile's net elevation change rather than the real climbing and descending inside it -- fixed, and the same fix carried over to Marathon Pacing Calculator's per-mile terrain notes. The calculator can also now account for a course's altitude above sea level, since thinner air costs real time even on a flat course; it's pulled in automatically when weather is looked up, or entered by hand.",
+  },
+  {
+    date: "2026-08-21",
+    headline: "Fixed co-authors being unable to reach their own article drafts",
+    detail:
+      "A writer added as a second author on someone else's article draft was being redirected away from My Drafts and the editor instead of reaching the piece they're a real, listed author on -- now fixed.",
+  },
+  {
+    date: "2026-08-21",
+    headline: "Signed-out readers can now see what signing in would unlock",
+    detail:
+      "The calculators' \"Save this result\" button used to be invisible if you weren't signed in, instead of showing what signing in would let you do -- it now shows a real sign-in prompt. Signed-out readers also see a small note after an article pointing at what a free account tracks for them: reading progress, notes, and bookmarks.",
+  },
+  {
+    date: "2026-08-19",
+    headline: "Learning Progress launched: a real sense of what you've mastered, not just read",
+    detail:
+      "Signed-in readers now get a starting-topic recommendation, four guided learning paths, and a mastery level per topic that's earned through real engagement and correctly-answered knowledge checks, not just having opened the page -- passive reading alone can't reach the top tier. Knowledge checks show your position (e.g. \"2 of 3\") and correctly move to the next question or mark a topic complete.",
+  },
+  {
+    date: "2026-08-19",
+    headline: "Highlight-to-note, Bookmarks, and a personal Library",
+    detail:
+      "Signed-in readers can now highlight any passage to leave a note that autosaves and links back to the exact spot, bookmark a topic to return to later, and see all of it -- notes, bookmarks, continue-reading, and learning history -- gathered on one new Library page.",
+  },
+  {
+    date: "2026-08-12",
+    headline: "Site navigation and mobile search were redesigned",
+    detail:
+      "The header's Learn menu is now a two-pane flyout (categories on the left, that category's own pages on the right) instead of one long flat list of every section at once. On mobile, search became a tap-to-open icon next to the menu button instead of a permanently visible bar taking up space on every page.",
+  },
+  {
+    date: "2026-08-12",
+    headline: "Admin notifications now cover signups, questions, and contributor applications",
+    detail:
+      "The admin notification bell (added in July for comments and review assignments) now also fires for new signups, new question submissions, and new contributor applications -- previously silent events an admin had no way to learn about without manually checking each page.",
+  },
   {
     date: "2026-07-30",
     headline: "The homepage got real photos, diagrams, and a dark-mode-only redesign",

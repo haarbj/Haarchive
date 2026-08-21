@@ -260,7 +260,7 @@ npx tsc --noEmit -p .
 
 **Validate every change with the appropriate subset of: `npx tsc --noEmit -p .`, `npm run lint` (or `npx eslint <changed files>` for a faster targeted check), and `npm run test`** (or `npx vitest run <path>` for a targeted run) before considering a task complete. This project's own test suite (`tests/`, mirroring `src/lib/`'s structure — `tests/coaching-engine/`, `tests/ai/`, `tests/strava/`, `tests/validation/`, `tests/lib/`, `tests/contribute-articles/`, `tests/search/`, `tests/dashboard/`, `tests/questions/`, `tests/fixtures/`) is real and should stay green — a change that breaks an existing test needs the underlying issue fixed, not the test loosened to match new, wrong behavior (unless the test itself encoded the old, now-intentionally-changed behavior, in which case update it deliberately and say so).
 
-No dedicated CI workflow exists in-repo (deployed on Vercel, git-integrated) — the checks above are the actual gate, run manually or by whatever the working session's own tooling invokes.
+No general CI workflow exists in-repo (deployed on Vercel, git-integrated) beyond a narrow, non-blocking release-documentation Action (`.github/workflows/release-docs.yml` — see §13) — the checks above are still the actual test/lint/build gate, run manually or by whatever the working session's own tooling invokes.
 
 ---
 
@@ -274,6 +274,7 @@ No dedicated CI workflow exists in-repo (deployed on Vercel, git-integrated) —
 - **Explain meaningful architectural changes** — if a change genuinely does need to touch a shared pattern (a design token, a shared engine, a container variant), say so explicitly and why, the way this file's own §7 documents the recent Settings container change.
 - **Run relevant validation after changes** — see §12.
 - **Do not commit changes unless explicitly asked.** When asked, follow standard commit hygiene: stage only the relevant files, write a message explaining *why*, never `--no-verify`/`--no-gpg-sign` unless explicitly requested, never force-push without explicit confirmation.
+- **Update `src/lib/release-notes.ts` in the same commit as any release-note-worthy change.** Before committing, decide whether a returning reader or contributor would actually notice this shipped — that file's own header comment has the exact worthy/not-worthy criteria and entry format (canonical source, see `docs/release-documentation-investigation.md` for the full reasoning). This is a judgment call made at commit time by whoever has the real context, not something to defer to automation: `.github/workflows/release-docs.yml` only flags a push that touched product code without touching this file — it never writes or invents an entry.
 
 ---
 

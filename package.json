@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sync:readme": "node scripts/sync-readme-status.mjs",
+    "sync:readme:check": "node scripts/sync-readme-status.mjs --check"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.6",

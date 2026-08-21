@@ -1,0 +1,95 @@
+name: Release Documentation
+
+# Runs on every push to main, since this repo ships directly to main (no
+# PR-based workflow -- see docs/release-documentation-investigation.md).
+# workflow_dispatch is included so this can be run manually/watched once
+# before relying on it firing automatically on a real push.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least-privilege: only what's needed to commit the README sync back to
+# main. No issues/PR permissions -- the coverage check only emits a
+# workflow annotation, it never opens or writes anything else.
+permissions:
+  contents: write
+
+# If two pushes land close together, let the second run wait rather than
+# racing the first one's git push -- not "cancel-in-progress", since each
+# run may have a genuinely different status block to commit.
+concurrency:
+  group: release-docs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-docs:
+    runs-on: ubuntu-latest
+    # Belt-and-suspenders: GitHub's own documented behavior is that a push
+    # made with the default GITHUB_TOKEN does not retrigger another
+    # push-triggered workflow run at all, so this job's own commit below
+    # can't cause a loop on its own. This condition is a second, explicit
+    # layer on top of that, not a replacement for it.
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          # Full history, not a shallow clone -- the coverage-check step
+          # below diffs against the push's own "before" commit, which a
+          # shallow clone might not have (e.g. several commits pushed at
+          # once, or the "before" SHA sitting further back than a small
+          # fixed depth would guess correctly).
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # --- A. Synchronize README ------------------------------------------
+      - name: Sync README status block
+        run: node scripts/sync-readme-status.mjs
+
+      - name: Commit README if it changed
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "README.md's status block is already up to date -- nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Sync README status block
+
+          Automated, mechanical update from scripts/sync-readme-status.mjs,
+          regenerated from src/lib/release-notes.ts (the canonical release
+          history -- see that file's own header and
+          docs/release-documentation-investigation.md). No prose is
+          generated here; this only reformats data that already exists.
+
+          [skip ci]"
+          git push
+
+      # --- B. Check release-note coverage (flag only, never blocking) -----
+      - name: Determine this push's changed paths
+        id: diff
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.event.after }}"
+          if [ -z "$AFTER" ] || [ "$AFTER" = "0000000000000000000000000000000000000000" ]; then
+            AFTER="HEAD"
+          fi
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            # First push of a new branch, or the "before" SHA is otherwise
+            # unavailable -- fall back to just the tip commit's own files
+            # rather than guessing a wider range.
+            git diff-tree --no-commit-id --name-only -r "$AFTER" > changed-paths.txt
+          else
+            git diff --name-only "$BEFORE" "$AFTER" > changed-paths.txt
+          fi
+          cat changed-paths.txt
+
+      - name: Check release-note coverage
+        run: node scripts/check-release-note-coverage.mjs < changed-paths.txt
