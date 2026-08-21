@@ -2,9 +2,19 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 
-import { submitKnowledgeCheckAnswer, type SafeKnowledgeCheck } from "@/app/knowledge-check-actions";
+import { getKnowledgeCheckForTopic, submitKnowledgeCheckAnswer, type SafeKnowledgeCheck } from "@/app/knowledge-check-actions";
+import { recordConversionEvent } from "@/app/conversion-actions";
 import type { MasteryLevel } from "@/lib/mastery/algorithm";
 import { FormError } from "@/components/ui/form-error";
+
+// The exact literal error submitKnowledgeCheckAnswer returns for an
+// unauthenticated submission (knowledge-check-actions.ts) -- matched here,
+// not passed as a structured error code, because that function's return
+// shape is asserted exactly (toEqual, not toMatchObject) by its own Phase
+// 8 regression tests; adding a field there to avoid this string match
+// would break tests protecting far more important behavior (grading,
+// answer-key handling) for a purely cosmetic gain here.
+const SIGN_IN_REQUIRED_ERROR = "Sign in to answer knowledge checks.";
 
 const LEVEL_LABELS: Record<MasteryLevel, string> = {
   exploring: "Exploring",
@@ -22,8 +32,17 @@ type AnswerResult = {
 };
 
 type KnowledgeCheckProps = {
+  // Server-fetched initial question for this page load -- kept in local
+  // state below (not read directly) so a correct answer on a
+  // multi-question topic can advance in place instead of requiring a full
+  // page reload to see the next one.
   question: SafeKnowledgeCheck;
   topicTitle: string;
+  // Needed to re-fetch getKnowledgeCheckForTopic client-side after a
+  // correct answer -- that function already picks the visitor's next
+  // unanswered question (or reports allQuestionsCompleted), so this reuses
+  // the same server logic rather than re-deriving "what's next" here.
+  topicSlug: string;
 };
 
 // Same border-l-4 + tinted-background visual language as ContentCallout
@@ -31,10 +50,17 @@ type KnowledgeCheckProps = {
 // this is fundamentally about testing understanding of the page's own
 // content) -- but a real interactive component, not a display-only one, so
 // it isn't built as a new ContentCallout variant.
-export function KnowledgeCheck({ question, topicTitle }: KnowledgeCheckProps) {
+export function KnowledgeCheck({ question: initialQuestion, topicTitle, topicSlug }: KnowledgeCheckProps) {
+  const [question, setQuestion] = useState(initialQuestion);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Prefetched immediately after a correct answer (see handleSubmit) so
+  // "Next question" is instant to click rather than triggering its own
+  // separate loading state -- null while that lookup is still in flight
+  // (isPending covers that gap, see the render below) or once it's
+  // resolved that there genuinely is nothing left to answer.
+  const [nextQuestion, setNextQuestion] = useState<SafeKnowledgeCheck | null>(null);
   const [isPending, startTransition] = useTransition();
   const resultHeadingRef = useRef<HTMLParagraphElement>(null);
 
@@ -54,9 +80,38 @@ export function KnowledgeCheck({ question, topicTitle }: KnowledgeCheckProps) {
       const response = await submitKnowledgeCheckAnswer(question.id, selectedOptionId);
       if ("error" in response) {
         setError(response.error);
+        if (response.error === SIGN_IN_REQUIRED_ERROR) {
+          // No separate "click" exists for this boundary today (the
+          // question/options render unconditionally for every visitor --
+          // see this component's own top-level comment -- so there's no
+          // embedded sign-in link to instrument a second, later click on,
+          // unlike bookmark/notes). The anonymous Submit press itself is
+          // both the shown and the clicked signal here: fire-and-forget,
+          // never awaited.
+          recordConversionEvent("cta_shown", "knowledge_check", { surface: "knowledge_check_submit" });
+          recordConversionEvent("cta_clicked", "knowledge_check", { surface: "knowledge_check_submit" });
+        }
         return;
       }
       setResult(response);
+      // Phase 12A: answering (correctly or not) is the deliberate,
+      // authenticated learning action here -- idempotent server-side,
+      // fire-and-forget.
+      recordConversionEvent("first_learning_action", "learning_progress", { surface: "knowledge_check_submit" });
+
+      // A correct answer on a multi-question topic: look up what's next
+      // *inside this same transition*, not a follow-up click, so isPending
+      // stays true for the whole "grading, then figuring out what's next"
+      // sequence -- otherwise the result view would render for a moment
+      // not yet knowing whether to offer "Next question" or report the set
+      // complete, and could flash the wrong one. Single-question topics
+      // skip this entirely -- same, unchanged behavior as before this fix.
+      if (response.correct && question.totalQuestions > 1) {
+        const next = await getKnowledgeCheckForTopic(topicSlug);
+        setNextQuestion(next && !next.allQuestionsCompleted ? next : null);
+      } else {
+        setNextQuestion(null);
+      }
     });
   }
 
@@ -71,14 +126,33 @@ export function KnowledgeCheck({ question, topicTitle }: KnowledgeCheckProps) {
     setError(null);
   }
 
+  function handleNext() {
+    if (!nextQuestion) return;
+    setQuestion(nextQuestion);
+    setNextQuestion(null);
+    setResult(null);
+    setSelectedOptionId(null);
+    setError(null);
+  }
+
   return (
     <div
       data-testid="knowledge-check"
       className="rounded-xl border-l-4 border-accent-research/50 bg-accent-research/5 px-5 py-5 sm:px-6 sm:py-6"
     >
-      <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-        Check your understanding
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+          Check your understanding
+        </p>
+        {/* Only meaningful when there's more than one question to know
+            about -- a lone "1/1" doesn't tell the reader anything a bare
+            label doesn't already. */}
+        {question.totalQuestions > 1 && (
+          <p className="shrink-0 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+            {question.questionNumber}/{question.totalQuestions}
+          </p>
+        )}
+      </div>
 
       {!result ? (
         <form onSubmit={handleSubmit} className="mt-3">
@@ -169,6 +243,26 @@ export function KnowledgeCheck({ question, topicTitle }: KnowledgeCheckProps) {
                 A correct answer after a retry still counts toward this topic, just less than getting it on the
                 first try.
               </p>
+            </div>
+          )}
+
+          {result.correct && question.totalQuestions > 1 && (
+            <div className="mt-4">
+              {isPending ? (
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading next question…</p>
+              ) : nextQuestion ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-pill bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition outline-none disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 dark:bg-white dark:text-zinc-900 dark:focus-visible:ring-white dark:focus-visible:ring-offset-zinc-950"
+                >
+                  Next question →
+                </button>
+              ) : (
+                <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+                  You&rsquo;ve completed all {question.totalQuestions} questions for this topic.
+                </p>
+              )}
             </div>
           )}
         </div>

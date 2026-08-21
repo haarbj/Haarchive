@@ -78,7 +78,7 @@ export default async function AthleteRoutePage({ params }: AthleteRouteParams) {
 
       {knowledgeCheck ? (
         <div className="mt-10">
-          <KnowledgeCheck question={knowledgeCheck} topicTitle="Athlete Library" />
+          <KnowledgeCheck question={knowledgeCheck} topicTitle="Athlete Library" topicSlug="athlete-library" />
         </div>
       ) : null}
     </Container>

@@ -88,7 +88,7 @@ export default async function CoachRoutePage({ params }: CoachRouteParams) {
 
       {knowledgeCheck ? (
         <div className="mt-10">
-          <KnowledgeCheck question={knowledgeCheck} topicTitle="Coaching Library" />
+          <KnowledgeCheck question={knowledgeCheck} topicTitle="Coaching Library" topicSlug="coaching-library" />
         </div>
       ) : null}
     </Container>

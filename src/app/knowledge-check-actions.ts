@@ -30,6 +30,19 @@ export type SafeKnowledgeCheck = {
   // null for a signed-out visitor, or a user with no engagement yet. Lets
   // the UI show "if it changed" after submitting, without a second query.
   currentLevel: MasteryLevel | null;
+  // 1-based position of this question within the topic's full ordered set,
+  // and the set's total size -- e.g. "1/3". Computed from the same
+  // `questions` array getKnowledgeCheckForTopic already fetches in full,
+  // not a second query.
+  questionNumber: number;
+  totalQuestions: number;
+  // True once the signed-in visitor has answered every question for this
+  // topic correctly -- getKnowledgeCheckForTopic falls back to re-serving
+  // questions[0] once that happens (see its own comment), and without this
+  // flag the client has no way to tell "here's your genuine next question"
+  // apart from "you're done, this is just the first one again." Always
+  // false for a signed-out visitor (no per-user progress exists to check).
+  allQuestionsCompleted: boolean;
 };
 
 type KnowledgeCheckRow = {
@@ -41,7 +54,12 @@ type KnowledgeCheckRow = {
   difficulty: string;
 };
 
-function toSafe(row: KnowledgeCheckRow, currentLevel: MasteryLevel | null): SafeKnowledgeCheck {
+function toSafe(
+  row: KnowledgeCheckRow,
+  currentLevel: MasteryLevel | null,
+  questions: KnowledgeCheckRow[],
+  allQuestionsCompleted: boolean,
+): SafeKnowledgeCheck {
   return {
     id: row.id,
     topicId: row.topic_id,
@@ -50,6 +68,9 @@ function toSafe(row: KnowledgeCheckRow, currentLevel: MasteryLevel | null): Safe
     options: row.options,
     difficulty: row.difficulty,
     currentLevel,
+    questionNumber: questions.findIndex((q) => q.id === row.id) + 1,
+    totalQuestions: questions.length,
+    allQuestionsCompleted,
   };
 }
 
@@ -110,11 +131,11 @@ export async function getKnowledgeCheckForTopic(topicSlug: string): Promise<Safe
     );
 
     const unanswered = questions.find((q) => !correctlyAnsweredIds.has(q.id));
-    if (unanswered) return toSafe(unanswered, currentLevel);
-    return toSafe(questions[0], currentLevel);
+    if (unanswered) return toSafe(unanswered, currentLevel, questions, false);
+    return toSafe(questions[0], currentLevel, questions, true);
   }
 
-  return toSafe(questions[0], null);
+  return toSafe(questions[0], null, questions, false);
 }
 
 // For the dashboard's small "Verify your understanding · N questions"

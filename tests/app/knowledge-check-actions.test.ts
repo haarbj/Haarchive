@@ -83,6 +83,120 @@ describe("getKnowledgeCheckForTopic", () => {
     expect(rlsCallLog).toHaveLength(0);
   });
 
+  it("reports questionNumber 1 of 1 for a topic with a single question", async () => {
+    const { client: serviceClient } = createScriptedSupabaseClient(
+      [
+        { table: "topics", result: { data: { id: "topic-1" }, error: null } },
+        { table: "knowledge_checks", result: { data: [QUESTION_ROW], error: null } },
+      ],
+      null,
+    );
+    vi.mocked(createServiceRoleClient).mockReturnValue(serviceClient as never);
+    vi.mocked(createClient).mockResolvedValue(createScriptedSupabaseClient([], null).client as never);
+
+    const result = await getKnowledgeCheckForTopic("the-aerobic-base");
+
+    expect(result).toMatchObject({ questionNumber: 1, totalQuestions: 1 });
+  });
+
+  it("reports allQuestionsCompleted: false for an anonymous visitor regardless of the question set", async () => {
+    const { client: serviceClient } = createScriptedSupabaseClient(
+      [
+        { table: "topics", result: { data: { id: "topic-1" }, error: null } },
+        { table: "knowledge_checks", result: { data: [QUESTION_ROW], error: null } },
+      ],
+      null,
+    );
+    vi.mocked(createServiceRoleClient).mockReturnValue(serviceClient as never);
+    vi.mocked(createClient).mockResolvedValue(createScriptedSupabaseClient([], null).client as never);
+
+    const result = await getKnowledgeCheckForTopic("the-aerobic-base");
+
+    expect(result).toMatchObject({ allQuestionsCompleted: false });
+  });
+
+  it("REGRESSION: reports allQuestionsCompleted: true, not a silent restart, once every question has been answered correctly", async () => {
+    const q2 = { ...QUESTION_ROW, id: "q2", question: "What is threshold?" };
+    const { client: serviceClient } = createScriptedSupabaseClient(
+      [
+        { table: "topics", result: { data: { id: "topic-1" }, error: null } },
+        { table: "knowledge_checks", result: { data: [QUESTION_ROW, q2], error: null } },
+      ],
+      null,
+    );
+    const { client: rlsClient } = createScriptedSupabaseClient(
+      [
+        {
+          table: "learning_events",
+          result: {
+            data: [
+              { metadata: { questionId: "q1", correct: true } },
+              { metadata: { questionId: "q2", correct: true } },
+            ],
+            error: null,
+          },
+        },
+        { table: "user_topic_mastery", result: { data: { level: "proficient" }, error: null } },
+      ],
+      "user-1",
+    );
+    vi.mocked(createServiceRoleClient).mockReturnValue(serviceClient as never);
+    vi.mocked(createClient).mockResolvedValue(rlsClient as never);
+
+    const result = await getKnowledgeCheckForTopic("the-aerobic-base");
+
+    // Falls back to the first question (existing, unchanged behavior) --
+    // but this flag is what lets the UI distinguish that fallback from a
+    // genuine next question, instead of silently restarting the sequence.
+    expect(result).toMatchObject({ id: "q1", allQuestionsCompleted: true });
+  });
+
+  it("reports the real position and total for a multi-question topic, for both an anonymous and an authenticated visitor", async () => {
+    const q2 = { ...QUESTION_ROW, id: "q2", question: "What is threshold?" };
+    const q3 = { ...QUESTION_ROW, id: "q3", question: "What is VO2max?" };
+    const allQuestions = [QUESTION_ROW, q2, q3];
+
+    // Anonymous: always the first question in order, so 1/3.
+    const { client: anonServiceClient } = createScriptedSupabaseClient(
+      [
+        { table: "topics", result: { data: { id: "topic-1" }, error: null } },
+        { table: "knowledge_checks", result: { data: allQuestions, error: null } },
+      ],
+      null,
+    );
+    vi.mocked(createServiceRoleClient).mockReturnValue(anonServiceClient as never);
+    vi.mocked(createClient).mockResolvedValue(createScriptedSupabaseClient([], null).client as never);
+    const anonResult = await getKnowledgeCheckForTopic("the-aerobic-base");
+    expect(anonResult).toMatchObject({ id: "q1", questionNumber: 1, totalQuestions: 3 });
+
+    vi.clearAllMocks();
+
+    // Authenticated, already answered q1 correctly: the second question is
+    // returned, and questionNumber must reflect ITS real position (2), not
+    // always default to 1.
+    const { client: authServiceClient } = createScriptedSupabaseClient(
+      [
+        { table: "topics", result: { data: { id: "topic-1" }, error: null } },
+        { table: "knowledge_checks", result: { data: allQuestions, error: null } },
+      ],
+      null,
+    );
+    const { client: rlsClient } = createScriptedSupabaseClient(
+      [
+        {
+          table: "learning_events",
+          result: { data: [{ metadata: { questionId: "q1", correct: true } }], error: null },
+        },
+        { table: "user_topic_mastery", result: { data: { level: "familiar" }, error: null } },
+      ],
+      "user-1",
+    );
+    vi.mocked(createServiceRoleClient).mockReturnValue(authServiceClient as never);
+    vi.mocked(createClient).mockResolvedValue(rlsClient as never);
+    const authResult = await getKnowledgeCheckForTopic("the-aerobic-base");
+    expect(authResult).toMatchObject({ id: "q2", questionNumber: 2, totalQuestions: 3 });
+  });
+
   it("resolves the correct topic slug", async () => {
     const { client: serviceClient, callLog: serviceCallLog } = createScriptedSupabaseClient(
       [

@@ -16,6 +16,7 @@ import { getKnowledgeCheckForTopic } from "@/app/knowledge-check-actions";
 import { getBookmarkStatus } from "@/app/bookmark-actions";
 import { conceptAnchorsForTopic } from "@/lib/mastery/concept-anchors";
 import { KnowledgeCheck } from "@/components/learning/knowledge-check";
+import { LearningProgressTeaser } from "@/components/learning/learning-progress-teaser";
 
 type ArticleLayoutProps = {
   section: Section;
@@ -145,9 +146,15 @@ export async function ArticleLayout({ section, category, content, attribution, c
 
       {knowledgeCheck ? (
         <div className="mt-10">
-          <KnowledgeCheck question={knowledgeCheck} topicTitle={section.title} />
+          <KnowledgeCheck question={knowledgeCheck} topicTitle={section.title} topicSlug={section.slug} />
         </div>
       ) : null}
+
+      {/* Phase 12A: after the content (and the Knowledge Check, when one
+          exists) rather than above it -- follows a real reading/engagement
+          moment instead of interrupting one. Renders nothing at all for an
+          authenticated visitor (see its own authStatus guard). */}
+      <LearningProgressTeaser />
 
       <ChapterNav prev={prev} next={next} />
       <QuestionsCta sourceSectionSlug={section.slug} />

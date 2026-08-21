@@ -360,7 +360,7 @@ export async function TrainingPhilosophyPage() {
 
       {knowledgeCheck ? (
         <div className="mt-10">
-          <KnowledgeCheck question={knowledgeCheck} topicTitle="Training Philosophy" />
+          <KnowledgeCheck question={knowledgeCheck} topicTitle="Training Philosophy" topicSlug="training-philosophy" />
         </div>
       ) : null}
     </>
