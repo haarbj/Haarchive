@@ -61,6 +61,29 @@ export function todayDateString(): string {
 }
 
 /**
+ * Adds a duration to a naive "YYYY-MM-DDTHH:mm" local wall-clock reading,
+ * returning the same naive format -- pure calendar/clock arithmetic via
+ * Date.UTC, same reasoning as naiveMinutes above: never touches a real
+ * timezone, just treats the digits as a clock face and advances them.
+ * Used by fetch-weather-conditions.ts's fetchConditionsWindow to find the
+ * far end of a run's real time window (start + duration) in the same
+ * naive units its own hourly timestamps already use.
+ */
+export function addSecondsToNaiveDateTime(localDateTime: string, seconds: number): string {
+  const [datePart, timePart = "00:00"] = localDateTime.split("T");
+  const [y, m, d] = datePart.split("-").map(Number);
+  const [hh, mm] = timePart.split(":").map(Number);
+  const resultMs = Date.UTC(y, m - 1, d, hh, mm) + seconds * 1000;
+  const result = new Date(resultMs);
+  const yyyy = result.getUTCFullYear();
+  const MM = String(result.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(result.getUTCDate()).padStart(2, "0");
+  const HH = String(result.getUTCHours()).padStart(2, "0");
+  const min = String(result.getUTCMinutes()).padStart(2, "0");
+  return `${yyyy}-${MM}-${dd}T${HH}:${min}`;
+}
+
+/**
  * Wind at a specific date and time -- past or future -- rather than only
  * "right now". `localDateTime` is exactly the value of an
  * `<input type="datetime-local">` (e.g. "2026-07-20T07:30"): a naive,

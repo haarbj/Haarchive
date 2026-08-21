@@ -38,6 +38,7 @@ function buildCourse(perMileGrade: number[], perMileHeadingDeg: (number | null)[
     downhillSeverityScore: 0,
     perMileGrade,
     perMileTerrainCostJPerKg: perMileGrade.map((grade) => gradeAddedCostJPerKgM(grade) * METERS_PER_MILE),
+    perMileAltitudeM: perMileGrade.map(() => 0),
     perMileHeadingDeg: perMileHeadingDeg.length > 0 ? perMileHeadingDeg : perMileGrade.map(() => null),
   };
 }

@@ -54,7 +54,8 @@ const QUADRATIC_COEFF = 0.000737;
 // covering any realistic road/trail race course.
 const MAX_MODELED_ALTITUDE_FT = 14000;
 
-function marathonImpairmentFraction(altitudeM: number): number {
+/** Exported for precise-altitude-engine.ts, which reuses this exact calibrated curve per-mile instead of duplicating it. */
+export function marathonImpairmentFraction(altitudeM: number): number {
   const altitudeKFt = Math.min(Math.max(altitudeM, 0) * FT_PER_M, MAX_MODELED_ALTITUDE_FT) / 1000;
   return LINEAR_COEFF * altitudeKFt + QUADRATIC_COEFF * altitudeKFt ** 2;
 }
@@ -71,7 +72,8 @@ const DURATION_ANCHORS = [
   { seconds: MARATHON_REFERENCE_SECONDS, scale: 1.0 }, // Marathon
 ] as const;
 
-function altitudeDurationScale(actualTimeSeconds: number): number {
+/** Exported for precise-altitude-engine.ts -- see marathonImpairmentFraction's own comment. */
+export function altitudeDurationScale(actualTimeSeconds: number): number {
   if (actualTimeSeconds <= DURATION_ANCHORS[0].seconds) return DURATION_ANCHORS[0].scale;
   if (actualTimeSeconds >= DURATION_ANCHORS[2].seconds) return DURATION_ANCHORS[2].scale;
 

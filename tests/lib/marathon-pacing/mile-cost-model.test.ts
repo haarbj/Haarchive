@@ -32,6 +32,7 @@ function buildCourse(overrides: Partial<CourseAnalysis>): CourseAnalysis {
     downhillSeverityScore: 0,
     perMileGrade,
     perMileTerrainCostJPerKg: costForConstantGradePerMile(perMileGrade),
+    perMileAltitudeM: perMileGrade.map(() => 0),
     perMileHeadingDeg: [null],
     ...overrides,
   };

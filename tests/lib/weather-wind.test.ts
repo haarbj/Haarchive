@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fetchWindAtTime } from "@/lib/weather-wind";
+import { addSecondsToNaiveDateTime, fetchWindAtTime } from "@/lib/weather-wind";
 
 function mockHourlyResponse(ok: boolean, body: unknown) {
   vi.stubGlobal(
@@ -59,5 +59,30 @@ describe("fetchWindAtTime", () => {
   it("throws when there is no hourly data at all", async () => {
     mockHourlyResponse(true, { hourly: { time: [], wind_speed_10m: [], wind_direction_10m: [], wind_gusts_10m: [] } });
     await expect(fetchWindAtTime(0, 0, "2026-01-01T00:00")).rejects.toThrow(/no wind data/i);
+  });
+});
+
+describe("addSecondsToNaiveDateTime", () => {
+  it("adds a duration within the same day", () => {
+    expect(addSecondsToNaiveDateTime("2026-07-20T07:15", 90 * 60)).toBe("2026-07-20T08:45");
+  });
+
+  it("rolls over into the next day", () => {
+    expect(addSecondsToNaiveDateTime("2026-07-20T23:30", 90 * 60)).toBe("2026-07-21T01:00");
+  });
+
+  it("rolls over across a month boundary", () => {
+    expect(addSecondsToNaiveDateTime("2026-01-31T23:00", 2 * 3600)).toBe("2026-02-01T01:00");
+  });
+
+  it("never routes through the browser's own timezone (stays a pure naive-digit calculation)", () => {
+    // If this ever regressed to using `new Date(localDateTime)` directly,
+    // the result would depend on process.env.TZ -- it must not.
+    const result = addSecondsToNaiveDateTime("2026-06-15T12:00", 3600);
+    expect(result).toBe("2026-06-15T13:00");
+  });
+
+  it("returns zero-padded hours/minutes", () => {
+    expect(addSecondsToNaiveDateTime("2026-03-05T09:05", 60)).toBe("2026-03-05T09:06");
   });
 });

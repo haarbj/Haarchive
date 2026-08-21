@@ -169,6 +169,8 @@ function buildFlatCourse(): CourseAnalysis {
     downhillSeverityScore: 0,
     perMileGrade: new Array(mileCount).fill(0),
     perMileTerrainCostJPerKg: new Array(mileCount).fill(0),
+    // Sea level -- there's no real location to be more accurate about on a synthetic flat course.
+    perMileAltitudeM: new Array(mileCount).fill(0),
     // A null heading makes split-generator.ts's wind math skip the mile
     // entirely -- without a real/preset course loaded, every mile would
     // get one, silently making wind conditions a no-op for most users by

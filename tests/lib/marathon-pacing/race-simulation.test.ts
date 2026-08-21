@@ -30,6 +30,7 @@ function buildCourse(mileCount: number): CourseAnalysis {
     downhillSeverityScore: 0,
     perMileGrade,
     perMileTerrainCostJPerKg: perMileGrade.map(() => 0),
+    perMileAltitudeM: perMileGrade.map(() => 0),
     perMileHeadingDeg: perMileGrade.map(() => null),
   };
 }

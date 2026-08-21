@@ -33,7 +33,7 @@ function buildRoute(profile: { distanceM: number; elevationM: number }[], stepM 
     points.push({ lat: 0, lon: lonDeg, elevationM: elevationAt(d), elapsedSeconds: null });
   }
 
-  return { points, source: "gpx", startTimeIso: null };
+  return { points, source: "gpx", startTimeIso: null, movingTimeS: null };
 }
 
 describe("analyzeCourse", () => {
@@ -181,6 +181,54 @@ describe("analyzeCourse", () => {
     expect(analysis.perMileGrade[mileCount - 1]).toBeCloseTo(0, 2); // last full mile is entirely in the flat section
   });
 
+  it("derives per-mile ABSOLUTE altitude, distinct from grade/gain -- a high-altitude route reads as high-altitude even on its flat miles", () => {
+    // Starts at 2000m (a real high-altitude town, not sea level), climbs to
+    // 2300m, then flattens out AT 2300m -- the flat trailing section has
+    // zero grade/gain but is still genuinely at 2300m above sea level,
+    // which is the whole distinction this field exists to capture.
+    const route = buildRoute([
+      { distanceM: 0, elevationM: 2000 },
+      { distanceM: 4000, elevationM: 2300 },
+      { distanceM: 8000, elevationM: 2300 },
+    ]);
+    const analysis = analyzeCourse(route);
+
+    const mileCount = Math.floor(8000 / METERS_PER_MILE);
+    expect(analysis.perMileAltitudeM).toHaveLength(mileCount);
+    // Every mile should read a real altitude in the 2000-2300m range --
+    // never near 0, and never equal to perMileGrade (a flat trailing mile
+    // has perMileGrade ~0 but perMileAltitudeM ~2300, a completely
+    // different number).
+    for (const altitudeM of analysis.perMileAltitudeM) {
+      expect(altitudeM).toBeGreaterThan(1900);
+      expect(altitudeM).toBeLessThan(2350);
+    }
+    // The last full mile is entirely in the flat-at-2300m section.
+    expect(analysis.perMileAltitudeM[mileCount - 1]).toBeCloseTo(2300, 0);
+    expect(analysis.perMileGrade[mileCount - 1]).toBeCloseTo(0, 2);
+  });
+
+  it("REGRESSION: two routes with the same total climb but different base altitudes have different perMileAltitudeM, even though gain/loss looks identical", () => {
+    const seaLevelRoute = buildRoute([
+      { distanceM: 0, elevationM: 0 },
+      { distanceM: 1609.344 + 100, elevationM: 100 },
+    ]);
+    const highAltitudeRoute = buildRoute([
+      { distanceM: 0, elevationM: 2400 },
+      { distanceM: 1609.344 + 100, elevationM: 2500 },
+    ]);
+
+    const seaLevel = analyzeCourse(seaLevelRoute);
+    const highAltitude = analyzeCourse(highAltitudeRoute);
+
+    // Same 100m climb -- gain looks identical.
+    expect(highAltitude.totalClimbM).toBeCloseTo(seaLevel.totalClimbM, 0);
+    // But absolute altitude is very different, which the old model (only
+    // gain/loss + a single external weather-fetched altitude) couldn't see.
+    expect(seaLevel.perMileAltitudeM[0]).toBeLessThan(200);
+    expect(highAltitude.perMileAltitudeM[0]).toBeGreaterThan(2300);
+  });
+
   it("partitions the full course distance across the grade histogram exactly", () => {
     const route = buildRoute([
       { distanceM: 0, elevationM: 0 },
@@ -207,7 +255,7 @@ describe("analyzeCourse", () => {
   });
 
   it("throws when there isn't enough route data to analyze", () => {
-    const empty: ParsedRoute = { points: [], source: "gpx", startTimeIso: null };
+    const empty: ParsedRoute = { points: [], source: "gpx", startTimeIso: null, movingTimeS: null };
     expect(() => analyzeCourse(empty)).toThrow();
   });
 });

@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fetchConditionsAtTime, fetchCurrentConditions } from "@/lib/environmental/fetch-weather-conditions";
+import {
+  fetchConditionsAtTime,
+  fetchConditionsWindow,
+  fetchCurrentConditions,
+  summarizeWeatherWindow,
+  type WeatherConditions,
+} from "@/lib/environmental/fetch-weather-conditions";
 
 function mockResponse(ok: boolean, body: unknown) {
   vi.stubGlobal(
@@ -119,5 +125,102 @@ describe("fetchConditionsAtTime", () => {
       },
     });
     await expect(fetchConditionsAtTime(0, 0, "2026-01-01T00:00")).rejects.toThrow(/no weather data/i);
+  });
+});
+
+function hourlyFixture() {
+  return {
+    hourly: {
+      time: [
+        "2026-07-20T05:00",
+        "2026-07-20T06:00",
+        "2026-07-20T07:00",
+        "2026-07-20T08:00",
+        "2026-07-20T09:00",
+        "2026-07-20T10:00",
+      ],
+      temperature_2m: [15, 17, 20, 22, 24, 26],
+      relative_humidity_2m: [80, 75, 65, 57, 50, 45],
+      dew_point_2m: [10, 11, 12, 12, 13, 13],
+      cloud_cover: [90, 70, 40, 10, 5, 0],
+      surface_pressure: [1012, 1012, 1013, 1013, 1014, 1014],
+      wind_speed_10m: [1, 2, 3, 4, 5, 6],
+      wind_direction_10m: [350, 0, 10, 20, 30, 40],
+      wind_gusts_10m: [3, 4, 6, 8, 9, 12],
+    },
+    elevation: 250,
+  };
+}
+
+describe("fetchConditionsWindow", () => {
+  it("includes every hour a run's real window actually touches, and no more", async () => {
+    mockResponse(true, hourlyFixture());
+    // A 90-minute run from 7:15 to 8:45 touches the 7:00 and 8:00 readings only.
+    const points = await fetchConditionsWindow(36.16, -86.78, "2026-07-20T07:15", 90 * 60);
+    expect(points.map((p) => p.tempC)).toEqual([20, 22]);
+  });
+
+  it("returns a single point for a short run entirely within one hour", async () => {
+    mockResponse(true, hourlyFixture());
+    const points = await fetchConditionsWindow(36.16, -86.78, "2026-07-20T07:05", 20 * 60);
+    expect(points).toHaveLength(1);
+    expect(points[0].tempC).toBe(20);
+  });
+
+  it("carries elevation through onto every point", async () => {
+    mockResponse(true, hourlyFixture());
+    const points = await fetchConditionsWindow(36.16, -86.78, "2026-07-20T07:15", 90 * 60);
+    for (const p of points) expect(p.elevationM).toBe(250);
+  });
+
+  it("throws a descriptive error when the API returns an error response", async () => {
+    mockResponse(false, { error: true, reason: "Parameter 'start_date' is out of allowed range" });
+    await expect(fetchConditionsWindow(0, 0, "2099-01-01T00:00", 3600)).rejects.toThrow(/out of allowed range/);
+  });
+});
+
+describe("summarizeWeatherWindow", () => {
+  const points: WeatherConditions[] = [
+    {
+      tempC: 20,
+      relativeHumidityPct: 65,
+      dewPointC: 12,
+      cloudCoverPct: 40,
+      pressureHPa: 1013,
+      windSpeedMS: 3,
+      windFromBearingDeg: 350,
+      windGustsMS: 6,
+      elevationM: 250,
+    },
+    {
+      tempC: 22,
+      relativeHumidityPct: 57,
+      dewPointC: 12,
+      cloudCoverPct: 10,
+      pressureHPa: 1013,
+      windSpeedMS: 4,
+      windFromBearingDeg: 10,
+      windGustsMS: 8,
+      elevationM: 250,
+    },
+  ];
+
+  it("returns the plain average for a straightforward field like temperature", () => {
+    expect(summarizeWeatherWindow(points).tempC).toBe(21);
+  });
+
+  it("returns the single point unchanged when there's only one (no fabricated averaging of a single observation)", () => {
+    expect(summarizeWeatherWindow([points[0]])).toEqual(points[0]);
+  });
+
+  it("uses a circular mean for wind bearing, not a naive average that would be wrong near 0/360", () => {
+    // Naive average of 350 and 10 would be 180 (due south) -- completely
+    // wrong. The real circular mean is 0 (due north), splitting the
+    // difference the short way around the compass.
+    expect(summarizeWeatherWindow(points).windFromBearingDeg).toBeCloseTo(0, 0);
+  });
+
+  it("uses the peak, not the average, for gusts", () => {
+    expect(summarizeWeatherWindow(points).windGustsMS).toBe(8);
   });
 });

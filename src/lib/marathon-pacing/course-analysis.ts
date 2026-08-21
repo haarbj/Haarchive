@@ -89,6 +89,19 @@ export type CourseAnalysis = {
    * wind cost, which is genuinely local (unlike heat/humidity).
    */
   perMileHeadingDeg: (number | null)[];
+  /**
+   * Average ABSOLUTE altitude (meters above sea level) for each full
+   * mile, from the same smoothed elevation grid perMileGrade and
+   * perMileTerrainCostJPerKg use. Distinct from elevation gain/loss above:
+   * this is "how high up was the runner," not "how much vertical ground
+   * was covered" -- a route that climbs from 2,100m to 2,600m and a route
+   * that stays flat at 2,350m the whole way have the same total climb
+   * (500m) but very different altitude profiles. Feeds
+   * precise-altitude-engine.ts, which costs each mile at its own real
+   * altitude instead of assuming one constant altitude for the whole
+   * effort.
+   */
+  perMileAltitudeM: number[];
 };
 
 export type CourseAnalysisOptions = {
@@ -343,6 +356,27 @@ function buildPerMileTerrainCostJPerKg(grid: GridPoint[], totalDistanceM: number
 }
 
 /**
+ * Average absolute altitude for each full mile -- see CourseAnalysis's own
+ * comment on perMileAltitudeM for why this is a distinct quantity from
+ * grade/terrain-cost above (those describe vertical change WITHIN a mile;
+ * this describes how high up that mile actually was).
+ */
+function buildPerMileAltitude(grid: GridPoint[], totalDistanceM: number): number[] {
+  const mileCount = Math.floor(totalDistanceM / METERS_PER_MILE);
+  const sums = new Array(mileCount).fill(0);
+  const counts = new Array(mileCount).fill(0);
+
+  for (const point of grid) {
+    const mileIdx = Math.min(mileCount - 1, Math.floor(point.distanceM / METERS_PER_MILE));
+    if (mileIdx < 0 || mileIdx >= mileCount) continue;
+    sums[mileIdx] += point.elevationM;
+    counts[mileIdx] += 1;
+  }
+
+  return sums.map((sum, i) => (counts[i] > 0 ? sum / counts[i] : 0));
+}
+
+/**
  * Bins each raw GPS segment's true bearing into the mile it falls within,
  * combining them with a distance-weighted circular mean (summing unit
  * vectors rather than raw degrees, so e.g. 350deg and 10deg average to
@@ -443,5 +477,6 @@ export function analyzeCourse(route: ParsedRoute, options: CourseAnalysisOptions
     perMileGrade,
     perMileTerrainCostJPerKg: buildPerMileTerrainCostJPerKg(grid, totalDistanceM),
     perMileHeadingDeg: buildPerMileHeading(route, perMileGrade.length),
+    perMileAltitudeM: buildPerMileAltitude(grid, totalDistanceM),
   };
 }

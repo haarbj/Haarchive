@@ -22,6 +22,7 @@ import {
   type TimeEstimate,
 } from "@/lib/environmental/combine";
 import { altitudeEngine, type AltitudeEngineInput } from "@/lib/environmental/altitude-engine";
+import { preciseAltitudeEngine, type PreciseAltitudeEngineInput } from "@/lib/environmental/precise-altitude-engine";
 import { elevationEngine, type ElevationEngineInput } from "@/lib/environmental/elevation-engine";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
 import { heatEngine, type HeatEngineInput } from "@/lib/environmental/heat-engine";
@@ -218,6 +219,66 @@ function formatRange(low: number, high: number, formatter: (seconds: number) => 
   return `${formatter(Math.min(low, high))}–${formatter(Math.max(low, high))}`;
 }
 
+/**
+ * Min/max of a real set of observations -- null when there's only one
+ * point (a single observation is a point, not a range) or when every
+ * point rounds to the same displayed value (showing "70-70°F" would read
+ * as a range that isn't really there). Used for the conditions display
+ * below to distinguish "this varied during your run" from "this is one
+ * representative reading," per the calculator's own honesty rule: never
+ * claim a range that isn't backed by more than one real observation.
+ */
+function numericRange<T>(points: T[] | null, select: (point: T) => number, formatValue: (n: number) => string): { minLabel: string; maxLabel: string } | null {
+  if (!points || points.length <= 1) return null;
+  const values = points.map(select);
+  const minLabel = formatValue(Math.min(...values));
+  const maxLabel = formatValue(Math.max(...values));
+  return minLabel === maxLabel ? null : { minLabel, maxLabel };
+}
+
+/**
+ * One row in the auto-fetched Conditions card -- shows a plain
+ * representative value normally, or (when `range` is non-null, i.e. more
+ * than one real hourly reading or route sample was available) the real
+ * min-max range with the representative value labeled underneath, rather
+ * than presenting one snapshot as if it held for the whole effort.
+ */
+function ConditionValueRow({
+  icon,
+  label,
+  range,
+  rangeUnitSuffix,
+  representativeLabel,
+}: {
+  icon: string;
+  label: string;
+  range: { minLabel: string; maxLabel: string } | null;
+  /** e.g. "°F" or "ft" -- appended once after the range, not on every value. */
+  rangeUnitSuffix?: string;
+  representativeLabel: string;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <span className="pt-0.5 text-zinc-600 dark:text-zinc-300">
+        {icon} {label}
+      </span>
+      <span className="text-right font-semibold text-zinc-900 dark:text-white">
+        {range ? (
+          <>
+            <span className="block">
+              {range.minLabel}–{range.maxLabel}
+              {rangeUnitSuffix ?? ""} during run
+            </span>
+            <span className="block text-xs font-normal text-zinc-500 dark:text-zinc-400">Representative: {representativeLabel}</span>
+          </>
+        ) : (
+          representativeLabel
+        )}
+      </span>
+    </div>
+  );
+}
+
 function resolveManualConditions(
   tempInput: string,
   tempUnit: TempUnit,
@@ -275,6 +336,8 @@ type ComputeResultsParams = {
   perMileGrade: number[] | null;
   /** Route only -- the same analyzeCourse() call's real per-mile terrain cost, see precise-elevation-engine.ts. */
   perMileTerrainCostJPerKg: number[] | null;
+  /** Route only -- the same analyzeCourse() call's real per-mile average altitude, see precise-altitude-engine.ts. */
+  perMileAltitudeM: number[] | null;
   context: PerformanceContext;
 };
 
@@ -288,7 +351,7 @@ type ComputeResultsParams = {
 // analyzeCourse couldn't run) -- a standard track is flat by construction,
 // so there's nothing for either elevation engine to do there.
 function computeResults(params: ComputeResultsParams): EngineResult[] {
-  const { conditions, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade, perMileTerrainCostJPerKg, context } = params;
+  const { conditions, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade, perMileTerrainCostJPerKg, perMileAltitudeM, context } = params;
   const results: EngineResult[] = [];
 
   if (conditions) {
@@ -301,7 +364,17 @@ function computeResults(params: ComputeResultsParams): EngineResult[] {
     };
     if (humidityEngine.isApplicable(humidityInput)) results.push(humidityEngine.compute(humidityInput, context));
 
-    if (conditions.altitudeM !== null) {
+    // A route's own real per-mile altitude (from its GPS elevation
+    // samples) is more accurate than the single altitude the weather
+    // lookup reported for the route's centroid -- prefer it whenever
+    // analyzeCourse produced one, falling back to the coarse single-value
+    // engine (manual entry, road/track, or a route with no elevation
+    // samples to build a profile from) otherwise. See
+    // precise-altitude-engine.ts's own comment.
+    if (perMileAltitudeM && perMileAltitudeM.length > 0) {
+      const preciseAltitudeInput: PreciseAltitudeEngineInput = { perMileAltitudeM };
+      if (preciseAltitudeEngine.isApplicable(preciseAltitudeInput)) results.push(preciseAltitudeEngine.compute(preciseAltitudeInput, context));
+    } else if (conditions.altitudeM !== null) {
       const altitudeInput: AltitudeEngineInput = { altitudeM: conditions.altitudeM };
       if (altitudeEngine.isApplicable(altitudeInput)) results.push(altitudeEngine.compute(altitudeInput, context));
     }
@@ -568,9 +641,11 @@ function ManualWeatherFields({
             </div>
           </div>
           <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
-            The course&rsquo;s own elevation above sea level, not its gain/loss -- thinner air costs aerobic
+            The course&rsquo;s own altitude above sea level, not its elevation gain/loss -- thinner air costs aerobic
             performance even on a flat course, and the cost accelerates the higher you go (e.g. 7,000ft costs roughly
-            twice what 5,000ft does).
+            twice what 5,000ft does). Treated as one representative altitude for the whole effort -- import a route
+            file instead if the course actually climbs or descends between meaningfully different altitudes and you
+            want that reflected mile by mile.
           </p>
         </div>
       </div>
@@ -869,7 +944,13 @@ export function EnvironmentalCalculator() {
     // feedback-driven "import should feel authoritative" design goal).
     if (summary.centroidLat !== null && summary.centroidLon !== null) {
       setSourceA("auto");
-      envWeatherA.applyRouteLocation(summary.centroidLat, summary.centroidLon, summary.startTimeIso, summary.source);
+      envWeatherA.applyRouteLocation(
+        summary.centroidLat,
+        summary.centroidLon,
+        summary.startTimeIso,
+        summary.source,
+        summary.totalTimeSeconds,
+      );
     }
     // Same idea for workout type: guess it from the activity itself rather
     // than asking, and only surface the manual picker if the user says the
@@ -901,6 +982,30 @@ export function EnvironmentalCalculator() {
     distanceValid && timeSeconds && timeSeconds > 0
       ? { distanceMeters, actualTimeSeconds: timeSeconds, paceMS: distanceMeters / timeSeconds }
       : null;
+
+  // Drives the Conditions card's Altitude row: when the route's own GPS
+  // elevation samples produced a real per-mile profile, show and use THAT
+  // (min/max + a plain average as "representative") instead of the single
+  // altitude the weather lookup reported for the route's centroid -- see
+  // precise-altitude-engine.ts. Mirrors computeResults' own
+  // perMileAltitudeM.length > 0 check for which engine actually runs, so
+  // the display never shows a profile the calculation isn't using.
+  const preciseAltitudeInputForDisplay =
+    courseAnalysis && courseAnalysis.perMileAltitudeM.length > 0 && courseAnalysis.perMileAltitudeM.some((m) => m > 0)
+      ? courseAnalysis.perMileAltitudeM
+      : null;
+  const routeAltitudeRangeM = (() => {
+    if (!preciseAltitudeInputForDisplay) return null;
+    const minM = Math.min(...preciseAltitudeInputForDisplay);
+    const maxM = Math.max(...preciseAltitudeInputForDisplay);
+    // Same "don't show a range that rounds to the same displayed value"
+    // rule numericRange applies elsewhere -- a route that's essentially
+    // flat shouldn't show e.g. "7,500-7,500ft" as if that were a range.
+    return Math.round(mToFt(minM)) === Math.round(mToFt(maxM)) ? null : { minM, maxM };
+  })();
+  const routeAltitudeRepresentativeM = preciseAltitudeInputForDisplay
+    ? preciseAltitudeInputForDisplay.reduce((sum, m) => sum + m, 0) / preciseAltitudeInputForDisplay.length
+    : 0;
 
   const weightRaw = Number(weightInput);
   const weightValid = Number.isFinite(weightRaw) && weightRaw > 0;
@@ -938,13 +1043,13 @@ export function EnvironmentalCalculator() {
       : null;
 
   const resultsA = context
-    ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
+    ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, perMileAltitudeM: courseAnalysis?.perMileAltitudeM ?? null, context })
     : [];
   const combinedA = combineAdjustments(resultsA);
 
   const resultsB =
     context && goalMode === "convert"
-      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
+      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, perMileAltitudeM: courseAnalysis?.perMileAltitudeM ?? null, context })
       : [];
   const combinedB = combineAdjustments(resultsB);
 
@@ -970,13 +1075,13 @@ export function EnvironmentalCalculator() {
 
   const altResultsA =
     context && altRepType
-      ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
+      ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, perMileAltitudeM: courseAnalysis?.perMileAltitudeM ?? null, context })
       : [];
   const altCombinedA = combineAdjustments(altResultsA);
 
   const altResultsB =
     context && altRepType && goalMode === "convert"
-      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
+      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, perMileAltitudeM: courseAnalysis?.perMileAltitudeM ?? null, context })
       : [];
   const altCombinedB = combineAdjustments(altResultsB);
 
@@ -1102,6 +1207,17 @@ export function EnvironmentalCalculator() {
                       {
                         label: "Elevation imported",
                         done: routeSummary.elevationGainM > 0 || routeSummary.elevationLossM > 0,
+                      },
+                      {
+                        // Distinct from "Elevation imported" above (gain/loss,
+                        // how much vertical ground was covered): this is
+                        // whether the file's own changing altitude data --
+                        // how high up the route actually was, mile by mile --
+                        // was successfully parsed and is feeding the Altitude
+                        // factor. Only true when preciseAltitudeInputForDisplay
+                        // is real (never just because gain/loss > 0).
+                        label: "Altitude profile imported",
+                        done: preciseAltitudeInputForDisplay !== null,
                       },
                       { label: "Route headings imported", done: routeSummary.headingSegments.length > 0 },
                       { label: "Weather retrieved", done: envWeatherA.fetchedConditions !== null },
@@ -1481,27 +1597,49 @@ export function EnvironmentalCalculator() {
                     <p className={statLabelClass}>
                       {envWeatherA.weatherLocation ? `Conditions: ${envWeatherA.weatherLocation}` : "Conditions"}
                     </p>
-                    <div className="mt-2 space-y-1.5 text-sm">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-300">🌡️ Temperature</span>
-                        <span className="font-semibold text-zinc-900 dark:text-white">
-                          {cToF(envWeatherA.fetchedConditions.tempC).toFixed(0)}°F ({envWeatherA.fetchedConditions.tempC.toFixed(0)}°C)
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-300">💧 Humidity</span>
-                        <span className="font-semibold text-zinc-900 dark:text-white">
-                          {envWeatherA.fetchedConditions.relativeHumidityPct.toFixed(0)}%
-                        </span>
-                      </div>
-                      {envWeatherA.fetchedConditions.elevationM !== null && (
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-zinc-600 dark:text-zinc-300">🏔️ Altitude</span>
-                          <span className="font-semibold text-zinc-900 dark:text-white">
-                            {Math.round(mToFt(envWeatherA.fetchedConditions.elevationM))}ft (
-                            {Math.round(envWeatherA.fetchedConditions.elevationM)}m)
-                          </span>
-                        </div>
+                    {envWeatherA.weatherWindowPoints && envWeatherA.weatherWindowPoints.length > 1 && (
+                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        {envWeatherA.weatherWindowPoints.length} real hourly readings across your run&rsquo;s own start-to-finish
+                        window, not one snapshot treated as constant throughout.
+                      </p>
+                    )}
+                    <div className="mt-2 space-y-2 text-sm">
+                      <ConditionValueRow
+                        icon="🌡️"
+                        label="Temperature"
+                        range={numericRange(envWeatherA.weatherWindowPoints, (p) => p.tempC, (c) => cToF(c).toFixed(0))}
+                        rangeUnitSuffix="°F"
+                        representativeLabel={`${cToF(envWeatherA.fetchedConditions.tempC).toFixed(0)}°F (${envWeatherA.fetchedConditions.tempC.toFixed(0)}°C)`}
+                      />
+                      <ConditionValueRow
+                        icon="💧"
+                        label="Humidity"
+                        range={numericRange(envWeatherA.weatherWindowPoints, (p) => p.relativeHumidityPct, (h) => h.toFixed(0))}
+                        rangeUnitSuffix="%"
+                        representativeLabel={`${envWeatherA.fetchedConditions.relativeHumidityPct.toFixed(0)}%`}
+                      />
+                      {courseType === "route" && preciseAltitudeInputForDisplay ? (
+                        <ConditionValueRow
+                          icon="🏔️"
+                          label="Altitude"
+                          range={
+                            routeAltitudeRangeM
+                              ? { minLabel: String(Math.round(mToFt(routeAltitudeRangeM.minM))), maxLabel: String(Math.round(mToFt(routeAltitudeRangeM.maxM))) }
+                              : null
+                          }
+                          rangeUnitSuffix="ft"
+                          representativeLabel={`${Math.round(mToFt(routeAltitudeRepresentativeM))}ft (${Math.round(routeAltitudeRepresentativeM)}m)`}
+                        />
+                      ) : (
+                        envWeatherA.fetchedConditions.elevationM !== null && (
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-zinc-600 dark:text-zinc-300">🏔️ Altitude</span>
+                            <span className="font-semibold text-zinc-900 dark:text-white">
+                              {Math.round(mToFt(envWeatherA.fetchedConditions.elevationM))}ft (
+                              {Math.round(envWeatherA.fetchedConditions.elevationM)}m)
+                            </span>
+                          </div>
+                        )
                       )}
                       {courseType !== "route" && (
                         <div className="flex items-center justify-between gap-3">
@@ -1530,13 +1668,17 @@ export function EnvironmentalCalculator() {
                           />
                         </div>
                       )}
+                      <ConditionValueRow
+                        icon="💨"
+                        label="Speed"
+                        range={numericRange(envWeatherA.weatherWindowPoints, (p) => msToMph(p.windSpeedMS), (mph) => mph.toFixed(0))}
+                        rangeUnitSuffix=" mph"
+                        representativeLabel={`${msToMph(envWeatherA.fetchedConditions.windSpeedMS).toFixed(0)} mph (${envWeatherA.fetchedConditions.windSpeedMS.toFixed(1)} m/s)`}
+                      />
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-300">💨 Speed / gusts</span>
+                        <span className="text-zinc-600 dark:text-zinc-300">💨 Peak gust{envWeatherA.weatherWindowPoints && envWeatherA.weatherWindowPoints.length > 1 ? " (across run)" : ""}</span>
                         <span className="font-semibold text-zinc-900 dark:text-white">
-                          {msToMph(envWeatherA.fetchedConditions.windSpeedMS).toFixed(0)} /{" "}
-                          {msToMph(envWeatherA.fetchedConditions.windGustsMS).toFixed(0)} mph (
-                          {envWeatherA.fetchedConditions.windSpeedMS.toFixed(1)} /{" "}
-                          {envWeatherA.fetchedConditions.windGustsMS.toFixed(1)} m/s)
+                          {msToMph(envWeatherA.fetchedConditions.windGustsMS).toFixed(0)} mph ({envWeatherA.fetchedConditions.windGustsMS.toFixed(1)} m/s)
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-3">
@@ -2036,7 +2178,7 @@ export function EnvironmentalCalculator() {
               {copy.resultLabel.includes("Ideal Conditions") && (
                 <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
                   <strong>Ideal Conditions</strong> assumes cool temperature (~50-59°F), low humidity, calm wind, flat
-                  terrain, and sea-level elevation.
+                  terrain, and sea-level altitude.
                 </p>
               )}
               <p className="mt-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
@@ -2265,6 +2407,17 @@ export function EnvironmentalCalculator() {
                   longer races use a scaled-down or scaled-up version of that same effect, which is the main reason
                   the result still comes with a confidence range rather than an exact number.
                 </p>
+                <p className="mt-2">
+                  Temperature comes from Open-Meteo&rsquo;s hourly forecast or historical archive -- real
+                  measured/modeled data, not a rough regional estimate. When a route was imported with a known start
+                  time and duration, every hourly reading your run&rsquo;s own real window actually touches is
+                  fetched (shown above as a range when it varied, e.g. &ldquo;67&ndash;71&deg;F during
+                  run&rdquo;), and the single number fed into this calculation is the plain average across those
+                  readings -- not fabricated interpolation between them, and not the wrong assumption that the
+                  start-line reading held for the whole effort. Manual entry, or a lookup for a single instant with
+                  no route duration to span, uses that one reading as-is: a representative assumption for the whole
+                  effort, not a claim that conditions were literally constant.
+                </p>
               </div>
             </details>
 
@@ -2291,6 +2444,13 @@ export function EnvironmentalCalculator() {
                   temperature x humidity surface), so this calculator isolates humidity&rsquo;s marginal effect by
                   comparing that surface at the actual humidity against a dry-air reference, and attributes the
                   difference here rather than double-counting it under Heat.
+                </p>
+                <p className="mt-2">
+                  Same source and resolution as temperature above: real hourly Open-Meteo data, averaged across
+                  every hourly reading an imported route&rsquo;s own real time window touches when that&rsquo;s
+                  available, or a single representative reading otherwise. Humidity in particular can shift faster
+                  than temperature within a single hour (a passing front, morning dew burning off), which hourly
+                  data can&rsquo;t resolve any finer than -- see Confidence ranges below.
                 </p>
               </div>
             </details>
@@ -2323,6 +2483,15 @@ export function EnvironmentalCalculator() {
                   integrates the same way but point-by-point along your file&rsquo;s own real heading changes, so
                   there&rsquo;s no single-heading assumption to make at all -- this is the most precise of the three
                   wind models, which is why its range is the narrowest.
+                </p>
+                <p className="mt-2">
+                  Wind speed itself (not direction) is the same real hourly Open-Meteo data as temperature and
+                  humidity, averaged across your run&rsquo;s own window when one&rsquo;s known -- see Heat above.
+                  <strong className="font-semibold text-zinc-900 dark:text-white"> Gusts are shown for awareness
+                  only</strong> -- the peak gust across your run&rsquo;s window, not an average -- and are never
+                  used in this calculation, which is based on sustained wind speed. A gusty day can feel harder than
+                  the sustained-speed number alone predicts; there&rsquo;s no established model here for how much
+                  that&rsquo;s worth, so it isn&rsquo;t guessed at.
                 </p>
               </div>
             </details>
@@ -2403,14 +2572,21 @@ export function EnvironmentalCalculator() {
                 >
                   ▶
                 </span>
-                ⛰️ Elevation
+                ⛰️ Elevation vs. Altitude -- two different things
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  <strong className="font-semibold text-zinc-900 dark:text-white">Practical takeaway:</strong> A
-                  hilly course is almost always a net time cost versus a flat one of the same distance, even when
-                  the total climbing and descending look balanced on paper -- don&rsquo;t expect the downhills to pay
-                  back what the uphills cost.
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Practical takeaway:</strong>{" "}
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Elevation</strong> (gain/loss) is
+                  how much vertical ground the course covers -- a hilly course is almost always a net time cost
+                  versus a flat one, even when the climbing and descending look balanced on paper.{" "}
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Altitude</strong> is how high
+                  above sea level you actually are -- a completely separate cost from thinner air, present even on a
+                  perfectly flat course. A route that climbs from 7,000ft to 8,000ft is environmentally different
+                  from one that runs the same distance at a constant 7,500ft: comparable elevation-gain cost, very
+                  different (and in this case understated by a &ldquo;7,500ft the whole way&rdquo; assumption)
+                  altitude cost. They&rsquo;re modeled, ranged, and shown as two separate factors below for exactly
+                  this reason -- see 🏔️ Altitude next.
                 </p>
                 <p className="mt-2">
                   Climbing costs substantially more energy per vertical meter than descending recovers -- this uses
@@ -2423,10 +2599,53 @@ export function EnvironmentalCalculator() {
                   >
                     GAP Calculator
                   </Link>
-                  . Since this input is a total gain/loss rather than a grade-by-grade profile (a 100m climb could
+                  . Manual entry (a total gain/loss, not a grade-by-grade profile) assumes a moderate representative
+                  grade to translate those vertical meters into a climbing/descending distance -- a 100m climb could
                   be a short steep pitch or a long gentle rise, which Minetti&rsquo;s polynomial treats quite
-                  differently), it assumes a moderate representative grade to translate vertical meters into a
-                  climbing/descending distance. Not a factor on a track, which is engineered flat.
+                  differently, so this is the least precise of the elevation inputs. An imported route instead costs
+                  its own real grade at every ~20m step along the file, mile by mile, with no representative-grade
+                  assumption at all -- the most precise version, and why its confidence range is tighter. Not a
+                  factor on a track, which is engineered flat.
+                </p>
+              </div>
+            </details>
+
+            <details className={detailsClass}>
+              <summary className={summaryClass}>
+                <span
+                  aria-hidden="true"
+                  className="inline-block text-[10px] text-zinc-500 transition-transform group-open:rotate-90 dark:text-zinc-400"
+                >
+                  ▶
+                </span>
+                🏔️ Altitude
+              </summary>
+              <div className={detailsBodyClass}>
+                <p>
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Practical takeaway:</strong>{" "}
+                  Thinner air at elevation reduces how much oxygen you can take in per breath, which caps aerobic
+                  performance -- expect to run slower for the same effort above roughly 3,000ft, with the cost
+                  accelerating (not scaling evenly) the higher you go.
+                </p>
+                <p className="mt-2">
+                  The performance-impairment curve is a quadratic fit to Jack Daniels&rsquo; published Altitude
+                  Adjustment Tables (the VDOT system&rsquo;s own altitude-conversion data), calibrated against six
+                  real data points from 3,000&ndash;8,000ft -- matched within about 0.04 percentage points at each
+                  one. Distance/duration scaling (how much a mile vs. a 5K vs. a marathon feels the same altitude)
+                  is interpolated between Daniels&rsquo; own Mile/5K/Marathon ratios, since altitude&rsquo;s
+                  oxygen-availability limit applies from the first stride -- unlike heat, it doesn&rsquo;t need a
+                  long effort to build up.
+                </p>
+                <p className="mt-2">
+                  For an imported route, this is genuinely mile-by-mile: each mile is costed at its own real average
+                  altitude from the file&rsquo;s own GPS elevation samples (shown above as a range, e.g.
+                  &ldquo;7,000&ndash;8,000ft&rdquo;, when it actually varied), not one constant altitude applied to
+                  the whole effort -- a route that climbs is costed accordingly, not averaged away. Without an
+                  imported route, altitude comes from wherever weather was looked up (the location&rsquo;s own
+                  ground elevation, a free byproduct of the same weather request) or a manual entry, either way
+                  treated as one representative altitude for the whole effort -- see the manual altitude field&rsquo;s
+                  own note on this. This calculator never invents a changing altitude profile from a single
+                  measurement.
                 </p>
               </div>
             </details>
@@ -2517,12 +2736,47 @@ export function EnvironmentalCalculator() {
               <div className={detailsBodyClass}>
                 <p>
                   Every factor&rsquo;s range reflects real variation this calculator can&rsquo;t know about for
-                  you specifically -- heat acclimatization, sweat rate, wind-sensitivity, and hill strength all
-                  differ by runner. The combined range simply adds each factor&rsquo;s own low/high bound rather
-                  than assuming they&rsquo;re statistically independent, which is a wider, more conservative range than a
-                  more sophisticated model might produce. Direct sunlight, air quality, and altitude
-                  acclimatization aren&rsquo;t factored in yet -- each is a large enough topic to deserve its own
-                  well-grounded model rather than a rough guess bolted onto this one.
+                  you specifically -- heat acclimatization, sweat rate, wind-sensitivity, hill strength, and
+                  altitude tolerance all differ by runner. The combined range simply adds each factor&rsquo;s own
+                  low/high bound rather than assuming they&rsquo;re statistically independent, which is a wider,
+                  more conservative range than a more sophisticated model might produce.
+                </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Weather resolution:</strong>{" "}
+                  Open-Meteo&rsquo;s hourly data is the finest resolution available -- real conditions can shift
+                  meaningfully inside a single hour (a passing cloud, a gust front) that this can&rsquo;t see.
+                  When a route&rsquo;s real duration is known, every hourly reading the run&rsquo;s own window
+                  touches is averaged together; that average is a real summary of real readings,{" "}
+                  <strong className="font-semibold text-zinc-900 dark:text-white">not interpolation</strong> --
+                  no value is invented for the time between two real hourly readings, and a run entirely within one
+                  hour still gets exactly one real reading, shown as a single value rather than a fabricated range.
+                </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Altitude data:</strong> An
+                  imported route&rsquo;s altitude comes from the file&rsquo;s own GPS/barometric elevation
+                  samples, which carry normal GPS noise (see Elevation above for the same caveat applied to
+                  grade). Without a route, altitude is a single figure -- wherever weather was looked up, or a
+                  manual entry -- always presented as one representative assumption, never as a profile that
+                  wasn&rsquo;t actually measured.
+                </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-zinc-900 dark:text-white">GPS/route resolution:</strong>{" "}
+                  An imported file&rsquo;s own recording interval sets the real precision ceiling for its grade,
+                  altitude, and heading data -- a device that samples once every few seconds resolves a course
+                  more coarsely than one sampling every second, and this calculator can&rsquo;t recover detail the
+                  original recording never captured.
+                </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Terrain exposure:</strong>{" "}
+                  Automatically estimated from map data (building/tree density near the course) as a continuous
+                  0&ndash;100 sheltering score, not a survey of the actual course -- a reasonable estimate, not a
+                  measurement.
+                </p>
+                <p className="mt-2">
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Not modeled at all:</strong>{" "}
+                  Direct sunlight/solar radiation and air quality aren&rsquo;t factored in -- each is a large
+                  enough topic to deserve its own well-grounded model rather than a rough guess bolted onto this
+                  one. Wind gusts are shown but not used in the calculation (see 💨 Wind above).
                 </p>
               </div>
             </details>
