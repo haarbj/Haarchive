@@ -21,6 +21,7 @@ import {
   type CombinedAdjustment,
   type TimeEstimate,
 } from "@/lib/environmental/combine";
+import { altitudeEngine, type AltitudeEngineInput } from "@/lib/environmental/altitude-engine";
 import { elevationEngine, type ElevationEngineInput } from "@/lib/environmental/elevation-engine";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
 import { heatEngine, type HeatEngineInput } from "@/lib/environmental/heat-engine";
@@ -172,6 +173,7 @@ type PersistedState = {
   windSpeedInputA: string;
   windSpeedUnitA: WindSpeedUnit;
   relativeWindAngleA: number;
+  altitudeInputA: string;
   workoutType: WorkoutType;
   workoutPaceInput: string;
   paceDisplayUnit: PaceDisplayUnit;
@@ -188,6 +190,8 @@ type ResolvedConditions = {
   windSpeedMS: number;
   windFromBearingDeg: number;
   runnerHeadingBearingDeg: number;
+  /** Absolute altitude above sea level, meters -- null when unknown (no weather fetched, no manual entry). Feeds the Altitude engine; unrelated to the course's own vertical gain/loss. */
+  altitudeM: number | null;
 };
 
 function cToF(c: number): number {
@@ -221,6 +225,8 @@ function resolveManualConditions(
   windSpeedInput: string,
   windSpeedUnit: WindSpeedUnit,
   relativeWindAngleDeg: number,
+  altitudeInput: string,
+  altitudeUnit: ElevationUnit,
 ): ResolvedConditions | null {
   const tempRaw = Number(tempInput);
   const rhRaw = Number(rhInput);
@@ -228,12 +234,15 @@ function resolveManualConditions(
   if (!Number.isFinite(tempRaw)) return null;
   if (!Number.isFinite(rhRaw) || rhRaw < 0 || rhRaw > 100) return null;
   if (!Number.isFinite(windSpeedRaw) || windSpeedRaw < 0) return null;
+  const altitudeRaw = Number(altitudeInput);
+  const altitudeM = Number.isFinite(altitudeRaw) && altitudeRaw > 0 ? (altitudeUnit === "ft" ? ftToM(altitudeRaw) : altitudeRaw) : null;
   return {
     tempC: tempUnit === "f" ? fToC(tempRaw) : tempRaw,
     relativeHumidityPct: rhRaw,
     windSpeedMS: windSpeedRaw * WIND_SPEED_TO_MS[windSpeedUnit],
     windFromBearingDeg: relativeWindAngleDeg,
     runnerHeadingBearingDeg: 0,
+    altitudeM,
   };
 }
 
@@ -245,6 +254,7 @@ function resolveAutoConditions(fetched: WeatherConditions | null, headingDeg: nu
     windSpeedMS: fetched.windSpeedMS,
     windFromBearingDeg: fetched.windFromBearingDeg,
     runnerHeadingBearingDeg: headingDeg,
+    altitudeM: fetched.elevationM,
   };
 }
 
@@ -263,6 +273,8 @@ type ComputeResultsParams = {
   routeSummary: RouteSummary | null;
   /** Route only -- a route's own real mile-by-mile grades, when analyzeCourse succeeded. */
   perMileGrade: number[] | null;
+  /** Route only -- the same analyzeCourse() call's real per-mile terrain cost, see precise-elevation-engine.ts. */
+  perMileTerrainCostJPerKg: number[] | null;
   context: PerformanceContext;
 };
 
@@ -276,7 +288,7 @@ type ComputeResultsParams = {
 // analyzeCourse couldn't run) -- a standard track is flat by construction,
 // so there's nothing for either elevation engine to do there.
 function computeResults(params: ComputeResultsParams): EngineResult[] {
-  const { conditions, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade, context } = params;
+  const { conditions, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade, perMileTerrainCostJPerKg, context } = params;
   const results: EngineResult[] = [];
 
   if (conditions) {
@@ -288,6 +300,11 @@ function computeResults(params: ComputeResultsParams): EngineResult[] {
       relativeHumidityPct: conditions.relativeHumidityPct,
     };
     if (humidityEngine.isApplicable(humidityInput)) results.push(humidityEngine.compute(humidityInput, context));
+
+    if (conditions.altitudeM !== null) {
+      const altitudeInput: AltitudeEngineInput = { altitudeM: conditions.altitudeM };
+      if (altitudeEngine.isApplicable(altitudeInput)) results.push(altitudeEngine.compute(altitudeInput, context));
+    }
 
     if (courseType === "track") {
       const trackWindInput: TrackWindEngineInput = {
@@ -330,8 +347,8 @@ function computeResults(params: ComputeResultsParams): EngineResult[] {
     const elevationInput: ElevationEngineInput = { elevationGainM, elevationLossM };
     if (elevationEngine.isApplicable(elevationInput)) results.push(elevationEngine.compute(elevationInput, context));
   } else if (courseType === "route" && routeSummary) {
-    if (perMileGrade && perMileGrade.length > 0) {
-      const preciseInput: PreciseElevationEngineInput = { perMileGrade };
+    if (perMileGrade && perMileGrade.length > 0 && perMileTerrainCostJPerKg) {
+      const preciseInput: PreciseElevationEngineInput = { perMileGrade, perMileTerrainCostJPerKg };
       if (preciseElevationEngine.isApplicable(preciseInput)) results.push(preciseElevationEngine.compute(preciseInput, context));
     } else {
       const elevationInput: ElevationEngineInput = {
@@ -361,6 +378,10 @@ function ManualWeatherFields({
   setWindSpeedUnit,
   relativeWindAngleDeg,
   setRelativeWindAngleDeg,
+  altitudeInput,
+  setAltitudeInput,
+  altitudeUnit,
+  setAltitudeUnit,
 }: {
   idPrefix: string;
   /**
@@ -385,6 +406,11 @@ function ManualWeatherFields({
   setWindSpeedUnit: (value: WindSpeedUnit) => void;
   relativeWindAngleDeg: number;
   setRelativeWindAngleDeg: (value: number) => void;
+  /** Absolute altitude above sea level -- empty string means "unknown," which leaves the Altitude engine inapplicable rather than assuming sea level. Shares the course elevation gain/loss fields' own m/ft toggle. */
+  altitudeInput: string;
+  setAltitudeInput: (value: string) => void;
+  altitudeUnit: ElevationUnit;
+  setAltitudeUnit: (value: ElevationUnit) => void;
 }) {
   function handleTempUnitChange(next: TempUnit) {
     if (next === tempUnit) return;
@@ -506,6 +532,47 @@ function ManualWeatherFields({
             </select>
           </div>
         </div>
+
+        <div>
+          <label htmlFor={`${idPrefix}-altitude`} className={labelClass}>
+            Altitude <span className="font-normal text-zinc-500">(optional)</span>
+          </label>
+          <div className="flex gap-2">
+            <input
+              id={`${idPrefix}-altitude`}
+              type="number"
+              inputMode="decimal"
+              min={0}
+              placeholder="Sea level"
+              value={altitudeInput}
+              onChange={(event) => setAltitudeInput(event.target.value)}
+              className={`w-24 ${fieldClass}`}
+            />
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={() => setAltitudeUnit("ft")}
+                aria-pressed={altitudeUnit === "ft"}
+                className={segmentedButtonClass(altitudeUnit === "ft")}
+              >
+                ft
+              </button>
+              <button
+                type="button"
+                onClick={() => setAltitudeUnit("m")}
+                aria-pressed={altitudeUnit === "m"}
+                className={segmentedButtonClass(altitudeUnit === "m")}
+              >
+                m
+              </button>
+            </div>
+          </div>
+          <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+            The course&rsquo;s own elevation above sea level, not its gain/loss -- thinner air costs aerobic
+            performance even on a flat course, and the cost accelerates the higher you go (e.g. 7,000ft costs roughly
+            twice what 5,000ft does).
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -555,6 +622,7 @@ export function EnvironmentalCalculator() {
   const [windSpeedInputA, setWindSpeedInputA] = usePersistedField(persisted?.windSpeedInputA, "5");
   const [windSpeedUnitA, setWindSpeedUnitA] = usePersistedField<WindSpeedUnit>(persisted?.windSpeedUnitA, "mph");
   const [relativeWindAngleA, setRelativeWindAngleA] = usePersistedField(persisted?.relativeWindAngleA, 0);
+  const [altitudeInputA, setAltitudeInputA] = usePersistedField(persisted?.altitudeInputA, "");
 
   // Conditions B is a "what if" comparison scenario for Convert mode only --
   // deliberately not persisted (nor location/auto-fetch-capable) to keep it
@@ -565,6 +633,7 @@ export function EnvironmentalCalculator() {
   const [windSpeedInputB, setWindSpeedInputB] = usePersistedField<string>(undefined, "0");
   const [windSpeedUnitB, setWindSpeedUnitB] = usePersistedField<WindSpeedUnit>(undefined, "mph");
   const [relativeWindAngleB, setRelativeWindAngleB] = usePersistedField<number>(undefined, 0);
+  const [altitudeInputB, setAltitudeInputB] = usePersistedField<string>(undefined, "");
 
   const [workoutType, setWorkoutType] = usePersistedField<WorkoutType>(persisted?.workoutType, "tempo");
   // Set only when an imported activity's title/distance/elevation produced
@@ -609,6 +678,7 @@ export function EnvironmentalCalculator() {
         windSpeedInputA,
         windSpeedUnitA,
         relativeWindAngleA,
+        altitudeInputA,
         workoutType,
         workoutPaceInput,
         paceDisplayUnit,
@@ -645,6 +715,7 @@ export function EnvironmentalCalculator() {
     windSpeedInputA,
     windSpeedUnitA,
     relativeWindAngleA,
+    altitudeInputA,
     workoutType,
     workoutPaceInput,
     paceDisplayUnit,
@@ -853,7 +924,7 @@ export function EnvironmentalCalculator() {
   const conditionsA =
     sourceA === "auto"
       ? resolveAutoConditions(envWeatherA.fetchedConditions, headingDeg)
-      : resolveManualConditions(tempInputA, tempUnitA, rhInputA, windSpeedInputA, windSpeedUnitA, relativeWindAngleA);
+      : resolveManualConditions(tempInputA, tempUnitA, rhInputA, windSpeedInputA, windSpeedUnitA, relativeWindAngleA, altitudeInputA, elevationUnit);
 
   // What computeResults actually used for elevation -- a route's own
   // measured samples take priority over the manual gain/loss fields, the
@@ -863,17 +934,17 @@ export function EnvironmentalCalculator() {
 
   const conditionsB =
     goalMode === "convert"
-      ? resolveManualConditions(tempInputB, tempUnitB, rhInputB, windSpeedInputB, windSpeedUnitB, relativeWindAngleB)
+      ? resolveManualConditions(tempInputB, tempUnitB, rhInputB, windSpeedInputB, windSpeedUnitB, relativeWindAngleB, altitudeInputB, elevationUnit)
       : null;
 
   const resultsA = context
-    ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
+    ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
     : [];
   const combinedA = combineAdjustments(resultsA);
 
   const resultsB =
     context && goalMode === "convert"
-      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
+      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
       : [];
   const combinedB = combineAdjustments(resultsB);
 
@@ -899,13 +970,13 @@ export function EnvironmentalCalculator() {
 
   const altResultsA =
     context && altRepType
-      ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
+      ? computeResults({ conditions: conditionsA, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
       : [];
   const altCombinedA = combineAdjustments(altResultsA);
 
   const altResultsB =
     context && altRepType && goalMode === "convert"
-      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, context })
+      ? computeResults({ conditions: conditionsB, courseType, elevationGainM, elevationLossM, windProfile, windExposureScore, weightKg, repType: altRepType, speedOrEffort, routeSummary, perMileGrade: courseAnalysis?.perMileGrade ?? null, perMileTerrainCostJPerKg: courseAnalysis?.perMileTerrainCostJPerKg ?? null, context })
       : [];
   const altCombinedB = combineAdjustments(altResultsB);
 
@@ -1423,6 +1494,15 @@ export function EnvironmentalCalculator() {
                           {envWeatherA.fetchedConditions.relativeHumidityPct.toFixed(0)}%
                         </span>
                       </div>
+                      {envWeatherA.fetchedConditions.elevationM !== null && (
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-zinc-600 dark:text-zinc-300">🏔️ Altitude</span>
+                          <span className="font-semibold text-zinc-900 dark:text-white">
+                            {Math.round(mToFt(envWeatherA.fetchedConditions.elevationM))}ft (
+                            {Math.round(envWeatherA.fetchedConditions.elevationM)}m)
+                          </span>
+                        </div>
+                      )}
                       {courseType !== "route" && (
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-zinc-600 dark:text-zinc-300">
@@ -1487,6 +1567,10 @@ export function EnvironmentalCalculator() {
               setWindSpeedUnit={setWindSpeedUnitA}
               relativeWindAngleDeg={relativeWindAngleA}
               setRelativeWindAngleDeg={setRelativeWindAngleA}
+              altitudeInput={altitudeInputA}
+              setAltitudeInput={setAltitudeInputA}
+              altitudeUnit={elevationUnit}
+              setAltitudeUnit={setElevationUnit}
             />
           )}
         </div>
@@ -1517,6 +1601,10 @@ export function EnvironmentalCalculator() {
               setWindSpeedUnit={setWindSpeedUnitB}
               relativeWindAngleDeg={relativeWindAngleB}
               setRelativeWindAngleDeg={setRelativeWindAngleB}
+              altitudeInput={altitudeInputB}
+              setAltitudeInput={setAltitudeInputB}
+              altitudeUnit={elevationUnit}
+              setAltitudeUnit={setElevationUnit}
             />
           </div>
         </div>
@@ -1846,6 +1934,7 @@ export function EnvironmentalCalculator() {
                       windExposureScore,
                       elevationGainM: effectiveElevationGainM,
                       elevationLossM: effectiveElevationLossM,
+                      altitudeM: conditionsA.altitudeM,
                     }
                   : null,
                 breakdown: workoutResultsForDisplay.map((r) => ({ factor: r.factor, adjustmentSeconds: r.adjustmentSeconds })),
@@ -2046,6 +2135,7 @@ export function EnvironmentalCalculator() {
                         windExposureScore,
                         elevationGainM: effectiveElevationGainM,
                         elevationLossM: effectiveElevationLossM,
+                        altitudeM: conditionsA.altitudeM,
                       }
                     : null,
                   breakdown: breakdownResultsA.map((r) => ({ factor: r.factor, adjustmentSeconds: r.adjustmentSeconds })),

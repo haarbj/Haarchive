@@ -7,13 +7,26 @@
 // +/-6% grade for the whole course. Same Minetti coefficients either way --
 // only the grade input's precision differs.
 
-import { flatPowerWPerKg, gradeAddedCostJPerKgM } from "@/lib/grade-pace-physics";
-import { MILE_METERS } from "@/lib/race-distances";
+import { flatPowerWPerKg } from "@/lib/grade-pace-physics";
 import type { AdjustmentEngine, EngineResult, PerformanceContext } from "@/lib/environmental/types";
 
 export type PreciseElevationEngineInput = {
-  /** One net grade per full mile, from course-analysis.ts's analyzeCourse(). */
+  /**
+   * One net grade per full mile, from course-analysis.ts's analyzeCourse()
+   * -- used only for the "N climbing / N descending miles" summary text
+   * below, never for the actual adjustmentSeconds math (a mile's net grade
+   * can read as near-flat even when it climbs and descends substantially,
+   * see perMileTerrainCostJPerKg).
+   */
   perMileGrade: number[];
+  /**
+   * True per-mile terrain energy cost (J/kg), from the same analyzeCourse()
+   * call -- computed from the route's real local grade at every ~20m step,
+   * not a mile's net start-to-finish grade, so rolling terrain that
+   * cancels out net-wise (a mile that climbs 25m then drops 20m) still
+   * costs real energy on both legs instead of reading as nearly flat.
+   */
+  perMileTerrainCostJPerKg: number[];
 };
 
 // Real per-mile grades remove the biggest source of error in the coarse
@@ -26,15 +39,12 @@ export const preciseElevationEngine: AdjustmentEngine<PreciseElevationEngineInpu
   factor: "Elevation",
 
   isApplicable(input: PreciseElevationEngineInput) {
-    return input.perMileGrade.length > 0 && input.perMileGrade.some((grade) => grade !== 0);
+    return input.perMileTerrainCostJPerKg.length > 0 && input.perMileTerrainCostJPerKg.some((cost) => cost !== 0);
   },
 
   compute(input: PreciseElevationEngineInput, context: PerformanceContext): EngineResult {
     const averagePowerWPerKg = flatPowerWPerKg(context.paceMS);
-    const addedEnergyJPerKg = input.perMileGrade.reduce(
-      (total, grade) => total + gradeAddedCostJPerKgM(grade) * MILE_METERS,
-      0,
-    );
+    const addedEnergyJPerKg = input.perMileTerrainCostJPerKg.reduce((total, cost) => total + cost, 0);
     const adjustmentSeconds = addedEnergyJPerKg / averagePowerWPerKg;
 
     const climbingMiles = input.perMileGrade.filter((grade) => grade > 0).length;

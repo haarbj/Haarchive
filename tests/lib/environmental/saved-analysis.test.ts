@@ -19,6 +19,7 @@ const baseParams = {
     windExposureScore: 25,
     elevationGainM: 10,
     elevationLossM: 10,
+    altitudeM: null,
   },
   confidenceLevel: "high" as const,
 };

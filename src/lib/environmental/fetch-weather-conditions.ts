@@ -22,6 +22,13 @@ export type WeatherConditions = {
   // Meteorological convention: the compass direction the wind is blowing FROM.
   windFromBearingDeg: number;
   windGustsMS: number;
+  // Open-Meteo always returns the queried grid cell's own ground elevation
+  // (meters) at the top level of the response, regardless of which
+  // variables were requested -- a free byproduct of the same request this
+  // module already makes, not a second API call. Feeds the Altitude
+  // adjustment engine automatically for both "now" and "at this date/time"
+  // lookups. Null only if the field is ever missing from the response.
+  elevationM: number | null;
 };
 
 const CONDITION_PARAMS =
@@ -38,7 +45,7 @@ type ConditionFields = {
   wind_gusts_10m: number;
 };
 
-function toWeatherConditions(fields: ConditionFields): WeatherConditions {
+function toWeatherConditions(fields: ConditionFields, elevationM: number | null): WeatherConditions {
   return {
     tempC: fields.temperature_2m,
     relativeHumidityPct: fields.relative_humidity_2m,
@@ -48,11 +55,13 @@ function toWeatherConditions(fields: ConditionFields): WeatherConditions {
     windSpeedMS: fields.wind_speed_10m,
     windFromBearingDeg: fields.wind_direction_10m,
     windGustsMS: fields.wind_gusts_10m,
+    elevationM,
   };
 }
 
 type CurrentConditionsResponse = {
   current: ConditionFields;
+  elevation?: number;
 };
 
 /**
@@ -78,11 +87,12 @@ export async function fetchCurrentConditions(lat: number, lon: number): Promise<
   const res = await fetch(url);
   if (!res.ok) throw new Error("Weather lookup failed.");
   const data: CurrentConditionsResponse = await res.json();
-  return toWeatherConditions(data.current);
+  return toWeatherConditions(data.current, typeof data.elevation === "number" ? data.elevation : null);
 }
 
 type HourlyConditionsResponse = {
   hourly?: { time: string[] } & { [K in keyof ConditionFields]: number[] };
+  elevation?: number;
   reason?: string;
 };
 
@@ -121,14 +131,17 @@ export async function fetchConditionsAtTime(lat: number, lon: number, localDateT
     }
   }
 
-  return toWeatherConditions({
-    temperature_2m: data.hourly.temperature_2m[bestIndex],
-    relative_humidity_2m: data.hourly.relative_humidity_2m[bestIndex],
-    dew_point_2m: data.hourly.dew_point_2m[bestIndex],
-    cloud_cover: data.hourly.cloud_cover[bestIndex],
-    surface_pressure: data.hourly.surface_pressure[bestIndex],
-    wind_speed_10m: data.hourly.wind_speed_10m[bestIndex],
-    wind_direction_10m: data.hourly.wind_direction_10m[bestIndex],
-    wind_gusts_10m: data.hourly.wind_gusts_10m[bestIndex],
-  });
+  return toWeatherConditions(
+    {
+      temperature_2m: data.hourly.temperature_2m[bestIndex],
+      relative_humidity_2m: data.hourly.relative_humidity_2m[bestIndex],
+      dew_point_2m: data.hourly.dew_point_2m[bestIndex],
+      cloud_cover: data.hourly.cloud_cover[bestIndex],
+      surface_pressure: data.hourly.surface_pressure[bestIndex],
+      wind_speed_10m: data.hourly.wind_speed_10m[bestIndex],
+      wind_direction_10m: data.hourly.wind_direction_10m[bestIndex],
+      wind_gusts_10m: data.hourly.wind_gusts_10m[bestIndex],
+    },
+    typeof data.elevation === "number" ? data.elevation : null,
+  );
 }

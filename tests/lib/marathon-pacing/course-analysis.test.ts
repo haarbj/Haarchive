@@ -77,6 +77,29 @@ describe("analyzeCourse", () => {
     expect(rollersAnalysis.rollingIndex).toBeGreaterThan(oneClimbAnalysis.rollingIndex * 5);
   });
 
+  it("REGRESSION: perMileTerrainCostJPerKg still costs a mile that climbs and descends back to net-zero within itself", () => {
+    // A single mile that climbs 40m over its first 200m then descends the
+    // same 40m back down over the next 200m, flat for the remaining
+    // ~1200m -- start and end elevation are identical, so perMileGrade
+    // (net start-to-finish) reads as ~0, exactly the "erased" case a
+    // net-grade-only model treats as free. Real terrain cost from climbing
+    // and descending a steep 20% pitch is definitely not free.
+    const route = buildRoute([
+      { distanceM: 0, elevationM: 0 },
+      { distanceM: 200, elevationM: 40 },
+      { distanceM: 400, elevationM: 0 },
+      { distanceM: METERS_PER_MILE + 50, elevationM: 0 },
+    ]);
+    const analysis = analyzeCourse(route);
+
+    expect(analysis.perMileGrade).toHaveLength(1);
+    expect(analysis.perMileGrade[0]).toBeCloseTo(0, 2);
+    // Before this fix, a mile reading as net-zero grade contributed exactly
+    // zero cost -- this asserts the real, segment-by-segment cost survives
+    // even when the net trend cancels out.
+    expect(analysis.perMileTerrainCostJPerKg[0]).toBeGreaterThan(100);
+  });
+
   it("reports a flat course as having no climbs or descents", () => {
     const flat = buildRoute([
       { distanceM: 0, elevationM: 50 },

@@ -29,6 +29,7 @@ describe("fetchCurrentConditions", () => {
         wind_direction_10m: 270,
         wind_gusts_10m: 8,
       },
+      elevation: 178,
     });
 
     const result = await fetchCurrentConditions(36.16, -86.78);
@@ -41,12 +42,31 @@ describe("fetchCurrentConditions", () => {
       windSpeedMS: 4,
       windFromBearingDeg: 270,
       windGustsMS: 8,
+      elevationM: 178,
     });
   });
 
   it("throws when the request fails", async () => {
     mockResponse(false, {});
     await expect(fetchCurrentConditions(0, 0)).rejects.toThrow(/weather lookup failed/i);
+  });
+
+  it("returns a null elevation when the response omits it", async () => {
+    mockResponse(true, {
+      current: {
+        temperature_2m: 22,
+        relative_humidity_2m: 55,
+        dew_point_2m: 12,
+        cloud_cover: 40,
+        surface_pressure: 1013,
+        wind_speed_10m: 4,
+        wind_direction_10m: 270,
+        wind_gusts_10m: 8,
+      },
+    });
+
+    const result = await fetchCurrentConditions(36.16, -86.78);
+    expect(result.elevationM).toBeNull();
   });
 });
 
@@ -64,12 +84,14 @@ describe("fetchConditionsAtTime", () => {
         wind_direction_10m: [10, 50, 90],
         wind_gusts_10m: [2, 6, 10],
       },
+      elevation: 1609,
     });
 
     const result = await fetchConditionsAtTime(36.16, -86.78, "2026-07-20T07:10");
     expect(result.tempC).toBe(22);
     expect(result.relativeHumidityPct).toBe(55);
     expect(result.dewPointC).toBe(12);
+    expect(result.elevationM).toBe(1609);
     expect(result.cloudCoverPct).toBe(40);
     expect(result.pressureHPa).toBe(1013);
     expect(result.windSpeedMS).toBe(5);

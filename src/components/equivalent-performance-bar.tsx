@@ -6,6 +6,7 @@ const FACTOR_ICON: Record<string, string> = {
   Humidity: "💧",
   Wind: "💨",
   Elevation: "⛰️",
+  Altitude: "🏔️",
 };
 
 function formatSignedSeconds(seconds: number): string {

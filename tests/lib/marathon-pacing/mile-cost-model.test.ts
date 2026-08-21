@@ -3,14 +3,21 @@ import { describe, expect, it } from "vitest";
 import { computeMileCosts } from "@/lib/marathon-pacing/mile-cost-model";
 import { heatEngine } from "@/lib/environmental/heat-engine";
 import { humidityEngine } from "@/lib/environmental/humidity-engine";
+import { gradeAddedCostJPerKgM } from "@/lib/grade-pace-physics";
 import type { CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
 
 const METERS_PER_MILE = 1609.344;
 
+/** Terrain cost as if every mile ran at one constant grade -- what course-analysis.ts's real per-segment costing collapses to when a mile has no internal rolling (the shape every existing test below assumes). */
+function costForConstantGradePerMile(grades: number[]): number[] {
+  return grades.map((grade) => gradeAddedCostJPerKgM(grade) * METERS_PER_MILE);
+}
+
 function buildCourse(overrides: Partial<CourseAnalysis>): CourseAnalysis {
+  const perMileGrade = overrides.perMileGrade ?? [0];
   return {
-    totalDistanceM: METERS_PER_MILE * (overrides.perMileGrade?.length ?? 1),
+    totalDistanceM: METERS_PER_MILE * perMileGrade.length,
     totalClimbM: 0,
     totalDescentM: 0,
     avgGrade: 0,
@@ -23,7 +30,8 @@ function buildCourse(overrides: Partial<CourseAnalysis>): CourseAnalysis {
     steepestDescent: null,
     rollingIndex: 0,
     downhillSeverityScore: 0,
-    perMileGrade: [0],
+    perMileGrade,
+    perMileTerrainCostJPerKg: costForConstantGradePerMile(perMileGrade),
     perMileHeadingDeg: [null],
     ...overrides,
   };
@@ -41,6 +49,7 @@ function calmWeather(overrides: Partial<WeatherConditions> = {}): WeatherConditi
     windSpeedMS: 0,
     windFromBearingDeg: 0,
     windGustsMS: 0,
+    elevationM: null,
     ...overrides,
   };
 }
@@ -124,6 +133,30 @@ describe("computeMileCosts", () => {
 
     expect(headwind[0].windSeconds).toBeGreaterThan(0);
     expect(tailwind[0].windSeconds).toBeLessThan(0);
+  });
+
+  it("REGRESSION: costs a rolling mile (net-zero grade, real climbing and descending) from its real terrain cost, not its net grade", () => {
+    // A mile that climbs 40m over 200m then descends the same 40m over the
+    // next 200m nets to grade 0 -- before this fix, computeMileCosts derived
+    // terrainSeconds from perMileGrade directly (gradeAddedCostJPerKgM(0) *
+    // mileDistanceM = 0), silently treating real climbing/descending as a
+    // free, flat mile. course-analysis.ts's perMileTerrainCostJPerKg costs
+    // each real segment instead, so this mile should cost real time even
+    // though its net grade is 0.
+    const legM = 200;
+    const climbGrade = 40 / legM;
+    const descentGrade = -40 / legM;
+    const realTerrainCostJPerKg = gradeAddedCostJPerKgM(climbGrade) * legM + gradeAddedCostJPerKgM(descentGrade) * legM;
+    expect(realTerrainCostJPerKg).toBeGreaterThan(0);
+
+    const course = buildCourse({
+      perMileGrade: [0],
+      perMileTerrainCostJPerKg: [realTerrainCostJPerKg],
+      perMileHeadingDeg: [null],
+    });
+    const costs = computeMileCosts(course, { goalSpeedMS: GOAL_SPEED_MS });
+
+    expect(costs[0].terrainSeconds).toBeGreaterThan(0);
   });
 
   it("treats a mile with no known heading as having zero wind cost, even in strong wind", () => {

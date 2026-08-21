@@ -168,6 +168,7 @@ function buildFlatCourse(): CourseAnalysis {
     rollingIndex: 0,
     downhillSeverityScore: 0,
     perMileGrade: new Array(mileCount).fill(0),
+    perMileTerrainCostJPerKg: new Array(mileCount).fill(0),
     // A null heading makes split-generator.ts's wind math skip the mile
     // entirely -- without a real/preset course loaded, every mile would
     // get one, silently making wind conditions a no-op for most users by
@@ -256,6 +257,10 @@ function buildWeatherConditions(tempF: number, humidityPct: number, windMph: num
     windSpeedMS: mphToMS(clampedWindMph),
     windFromBearingDeg,
     windGustsMS: mphToMS(clampedWindMph),
+    // Marathon Pacing Calculator has no location/altitude concept of its
+    // own (mile-cost-model.ts doesn't consume it) -- null is inert here,
+    // not a missing feature.
+    elevationM: null,
   };
 }
 

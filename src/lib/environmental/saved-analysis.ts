@@ -43,6 +43,8 @@ export type SavedEnvironmentalAnalysis = {
     windExposureScore: number;
     elevationGainM: number;
     elevationLossM: number;
+    /** Absolute altitude above sea level, meters -- null when unknown (no weather fetched, no manual entry). Distinct from elevationGainM/elevationLossM, which describe the course's own vertical profile. */
+    altitudeM: number | null;
   } | null;
   /** Every factor's contribution, largest-impact-first -- see coaching-summary.ts's rankByImpact. */
   breakdown: SavedAnalysisFactor[];

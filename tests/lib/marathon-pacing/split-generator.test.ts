@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { generatePacingPlan } from "@/lib/marathon-pacing/split-generator";
+import { gradeAddedCostJPerKgM } from "@/lib/grade-pace-physics";
 import type { CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
 
@@ -14,6 +15,7 @@ function hotWeather(): WeatherConditions {
     windSpeedMS: 0,
     windFromBearingDeg: 0,
     windGustsMS: 0,
+    elevationM: null,
   };
 }
 
@@ -35,6 +37,7 @@ function buildCourse(perMileGrade: number[], perMileHeadingDeg: (number | null)[
     rollingIndex: 0,
     downhillSeverityScore: 0,
     perMileGrade,
+    perMileTerrainCostJPerKg: perMileGrade.map((grade) => gradeAddedCostJPerKgM(grade) * METERS_PER_MILE),
     perMileHeadingDeg: perMileHeadingDeg.length > 0 ? perMileHeadingDeg : perMileGrade.map(() => null),
   };
 }

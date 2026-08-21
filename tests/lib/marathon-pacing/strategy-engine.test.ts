@@ -38,6 +38,7 @@ function buildCourse(overrides: Partial<CourseAnalysis> = {}): CourseAnalysis {
     rollingIndex: 0,
     downhillSeverityScore: 0,
     perMileGrade: new Array(mileCount).fill(0),
+    perMileTerrainCostJPerKg: new Array(mileCount).fill(0),
     perMileHeadingDeg: new Array(mileCount).fill(null),
     ...overrides,
   };

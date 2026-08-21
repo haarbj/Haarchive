@@ -3,13 +3,18 @@
 // this specific mile cost, relative to goal pace on a flat, windless,
 // temperate course" answer.
 //
-// Terrain uses grade-pace-physics.ts (the real Minetti et al. 2002
-// polynomial) against each mile's own actual grade from course-analysis.ts
-// -- not the standalone Environmental Performance Calculator's
-// elevation-engine.ts, which (by its own documentation) only has a total
-// gain/loss figure to work with and has to assume a single representative
-// grade. A real per-mile grade is exactly the upgrade that engine's own
-// comments anticipate once route data was available.
+// Terrain uses course-analysis.ts's perMileTerrainCostJPerKg -- the real
+// Minetti et al. 2002 polynomial applied to the route's own local grade at
+// every ~20m step, not the mile's net start-to-finish grade. A mile that
+// climbs and descends by comparable amounts (a rolling mile) nets a small
+// grade even though it costs real energy on both legs; costing from the
+// mile's net grade alone would silently erase most of that (the same bug
+// precise-elevation-engine.ts had, fixed the same way -- see
+// course-analysis.ts's own comment on perMileTerrainCostJPerKg). This is
+// also why this stays a separate calculation from the standalone
+// Environmental Performance Calculator's elevation-engine.ts, which only
+// ever has a total gain/loss figure to work with (no per-mile route data)
+// and has to assume a single representative grade for the whole course.
 //
 // Heat and humidity are duration-driven, not location-driven -- ambient
 // temperature doesn't meaningfully vary mile to mile on a single race day,
@@ -27,7 +32,7 @@
 // using that mile's real average heading, following the same
 // paceModeEquivalentSpeedMS pattern wind-engine.ts already uses.
 
-import { flatPowerWPerKg, gradeAddedCostJPerKgM } from "@/lib/grade-pace-physics";
+import { flatPowerWPerKg } from "@/lib/grade-pace-physics";
 import { heatEngine } from "@/lib/environmental/heat-engine";
 import { humidityEngine } from "@/lib/environmental/humidity-engine";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
@@ -63,9 +68,8 @@ export type MileCostModelInput = {
   windProfile?: WindProfile;
 };
 
-function terrainSecondsForMile(grade: number, mileDistanceM: number, averagePowerWPerKg: number): number {
-  const addedEnergyJPerKg = gradeAddedCostJPerKgM(grade) * mileDistanceM;
-  return addedEnergyJPerKg / averagePowerWPerKg;
+function terrainSecondsForMile(terrainCostJPerKg: number, averagePowerWPerKg: number): number {
+  return terrainCostJPerKg / averagePowerWPerKg;
 }
 
 function windSecondsForMile(
@@ -115,7 +119,7 @@ export function computeMileCosts(course: CourseAnalysis, input: MileCostModelInp
     const mileDistanceM = METERS_PER_MILE; // full miles only, matching perMileGrade's own scope
     const mileTimeShare = mileDistanceM / course.totalDistanceM; // matches how the whole-race total was itself computed, so shares sum back exactly
 
-    const terrainSeconds = terrainSecondsForMile(grade, mileDistanceM, averagePowerWPerKg);
+    const terrainSeconds = terrainSecondsForMile(course.perMileTerrainCostJPerKg[i], averagePowerWPerKg);
     const heatSeconds = totalHeatSeconds * mileTimeShare;
     const humiditySeconds = totalHumiditySeconds * mileTimeShare;
     const headingDeg = course.perMileHeadingDeg[i];

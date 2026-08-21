@@ -11,7 +11,7 @@
 // summing totals.
 
 import { bearingDeg, haversineDistanceM } from "@/lib/route-import/route-summary";
-import { STEEP_DOWNHILL_GRADE_THRESHOLD } from "@/lib/grade-pace-physics";
+import { STEEP_DOWNHILL_GRADE_THRESHOLD, gradeAddedCostJPerKgM } from "@/lib/grade-pace-physics";
 import type { ParsedRoute } from "@/lib/route-import/types";
 
 const METERS_PER_MILE = 1609.344;
@@ -68,6 +68,20 @@ export type CourseAnalysis = {
   downhillSeverityScore: number;
   /** Net grade for each full mile of the course, in order. */
   perMileGrade: number[];
+  /**
+   * True physics-based terrain energy cost (J/kg) for each full mile,
+   * from applying Minetti's polynomial to the smoothed grid's own local
+   * grade at every ~20m step and summing within each mile -- unlike
+   * perMileGrade (a mile's net start-to-finish grade), this doesn't erase
+   * a mile's real climbing and descending when they roughly cancel out
+   * (e.g. a rolling mile that climbs 25m and drops 20m nets a ~1% grade,
+   * but actually cost far more than a steady 1% grade would). This is
+   * what elevation-cost consumers (precise-elevation-engine.ts) should
+   * sum for adjustmentSeconds; perMileGrade remains for narrative/display
+   * ("net uphill this mile") and pacing-strategy uses that genuinely want
+   * the net trend.
+   */
+  perMileTerrainCostJPerKg: number[];
   /**
    * Distance-weighted circular-mean true bearing the runner heads toward
    * during each full mile -- null for a mile with no net directional GPS
@@ -302,6 +316,33 @@ function buildPerMileGrade(grid: GridPoint[], totalDistanceM: number): number[] 
 }
 
 /**
+ * The real terrain-cost counterpart to buildPerMileGrade: instead of one
+ * net grade per mile, walks the same fine-grained smoothed grid pairwise
+ * (the same local-grade calculation buildGradeHistogram and
+ * computeDownhillSeverityScore already use) and costs each ~20m step with
+ * Minetti's polynomial directly, binning the result into whichever mile
+ * that step falls in. A mile that climbs and then descends by comparable
+ * amounts still costs real energy on both legs, even though its net grade
+ * (and therefore its flat-equivalent-distance/GAP-style estimate) would
+ * read as nearly zero.
+ */
+function buildPerMileTerrainCostJPerKg(grid: GridPoint[], totalDistanceM: number): number[] {
+  const mileCount = Math.floor(totalDistanceM / METERS_PER_MILE);
+  const costs = new Array(mileCount).fill(0);
+
+  for (let i = 0; i < grid.length - 1; i++) {
+    const dDist = grid[i + 1].distanceM - grid[i].distanceM;
+    if (dDist <= 0) continue;
+    const grade = (grid[i + 1].elevationM - grid[i].elevationM) / dDist;
+    const mileIdx = Math.floor(grid[i].distanceM / METERS_PER_MILE);
+    if (mileIdx >= mileCount) continue;
+    costs[mileIdx] += gradeAddedCostJPerKgM(grade) * dDist;
+  }
+
+  return costs;
+}
+
+/**
  * Bins each raw GPS segment's true bearing into the mile it falls within,
  * combining them with a distance-weighted circular mean (summing unit
  * vectors rather than raw degrees, so e.g. 350deg and 10deg average to
@@ -400,6 +441,7 @@ export function analyzeCourse(route: ParsedRoute, options: CourseAnalysisOptions
     rollingIndex,
     downhillSeverityScore: computeDownhillSeverityScore(grid),
     perMileGrade,
+    perMileTerrainCostJPerKg: buildPerMileTerrainCostJPerKg(grid, totalDistanceM),
     perMileHeadingDeg: buildPerMileHeading(route, perMileGrade.length),
   };
 }

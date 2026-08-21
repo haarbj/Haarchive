@@ -1,10 +1,19 @@
-// Shared duration-scaling + seconds-conversion logic used by both
-// heat-engine.ts and humidity-engine.ts. The empirical log-speed
-// adjustment surface in heat-humidity-model.ts is calibrated to marathon-
-// length efforts (Mantzios et al. 2022 fit it to marathon results only),
-// so this module scales that marathon-calibrated effect for shorter or
-// longer distances and converts it into a seconds cost given the
-// runner's own pace.
+// Shared duration-scaling + seconds-conversion logic used by heat-engine.ts
+// and humidity-engine.ts. The empirical log-speed adjustment surface in
+// heat-humidity-model.ts is calibrated to marathon-length efforts (Mantzios
+// et al. 2022 fit it to marathon results only), so this module scales that
+// marathon-calibrated effect for shorter or longer distances and converts
+// it into a seconds cost given the runner's own pace.
+//
+// altitude-engine.ts does NOT reuse durationScaleFor (an earlier version of
+// this comment said it did) -- Jack Daniels' altitude tables' own
+// Mile/5K/Marathon multiplier ratios don't match this curve's shape at all
+// (this curve would floor both a mile and a 5K to the same ~0.15 scale;
+// the tables put them at ~0.29 and ~0.71 relative to marathon). Altitude's
+// oxygen-availability limit applies from the first stride, unlike heat's
+// thermoregulatory strain, which genuinely does build up over a longer
+// effort -- so altitude-engine.ts has its own table-derived duration curve
+// instead. See that file for the reasoning.
 //
 // Heat and humidity aren't physiologically separable -- the underlying
 // grid already folds humidity's effect into a single temperature x
