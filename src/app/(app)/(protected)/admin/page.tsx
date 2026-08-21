@@ -131,6 +131,31 @@ export default async function AdminPage() {
           </span>
         </CardLink>
 
+        <CardLink href="/admin/bug-reports" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Bug Reports</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Review issues submitted through the site&rsquo;s &ldquo;Report a Bug&rdquo; control.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
+        <CardLink href="/admin/conversion" className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Conversion Funnel</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Aggregate counts for the existing &ldquo;Sign in to &hellip;&rdquo; CTAs, Google signup, and account
+              creation.
+            </p>
+          </div>
+          <span className="text-sm font-semibold text-zinc-700 transition group-hover:text-zinc-950 dark:text-white dark:group-hover:text-white">
+            Open →
+          </span>
+        </CardLink>
+
         <CreateInviteForm />
 
         <div>

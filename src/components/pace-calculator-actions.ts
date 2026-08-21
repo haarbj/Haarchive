@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/db/server";
 import { logLearningEvent } from "@/app/learning-actions";
+import { recordConversionEvent } from "@/app/conversion-actions";
 
 export type SaveCalculationResult = {
   status: "success" | "error";
@@ -20,6 +21,13 @@ export async function saveCalculation(
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) {
+    // Phase 12A: defensive instrumentation only -- SaveCalculationButton
+    // never renders this action's call site for an anonymous visitor (see
+    // its own `if (status !== "authenticated") return null`), so this
+    // branch is not reachable through the current UI. Kept here,
+    // fire-and-forget, so it isn't silently missed later if that ever
+    // changes, rather than because it produces real data today.
+    recordConversionEvent("cta_shown", "calculator", { surface: "save_calculation" });
     return { status: "error", message: "Sign in to save calculator results." };
   }
 
@@ -42,6 +50,9 @@ export async function saveCalculation(
   // so no translation is needed. No-ops silently if it isn't (e.g. a
   // calculator not yet seeded as a topic).
   await logLearningEvent(calculatorType, "tool_used");
+  // Phase 12A: same "deliberate authenticated action" reasoning as the
+  // learning event above -- idempotent server-side, fire-and-forget.
+  recordConversionEvent("first_learning_action", "learning_progress", { surface: "save_calculation" });
 
   revalidatePath("/dashboard");
   return { status: "success" };

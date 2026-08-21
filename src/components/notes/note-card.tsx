@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { ContentBlock } from "@/lib/sections";
+import { recordConversionEvent } from "@/app/conversion-actions";
 import { formatRelativeTime } from "@/lib/format";
 import { resolveAnchor } from "@/lib/notes/anchor";
 import { createNote, deleteNote, updateNoteBody } from "@/lib/notes/actions";
@@ -66,6 +67,10 @@ export function NoteCard({ content, contentSlug, note, onDeleted, autoFocus, onN
         });
         if ("error" in result) return { ok: false, error: result.error };
         idRef.current = result.id;
+        // Phase 12A: only on creation, matching createNote's own
+        // note_taken signal above it (an edit to an existing note isn't a
+        // new "first action"). Idempotent server-side; fire-and-forget.
+        recordConversionEvent("first_learning_action", "learning_progress", { surface: "note_card" });
         return { ok: true };
       }
       const result = await updateNoteBody(idRef.current, value);

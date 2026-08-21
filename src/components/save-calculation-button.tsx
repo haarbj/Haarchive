@@ -24,7 +24,15 @@ export function SaveCalculationButton({
     null,
   );
 
-  if (status !== "authenticated") return null;
+  // Phase 12A.2: only "loading" hides the button now (avoids a flash
+  // before the real session is known, same guard ArticleNotes/
+  // BookmarkButton already use) -- an anonymous visitor now sees Save too,
+  // so the existing saveCalculation() sign-in boundary and its Phase 12A
+  // instrumentation (see pace-calculator-actions.ts) become reachable.
+  // Everything below this line -- handleSave, the button, the error
+  // message -- is unchanged; an anonymous click just now actually reaches
+  // it instead of the button never rendering at all.
+  if (status === "loading") return null;
 
   function handleSave() {
     startTransition(async () => {

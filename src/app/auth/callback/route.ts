@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createClient } from "@/lib/db/server";
 import { notifyAdmins } from "@/lib/notifications/create-notification";
+import { recordConversionEvent } from "@/app/conversion-actions";
 
 // This route handles both a brand-new OAuth signup and a returning user's
 // OAuth sign-in -- Supabase's code exchange doesn't distinguish them, and
@@ -32,6 +33,12 @@ export async function GET(request: Request) {
           type: "user_signed_up",
           content: `New signup: ${user.email ?? "unknown email"}`,
         });
+        // Phase 12A: covers OAuth (Google) signups and email-confirmation
+        // completions -- the two cases auth-actions.ts's own signUp()
+        // can't fire this for (see its matching comment). Awaited for the
+        // same reason as there: a one-time, low-frequency event right
+        // before a redirect, not a hot interactive path.
+        await recordConversionEvent("account_created", "learning_progress", { method: "oauth_or_confirmation" });
       }
       return NextResponse.redirect(`${origin}${next}`);
     }

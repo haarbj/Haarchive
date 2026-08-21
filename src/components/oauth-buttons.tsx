@@ -1,9 +1,25 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 import { createClient } from "@/lib/db/client";
+import { recordConversionEvent } from "@/app/conversion-actions";
 
 export function GoogleSignInButton() {
+  const pathname = usePathname();
+
   async function handleClick() {
+    // Phase 12A: fire-and-forget, never awaited -- OAuth must proceed
+    // immediately regardless of whether this call succeeds, fails, or is
+    // still in flight (see conversion-actions.ts's own fail-open
+    // reasoning). This button renders on both /login and /signup with no
+    // per-feature attribution today (every "Sign in" CTA across the site
+    // links here generically, not with a feature-specific query param), so
+    // "learning_progress" is used as the closest existing feature value
+    // rather than inventing a new one for a single, unattributed event --
+    // `metadata.page` at least preserves which page it was clicked from.
+    recordConversionEvent("google_signup_clicked", "learning_progress", { page: pathname });
+
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",

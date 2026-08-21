@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import type { ContentBlock } from "@/lib/sections";
+import { recordConversionEvent } from "@/app/conversion-actions";
 import { createClient } from "@/lib/db/client";
 import { computeAnchor, resolveAnchor } from "@/lib/notes/anchor";
 import { mapNoteRow, type Note, type NoteRow } from "@/lib/notes/types";
@@ -167,7 +168,13 @@ export function ArticleNotes({ contentSlug, content, initialBookmarked }: Articl
 
   function handleTriggerClick() {
     if (authStatus !== "authenticated") {
-      setAnonHintOpen((v) => !v);
+      setAnonHintOpen((v) => {
+        const next = !v;
+        // Phase 12A: fire only on open, same "count appearances, not
+        // clicks" reasoning as bookmark-button.tsx. Fire-and-forget.
+        if (next) recordConversionEvent("cta_shown", "notes", { surface: "notes_trigger" });
+        return next;
+      });
       return;
     }
     setOpen(true);
@@ -247,7 +254,11 @@ export function ArticleNotes({ contentSlug, content, initialBookmarked }: Articl
               className="absolute top-full right-0 z-[var(--z-dropdown)] mt-2 w-64 rounded-xl border border-black/10 bg-white p-4 text-sm text-zinc-600 shadow-dropdown dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-300"
             >
               Notes are private to your account.{" "}
-              <Link href="/login" className="font-semibold text-zinc-900 underline underline-offset-2 dark:text-white">
+              <Link
+                href="/login"
+                onClick={() => recordConversionEvent("cta_clicked", "notes", { surface: "notes_trigger" })}
+                className="font-semibold text-zinc-900 underline underline-offset-2 dark:text-white"
+              >
                 Sign in
               </Link>{" "}
               to keep your own notes on what you read.

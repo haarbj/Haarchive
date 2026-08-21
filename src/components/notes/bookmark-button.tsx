@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 
 import { addBookmark, removeBookmark } from "@/app/bookmark-actions";
+import { recordConversionEvent } from "@/app/conversion-actions";
 import { useAuthStatus } from "@/lib/use-auth-status";
 import { Tooltip } from "@/components/ui/tooltip";
 
@@ -55,7 +56,15 @@ export function BookmarkButton({ topicSlug, initialBookmarked }: BookmarkButtonP
 
   function handleClick() {
     if (authStatus !== "authenticated") {
-      setAnonHintOpen((v) => !v);
+      setAnonHintOpen((v) => {
+        const next = !v;
+        // Phase 12A: fire only on open, not on close/toggle-off -- "shown"
+        // should count once per real appearance, not once per click.
+        // Fire-and-forget: never awaited, so a slow/failed analytics call
+        // can't delay or block the hint from appearing.
+        if (next) recordConversionEvent("cta_shown", "bookmark", { surface: "bookmark_button" });
+        return next;
+      });
       return;
     }
 
@@ -70,6 +79,13 @@ export function BookmarkButton({ topicSlug, initialBookmarked }: BookmarkButtonP
       const result = next ? await addBookmark(topicSlug) : await removeBookmark(topicSlug);
       if ("error" in result) {
         setBookmarked(!next); // rollback
+      } else if (next) {
+        // Phase 12A: a genuine, deliberate authenticated learning action --
+        // idempotent server-side (see the migration's partial unique index),
+        // so no client-side "have I already fired this" tracking is needed.
+        // Only on save (next===true), not on unsave, to match "a real
+        // action," not a toggle-off.
+        recordConversionEvent("first_learning_action", "learning_progress", { surface: "bookmark_button" });
       }
     });
   }
@@ -115,7 +131,11 @@ export function BookmarkButton({ topicSlug, initialBookmarked }: BookmarkButtonP
           className="absolute top-full right-0 z-[var(--z-dropdown)] mt-2 w-64 rounded-xl border border-black/10 bg-white p-4 text-sm text-zinc-600 shadow-dropdown dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-300"
         >
           Saved topics are private to your account.{" "}
-          <Link href="/login" className="font-semibold text-zinc-900 underline underline-offset-2 dark:text-white">
+          <Link
+            href="/login"
+            onClick={() => recordConversionEvent("cta_clicked", "bookmark", { surface: "bookmark_button" })}
+            className="font-semibold text-zinc-900 underline underline-offset-2 dark:text-white"
+          >
             Sign in
           </Link>{" "}
           to build your own library.

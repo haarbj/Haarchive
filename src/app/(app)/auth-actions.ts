@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/db/server";
 import { notifyAdmins } from "@/lib/notifications/create-notification";
+import { recordConversionEvent } from "@/app/conversion-actions";
 import { signInSchema, signUpSchema } from "@/lib/validation/auth";
 
 export type AuthActionState = {
@@ -39,11 +40,21 @@ export async function signUp(
   // /auth/callback exchange that actually completes them -- notifying here
   // too would double-fire for that path. This branch only runs once email
   // confirmation is off (or already satisfied), so it's this account's one
-  // and only completion.
+  // and only completion. account_created mirrors that exact same
+  // mutually-exclusive placement (also present in /auth/callback below).
+  //
+  // Awaited, unlike every client-triggered conversion event in this phase:
+  // this is a low-frequency, one-time action immediately followed by a
+  // redirect (which itself short-circuits execution in Next.js), so
+  // leaving it un-awaited risks the event never actually completing before
+  // the response ends. recordConversionEvent already fails open internally
+  // (see its own try/catch), so awaiting it here can never fail this
+  // action or delay the user meaningfully.
   await notifyAdmins({
     type: "user_signed_up",
     content: `New signup: ${data.user?.email ?? parsed.data.email}`,
   });
+  await recordConversionEvent("account_created", "learning_progress", { method: "email" });
 
   redirect("/dashboard");
 }
