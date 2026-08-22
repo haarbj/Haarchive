@@ -2744,18 +2744,27 @@ export function EnvironmentalCalculator() {
                 <p className="mt-2">
                   <strong className="font-semibold text-zinc-900 dark:text-white">Weather resolution:</strong>{" "}
                   Open-Meteo&rsquo;s hourly data is the finest resolution available -- real conditions can shift
-                  meaningfully inside a single hour (a passing cloud, a gust front) that this can&rsquo;t see.
-                  When a route&rsquo;s real duration is known, every hourly reading the run&rsquo;s own window
-                  touches is averaged together; that average is a real summary of real readings,{" "}
+                  meaningfully inside a single hour (a passing cloud, a gust front) that this can&rsquo;t see. This
+                  is a limit of the available data, not an error in the calculator: hourly is genuinely the finest
+                  free, global, arbitrary-date historical weather resolution that exists (see
+                  docs/continuous-weather-investigation.md for the research behind that). When a route&rsquo;s real
+                  duration is known, every hourly reading the run&rsquo;s own window touches is averaged together;
+                  that average is a real summary of real readings,{" "}
                   <strong className="font-semibold text-zinc-900 dark:text-white">not interpolation</strong> --
                   no value is invented for the time between two real hourly readings, and a run entirely within one
                   hour still gets exactly one real reading, shown as a single value rather than a fabricated range.
+                  This hourly ceiling applies to temperature, humidity, and wind <em>speed</em> -- wind{" "}
+                  <em>direction</em>{" "}
+                  is a genuine exception, since it comes from the route file&rsquo;s own real
+                  heading at each point rather than from Open-Meteo at all (see 💨 Wind above).
                 </p>
                 <p className="mt-2">
-                  <strong className="font-semibold text-zinc-900 dark:text-white">Altitude data:</strong> An
-                  imported route&rsquo;s altitude comes from the file&rsquo;s own GPS/barometric elevation
+                  <strong className="font-semibold text-zinc-900 dark:text-white">Altitude data:</strong>{" "}
+                  An imported route&rsquo;s altitude comes from the file&rsquo;s own GPS/barometric elevation
                   samples, which carry normal GPS noise (see Elevation above for the same caveat applied to
-                  grade). Without a route, altitude is a single figure -- wherever weather was looked up, or a
+                  grade) -- but is resolved mile by mile, a meaningfully finer resolution than the weather data
+                  above, since it comes from the route file itself rather than from an hourly external lookup.
+                  Without a route, altitude is a single figure -- wherever weather was looked up, or a
                   manual entry -- always presented as one representative assumption, never as a profile that
                   wasn&rsquo;t actually measured.
                 </p>
