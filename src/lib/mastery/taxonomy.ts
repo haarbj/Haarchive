@@ -104,6 +104,7 @@ export const TOPIC_SEEDS: TopicSeed[] = [
   { slug: "hr-threshold-calculator", title: "LT1 & LT2 Heart Rate Reference Ranges", categorySlug: "tools", sectionSlug: "hr-threshold-calculator" },
   { slug: "tinman-calculator", title: "Tinman Running Calculator", categorySlug: "tools", sectionSlug: "tinman-calculator" },
   { slug: "marathon-pacing-calculator", title: "Marathon Pacing Calculator", categorySlug: "tools", sectionSlug: "marathon-pacing-calculator" },
+  { slug: "altitude-calculator", title: "Altitude Calculator", categorySlug: "tools", sectionSlug: "altitude-calculator" },
 ];
 
 // ~6-8 "high-value" topics get concept coverage first (exercise-physiology,
