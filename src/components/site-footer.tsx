@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { categories } from "@/lib/sections";
+import { BugReportTrigger } from "@/components/bug-report/bug-report-trigger";
 
 const linkClass =
   "text-zinc-500 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white";
@@ -57,6 +58,14 @@ export function SiteFooter() {
               <Link href="/contact" className={linkClass}>
                 Contact
               </Link>
+            </li>
+            <li>
+              {/* A button, not a Link -- this opens the Drawer in place
+                  rather than navigating anywhere, same reasoning as the
+                  Notes trigger. Same visual weight as every other item in
+                  this list (linkClass) so it reads as one more quiet site
+                  utility, not a callout. */}
+              <BugReportTrigger />
             </li>
             <li>
               <Link href="/privacy-policy" className={linkClass}>

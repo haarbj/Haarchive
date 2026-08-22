@@ -10,4 +10,5 @@ export type NotificationType =
   | "article_status_changed"
   | "user_signed_up"
   | "question_submitted"
-  | "contributor_application_submitted";
+  | "contributor_application_submitted"
+  | "bug_report_submitted";

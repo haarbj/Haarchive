@@ -43,9 +43,20 @@ export default function RootLayout({
     // script: this is the one true state, rendered server-side.
     <html lang="en" className="h-full antialiased dark">
       <body className="min-h-full bg-stone-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
+        {/* id="page-content" is a real capture boundary, not decoration --
+            src/lib/bug-report/capture-screenshot.ts renders exactly this
+            element for the bug-report screenshot. Every Drawer/modal in the
+            app (Notes today, any future one) is portaled to document.body
+            as a *sibling* of this div, not a descendant of it -- so
+            targeting this element instead of document.body automatically
+            keeps the bug-report flow itself, and anything like the private
+            Notes panel, out of the captured image with zero per-feature
+            redaction logic. */}
+        <div id="page-content">
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+        </div>
       </body>
     </html>
   );

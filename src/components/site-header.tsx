@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { categories, sectionsInCategory } from "@/lib/sections";
 import { AuthStatus } from "@/components/auth-status";
+import { BugReportTrigger } from "@/components/bug-report/bug-report-trigger";
 import { NotificationBell } from "@/components/notification-bell";
 import { SiteSearchBox } from "@/components/site-search";
 
@@ -41,44 +42,78 @@ export function SiteHeader() {
   const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  // Drives the collapsible search row at *every* breakpoint now, not just
+  // mobile -- desktop used to show an always-visible search bar inline in
+  // the header; it's now the same collapsed-icon-until-clicked row mobile
+  // already had, just no longer md:hidden. Kept the name generic (not
+  // "mobileSearchOpen") since it's no longer mobile-specific.
+  const [searchOpen, setSearchOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchRowRef = useRef<HTMLDivElement>(null);
+  const mobileSearchButtonRef = useRef<HTMLButtonElement>(null);
 
   // Global so ⌘K/Ctrl+K jumps to search from anywhere on the site, not just
   // while the header itself has focus -- preventDefault stops the browser's
   // own Ctrl+K (Firefox's address-bar search) from firing alongside it.
-  // Queries every mounted search input and focuses whichever one actually
-  // has layout (offsetParent is null for anything the current breakpoint,
-  // or the mobile search toggle, currently hides). If none are visible --
-  // mobile with the search row collapsed -- open it instead; the focus
-  // effect below picks it up once it's actually mounted.
+  // Reads `searchOpen` directly (a real dependency of this effect, so the
+  // closure always has the current value) rather than probing the DOM for
+  // "is an input already visible" the way this used to: offsetParent is
+  // null for display:none, but does *not* go null for an element merely
+  // clipped by an ancestor's overflow:hidden/max-height:0 (the row's own
+  // collapse mechanism) -- so that check was always true regardless of
+  // whether the row was actually open, meaning Cmd+K never opened a
+  // collapsed row, it just silently called .focus() on an input inside an
+  // inert ancestor, which the HTML spec makes a no-op. React state is the
+  // real source of truth here; the DOM shouldn't have needed reverse-
+  // engineering in the first place. Escape lives in this same listener
+  // (not a second one) purely so it can share the one existing global
+  // keydown subscription rather than adding another; it only acts when the
+  // row is actually open, and doesn't touch the *input's own* Escape
+  // handling in site-search.tsx (closing its dropdown + blurring), which
+  // fires independently and is left completely alone.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (!((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) return;
-      e.preventDefault();
-      const inputs = document.querySelectorAll<HTMLInputElement>("[data-site-search-input]");
-      for (const input of inputs) {
-        if (input.offsetParent !== null) {
-          input.focus();
-          return;
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (searchOpen) {
+          document.querySelector<HTMLInputElement>("[data-site-search-input]")?.focus();
+        } else {
+          setSearchOpen(true);
         }
+        return;
       }
-      setMobileSearchOpen(true);
+      if (e.key === "Escape" && searchOpen) {
+        setSearchOpen(false);
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [searchOpen]);
 
   useEffect(() => {
-    if (!mobileSearchOpen) return;
-    const inputs = document.querySelectorAll<HTMLInputElement>("[data-site-search-input]");
-    for (const input of inputs) {
-      if (input.offsetParent !== null) {
-        input.focus();
-        break;
-      }
+    if (!searchOpen) return;
+    document.querySelector<HTMLInputElement>("[data-site-search-input]")?.focus();
+  }, [searchOpen]);
+
+  // Click-outside collapse -- exempts the toggle buttons themselves (a
+  // mousedown on one would otherwise register as "outside" a split second
+  // before its own onClick re-opens it, fighting the toggle) and the
+  // portaled results panel (site-search.tsx's dropdown lives outside this
+  // row's own DOM subtree via createPortal, so a plain .contains() check
+  // would treat clicking a real search result as "outside" and collapse
+  // the row out from under the click).
+  useEffect(() => {
+    if (!searchOpen) return;
+    function handlePointerDown(e: MouseEvent) {
+      const target = e.target as Node;
+      if (searchRowRef.current?.contains(target)) return;
+      if (target instanceof Element && target.closest("[data-search-toggle]")) return;
+      if (target instanceof Element && target.closest("[data-search-results-panel]")) return;
+      setSearchOpen(false);
     }
-  }, [mobileSearchOpen]);
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [searchOpen]);
 
   const openLearn = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -97,7 +132,7 @@ export function SiteHeader() {
     setActiveCategorySlug(null);
     setMobileOpen(false);
     setMobileLearnOpen(false);
-    setMobileSearchOpen(false);
+    setSearchOpen(false);
   };
 
   const learnActive = isLearnPath(pathname);
@@ -249,22 +284,33 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        {/* flex-1 lets this slot absorb all the space between the left
-            cluster and the account menu -- justify-between on the outer
-            row then has nothing left to redistribute, so this sits exactly
-            in the gap that used to just be empty. Hidden on mobile, where
-            there's no comparable spare width -- search there is a toggled
-            icon instead (see the mobile search button + row below).
-            Skipped entirely on /search, which already has its own
-            full-width input with results inline below it -- this one would
-            just be a second, visually-identical box stacked above it. */}
-        {!isSearchPage && (
-          <div className="hidden flex-1 justify-center px-6 md:flex">
-            <SiteSearchBox variant="header" onNavigate={closeAll} />
-          </div>
-        )}
-
         <div className="hidden items-center gap-3 md:flex">
+          {/* Search collapses to a plain icon at every breakpoint now (see
+              the row below the header bar) -- this replaced an
+              always-visible flex-1 input that used to sit here, between the
+              left nav cluster and this icon group. Skipped entirely on
+              /search, which already has its own full-width input with
+              results inline below it. */}
+          {!isSearchPage && (
+            // No tooltip -- a magnifying glass is self-explanatory, and the
+            // expanded row's own placeholder ("Search articles, workouts,
+            // tools...") already explains it a beat later; a hover label on
+            // top of both was redundant.
+            <button
+              type="button"
+              data-search-toggle
+              aria-label={searchOpen ? "Close search" : "Search"}
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen((v) => !v)}
+              className="flex h-12 w-12 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+              <svg className="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M17 17L13.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
+          <BugReportTrigger variant="icon" />
           <Link
             href="/questions"
             onClick={closeAll}
@@ -297,11 +343,13 @@ export function SiteHeader() {
         <div className="flex items-center gap-1 md:hidden">
           {!isSearchPage && (
             <button
+              ref={mobileSearchButtonRef}
               type="button"
-              aria-label={mobileSearchOpen ? "Close search" : "Open search"}
-              aria-expanded={mobileSearchOpen}
+              data-search-toggle
+              aria-label={searchOpen ? "Close search" : "Open search"}
+              aria-expanded={searchOpen}
               onClick={() => {
-                setMobileSearchOpen((v) => !v);
+                setSearchOpen((v) => !v);
                 setMobileOpen(false);
               }}
               className="flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-black/5 dark:hover:bg-white/10"
@@ -319,7 +367,7 @@ export function SiteHeader() {
             aria-expanded={mobileOpen}
             onClick={() => {
               setMobileOpen((v) => !v);
-              setMobileSearchOpen(false);
+              setSearchOpen(false);
             }}
             className="flex h-12 w-12 items-center justify-center rounded-full transition hover:bg-black/5 dark:hover:bg-white/10"
           >
@@ -338,14 +386,38 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Toggled, not persistent -- see the mobile search button above.
-          shrink-0 keeps it at its natural height if the header becomes a
-          fixed, full-viewport flex column below (mobileOpen branch above),
-          though in practice the two states are kept mutually exclusive.
-          Skipped on /search -- see the isSearchPage comment above. */}
-      {!isSearchPage && mobileSearchOpen && (
-        <div className="shrink-0 border-t border-black/5 px-6 py-3 md:hidden dark:border-white/10">
-          <SiteSearchBox variant="header" onNavigate={closeAll} />
+      {/* The collapsible search row -- a real extension of the header, not
+          a modal or a floating popup: an ordinary bordered row in normal
+          document flow, directly below the header bar, animated open with
+          the same max-height transition technique the Learn submenu below
+          already uses (kept consistent rather than introducing a second
+          animation approach). Always mounted (not conditionally rendered)
+          so the max-height transition has something to animate between --
+          `inert` is what actually keeps it non-interactive and out of the
+          tab order while collapsed (same technique drawer.tsx already uses
+          for its own closed-but-mounted state), which a plain max-h-0 +
+          overflow-hidden alone would *not* guarantee: a hidden-but-tabbable
+          input reachable by Tab would be a real, and easy to miss,
+          keyboard regression. Skipped on /search -- see isSearchPage. */}
+      {!isSearchPage && (
+        <div
+          ref={searchRowRef}
+          data-search-row
+          inert={!searchOpen}
+          className={`overflow-hidden border-t border-black/5 transition-[max-height] duration-200 motion-reduce:transition-none dark:border-white/10 ${
+            searchOpen ? "max-h-24" : "max-h-0"
+          }`}
+        >
+          {/* mx-auto max-w-chrome matches the top bar's own alignment
+              container (see the logo/nav row above) -- without it the row
+              spans the full viewport edge-to-edge (it's a direct child of
+              <header>, not nested inside that same alignment wrapper), so
+              centering the search box within *that* on a wide viewport
+              would center it across the whole window rather than within
+              the page's actual content width. */}
+          <div className="mx-auto flex w-full max-w-chrome justify-center px-6 py-3">
+            <SiteSearchBox variant="header" onNavigate={closeAll} forceClose={!searchOpen} />
+          </div>
         </div>
       )}
 
@@ -447,8 +519,9 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          <div className="border-b border-black/5 py-3 dark:border-white/10">
+          <div className="flex items-center gap-1 border-b border-black/5 py-3 dark:border-white/10">
             <NotificationBell />
+            <BugReportTrigger variant="icon" />
           </div>
 
           <div className="mt-4 border-t border-black/5 pt-4 dark:border-white/10">

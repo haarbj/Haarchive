@@ -3502,86 +3502,6 @@ export const sections: Section[] = [
     hiddenFromCategory: true,
   },
   {
-    slug: "heat-tracker",
-    title: "Heat Tracker",
-    mission:
-      "Live WBGT readings and a 48-hour outlook to help you plan safe training around heat.",
-    topics: ["WBGT estimate", "48-hour outlook", "ACSM flag guidance"],
-    category: "tools",
-  },
-  {
-    slug: "pace-calculator",
-    title: "Pace & Heart Rate Calculator",
-    mission:
-      "Understand what your race result says about your fitness, where your training zones fall, and how your current ability translates across distances.",
-    topics: ["Race-time prediction", "Training paces", "Heart-rate zones"],
-    category: "tools",
-  },
-  {
-    slug: "environmental-calculator",
-    title: "Environmental Performance Calculator",
-    mission:
-      "Combine heat, humidity, wind, and elevation into one equivalent time -- analyze a past race, predict an upcoming one, or convert between conditions.",
-    topics: ["Equivalent performance", "Environmental breakdown", "Analyze / predict / convert"],
-    category: "tools",
-  },
-  {
-    slug: "gap-calculator",
-    title: "GAP Calculator",
-    mission:
-      "Find the flat-ground effort a hill pace was really worth, or the pace to target on a grade for an even effort.",
-    topics: ["Grade-adjusted pace", "Vertical speed targets", "Uphill/downhill asymmetry"],
-    category: "tools",
-  },
-  {
-    slug: "pace-percent-calculator",
-    title: "Pace Percent Calculator",
-    mission:
-      "Find a workout pace as a percentage of a reference pace, or back-solve the reference pace a workout implies -- the percentage-based method Renato Canova and other coaches use to prescribe intervals.",
-    topics: ["Percent of pace vs. percent of speed", "Forward and reverse calculations", "Unit conversion"],
-    category: "tools",
-  },
-  {
-    slug: "cv-threshold-calculator",
-    title: "Threshold, CV & VO2 Max Pace Calculator",
-    mission:
-      "Predict threshold, critical velocity, and VO2 max training paces (with uncertainty ranges, not just one number) from a single 800m-10K performance.",
-    topics: ["Statistically-grounded pace prediction", "Safe vs. median estimates", "Age-adjusted"],
-    category: "tools",
-  },
-  {
-    slug: "race-pace-calculator",
-    title: "Race Pace Calculator",
-    mission:
-      "Convert between a goal race time and the pace required to run it, for any standard or custom distance and split unit.",
-    topics: ["Race time to pace", "Pace to race time", "Custom distances and splits"],
-    category: "tools",
-  },
-  {
-    slug: "hr-threshold-calculator",
-    title: "LT1 & LT2 Heart Rate Reference Ranges",
-    mission:
-      "See where the aerobic threshold (LT1) and lactate threshold (LT2) typically fall on a heart rate monitor, from a real meta-analysis rather than a fixed rule of thumb.",
-    topics: ["Meta-analytic reference ranges", "% of max HR and HR reserve", "Population variability"],
-    category: "tools",
-  },
-  {
-    slug: "tinman-calculator",
-    title: "Tinman Running Calculator",
-    mission:
-      "Independently reverse-engineered from Tom Schwartz's public running calculator -- a performance rating, 30 equivalent race predictions, and paces for all 13 training zones from one recent race.",
-    topics: ["Performance rating", "Equivalent race times", "13 training zones"],
-    category: "tools",
-  },
-  {
-    slug: "marathon-pacing-calculator",
-    title: "Marathon Pacing Calculator",
-    mission:
-      "Mile-by-mile marathon pacing built from real terrain, weather, and fatigue physiology -- not a preset pace table. Upload a course, pick a strategy and risk tolerance, and get paces, fueling, and an explanation for every mile.",
-    topics: ["Terrain- and weather-adjusted pacing", "Glycogen and durability tracking", "Course-adaptive strategies"],
-    category: "tools",
-  },
-  {
     slug: "choosing-a-pace-calculator",
     title: "Which Pace Calculator Should I Use?",
     mission:
@@ -3682,6 +3602,94 @@ export const sections: Section[] = [
         ],
       },
     ],
+  },
+  {
+    slug: "heat-tracker",
+    title: "Heat Tracker",
+    mission:
+      "Live WBGT readings and a 48-hour outlook to help you plan safe training around heat.",
+    topics: ["WBGT estimate", "48-hour outlook", "ACSM flag guidance"],
+    category: "tools",
+  },
+  {
+    slug: "pace-calculator",
+    title: "Pace & Heart Rate Calculator",
+    mission:
+      "Understand what your race result says about your fitness, where your training zones fall, and how your current ability translates across distances.",
+    topics: ["Race-time prediction", "Training paces", "Heart-rate zones"],
+    category: "tools",
+  },
+  {
+    slug: "environmental-calculator",
+    title: "Environmental Performance Calculator",
+    mission:
+      "Combine heat, humidity, wind, and elevation into one equivalent time -- analyze a past race, predict an upcoming one, or convert between conditions.",
+    topics: ["Equivalent performance", "Environmental breakdown", "Analyze / predict / convert"],
+    category: "tools",
+  },
+  {
+    slug: "gap-calculator",
+    title: "GAP Calculator",
+    mission:
+      "Find the flat-ground effort a hill pace was really worth, or the pace to target on a grade for an even effort.",
+    topics: ["Grade-adjusted pace", "Vertical speed targets", "Uphill/downhill asymmetry"],
+    category: "tools",
+  },
+  {
+    slug: "pace-percent-calculator",
+    title: "Pace Percent Calculator",
+    mission:
+      "Find a workout pace as a percentage of a reference pace, or back-solve the reference pace a workout implies -- the percentage-based method Renato Canova and other coaches use to prescribe intervals.",
+    topics: ["Percent of pace vs. percent of speed", "Forward and reverse calculations", "Unit conversion"],
+    category: "tools",
+  },
+  {
+    slug: "cv-threshold-calculator",
+    title: "Threshold, CV & VO2 Max Pace Calculator",
+    mission:
+      "Predict threshold, critical velocity, and VO2 max training paces (with uncertainty ranges, not just one number) from a single 800m-10K performance.",
+    topics: ["Statistically-grounded pace prediction", "Safe vs. median estimates", "Age-adjusted"],
+    category: "tools",
+  },
+  {
+    slug: "race-pace-calculator",
+    title: "Race Pace Calculator",
+    mission:
+      "Convert between a goal race time and the pace required to run it, for any standard or custom distance and split unit.",
+    topics: ["Race time to pace", "Pace to race time", "Custom distances and splits"],
+    category: "tools",
+  },
+  {
+    slug: "hr-threshold-calculator",
+    title: "LT1 & LT2 Heart Rate Reference Ranges",
+    mission:
+      "See where the aerobic threshold (LT1) and lactate threshold (LT2) typically fall on a heart rate monitor, from a real meta-analysis rather than a fixed rule of thumb.",
+    topics: ["Meta-analytic reference ranges", "% of max HR and HR reserve", "Population variability"],
+    category: "tools",
+  },
+  {
+    slug: "tinman-calculator",
+    title: "Tinman Running Calculator",
+    mission:
+      "Independently reverse-engineered from Tom Schwartz's public running calculator -- a performance rating, 30 equivalent race predictions, and paces for all 13 training zones from one recent race.",
+    topics: ["Performance rating", "Equivalent race times", "13 training zones"],
+    category: "tools",
+  },
+  {
+    slug: "marathon-pacing-calculator",
+    title: "Marathon Pacing Calculator",
+    mission:
+      "Mile-by-mile marathon pacing built from real terrain, weather, and fatigue physiology -- not a preset pace table. Upload a course, pick a strategy and risk tolerance, and get paces, fueling, and an explanation for every mile.",
+    topics: ["Terrain- and weather-adjusted pacing", "Glycogen and durability tracking", "Course-adaptive strategies"],
+    category: "tools",
+  },
+  {
+    slug: "altitude-calculator",
+    title: "Altitude Calculator",
+    mission:
+      "Estimate how altitude affects aerobic capacity, and convert VO2 max between elevations, using acclimatized and unacclimatized altitude-performance models.",
+    topics: ["Available capacity at altitude", "VO2 max conversion between elevations", "Acclimatized vs. unacclimatized"],
+    category: "tools",
   },
 ];
 

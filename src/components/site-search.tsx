@@ -11,21 +11,37 @@ import type { SiteSearchResults } from "@/lib/search/run-search";
 import { EmptyState } from "@/components/ui/empty-state";
 
 type SiteSearchBoxProps = {
-  // "header": a fixed-width input with a portaled dropdown -- used in the
-  // desktop bar (always mounted) and the mobile search row (mounted only
-  // while toggled open via the header's search icon). "page": a full-width
-  // input on /search with results rendered inline below it, no dropdown.
+  // "header": a full-width input with a portaled dropdown -- used in the
+  // header's collapsible search row (see site-header.tsx), at every
+  // breakpoint, sized to match that row's own max-w-chrome content width.
+  // "page": a full-width input on /search with results rendered inline
+  // below it, no dropdown.
   variant: "header" | "page";
   initialQuery?: string;
   initialResults?: SiteSearchResults | null;
   onNavigate?: () => void;
+  // True while the header's own search row is collapsed/collapsing --
+  // forces this box's own dropdown closed in lockstep, so a portaled
+  // results panel (rendered outside the row's own DOM subtree, hence
+  // immune to the row's own max-height/inert collapse) never keeps
+  // floating on screen after the row it belongs to has disappeared.
+  // Irrelevant to variant="page" (no dropdown concept there), so it's
+  // optional rather than a required prop that call site would have to
+  // pass a meaningless value for.
+  forceClose?: boolean;
 };
 
 type Rect = { top: number; left: number; width: number };
 
 const URL_SYNC_DEBOUNCE_MS = 350;
 
-export function SiteSearchBox({ variant, initialQuery = "", initialResults = null, onNavigate }: SiteSearchBoxProps) {
+export function SiteSearchBox({
+  variant,
+  initialQuery = "",
+  initialResults = null,
+  onNavigate,
+  forceClose,
+}: SiteSearchBoxProps) {
   const router = useRouter();
   const { query, setQuery, matches, aiSuggestions } = useSiteSearch(initialQuery, initialResults);
   const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +74,19 @@ export function SiteSearchBox({ variant, initialQuery = "", initialResults = nul
   }
   if (rowCount > 0 && selectedIndex > rowCount - 1) {
     setSelectedIndex(rowCount - 1);
+  }
+
+  // The header's own collapsible search row (site-header.tsx) collapsing is
+  // a signal from outside this component -- close the dropdown to match.
+  // Adjusted during render, not inside an effect: this codebase's own
+  // react-hooks/set-state-in-effect rule flags a setState call synchronous
+  // *inside an effect body* (see drawer.tsx's everOpened for the same
+  // pattern) -- this is a plain "derive state from a prop" case React's own
+  // docs describe adjusting during render instead, and the `isOpen` guard
+  // is what stops this from looping (it only fires the render where
+  // isOpen is still true and forceClose just became true).
+  if (forceClose && isOpen) {
+    setIsOpen(false);
   }
 
   const showDropdown = variant === "header" && isOpen;
@@ -132,9 +161,21 @@ export function SiteSearchBox({ variant, initialQuery = "", initialResults = nul
     updatePosition();
     window.addEventListener("resize", updatePosition);
     window.addEventListener("scroll", updatePosition, true);
+    // The header's search row (site-header.tsx) animates its own height
+    // open with a CSS transition -- if this box's wrapper is focused (and
+    // the dropdown opens) while that's still mid-transition, a plain
+    // resize/scroll listener never fires to correct the dropdown's
+    // position once the row finishes growing, since neither the window nor
+    // any scroll container actually changed size. ResizeObserver fires on
+    // every layout size change of the observed element itself, including
+    // mid-CSS-transition, which a discrete window "resize" event doesn't
+    // cover.
+    const resizeObserver = wrapperRef.current ? new ResizeObserver(updatePosition) : null;
+    if (wrapperRef.current && resizeObserver) resizeObserver.observe(wrapperRef.current);
     return () => {
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition, true);
+      resizeObserver?.disconnect();
     };
   }, [showDropdown]);
 
@@ -151,11 +192,17 @@ export function SiteSearchBox({ variant, initialQuery = "", initialResults = nul
   }, [showDropdown]);
 
   const inputHeightClass = "h-11";
-  const inputSizingClass =
-    variant === "header" ? "min-w-[27ch] max-w-[600px]" : "w-full";
 
   const inputEl = (
-    <div ref={wrapperRef} className={`relative w-full ${variant === "header" ? inputSizingClass : ""}`}>
+    // Full width in both variants now -- "header" used to cap at
+    // max-w-[600px] so the input stayed a reasonable size sitting in a
+    // flex-1 slot next to other header controls, back when it was
+    // always-visible inline in the top bar. Now that it's the sole content
+    // of its own dedicated row (site-header.tsx), it should span that
+    // row's own width -- the same max-w-chrome content width the navbar's
+    // logo/nav/icon row above it already uses -- not sit at a fixed size
+    // inside it.
+    <div ref={wrapperRef} className="relative w-full">
       <svg
         className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400"
         viewBox="0 0 20 20"
@@ -227,12 +274,18 @@ export function SiteSearchBox({ variant, initialQuery = "", initialResults = nul
         createPortal(
           <div
             ref={panelRef}
+            data-search-results-panel
             style={{ position: "fixed", top: rect.top, left: rect.left, width: rect.width }}
             className="z-[var(--z-dropdown)] overflow-hidden rounded-2xl border border-black/10 bg-white shadow-dropdown dark:border-white/10 dark:bg-zinc-900"
           >
             <div className="max-h-96 overflow-y-auto p-2">
               {!hasQuery ? (
-                <p className="px-3 py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                // No vertical padding of its own -- the outer p-2 wrapper
+                // already gives it breathing room, and stacking a second
+                // py-* on top of that (first py-6, then py-2) kept this
+                // taller than the 44px (h-11) search bar for one line of
+                // hint text.
+                <p className="px-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
                   Search articles, tools, and topics across the site.
                 </p>
               ) : (

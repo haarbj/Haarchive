@@ -35,31 +35,37 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <Container variant="content">
-      <h1 className="text-2xl font-semibold text-zinc-950 dark:text-white">Search</h1>
-      <div className="mt-6 max-w-xl">
-        <SiteSearchBox variant="page" initialQuery={query} initialResults={initialResults} />
+      {/* mx-auto max-w-xl centers the whole block (title, search box,
+          category shortcuts) as one column within the wider content
+          container, rather than the title spanning the full 1080px width
+          while the actual search box sits alone at its left edge. */}
+      <div className="mx-auto max-w-xl">
+        <h1 className="text-2xl font-semibold text-zinc-950 dark:text-white">Search</h1>
+        <div className="mt-6">
+          <SiteSearchBox variant="page" initialQuery={query} initialResults={initialResults} />
 
-        {/* SiteSearchBox renders nothing at all below the input until
-            there's a query -- previously left this page a near-blank gap
-            down to the footer for anyone who lands here without one
-            already typed. Category shortcuts give that visit somewhere to
-            go instead of a dead end. */}
-        {!query.trim() && (
-          <div className="mt-10">
-            <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Or browse by topic</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Link
-                  key={category.slug}
-                  href={`/${category.slug}`}
-                  className="rounded-pill border border-black/10 px-3.5 py-2 text-sm font-medium text-zinc-700 transition hover:bg-black/5 hover:text-zinc-950 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                  {category.title}
-                </Link>
-              ))}
+          {/* SiteSearchBox renders nothing at all below the input until
+              there's a query -- previously left this page a near-blank gap
+              down to the footer for anyone who lands here without one
+              already typed. Category shortcuts give that visit somewhere to
+              go instead of a dead end. */}
+          {!query.trim() && (
+            <div className="mt-10">
+              <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Or browse by topic</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={`/${category.slug}`}
+                    className="rounded-pill border border-black/10 px-3.5 py-2 text-sm font-medium text-zinc-700 transition hover:bg-black/5 hover:text-zinc-950 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+                  >
+                    {category.title}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Container>
   );

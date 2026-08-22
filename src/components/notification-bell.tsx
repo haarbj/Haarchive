@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/db/client";
 import { useAuthStatus } from "@/lib/use-auth-status";
 import { formatRelativeTime } from "@/lib/format";
+import { notificationHref } from "@/lib/notifications/notification-href";
 import type { NotificationType } from "@/lib/notifications/types";
 
 type NotificationRow = {
@@ -19,34 +20,6 @@ type NotificationRow = {
 
 const POLL_INTERVAL_MS = 45_000;
 const LIST_LIMIT = 20;
-
-// Every place a notification's related_entity_id can actually be resolved
-// to a page the recipient has access to -- see the trigger call sites
-// (contribute/review/actions.ts, admin/articles/actions.ts, etc.) for why
-// each of these specifically, e.g. article_comment links to the author's
-// own edit page rather than the reviewer-only /contribute/review/[id],
-// which the author has no access to.
-function notificationHref(type: NotificationType, relatedEntityId: string | null): string | null {
-  if (type === "article_comment" || type === "article_status_changed") {
-    return relatedEntityId ? `/contribute/articles/${relatedEntityId}` : null;
-  }
-  if (type === "question_comment") {
-    return relatedEntityId ? `/contribute/questions/${relatedEntityId}` : null;
-  }
-  if (type === "suggestion_reviewed") {
-    return "/contribute/suggestions";
-  }
-  if (type === "user_signed_up") {
-    return "/admin/users";
-  }
-  if (type === "contributor_application_submitted") {
-    return "/admin/contributor-applications";
-  }
-  if (type === "question_submitted") {
-    return relatedEntityId ? `/admin/questions/${relatedEntityId}` : "/admin/questions";
-  }
-  return null;
-}
 
 export function NotificationBell() {
   const authStatus = useAuthStatus();
