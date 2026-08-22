@@ -22,6 +22,7 @@ type Profile = {
   display_name: string;
   units: "mi" | "km";
   avatar_url: string | null;
+  email_unsubscribed_at: string | null;
 };
 
 type AthleteProfile = {
@@ -63,7 +64,7 @@ export default async function SettingsPage() {
     { data: injuries },
     { data: learningPreferences },
   ] = await Promise.all([
-      supabase.from("profiles").select("display_name, units, avatar_url").single<Profile>(),
+      supabase.from("profiles").select("display_name, units, avatar_url, email_unsubscribed_at").single<Profile>(),
       supabase
         .from("athlete_profiles")
         .select(
@@ -103,6 +104,7 @@ export default async function SettingsPage() {
         <SettingsForm
           initialDisplayName={profile?.display_name ?? ""}
           initialUnits={profile?.units ?? "mi"}
+          initialEmailUnsubscribed={profile?.email_unsubscribed_at != null}
           email={session!.email ?? ""}
         />
       </div>

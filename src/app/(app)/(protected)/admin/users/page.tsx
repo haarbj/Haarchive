@@ -3,8 +3,9 @@ import Link from "next/link";
 
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { isAdminEmail } from "@/lib/auth/session";
-import { loadAllUsers } from "@/lib/admin/users";
-import { UserPermissionsRow } from "./user-permissions-row";
+import { loadAllUsersWithDetails } from "@/lib/admin/users";
+import { matchesUserSearch, matchesUserType, type UserTypeFilter } from "@/lib/admin/user-filters";
+import { UserManagementPanel } from "./user-management-panel";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 // admin/actions.ts uses for coach invites.
 const BRONCOS_TEAM_ID = "00000000-0000-0000-0000-000000000001";
 
-type UserRow = {
+export type UserRow = {
   id: string;
   email: string;
   displayName: string;
@@ -27,9 +28,17 @@ type UserRow = {
   reviewer: boolean;
   trainingDashboardAccess: boolean;
   isAdmin: boolean;
+  createdAt: string;
+  lastSignInAt: string | null;
+  /** Has at least one team_memberships row -- the same "approved" gate getAppSession() uses to unlock /dashboard. */
+  status: "active" | "pending";
+  learningEventCount: number;
+  savedCalculationCount: number;
+  /** ISO timestamp, or null if never unsubscribed -- see profiles.email_unsubscribed_at. */
+  emailUnsubscribedAt: string | null;
 };
 
-type TypeKey = "admin" | "contributor" | "reviewer" | "coach" | "none";
+type TypeKey = UserTypeFilter;
 
 const TYPE_OPTIONS: { key: TypeKey; label: string }[] = [
   { key: "admin", label: "Admin" },
@@ -48,19 +57,32 @@ const TYPE_OPTIONS: { key: TypeKey; label: string }[] = [
 async function loadUsers(): Promise<UserRow[]> {
   const admin = createServiceRoleClient();
 
-  const [users, { data: memberships }, { data: permissionRows }] = await Promise.all([
-    loadAllUsers(),
-    admin
-      .from("team_memberships")
-      .select("user_id, role")
-      .eq("team_id", BRONCOS_TEAM_ID)
-      .returns<{ user_id: string; role: string }[]>(),
-    admin
-      .from("user_permissions")
-      .select("user_id, permission")
-      .returns<{ user_id: string; permission: string }[]>(),
-  ]);
+  const [users, { data: memberships }, { data: permissionRows }, { data: learningEventRows }, { data: savedCalcRows }] =
+    await Promise.all([
+      loadAllUsersWithDetails(),
+      admin
+        .from("team_memberships")
+        .select("user_id, role")
+        .eq("team_id", BRONCOS_TEAM_ID)
+        .returns<{ user_id: string; role: string }[]>(),
+      admin
+        .from("user_permissions")
+        .select("user_id, permission")
+        .returns<{ user_id: string; permission: string }[]>(),
+      // Single aggregate query per metric (not per-user): only the user_id
+      // column, counted in memory below. learning_events already covers
+      // tool_used/note_taken/knowledge_check_answered/content_viewed/etc.
+      // in one table, so this one count is a reasonable proxy for overall
+      // engagement without a query per event type.
+      admin.from("learning_events").select("user_id").returns<{ user_id: string }[]>(),
+      admin.from("saved_calculations").select("user_id").returns<{ user_id: string }[]>(),
+    ]);
 
+  // Only one team exists in the whole app (see BRONCOS_TEAM_ID's own
+  // comment elsewhere) -- so ANY membership row for it, regardless of
+  // role, is exactly getAppSession()'s own `approved = memberships.length
+  // > 0` gate for unlocking /dashboard.
+  const approvedIds = new Set((memberships ?? []).map((m) => m.user_id));
   const coachIds = new Set((memberships ?? []).filter((m) => m.role === "coach").map((m) => m.user_id));
   const contributorIds = new Set(
     (permissionRows ?? []).filter((p) => p.permission === "content_contributor").map((p) => p.user_id),
@@ -69,36 +91,24 @@ async function loadUsers(): Promise<UserRow[]> {
     (permissionRows ?? []).filter((p) => p.permission === "reviewer").map((p) => p.user_id),
   );
 
+  const countByUser = (rows: { user_id: string }[] | null) => {
+    const counts = new Map<string, number>();
+    for (const row of rows ?? []) counts.set(row.user_id, (counts.get(row.user_id) ?? 0) + 1);
+    return counts;
+  };
+  const learningEventCounts = countByUser(learningEventRows);
+  const savedCalcCounts = countByUser(savedCalcRows);
+
   return users.map((u) => ({
     ...u,
     contentContributor: contributorIds.has(u.id),
     reviewer: reviewerIds.has(u.id),
     trainingDashboardAccess: coachIds.has(u.id),
     isAdmin: isAdminEmail(u.email),
+    status: approvedIds.has(u.id) ? "active" : "pending",
+    learningEventCount: learningEventCounts.get(u.id) ?? 0,
+    savedCalculationCount: savedCalcCounts.get(u.id) ?? 0,
   }));
-}
-
-function matchesSearch(user: UserRow, query: string): boolean {
-  const q = query.trim().toLowerCase();
-  if (!q) return true;
-  return user.email.toLowerCase().includes(q) || user.displayName.toLowerCase().includes(q);
-}
-
-function matchesType(user: UserRow, type: TypeKey | undefined): boolean {
-  switch (type) {
-    case "admin":
-      return user.isAdmin;
-    case "contributor":
-      return user.contentContributor;
-    case "reviewer":
-      return user.reviewer;
-    case "coach":
-      return user.trainingDashboardAccess;
-    case "none":
-      return !user.isAdmin && !user.contentContributor && !user.reviewer && !user.trainingDashboardAccess;
-    default:
-      return true;
-  }
 }
 
 export default async function UsersPermissionsPage({
@@ -110,7 +120,7 @@ export default async function UsersPermissionsPage({
   const typeKey = TYPE_OPTIONS.some((o) => o.key === type) ? (type as TypeKey) : undefined;
   const users = await loadUsers();
   const filtered = users
-    .filter((user) => matchesSearch(user, q ?? "") && matchesType(user, typeKey))
+    .filter((user) => matchesUserSearch(user, q ?? "") && matchesUserType(user, typeKey))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   return (
@@ -159,13 +169,13 @@ export default async function UsersPermissionsPage({
         ))}
       </div>
 
-      <div className="mt-6 space-y-4">
-        {filtered.length > 0 ? (
-          filtered.map((user) => <UserPermissionsRow key={user.id} {...user} />)
-        ) : (
+      {filtered.length > 0 ? (
+        <UserManagementPanel users={filtered} />
+      ) : (
+        <div className="mt-6">
           <EmptyState>No users match these filters.</EmptyState>
-        )}
-      </div>
+        </div>
+      )}
     </Container>
   );
 }

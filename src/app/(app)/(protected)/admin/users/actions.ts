@@ -75,3 +75,34 @@ export async function updateUserPermissions(
   revalidatePath("/admin/users");
   return { success: true };
 }
+
+export type SetEmailUnsubscribedState = { error?: string; success?: boolean };
+
+// Deliberately separate from updateUserPermissions above -- this isn't a
+// permission (it grants no access), it's an email preference, and firing
+// immediately on click (see UserPermissionsRow) rather than needing its own
+// "Save changes" step matches DangerZone's own immediate-action buttons
+// elsewhere in this admin section. Writes profiles.email_unsubscribed_at
+// directly via the service-role client (bypassing RLS, same as every other
+// admin write on this page) since an admin marking someone ELSE
+// unsubscribed after a manual reply/bounce is a different path from that
+// same person unsubscribing themselves in Settings (see settings/actions.ts's
+// updateProfile, which uses the RLS-scoped client instead).
+export async function setUserEmailUnsubscribed(
+  userId: string,
+  unsubscribed: boolean,
+): Promise<SetEmailUnsubscribedState> {
+  const session = await getAppSession();
+  if (!session?.isAdmin) return { error: "Not authorized." };
+  if (typeof userId !== "string" || !userId) return { error: "Missing user." };
+
+  const admin = createServiceRoleClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({ email_unsubscribed_at: unsubscribed ? new Date().toISOString() : null })
+    .eq("id", userId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/users");
+  return { success: true };
+}

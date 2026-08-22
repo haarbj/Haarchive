@@ -43,6 +43,10 @@ export async function updateProfile(
 ): Promise<UpdateProfileState> {
   const displayName = formData.get("displayName");
   const units = formData.get("units");
+  // Standard unchecked-checkbox-sends-nothing handling, same convention as
+  // question-triage-panel's isFaq and admin/users' permission checkboxes.
+  const emailUnsubscribed = formData.get("emailUnsubscribed") === "on";
+  const wasEmailUnsubscribed = formData.get("wasEmailUnsubscribed") === "true";
 
   if (typeof displayName !== "string" || !displayName.trim()) {
     return { error: "Display name can't be empty" };
@@ -58,10 +62,19 @@ export async function updateProfile(
     return { error: "Your session expired. Sign in again." };
   }
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({ display_name: displayName.trim(), units })
-    .eq("id", userId);
+  const updates: { display_name: string; units: string; email_unsubscribed_at?: string | null } = {
+    display_name: displayName.trim(),
+    units,
+  };
+  // Only touch the timestamp when the checkbox actually changed -- saving
+  // the form for an unrelated field shouldn't stamp a fresh
+  // email_unsubscribed_at (or silently clear one an admin set) just
+  // because the box was already in that state.
+  if (emailUnsubscribed !== wasEmailUnsubscribed) {
+    updates.email_unsubscribed_at = emailUnsubscribed ? new Date().toISOString() : null;
+  }
+
+  const { error } = await supabase.from("profiles").update(updates).eq("id", userId);
 
   if (error) {
     return { error: error.message };

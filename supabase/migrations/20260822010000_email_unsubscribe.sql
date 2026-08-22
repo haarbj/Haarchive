@@ -1,0 +1,12 @@
+-- Manual email-unsubscribe marker, driven by the Users & Permissions admin
+-- page (an admin can mark someone unsubscribed after a manual reply/bounce)
+-- and by a self-service toggle in Settings. A nullable timestamp rather
+-- than a boolean, matching this schema's own convention for "did X happen"
+-- fields (read_at, onboarding_completed_at, last_synced_at) -- null means
+-- never unsubscribed, a real value is both a flag and a record of when.
+-- No RLS policy needed: profiles_update_own (see 20260708123358_rls_policies.sql)
+-- is a plain row-level policy with no column restriction, so it already
+-- covers this column for the self-service Settings path; the admin path
+-- writes via the service-role client, which bypasses RLS entirely, same
+-- as every other admin write in this schema.
+alter table public.profiles add column email_unsubscribed_at timestamptz;
