@@ -53,6 +53,18 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-08-25",
+    headline: "Fixed the logo shown in link previews",
+    detail:
+      "The image social apps and messaging clients show when a Haarchive link is shared was still built from an older two-tone version of the wordmark. It now uses the current single-color mark.",
+  },
+  {
+    date: "2026-08-25",
+    headline: "Mobile navigation now shows all six categories directly, and the homepage launch banner is gone",
+    detail:
+      "The hamburger menu no longer nests Physiology, Psychology, Philosophy, Practice, Library, and Tools behind a \"Learn\" accordion -- all six are visible and tappable right away, matching how desktop already treats them as independent top-level items. The homepage's \"New Tool\" strip for the Environmental Performance Calculator was also retired; the calculator itself is unchanged and still reachable from Tools.",
+  },
+  {
+    date: "2026-08-25",
     headline: "Fixed missing \"new signup\" notifications for accounts confirmed by email",
     detail:
       "Admins were only ever notified about new signups completed through Google, since the check for \"is this really a brand-new account\" compared account-creation time to first-sign-in time and assumed the two would land within a few seconds of each other -- true for OAuth, but never true for an email/password signup, where a real person has to go check their inbox first. It's now a direct, idempotent check instead of a timing guess.",

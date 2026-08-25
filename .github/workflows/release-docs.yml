@@ -47,6 +47,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+
+      # sync-last-updated.mjs imports the `typescript` package (a
+      # devDependency) to parse sections.ts -- without this, node_modules
+      # never exists in this job at all and that import fails with
+      # ERR_MODULE_NOT_FOUND the first time a push actually reaches that
+      # script.
+      - name: Install dependencies
+        run: npm ci
 
       # --- A. Synchronize generated files ----------------------------------
       - name: Sync README status block
