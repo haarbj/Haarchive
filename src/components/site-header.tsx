@@ -20,15 +20,10 @@ import { useTheme } from "@/lib/theme";
 // dropped from 8 unrelated categories to 6, see CLAUDE.md §9). Tools used
 // to be split out as a plain link with no dropdown at all; it's now
 // uniform with the other five.
-const TOOLS_SLUG = "tools";
 // Sections.length beyond this switches a category's dropdown from a single
 // column to a two-column grid, so a category with many sections (Tools,
 // Physiology, Practice) doesn't render one excessively tall list.
 const TWO_COLUMN_THRESHOLD = 4;
-// Mobile keeps its own pre-redesign "Learn" accordion (category names
-// only, no per-category chevron/dropdown) -- this desktop-only change
-// still needs the non-Tools category list for that mobile block.
-const learnCategories = categories.filter((category) => category.slug !== TOOLS_SLUG);
 
 function isCategoryActive(categorySlug: string, pathname: string): boolean {
   return (
@@ -119,7 +114,6 @@ export function SiteHeader() {
   // had, since there's no longer a shared panel).
   const [openCategorySlug, setOpenCategorySlug] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
   // Drives the collapsible search row at *every* breakpoint now, not just
   // mobile -- desktop used to show an always-visible search bar inline in
   // the header; it's now the same collapsed-icon-until-clicked row mobile
@@ -219,14 +213,9 @@ export function SiteHeader() {
   const closeAll = () => {
     setOpenCategorySlug(null);
     setMobileOpen(false);
-    setMobileLearnOpen(false);
     setSearchOpen(false);
   };
 
-  const toolsActive = isCategoryActive(TOOLS_SLUG, pathname);
-  // Mobile-only: whether any non-Tools category (or one of its sections) is
-  // the current page, for the mobile "Learn" accordion's own label styling.
-  const learnActive = pathname !== "/" && learnCategories.some((category) => isCategoryActive(category.slug, pathname));
   // /search already has its own full-width search input with results inline
   // below it -- the header's copy (mobile row + desktop bar) would just be
   // a second, visually-identical input stacked right above it.
@@ -567,73 +556,33 @@ export function SiteHeader() {
           it through. */}
       <div className={`min-h-0 border-t border-black/5 lg:hidden dark:border-white/10 ${mobileOpen ? "flex-1 overflow-y-auto" : "hidden"}`}>
         <div className="px-6 py-4">
-          <div className="border-b border-black/5 dark:border-white/10">
-            <div className="flex items-center justify-between py-3">
-              <span className={`text-sm font-medium ${learnActive ? "text-zinc-950 dark:text-white" : "text-zinc-900 dark:text-white"}`}>
-                Learn
-              </span>
-              <button
-                type="button"
-                aria-expanded={mobileLearnOpen}
-                aria-label="Toggle Learn submenu"
-                onClick={() => setMobileLearnOpen((v) => !v)}
-                className="p-1"
-              >
-                <svg
-                  className={`h-4 w-4 transition-transform ${mobileLearnOpen ? "rotate-180" : ""}`}
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden="true"
+          {/* All 6 categories visible right away, flat -- no "Learn"
+              accordion to tap through first. Matches desktop's own move to
+              6 independent top-level items (see this file's top-of-file
+              comment); mobile just can't show a hover dropdown per item, so
+              each is a direct link straight to that category's own landing
+              page, which is already the real drill-down step (see
+              CLAUDE.md §9) rather than something the nav needs to
+              reproduce. */}
+          <div className="flex flex-col border-b border-black/5 py-2 dark:border-white/10">
+            {categories.map((category) => {
+              const active = isCategoryActive(category.slug, pathname);
+              return (
+                <Link
+                  key={category.slug}
+                  href={`/${category.slug}`}
+                  onClick={closeAll}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-lg px-2 py-3 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/10 ${
+                    active
+                      ? "text-zinc-950 underline dark:text-white"
+                      : "text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                  }`}
                 >
-                  <path
-                    d="M5 7.5L10 12.5L15 7.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* Category names only -- not every section under every
-                category too. That used to make this the exact "expose
-                nearly every subsection" problem: tapping Learn once dumped
-                the entire site map (~40 links) in one flat list. Each
-                category's own landing page (/philosophy, /physiology, …)
-                already lists its sections cleanly -- that page *is* the
-                drill-down step, so the nav doesn't need to reproduce it. */}
-            <div
-              className={`overflow-hidden transition-[max-height] duration-200 ${
-                mobileLearnOpen ? "max-h-[28rem]" : "max-h-0"
-              }`}
-            >
-              <div className="flex flex-col pb-2">
-                {learnCategories.map((category) => (
-                  <Link
-                    key={category.slug}
-                    href={`/${category.slug}`}
-                    onClick={closeAll}
-                    className="rounded-lg px-2 py-3 text-sm font-medium text-zinc-700 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                  >
-                    {category.title}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="border-b border-black/5 py-3 dark:border-white/10">
-            <Link
-              href={`/${TOOLS_SLUG}`}
-              onClick={closeAll}
-              aria-current={toolsActive ? "page" : undefined}
-              className={`text-sm font-medium ${
-                toolsActive ? "text-zinc-950 underline dark:text-white" : "text-zinc-900 dark:text-white"
-              }`}
-            >
-              Tools
-            </Link>
+                  {category.title}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="border-b border-black/5 py-3 dark:border-white/10">

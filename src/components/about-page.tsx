@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { categories } from "@/lib/sections";
-import { FeatureAnnouncementLoader as FeatureAnnouncement } from "@/components/feature-announcement-loader";
 import { FeaturedEssay } from "@/components/featured-essay";
 import { PullQuote } from "@/components/pull-quote";
 import { Container } from "@/components/ui/container";
@@ -170,15 +169,6 @@ function PillarLine({ index }: { index: number }) {
 export function AboutPage() {
   return (
     <>
-      {/* Full-width, so it renders outside Container (which caps width) --
-          the one thing on this page not scoped to the reading column. */}
-      <FeatureAnnouncement
-        badge="New Tool"
-        title="Environmental Performance Calculator"
-        cta="Launch"
-        href="/environmental-calculator"
-      />
-
       <Container variant="wide">
         {/* Hero -- a hand-set h1 rather than the shared Heading primitive:
             every other page's h1 stays the site's standard scale, but the
