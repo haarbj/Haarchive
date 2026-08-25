@@ -71,9 +71,20 @@ export default async function SettingsPage() {
           "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event",
         )
         .maybeSingle<AthleteProfile>(),
+      // Unlike profiles/athlete_profiles above (whose own RLS "select own"
+      // policies scope an unfiltered query to the caller for free),
+      // community_profiles' only select policy is fully public
+      // (`using (true)`, see 20260721010000_community_profiles.sql) --
+      // required so /community/[id] can show anyone's public profile, but
+      // it means nothing here narrows this read to "mine" without an
+      // explicit filter. Without it, this could read a different (or, past
+      // one existing row, an ambiguous) profile than the signed-in user's
+      // own, which both mis-set the "View how this looks to others" link's
+      // hasProfile flag and could prefill the form with someone else's bio.
       supabase
         .from("community_profiles")
         .select("bio, location, favorite_distances")
+        .eq("user_id", session!.userId)
         .maybeSingle<CommunityProfile>(),
       supabase
         .from("race_results")

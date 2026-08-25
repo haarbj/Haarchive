@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Aug 21, 2026](https://brodyhaar.com/release-notes)):** The Environmental Performance Calculator got more accurate on hilly routes, and can now factor in altitude
+**Latest update ([Aug 25, 2026](https://brodyhaar.com/release-notes)):** Fixed missing "new signup" notifications for accounts confirmed by email
 
 Recent highlights:
-- Fixed co-authors being unable to reach their own article drafts (Aug 21, 2026)
-- Signed-out readers can now see what signing in would unlock (Aug 21, 2026)
-- Learning Progress launched: a real sense of what you've mastered, not just read (Aug 19, 2026)
+- A real light/dark toggle, and the article and Library/Tools pages were rebuilt around the new editorial identity (Aug 25, 2026)
+- New Foundations content drawn from Running with the Buffaloes and Daniels' Running Formula (Aug 25, 2026)
+- The Environmental Performance Calculator got more accurate on hilly routes, and can now factor in altitude (Aug 21, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

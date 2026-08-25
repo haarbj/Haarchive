@@ -5,7 +5,7 @@
 // third page (coach-page.tsx) needed the exact same recipe.
 export const eyebrowClass = "text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500";
 export const sectionHeadingClass =
-  "mt-3 scroll-mt-24 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white";
+  "mt-3 scroll-mt-24 font-serif text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl dark:text-white";
 export const sectionDividerClass = "mt-16 border-t border-black/5 pt-14 dark:border-white/10";
 export const sectionProseClass = "mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300";
 export const inlineLinkClass =

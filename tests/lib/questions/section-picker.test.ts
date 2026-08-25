@@ -9,7 +9,7 @@ describe("buildLinkableTargets", () => {
     const recoveryPage = targets.find((t) => t.value === "recovery");
     expect(recoveryPage).toBeDefined();
     expect(recoveryPage?.label).toBe("Recovery");
-    expect(recoveryPage?.categoryTitle).toBe("Recovery & Fueling");
+    expect(recoveryPage?.categoryTitle).toBe("Physiology");
   });
 
   it("includes a heading-anchored target matching the real reported bug", () => {

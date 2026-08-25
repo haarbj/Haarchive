@@ -2,6 +2,26 @@
 
 import { useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  Circle,
+  Cloud,
+  CircleDot,
+  Compass,
+  Droplet,
+  Globe,
+  Map,
+  MapPin,
+  Minus,
+  Mountain,
+  MountainSnow,
+  PenLine,
+  Route as RouteIcon,
+  Thermometer,
+  Wind as WindIcon,
+} from "lucide-react";
 
 import { ConfidenceRangeBar } from "@/components/confidence-range-bar";
 import { ContentCallout } from "@/components/content-callout";
@@ -244,13 +264,13 @@ function numericRange<T>(points: T[] | null, select: (point: T) => number, forma
  * than presenting one snapshot as if it held for the whole effort.
  */
 function ConditionValueRow({
-  icon,
+  icon: Icon,
   label,
   range,
   rangeUnitSuffix,
   representativeLabel,
 }: {
-  icon: string;
+  icon: LucideIcon;
   label: string;
   range: { minLabel: string; maxLabel: string } | null;
   /** e.g. "°F" or "ft" -- appended once after the range, not on every value. */
@@ -259,8 +279,9 @@ function ConditionValueRow({
 }) {
   return (
     <div className="flex items-start justify-between gap-3">
-      <span className="pt-0.5 text-zinc-600 dark:text-zinc-300">
-        {icon} {label}
+      <span className="flex items-center gap-1.5 pt-0.5 text-zinc-600 dark:text-zinc-300">
+        <Icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+        {label}
       </span>
       <span className="text-right font-semibold text-zinc-900 dark:text-white">
         {range ? (
@@ -1167,7 +1188,10 @@ export function EnvironmentalCalculator() {
                 aria-pressed={courseType === "road"}
                 className={segmentedButtonClass(courseType === "road")}
               >
-                Road / open course
+                <span className="inline-flex items-center gap-1.5">
+                  <RouteIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  Road / open course
+                </span>
               </button>
               <button
                 type="button"
@@ -1175,7 +1199,10 @@ export function EnvironmentalCalculator() {
                 aria-pressed={courseType === "track"}
                 className={segmentedButtonClass(courseType === "track")}
               >
-                🏟️ Track (400m oval)
+                <span className="inline-flex items-center gap-1.5">
+                  <CircleDot className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  Track (400m oval)
+                </span>
               </button>
               <button
                 type="button"
@@ -1183,7 +1210,10 @@ export function EnvironmentalCalculator() {
                 aria-pressed={courseType === "route"}
                 className={segmentedButtonClass(courseType === "route")}
               >
-                🗺️ Import a route
+                <span className="inline-flex items-center gap-1.5">
+                  <Map className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  Import a route
+                </span>
               </button>
             </div>
             <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
@@ -1228,12 +1258,22 @@ export function EnvironmentalCalculator() {
                     ] as const
                   ).map((item) => (
                     <li key={item.label} className="flex items-center gap-1.5">
-                      <span aria-hidden="true">{item.done ? "✓" : "○"}</span>
+                      {item.done ? (
+                        <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+                      ) : (
+                        <Circle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                      )}
                       {item.label}
                     </li>
                   ))}
                   <li className="flex items-center gap-1.5">
-                    <span aria-hidden="true">{exposureDetected ? "✓" : exposureDetectionFailed ? "⚠" : "○"}</span>
+                    {exposureDetected ? (
+                      <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+                    ) : exposureDetectionFailed ? (
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    ) : (
+                      <Circle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    )}
                     {exposureDetected
                       ? "Terrain estimated automatically"
                       : exposureDetectionFailed
@@ -1510,7 +1550,10 @@ export function EnvironmentalCalculator() {
               aria-pressed={sourceA === "manual"}
               className={segmentedButtonClass(sourceA === "manual")}
             >
-              Enter manually
+              <span className="inline-flex items-center gap-1.5">
+                <PenLine className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                Enter manually
+              </span>
             </button>
             <button
               type="button"
@@ -1518,7 +1561,10 @@ export function EnvironmentalCalculator() {
               aria-pressed={sourceA === "auto"}
               className={segmentedButtonClass(sourceA === "auto")}
             >
-              🌍 Use weather data
+              <span className="inline-flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                Use weather data
+              </span>
             </button>
           </div>
         </div>
@@ -1543,10 +1589,13 @@ export function EnvironmentalCalculator() {
                 )}
 
                 {courseType === "route" && routeSummary ? (
-                  <p className="text-xs text-zinc-600 dark:text-zinc-300">
-                    📍 Location and time came straight from the imported activity -- weather was fetched
-                    automatically, with nothing else to look up.
-                    {envWeatherA.weatherMessage && ` ${envWeatherA.weatherMessage}`}
+                  <p className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span>
+                      Location and time came straight from the imported activity -- weather was fetched
+                      automatically, with nothing else to look up.
+                      {envWeatherA.weatherMessage && ` ${envWeatherA.weatherMessage}`}
+                    </span>
                   </p>
                 ) : (
                   <>
@@ -1605,14 +1654,14 @@ export function EnvironmentalCalculator() {
                     )}
                     <div className="mt-2 space-y-2 text-sm">
                       <ConditionValueRow
-                        icon="🌡️"
+                        icon={Thermometer}
                         label="Temperature"
                         range={numericRange(envWeatherA.weatherWindowPoints, (p) => p.tempC, (c) => cToF(c).toFixed(0))}
                         rangeUnitSuffix="°F"
                         representativeLabel={`${cToF(envWeatherA.fetchedConditions.tempC).toFixed(0)}°F (${envWeatherA.fetchedConditions.tempC.toFixed(0)}°C)`}
                       />
                       <ConditionValueRow
-                        icon="💧"
+                        icon={Droplet}
                         label="Humidity"
                         range={numericRange(envWeatherA.weatherWindowPoints, (p) => p.relativeHumidityPct, (h) => h.toFixed(0))}
                         rangeUnitSuffix="%"
@@ -1620,7 +1669,7 @@ export function EnvironmentalCalculator() {
                       />
                       {courseType === "route" && preciseAltitudeInputForDisplay ? (
                         <ConditionValueRow
-                          icon="🏔️"
+                          icon={MountainSnow}
                           label="Altitude"
                           range={
                             routeAltitudeRangeM
@@ -1633,7 +1682,10 @@ export function EnvironmentalCalculator() {
                       ) : (
                         envWeatherA.fetchedConditions.elevationM !== null && (
                           <div className="flex items-center justify-between gap-3">
-                            <span className="text-zinc-600 dark:text-zinc-300">🏔️ Altitude</span>
+                            <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-300">
+                              <MountainSnow className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                              Altitude
+                            </span>
                             <span className="font-semibold text-zinc-900 dark:text-white">
                               {Math.round(mToFt(envWeatherA.fetchedConditions.elevationM))}ft (
                               {Math.round(envWeatherA.fetchedConditions.elevationM)}m)
@@ -1643,8 +1695,9 @@ export function EnvironmentalCalculator() {
                       )}
                       {courseType !== "route" && (
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-zinc-600 dark:text-zinc-300">
-                            🧭 {courseType === "track" ? "Home straight faces" : "You run toward"}
+                          <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-300">
+                            <Compass className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                            {courseType === "track" ? "Home straight faces" : "You run toward"}
                           </span>
                           <span className="font-semibold text-zinc-900 dark:text-white">
                             {compassPointLabel(headingDeg)} ({Math.round(headingDeg)}°)
@@ -1652,7 +1705,10 @@ export function EnvironmentalCalculator() {
                         </div>
                       )}
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-300">💨 Wind blows from</span>
+                        <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-300">
+                          <WindIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                          Wind blows from
+                        </span>
                         <span className="font-semibold text-zinc-900 dark:text-white">
                           {compassPointLabel(envWeatherA.fetchedConditions.windFromBearingDeg)} (
                           {Math.round(envWeatherA.fetchedConditions.windFromBearingDeg)}°)
@@ -1669,20 +1725,26 @@ export function EnvironmentalCalculator() {
                         </div>
                       )}
                       <ConditionValueRow
-                        icon="💨"
+                        icon={WindIcon}
                         label="Speed"
                         range={numericRange(envWeatherA.weatherWindowPoints, (p) => msToMph(p.windSpeedMS), (mph) => mph.toFixed(0))}
                         rangeUnitSuffix=" mph"
                         representativeLabel={`${msToMph(envWeatherA.fetchedConditions.windSpeedMS).toFixed(0)} mph (${envWeatherA.fetchedConditions.windSpeedMS.toFixed(1)} m/s)`}
                       />
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-300">💨 Peak gust{envWeatherA.weatherWindowPoints && envWeatherA.weatherWindowPoints.length > 1 ? " (across run)" : ""}</span>
+                        <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-300">
+                          <WindIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                          Peak gust{envWeatherA.weatherWindowPoints && envWeatherA.weatherWindowPoints.length > 1 ? " (across run)" : ""}
+                        </span>
                         <span className="font-semibold text-zinc-900 dark:text-white">
                           {msToMph(envWeatherA.fetchedConditions.windGustsMS).toFixed(0)} mph ({envWeatherA.fetchedConditions.windGustsMS.toFixed(1)} m/s)
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-300">☁️ Cloud cover</span>
+                        <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-300">
+                          <Cloud className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                          Cloud cover
+                        </span>
                         <span className="font-semibold text-zinc-900 dark:text-white">
                           {envWeatherA.fetchedConditions.cloudCoverPct.toFixed(0)}%
                         </span>
@@ -1867,10 +1929,16 @@ export function EnvironmentalCalculator() {
                 ))}
               </div>
               {exposureMessage && (
-                <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
-                  {exposureDetected ? "📍 " : exposureDetectionFailed ? "⚠ " : ""}
-                  {exposureMessage}
-                  {exposureDetected && " -- pick a different option above to override."}
+                <p className="mt-1.5 flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  {exposureDetected ? (
+                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  ) : exposureDetectionFailed ? (
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  ) : null}
+                  <span>
+                    {exposureMessage}
+                    {exposureDetected && " -- pick a different option above to override."}
+                  </span>
                 </p>
               )}
               {!exposureMessage && (
@@ -2048,8 +2116,12 @@ export function EnvironmentalCalculator() {
               <summary className={summaryClass}>Confidence is {confidenceLevel} -- why?</summary>
               <ul className={`${detailsBodyClass} space-y-1`}>
                 {confidenceReasons.map((reason) => (
-                  <li key={reason.label}>
-                    {reason.strengthensConfidence ? "✓ " : "~ "}
+                  <li key={reason.label} className="flex items-center gap-1.5">
+                    {reason.strengthensConfidence ? (
+                      <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+                    ) : (
+                      <Minus className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    )}
                     {reason.label}
                   </li>
                 ))}
@@ -2148,7 +2220,7 @@ export function EnvironmentalCalculator() {
           <div className="mt-4">
             <ContentCallout
               variant="tip"
-              title="🎯 Training Guidance"
+              title="Training Guidance"
               text={trainingGuidance(
                 workoutConfig.targetSystem,
                 workoutConfig.driftDescription,
@@ -2160,7 +2232,7 @@ export function EnvironmentalCalculator() {
 
           {coachNotesText && (
             <div className="mt-4">
-              <ContentCallout variant="tip" title="🧑‍🏫 Coach's Notes" text={coachNotesText} />
+              <ContentCallout variant="tip" title="Coach's Notes" text={coachNotesText} />
             </div>
           )}
         </div>
@@ -2201,8 +2273,12 @@ export function EnvironmentalCalculator() {
                 </summary>
                 <ul className={`${detailsBodyClass} space-y-1`}>
                   {confidenceReasons.map((reason) => (
-                    <li key={reason.label}>
-                      {reason.strengthensConfidence ? "✓ " : "~ "}
+                    <li key={reason.label} className="flex items-center gap-1.5">
+                      {reason.strengthensConfidence ? (
+                        <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+                      ) : (
+                        <Minus className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                      )}
                       {reason.label}
                     </li>
                   ))}
@@ -2307,7 +2383,7 @@ export function EnvironmentalCalculator() {
             <div className="mt-4">
               <ContentCallout
                 variant={altIsBetter ? "tip" : "research"}
-                title="🎯 Coaching Application"
+                title="Coaching Application"
                 text={
                   altIsBetter
                     ? `Given today's conditions, ${REP_TYPE_OPTIONS.find((option) => option.value === altRepType)?.label} would be the better starting line -- about ${Math.abs(outcome.estimateSeconds - altOutcome.estimateSeconds).toFixed(1)}s faster than the standard ${REP_TYPE_OPTIONS.find((option) => option.value === repType)?.label} for the identical effort. Which segments you skip is a real, exploitable choice on a windy day, not a formality.`
@@ -2351,14 +2427,14 @@ export function EnvironmentalCalculator() {
 
           {coachNotesText && (
             <div className="mt-4">
-              <ContentCallout variant="tip" title="🧑‍🏫 Coach's Notes" text={coachNotesText} />
+              <ContentCallout variant="tip" title="Coach's Notes" text={coachNotesText} />
             </div>
           )}
 
           <div className="mt-4">
             <ContentCallout
               variant="tip"
-              title="🎯 How to use this"
+              title="How to use this"
               text="Treat the estimate and range as a sanity check, not a promise -- if a race went badly in tough conditions, this can show you it was still a strong effort. If you're setting a goal for an upcoming race, use the low end of the range for a conservative target and the high end as your ceiling."
             />
           </div>
@@ -2387,7 +2463,7 @@ export function EnvironmentalCalculator() {
                 >
                   ▶
                 </span>
-                🌡️ Heat
+                <span className="inline-flex items-center gap-1.5"><Thermometer className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Heat</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -2429,7 +2505,7 @@ export function EnvironmentalCalculator() {
                 >
                   ▶
                 </span>
-                💧 Humidity
+                <span className="inline-flex items-center gap-1.5"><Droplet className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Humidity</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -2463,7 +2539,7 @@ export function EnvironmentalCalculator() {
                 >
                   ▶
                 </span>
-                💨 Wind
+                <span className="inline-flex items-center gap-1.5"><WindIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Wind</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -2506,7 +2582,7 @@ export function EnvironmentalCalculator() {
                     >
                       ▶
                     </span>
-                    🏟️ Why a track needs more than the road model
+                    <span className="inline-flex items-center gap-1.5"><CircleDot className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Why a track needs more than the road model</span>
                   </summary>
                   <div className={detailsBodyClass}>
                     <p>
@@ -2572,7 +2648,7 @@ export function EnvironmentalCalculator() {
                 >
                   ▶
                 </span>
-                ⛰️ Elevation vs. Altitude -- two different things
+                <span className="inline-flex items-center gap-1.5"><Mountain className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Elevation vs. Altitude -- two different things</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -2586,7 +2662,7 @@ export function EnvironmentalCalculator() {
                   from one that runs the same distance at a constant 7,500ft: comparable elevation-gain cost, very
                   different (and in this case understated by a &ldquo;7,500ft the whole way&rdquo; assumption)
                   altitude cost. They&rsquo;re modeled, ranged, and shown as two separate factors below for exactly
-                  this reason -- see 🏔️ Altitude next.
+                  this reason -- see Altitude next.
                 </p>
                 <p className="mt-2">
                   Climbing costs substantially more energy per vertical meter than descending recovers -- this uses
@@ -2618,7 +2694,10 @@ export function EnvironmentalCalculator() {
                 >
                   ▶
                 </span>
-                🏔️ Altitude
+                <span className="inline-flex items-center gap-1.5">
+                  <MountainSnow className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  Altitude
+                </span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -2756,7 +2835,7 @@ export function EnvironmentalCalculator() {
                   This hourly ceiling applies to temperature, humidity, and wind <em>speed</em> -- wind{" "}
                   <em>direction</em>{" "}
                   is a genuine exception, since it comes from the route file&rsquo;s own real
-                  heading at each point rather than from Open-Meteo at all (see 💨 Wind above).
+                  heading at each point rather than from Open-Meteo at all (see Wind above).
                 </p>
                 <p className="mt-2">
                   <strong className="font-semibold text-zinc-900 dark:text-white">Altitude data:</strong>{" "}
@@ -2785,7 +2864,7 @@ export function EnvironmentalCalculator() {
                   <strong className="font-semibold text-zinc-900 dark:text-white">Not modeled at all:</strong>{" "}
                   Direct sunlight/solar radiation and air quality aren&rsquo;t factored in -- each is a large
                   enough topic to deserve its own well-grounded model rather than a rough guess bolted onto this
-                  one. Wind gusts are shown but not used in the calculation (see 💨 Wind above).
+                  one. Wind gusts are shown but not used in the calculation (see Wind above).
                 </p>
               </div>
             </details>

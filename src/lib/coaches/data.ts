@@ -455,6 +455,8 @@ export const coaches: Coach[] = [
       "Respect the taper as much as the buildup",
       "VO₂max and running economy are trained separately",
       "Consistency in moderate training beats sporadic heroics",
+      "Build a season backward from the goal race, not forward from day one",
+      "Include real resistance training as a standing part of the week, not an afterthought",
     ],
     physiologicalEmphasis: ["vo2max", "lactateThreshold", "runningEconomy"],
     signatureWorkouts: [
@@ -469,13 +471,13 @@ export const coaches: Coach[] = [
       { name: "Marathon-Pace Long Runs", description: "Long runs that include sustained marathon-pace segments as fitness builds." },
     ],
     periodization: [
-      { label: "Base (Easy + Strides)", description: "Easy aerobic volume and short strides: no quality sessions yet." },
-      { label: "Early Quality (Threshold)", description: "Threshold work is introduced first, on top of the aerobic base." },
-      { label: "Peak Quality (VO₂max + Race-Pace)", description: "Interval and repetition work layer on, alongside race-pace long runs." },
-      { label: "Taper", description: "Volume drops sharply; intensity and recalculated paces stay sharp." },
+      { label: "B/FIP — Base, Foundation & Injury Prevention", description: "Mostly easy running and strides, with light resistance work: no quality sessions yet." },
+      { label: "IQ — Initial Quality", description: "Repetition-pace work added first, deliberately: a single new stress (speed) without adding aerobic or lactate-clearance demand yet." },
+      { label: "TQ — Transition Quality", description: "Interval-pace work added on top of repetition work: the single toughest phase, since it's the first genuinely new aerobic-anaerobic stress of the season." },
+      { label: "FQ — Final Quality", description: "Threshold work takes over as the primary emphasis; for longer-distance specialists, interval work is often dropped here because races themselves (5-20 minute efforts) now supply that same stimulus." },
     ],
     periodizationSummary:
-      "Phase boundaries are set by VDOT math, not a fixed calendar: a phase ends when the numbers say the current pace band has been absorbed, not when a set number of weeks has passed.",
+      "Daniels names and plans this four-phase season backward, not forward: he decides what the final (FQ) phase needs to contain first, since every earlier phase exists to prepare for it, then works back through TQ, IQ, and B/FIP in that order. Phase boundaries are set by VDOT math and real fitness signals, not a fixed calendar, and a season shorter than the full 24 weeks is compressed by dropping specific, pre-ranked weeks from each phase rather than cutting arbitrarily.",
     weeklyStructure: [
       { day: "Monday", session: "Easy + strides" },
       { day: "Tuesday", session: "Threshold (T-pace)" },
@@ -511,6 +513,14 @@ export const coaches: Coach[] = [
       {
         myth: "Faster is always better in training.",
         reality: "Daniels was famously precise that R-pace and I-pace shouldn't be run faster than prescribed: overshooting trains the wrong system and adds unnecessary fatigue.",
+      },
+      {
+        myth: "VDOT is a measured VO₂max.",
+        reality: "Daniels calls it a \"pseudo VO₂max,\" derived entirely from a real race performance rather than a lab test. A runner's VDOT and lab-measured VO₂max can legitimately differ, since VDOT bakes in running economy along with aerobic power: a lower lab number than VDOT would predict usually means better-than-average economy, not a bad test.",
+      },
+      {
+        myth: "Daniels doesn't believe in strength training.",
+        reality: "He states directly that he encourages all runners to include resistance training in their weekly program, generally three times a week during the base phase, and outlines a specific bodyweight circuit for runners without gym access. It's a real, standing part of the system, just secondary to the pace-zone content that dominates his public reputation.",
       },
     ],
     criticisms: [
@@ -2343,6 +2353,357 @@ export const coaches: Coach[] = [
       { label: "Research Library", href: "/research-library" },
       { label: "Threshold, CV & VO2 Max Pace Calculator", href: "/cv-threshold-calculator" },
       { label: "Data & Analytics", href: "/data-and-analytics" },
+    ],
+  },
+
+  {
+    // Sourced entirely from Chris Lear's Running with the Buffaloes (2011
+    // ed.), an embedded season of reporting inside the 1998 University of
+    // Colorado men's cross country program -- see the book's own primary
+    // source entry below. Every quote, page number, and factual claim here
+    // traces to that single book, not to independent biographical research;
+    // omit rather than guess wherever the book itself doesn't say.
+    slug: "wetmore",
+    name: "Mark Wetmore",
+    oneLiner: "Modified Lydiardism, built for a season with more than one peak.",
+    yearsActive: "1990s–present",
+    eventFocus: "General / All Distances",
+    activeYears: { start: 1992, end: null },
+    compare: {
+      primaryIdea: "Aerobic volume, compressed for multiple peaks a year",
+      primaryAdaptation: "Aerobic capacity, individualized within a shared team structure",
+      intensityPhilosophy: "Feel-based, five-phase sequencing",
+      mileagePhilosophy: "Very high, individualized against each athlete's own history",
+      recoveryPhilosophy: "Built into phase sequencing; composure treated as part of recovery",
+      longTermSustainability: "High: an explicit multi-year development horizon for every recruit",
+    },
+    historicalContext: {
+      emergedBecause:
+        "Coaching the University of Colorado men's cross country program from the early 1990s, Wetmore inherited Arthur Lydiard's own written system but faced a scheduling problem Lydiard's original model was never built for: a collegiate athlete has to peak roughly three times a year (indoor track, outdoor track, and cross country), not once.",
+      problemItSolved:
+        "He needed to keep Lydiard's aerobic-base-first sequencing intact while compressing and effectively repeating the anaerobic-to-taper portion of the cycle enough times a year to fit a college calendar, without simply skipping the base each time to save room for it.",
+      priorSystems:
+        "Wetmore has credited Lydiard's own Running to the Top directly, naming two specific ideas he took from it: that anaerobic and interval training is overrated relative to sustained aerobic development, and that an athlete has to continuously build aerobic capacity and then choose a specific time to peak.",
+      assumptionsChallenged:
+        "He treated a single-peak periodization model as something to adapt rather than either adopt whole or discard for a multi-peak season: the belief underneath the system stayed Lydiard's, only the sequencing it's compressed into changed.",
+      laterInfluence:
+        "His Colorado program won multiple further NCAA cross country titles in the years after the 1998 season Running with the Buffaloes documents, and by 2002 he had become the first coach in NCAA history to have won all four possible NCAA cross country titles: men's team, men's individual, women's team, and women's individual.",
+    },
+    philosophy: [
+      "Wetmore's own account of his central belief traces directly to Lydiard: \"anaerobic and interval training is overrated,\" and an athlete has to continuously develop aerobic capacity, then choose a specific time to race well (Lear, Running with the Buffaloes). The program is built explicitly, by its own coach's description, as \"modified Lydiardism\": the belief is Lydiard's, sequenced to fit a season with more than one championship rather than Lydiard's original single annual peak.",
+      "In daily practice, that belief is applied through individualized, tiered prescriptions inside one shared team session rather than either a single team-wide number or a fully bespoke plan per athlete: the same nominal workout, run by the whole squad at once, with pace and volume individualized by ability group. Volume itself is capped, not by a fixed team target, but by a rule tied to each athlete's own history: no more than roughly a 10% increase over that athlete's last successful peak volume.",
+      "The psychological side of the program is just as deliberate as the physiological one, and it runs against the grain of a more common motivational-rhetoric coaching style: Wetmore has described the team's actual competitive edge as composure rather than hype, and has stated an explicit policy of evaluating athletes over a long observation window rather than any single session or race, in both directions -- resisting the temptation to over-read either an unusually bad day or an unusually good one.",
+    ],
+    corePrinciples: [
+      "Build the aerobic base first, individualized to each athlete's own last successful volume",
+      "Compress and repeat Lydiard's five-phase sequence to fit a season with more than one peak",
+      "Evaluate a pattern across weeks, never a single session, in either direction",
+      "Composure over rhetoric: outcool the competition rather than out-hype it",
+      "Let athletes author the team's own season goal rather than dictate it to them",
+      "Name a specific limiter (talent, durability, determination, or courage) rather than a vague read on whether an athlete \"has it\"",
+    ],
+    physiologicalEmphasis: ["aerobicBase", "neuromuscularPower", "mentalPerformance", "fatigueResistance"],
+    signatureWorkouts: [
+      {
+        name: "Neuromuscular 300s",
+        description: "300m repeats with deliberately unstructured, self-paced recovery: a leg-speed and turnover stimulus, explicitly not an aerobic or anaerobic one.",
+        workoutLibraryHref: "/workout-library#a-workout-s-purpose-isn-t-always-aerobic-or-anaerobic",
+      },
+      {
+        name: "The Long Run at Altitude",
+        description: "A signature 14-to-17-mile out-and-back long run at elevation, run by feel rather than a fixed pace, with the return leg consistently faster than the outbound climb.",
+      },
+      {
+        name: "Tiered AT Fartlek",
+        description: "1:30 hard, 3:30 steady recovery, repeated for a total time individualized by ability group rather than one blanket prescription for the whole team.",
+      },
+      {
+        name: "Hill Repeats: Conserve Up, Roll Down",
+        description: "Hold or ease effort on the climb, then deliberately relax and let gravity add to the pace on the descent, banking the energy saved on the way up. See Racing a Hilly Course in 5K Training for the full tactical case.",
+      },
+    ],
+    periodization: [
+      {
+        label: "Ascending to Full Volume",
+        description: "Roughly six weeks, purely aerobic: no intervals, tempo runs, or anaerobic threshold work at all. Volume individualized per athlete, capped at a 10% increase over that athlete's own last successful peak.",
+      },
+      {
+        label: "Aerobic Short Specificity",
+        description: "Roughly five weeks: faster, more race-specific running reintroduced, but at full recovery so no meaningful oxygen debt accrues.",
+      },
+      {
+        label: "Aerobic Long Specificity",
+        description: "Roughly six weeks: longer aerobic efforts and fartlek work, recovery gradually shortening as paces converge toward actual goal-race pace.",
+      },
+      {
+        label: "Anaerobic Specificity",
+        description: "Through roughly six weeks before the championship: the season's first genuinely anaerobic work, short fast repeats with real, limited recovery.",
+      },
+      {
+        label: "Anaerobic Speed",
+        description: "The final two weeks: sprinting and short intervals faster than race pace, aimed as much at restoring sharpness and confidence as at any remaining physiological adaptation.",
+      },
+    ],
+    periodizationSummary:
+      "A five-phase cycle built directly on Lydiard's own base-then-anaerobic-then-taper sequence, compressed to fit inside a single competitive season rather than an entire year, and effectively repeated, at whatever aerobic base carries over, for indoor track, outdoor track, and cross country in turn.",
+    weeklyStructure: [
+      { day: "Monday", session: "\"OYO\" (On Your Own): easy running, the team's one unsupervised day" },
+      { day: "Tuesday", session: "Hard: AT or fartlek session" },
+      { day: "Wednesday", session: "Hard: medium-distance steady run" },
+      { day: "Thursday", session: "Easy, sometimes a neuromuscular leg-speed session" },
+      { day: "Friday", session: "Hard: interval or hill session" },
+      { day: "Saturday", session: "Easy, or a race" },
+      { day: "Sunday", session: "Hard: the long run" },
+    ],
+    weeklyStructureNote:
+      "Four hard days a week (Tuesday, Wednesday, Friday, Sunday) held constant across the whole season is a real, documented structural constant of this program (Lear, Running with the Buffaloes); the specific easy-day content filling the other three days is this site's own illustrative fill-in, not a literally documented weekly log.",
+    bestFor: [
+      { label: "Multi-peak seasons", description: "Built specifically for a calendar with more than one championship a year, not a single annual peak." },
+      { label: "Large squads with a wide talent spread", description: "The individualized-within-a-shared-structure model is built to train many athletes together without flattening them into one pace." },
+      { label: "Programs recruiting real walk-ons", description: "The multi-year development horizon and individualized volume rules assume real patience with an unheralded athlete's timeline." },
+      { label: "Athletes who respond to calm over hype", description: "The composure-first psychological philosophy fits an athlete who performs worse, not better, under high pre-race arousal." },
+    ],
+    notIdealFor: [
+      { label: "An athlete or program that needs precise, numeric feedback", description: "Much of the system runs on feel, tiered group targets, and a coach's long-window judgment rather than lab-measured pace zones." },
+      { label: "A short-notice goal with no multi-year runway", description: "The system explicitly asks recruits for a multi-year investment before real change shows up; it isn't built for a fast turnaround." },
+      { label: "The highest training volumes without a deliberate strength-training decision", description: "The program's own strength-training abstention is volume-specific; it's worth deciding on purpose at a lower volume, not adopting by default." },
+      { label: "A team that needs a coach's attention distributed evenly", description: "The program's own stated policy prioritizes its top athletes first; a squad that needs more even distribution of coaching time may not fit." },
+    ],
+    misunderstandings: [
+      {
+        myth: "\"Modified Lydiardism\" means Wetmore invented a new training philosophy.",
+        reality:
+          "The underlying belief is Lydiard's own, stated in Lydiard's own terms (build the aerobic base first, add anaerobic work only once it exists). What's adapted is the calendar the belief is compressed into -- a college season with three peaks a year, not Lydiard's single annual one -- not the belief itself.",
+      },
+      {
+        myth: "A successful season means the program has no real costs.",
+        reality:
+          "The 1998 season Running with the Buffaloes documents included two stress fractures, a season-ending neuroma, and a team captain who competed the entire year on a serious, undiagnosed knee injury. The coach himself later attributed part of the season's injury rate to his own misjudgment of training density and made a specific, stated adjustment for at least one athlete going forward (Lear, Running with the Buffaloes).",
+      },
+      {
+        myth: "The program is opposed to strength training on principle.",
+        reality:
+          "The stated reasoning is a volume-specific energy tradeoff for men running 85 to 95-plus miles a week, not a general claim that strength work doesn't help distance runners: see Strength Training for Runners for how this sits in real, acknowledged tension with this site's own generally favorable coverage.",
+      },
+    ],
+    criticisms: [
+      {
+        criticism: "No supplemental strength training at very high mileage",
+        explanation:
+          "The men's program prescribes no lifting at all for its highest-mileage runners, in direct, documented tension with the broader evidence for heavy, low-rep strength work covered in Strength Training for Runners.",
+        response:
+          "Wetmore's own stated reasoning is a volume-specific energy tradeoff -- \"trying to do circuits would be borrowing from Peter to pay Paul\" at 85-95+ miles a week (Lear, Running with the Buffaloes) -- not a claim that strength work is ineffective in general. Whether that tradeoff genuinely holds at that specific volume, versus simply being an unexamined default, hasn't been directly tested against a comparable program that adds real strength work on top of the same mileage.",
+      },
+      {
+        criticism: "A real, above-average injury rate in the one season most closely documented",
+        explanation:
+          "The 1998 season included two stress fractures and a season-ending neuroma among the team's top scorers, plus a captain who raced the entire season on a serious, concealed knee injury -- a genuine cost sitting alongside that season's real success.",
+        response:
+          "Wetmore didn't attribute this to bad luck after the fact: \"If we weren't hurt, we should have won. So I have to look critically at my own work and see what misjudgments I made,\" naming training density specifically as the likely factor and committing to adjust it for the athletes affected (Lear, Running with the Buffaloes). A program's own honest, closed-loop accounting of a real cost is a genuinely different thing from either denying the cost or treating it as unavoidable.",
+      },
+      {
+        criticism: "A documented, era-specific body-composition and leanness culture",
+        explanation:
+          "The book documents real instances of coach-directed weight criticism and caloric restriction for male athletes, including a stated team philosophy (\"leanness is underrated\") that reads as a genuine RED-S risk factor by current understanding, not a defensible training practice (Lear, Running with the Buffaloes; see Recovery for the fuller RED-S framework this sits inside).",
+        response:
+          "This isn't a criticism this profile defends. It's presented here as real, historically documented coaching practice from a specific era that should be read critically, not adopted -- consistent with how this site treats any other historically documented but no-longer-defensible practice elsewhere in the Coaching Library.",
+      },
+    ],
+    strongestArgument:
+      "The results outlasted the one season this program is best documented through: multiple further NCAA titles in the years that followed, and a real, repeated record of unrecruited or lightly recruited walk-ons developing into All-Americans across more than one era of the roster, under the same volume-and-patience model rather than a scholarship-athlete-only success story.",
+    otherCoachesCritique: [
+      {
+        coachSlug: "daniels",
+        critique:
+          "Jack Daniels might argue that a feel-based, tiered-group system with no lactate-tested pace zones makes it hard to know precisely how much of a team's improvement is real physiological adaptation versus everyone simply getting fitter together at once.",
+      },
+      {
+        coachSlug: "vigil",
+        critique:
+          "Joe Vigil might argue that a program built this heavily around aerobic volume and composure leaves real gains on the table by not formally coaching biomechanics and psychology as their own dedicated training components, the way his own whole-athlete system does.",
+      },
+      {
+        coachSlug: "norwegian-system",
+        critique:
+          "The Norwegian system's coaches might argue that controlling intensity by feel and group pacing, rather than measured blood lactate, risks exactly the kind of training-density mistake this program's own most closely chronicled season documented -- lactate testing exists specifically to catch that before an injury does, not after.",
+      },
+    ],
+    dailyLife: {
+      narrative:
+        "If Mark Wetmore coached you, your week would run on four fixed hard days (Tuesday, Wednesday, Friday, Sunday) held constant all season, with your own individual pace and volume targets pinned to your own history, not the team's. You'd hear a lot less pre-race pep talk than you might expect, and a lot more emphasis on staying calm.",
+      easyDays: "Aerobic and unstructured, sometimes doubled as a neuromuscular leg-speed day; Monday is the team's one unsupervised (\"OYO\") day.",
+      hardSessions: "Four a week, every week, all season: an AT or fartlek session, a steady medium-distance run, an interval or hill session, and the long run, with pace and total volume individualized by ability group rather than one number for the whole team.",
+      frequency: "Constant rather than cyclical: the same four-hard-day structure holds from the first week of the season through the anaerobic phase, with the phase, not the weekly frequency, changing what those four days are actually training.",
+      recovery: "Built into the phase sequencing itself (aerobic work is easier to recover from than anaerobic work, so most of the season is aerobic), plus a real, deliberate emphasis on staying psychologically calm and rested rather than emotionally cranked up before a race.",
+      mileage: "Very high at the top of the roster (85-100+ miles a week at peak for the varsity men) but individualized by a stated rule: no more than a 10% increase over an athlete's own last successful peak volume, not a fixed team number.",
+      progression: "Five phases across a season -- aerobic base, aerobic short specificity, aerobic long specificity, anaerobic specificity, anaerobic speed -- compressed and effectively repeated across a full year for indoor track, outdoor track, and cross country in turn.",
+      mistakes: "Evaluated over a long window, not any single day: a bad session is expected to happen and isn't treated as a verdict, and a plan will be abandoned mid-session if the data in front of the coach says continuing isn't serving the actual goal. A real injury or setback gets a direct, closed-loop response: the coach has publicly attributed at least one season's above-average injury rate to his own misjudgment of training density and adjusted specific athletes' loads going forward, rather than treating the injuries as simply bad luck.",
+    },
+    lastingInfluence: {
+      paragraphs: [
+        "The 1998 season chronicled in Chris Lear's Running with the Buffaloes ended with a third-place NCAA team finish and an individual national championship, but the program's success continued well beyond that one season: Wetmore's Colorado teams won multiple further NCAA cross country titles in the years that followed, and by 2002 he had become the first coach in NCAA history to win all four possible NCAA cross country titles: men's team, men's individual, women's team, and women's individual.",
+        "The program is also a real, documented example of walk-on development at scale: multiple unrecruited or lightly recruited athletes across more than one era of the roster became All-Americans under the same volume-and-patience model, not only the program's most heavily recruited scholarship athletes.",
+      ],
+      items: [
+        { label: "Ideas Introduced", description: "A publicly documented, five-phase adaptation of Lydiard's single-peak periodization for a season with more than one championship." },
+        { label: "Coaching Practice", description: "An explicit, named policy of evaluating athletes over a long observation window (\"100 days to impress me\") rather than any single session or race." },
+        { label: "Long-Term Impact", description: "A real, sustained record of success (multiple further NCAA titles, a repeated walk-on-to-All-American development pattern across more than one era of the roster) that outlasted the single season the program is most publicly documented through." },
+      ],
+    },
+    influencedBy: [[{ name: "Arthur Lydiard's own writing, especially Running to the Top", slug: "lydiard" }]],
+    primarySources: [
+      {
+        title: "Running with the Buffaloes: A Season Inside with Mark Wetmore, Adam Goucher, and the University of Colorado Men's Cross Country Team",
+        author: "Chris Lear",
+        kind: "book",
+        description: "Embedded, season-long reporting inside the 1998 Colorado program, including extensive direct quotes from Wetmore, his coaching staff, and his athletes: the sole source behind this profile.",
+      },
+    ],
+    notableAthletes: [
+      {
+        name: "Adam Goucher",
+        events: "5000m / Cross Country",
+        whyRepresentative: "A 3x NCAA champion and the 1998 NCAA cross country individual champion, coached his own team's four-factor framework describes as having real talent, determination, and courage, with durability as his one documented gap -- a read his subsequent professional career (an Olympic final, a World Championships final, but recurring injury interruption) bore out.",
+        relationship: "coached",
+        slug: "adam-goucher",
+        caseStudy: {
+          exampleWeek: [
+            "A roughly 100-mile week run almost entirely in singles (one run a day), including a signature 17.4-mile long run",
+            "A tiered AT/fartlek session run largely alone, well ahead of the rest of the roster's own pace targets",
+            "A neuromuscular leg-speed session with self-paced, unstructured recovery",
+          ],
+          raceOutcome:
+            "Won the 1998 NCAA individual cross country title in a course-record 29:26.9, the culmination of a collegiate career that included the highest freshman NCAA finish (2nd) since 1988.",
+          whyItFits:
+            "His own coach used a four-factor framework (talent, durability, determination, courage) to describe him directly, naming durability, not talent, as his one real gap -- and his professional career after college bore that specific read out.",
+        },
+      },
+      {
+        name: "Wes Berkshire",
+        events: "5000m / 10,000m (collegiate)",
+        whyRepresentative: "An unrecruited walk-on whose coach directly credited a roughly 1,000-mile, ten-week training block for a documented 90-second time-trial improvement: a concrete illustration of this program's walk-on-development record.",
+        relationship: "coached",
+      },
+      {
+        name: "Alan Culpepper",
+        events: "1500m / 5000m (collegiate)",
+        whyRepresentative: "An underperforming collegiate miler (no conference finals in four years) whose training was rebuilt around real aerobic volume rather than pure middle-distance work, improving from a 3:50 high school 1500m to 3:43 and a 13:53 5000m within roughly two seasons.",
+        relationship: "coached",
+      },
+    ],
+    decisionScenarios: [
+      {
+        title: "Evaluating a Bad Session",
+        question: {
+          question: "Did most of the group miss their assigned targets, not just one athlete?",
+          outcomes: [
+            {
+              condition: "No, just one athlete",
+              steps: ["Treat it as individual: check that athlete's recent sleep, stress, and cumulative fatigue before assuming anything about the plan itself"],
+            },
+            {
+              condition: "Yes, most of the group",
+              steps: [],
+              followUp: {
+                question: "Is there a race in the next 5-7 days?",
+                outcomes: [
+                  { condition: "Yes", steps: ["Cut the remaining session short rather than pushing through it", "Protect the upcoming race over completing today's plan as written"] },
+                  {
+                    condition: "No",
+                    steps: [
+                      "Note it, but don't overreact: a single bad group day well into a hard training block is a well-documented, predictable pattern, not necessarily a sign anything is wrong",
+                      "Re-check in the next similar session before changing the plan",
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      {
+        title: "Approaching a Championship Race",
+        steps: [
+          "Stop giving any new instruction the week of the race: whatever's already been taught is what has to carry the athlete now",
+          "Skip motivational rhetoric specifically: a calm, low-arousal pre-race message is treated as a real pacing-discipline tool, not just a personality preference",
+          "Keep team talk logistics-focused (course conditions, pacing bands, what each phase of the race is actually for) rather than emotional",
+        ],
+      },
+      {
+        title: "What's Actually Limiting This Athlete?",
+        question: {
+          question: "Which of talent, durability, determination, or courage is genuinely the weakest?",
+          outcomes: [
+            {
+              condition: "Durability (recurring injury or illness interruption)",
+              steps: ["Address training density and recovery before adding any more volume or intensity", "Treat consistency, not one breakthrough session, as the actual goal"],
+            },
+            {
+              condition: "Determination or courage (fitness exists but isn't showing up in competition)",
+              steps: ["Address the psychological side directly rather than assuming more training will fix it", "Check whether the athlete has genuinely authored their own goal, or is only working toward one handed to them"],
+            },
+            {
+              condition: "Talent (durable, determined, and courageous, but capped by raw ability)",
+              steps: ["Individualize the volume ceiling to this specific athlete's own history, not the team's top end", "Recognize a low ceiling relative to a teammate is a real, separate outcome from a wasted season -- both can be true"],
+            },
+          ],
+        },
+      },
+    ],
+    workoutReactions: [
+      {
+        workout: "8 × 800m at all-out effort, full recovery between reps",
+        reaction:
+          "\"All-out\" isn't a real prescription on this system: which phase of the season is this athlete actually in? Full recovery between all-out efforts is fine for a genuinely anaerobic-phase session, but the same workout during the aerobic base would be borrowing fitness the athlete hasn't built yet.",
+      },
+      {
+        workout: "20-mile long run at conversational, easy effort",
+        reaction:
+          "That's the kind of session this whole system is built on. But the number that actually matters is this specific athlete's own last successful long run, not a blanket 20 miles handed to the whole group.",
+      },
+    ],
+    relatedPhilosophies: [
+      {
+        slug: "lydiard",
+        shared: "Both build a season around a deep aerobic base developed before any anaerobic work, and both credit that sequencing, not raw volume, as the actual system.",
+        difference: "Lydiard periodizes toward one annual peak; this program compresses and repeats the same five-phase sequence to fit a season with three.",
+      },
+      {
+        slug: "vigil",
+        shared: "Both build serious aerobic volume in a program genuinely shaped by its home elevation.",
+        difference: "Vigil's system is built around relocating to altitude for a defined adaptation window; this program is based at altitude year-round, and its own coach has called the added physiological benefit of that specifically \"debatable.\"",
+      },
+      {
+        slug: "norwegian-system",
+        shared: "Both prioritize a large volume of controlled, sub-maximal work over frequent all-out efforts.",
+        difference: "The Norwegian system controls intensity with blood-lactate testing; this program controls it by feel, tiered group pacing, and a coach's long-window judgment, with no lab measurement in the loop.",
+      },
+    ],
+    keyTakeaways: [
+      "A single-peak periodization system doesn't have to be discarded for a season with more than one championship: the underlying sequencing can be compressed and repeated instead.",
+      "Evaluate a pattern across weeks, not any single session, good or bad: a plan is a hypothesis, not a script to complete regardless of what the data in front of you says.",
+      "Naming a specific limiter (talent, durability, determination, or courage) is more useful than a vague read on whether an athlete \"has it.\"",
+      "A program's real, documented successes and its real, documented costs (injuries, an era-specific body-composition culture) can both be true of the same season: neither cancels the other out.",
+    ],
+    genome: {
+      aerobicDevelopment: 95,
+      threshold: 40,
+      vo2max: 45,
+      specificity: 40,
+      psychology: 70,
+      strength: 20,
+      biomechanics: 30,
+      dataDriven: 25,
+      individualization: 75,
+      volume: 90,
+    },
+    crossLinks: [
+      { label: "Workout Library", href: "/workout-library" },
+      { label: "5K Training", href: "/5k-training" },
+      { label: "For Coaches", href: "/for-coaches" },
+      { label: "Sports Psychology", href: "/sports-psychology" },
+      { label: "Strength Training", href: "/strength-training" },
+      { label: "Recovery", href: "/recovery" },
     ],
   },
 ];

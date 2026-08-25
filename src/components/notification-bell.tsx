@@ -21,7 +21,21 @@ type NotificationRow = {
 const POLL_INTERVAL_MS = 45_000;
 const LIST_LIMIT = 20;
 
-export function NotificationBell() {
+const ICON_BUTTON_SIZE_CLASSES: Record<"md" | "sm", string> = {
+  md: "h-12 w-12",
+  sm: "h-10 w-10",
+};
+
+type NotificationBellProps = {
+  // "md" (default, 48px) is the original size, still used in the mobile
+  // menu where a larger touch target genuinely matters more. "sm" (40px)
+  // matches the desktop header icon cluster's other buttons (search,
+  // Questions, ThemeToggle, BugReportTrigger) -- see bug-report-trigger.tsx
+  // for the same size prop, added for the same reason.
+  size?: "md" | "sm";
+};
+
+export function NotificationBell({ size = "md" }: NotificationBellProps) {
   const authStatus = useAuthStatus();
   const pathname = usePathname();
   const router = useRouter();
@@ -113,7 +127,7 @@ export function NotificationBell() {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : "Notifications"}
-        className="relative flex h-12 w-12 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+        className={`relative flex items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white ${ICON_BUTTON_SIZE_CLASSES[size]}`}
       >
         <svg className="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path

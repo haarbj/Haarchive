@@ -124,18 +124,18 @@ describe("recommendNextTopic", () => {
     });
 
     it("prefers a candidate whose category matches a stated interest over plain path order", () => {
-      // marathon-training path order: the-aerobic-base (the-science),
-      // marathon-training (coaching-and-training), nutrition-and-fueling
-      // (recovery-and-fueling), recovery (recovery-and-fueling),
-      // marathon-pacing-calculator (tools). With no interests, a brand-new
-      // user gets the path's first topic (the-aerobic-base). With a
-      // recovery-and-fueling interest, the earliest matching candidate
-      // (nutrition-and-fueling) should win instead.
+      // marathon-training path order: the-aerobic-base (physiology),
+      // marathon-training (practice), nutrition-and-fueling (physiology),
+      // recovery (physiology), marathon-pacing-calculator (tools). With no
+      // interests, a brand-new user gets the path's first topic
+      // (the-aerobic-base). With a "practice" interest -- which the first
+      // candidate does NOT match -- the earliest matching candidate
+      // (marathon-training) should win instead.
       const withoutInterest = recommendNextTopic("training_goal", []);
       expect(withoutInterest.topicSlug).toBe("the-aerobic-base");
 
-      const withInterest = recommendNextTopic("training_goal", [], ["recovery-and-fueling"]);
-      expect(withInterest.topicSlug).toBe("nutrition-and-fueling");
+      const withInterest = recommendNextTopic("training_goal", [], ["practice"]);
+      expect(withInterest.topicSlug).toBe("marathon-training");
       expect(withInterest.pathId).toBe("marathon-training");
     });
 
@@ -148,8 +148,8 @@ describe("recommendNextTopic", () => {
     });
 
     it("falls back to plain path order when no candidate matches any stated interest (never gets stuck)", () => {
-      // "mind-and-recovery" matches none of marathon-training's 5 topics.
-      const result = recommendNextTopic("training_goal", [], ["mind-and-recovery"]);
+      // "psychology" matches none of marathon-training's 5 topics.
+      const result = recommendNextTopic("training_goal", [], ["psychology"]);
       expect(result.topicSlug).toBe("the-aerobic-base");
     });
 

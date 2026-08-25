@@ -4,12 +4,13 @@
 // case something needs the raw number in JS (not a Tailwind class) rather
 // than a `max-w-*` utility. Keep both in sync by hand when a width changes.
 export const layout = {
-  chrome: "1080px",
-  content: "1080px",
+  chrome: "1160px",
+  content: "1160px",
+  wide: "1160px",
   dashboard: "900px",
   narrow: "680px",
   auth: "400px",
-  articleProse: "72ch",
+  articleProse: "66ch",
 } as const;
 
 export type LayoutToken = keyof typeof layout;

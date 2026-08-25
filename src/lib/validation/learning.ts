@@ -12,16 +12,19 @@ export const learningOrientationSchema = z.enum([
 ]);
 export type LearningOrientation = z.infer<typeof learningOrientationSchema>;
 
-// "What do you want to learn about" (onboarding Step 2) -- a deliberate
-// subset of sections.ts's 8 real categories. getting-started,
-// writing-and-resources, and tools aren't "areas of interest" in the same
-// sense the other five are, so they're left off the picker.
+// "What do you want to learn about" (onboarding Step 2) -- the four
+// intellectual domains from sections.ts's categories, not the two
+// supporting non-domain areas (library, tools) alongside them -- those
+// aren't "areas of interest" in the same sense the four domains are.
+// Previously a 5-slug subset of the old 8-category taxonomy; the old
+// the-science/recovery-and-fueling categories both migrated into a single
+// physiology domain, so this enum is now 4 entries, not 5 -- a real
+// consequence of the migration, not a mistake.
 export const learningInterestCategorySchema = z.enum([
-  "foundations",
-  "the-science",
-  "coaching-and-training",
-  "recovery-and-fueling",
-  "mind-and-recovery",
+  "physiology",
+  "psychology",
+  "philosophy",
+  "practice",
 ]);
 export type LearningInterestCategory = z.infer<typeof learningInterestCategorySchema>;
 

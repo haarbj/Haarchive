@@ -99,16 +99,21 @@ export function BookmarkButton({ topicSlug, initialBookmarked }: BookmarkButtonP
         disabled={isPending && authStatus === "authenticated"}
         aria-pressed={authStatus === "authenticated" ? bookmarked : undefined}
         aria-describedby={anonHintOpen ? hintId : authStatus === "authenticated" ? tooltipId : undefined}
-        className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 disabled:opacity-70 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+        className="-m-1 inline-flex items-center gap-1 p-1 text-sm text-zinc-500 transition hover:text-zinc-950 hover:underline disabled:opacity-70 dark:text-zinc-400 dark:hover:text-white"
       >
-        <svg className="h-[15px] w-[15px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        {/* Scaled down from the icon's original 15px utility-row size --
+            this now sits beside a 12px eyebrow label at the very top of
+            the masthead, not a standalone row of its own, so it reads as
+            one small mark in that line rather than its old, slightly
+            larger button-scale glyph. */}
+        <svg className="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
             d="M5.5 3.5h9a1 1 0 0 1 1 1v12l-5.5-3.2-5.5 3.2v-12a1 1 0 0 1 1-1Z"
             stroke="currentColor"
-            strokeWidth="1.3"
+            strokeWidth="1.4"
             strokeLinejoin="round"
             fill={bookmarked ? "currentColor" : "none"}
-            fillOpacity={bookmarked ? 0.15 : 0}
+            fillOpacity={bookmarked ? 0.18 : 0}
           />
         </svg>
         {bookmarked ? "Saved" : "Save"}

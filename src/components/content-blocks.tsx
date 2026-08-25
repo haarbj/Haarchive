@@ -47,7 +47,7 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
               key={index}
               id={headingId(block.text)}
               data-block-index={index}
-              className="scroll-mt-24 pt-4 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white"
+              className="font-serif scroll-mt-24 pt-4 text-xl font-medium tracking-tight text-zinc-900 dark:text-white"
             >
               {block.text}
             </h3>
@@ -56,7 +56,7 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
               key={index}
               id={headingId(block.text)}
               data-block-index={index}
-              className="scroll-mt-24 border-t border-black/5 pt-8 text-2xl font-semibold tracking-tight text-zinc-900 first:border-t-0 first:pt-0 dark:border-white/10 dark:text-white"
+              className="font-serif scroll-mt-24 border-t border-black/5 pt-8 text-2xl font-medium tracking-tight text-zinc-900 first:border-t-0 first:pt-0 dark:border-white/10 dark:text-white"
             >
               {block.text}
             </h2>
@@ -85,9 +85,13 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
           );
         }
         if (block.type === "quote") {
+          // my-4, on top of the content column's own space-y-6 -- a pull
+          // quote is meant to read as a deliberate editorial interruption
+          // in the middle of an essay, not just another paragraph-sized
+          // block, so it gets extra breathing room on both sides.
           return (
-            <div key={index} data-block-index={index}>
-              <PullQuote text={block.text} attribution={block.attribution} />
+            <div key={index} data-block-index={index} className="my-4">
+              <PullQuote text={block.text} attribution={block.attribution} size="article" />
             </div>
           );
         }

@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent, type DragEvent } from "react";
 import Link from "next/link";
+import { Activity, Check, Upload } from "lucide-react";
 
 import { parseFit } from "@/lib/route-import/parse-fit";
 import { parseGpx } from "@/lib/route-import/parse-gpx";
@@ -120,7 +121,10 @@ export function RouteImportPanel({
           aria-pressed={source === "file"}
           className={segmentedButtonClass(source === "file")}
         >
-          Upload a file
+          <span className="inline-flex items-center gap-1.5">
+            <Upload className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+            Upload a file
+          </span>
         </button>
         <button
           type="button"
@@ -131,7 +135,10 @@ export function RouteImportPanel({
           aria-pressed={source === "strava"}
           className={segmentedButtonClass(source === "strava")}
         >
-          🟠 Import from Strava
+          <span className="inline-flex items-center gap-1.5">
+            <Activity className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+            Import from Strava
+          </span>
         </button>
       </div>
 
@@ -192,9 +199,9 @@ export function RouteImportPanel({
 
       {status !== "idle" && message && (
         <p
-          className={`text-sm ${status === "error" ? "font-semibold text-red-700 dark:text-red-400" : "text-zinc-600 dark:text-zinc-300"}`}
+          className={`flex items-center gap-1.5 text-sm ${status === "error" ? "font-semibold text-red-700 dark:text-red-400" : "text-zinc-600 dark:text-zinc-300"}`}
         >
-          {status === "loaded" ? "✓ " : ""}
+          {status === "loaded" ? <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" /> : null}
           {message}
         </p>
       )}

@@ -2,6 +2,7 @@
 
 import { useEffect, useId } from "react";
 import Link from "next/link";
+import { AlertTriangle, Calculator, Dna, Gauge, Mountain, Sigma } from "lucide-react";
 
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -561,7 +562,7 @@ export function AltitudeCalculator() {
                 >
                   ▶
                 </span>
-                ⛰️ Altitude and aerobic capacity
+                <span className="inline-flex items-center gap-1.5"><Mountain className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Altitude and aerobic capacity</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -590,7 +591,7 @@ export function AltitudeCalculator() {
                 >
                   ▶
                 </span>
-                🧬 Acclimatization
+                <span className="inline-flex items-center gap-1.5"><Dna className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Acclimatization</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -614,7 +615,7 @@ export function AltitudeCalculator() {
                 >
                   ▶
                 </span>
-                📐 The equations
+                <span className="inline-flex items-center gap-1.5"><Sigma className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />The equations</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -646,7 +647,7 @@ export function AltitudeCalculator() {
                 >
                   ▶
                 </span>
-                🧮 VO2 max conversion
+                <span className="inline-flex items-center gap-1.5"><Calculator className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />VO2 max conversion</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -669,7 +670,7 @@ export function AltitudeCalculator() {
                 >
                   ▶
                 </span>
-                🏃 Pace and time conversion
+                <span className="inline-flex items-center gap-1.5"><Gauge className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Pace and time conversion</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>
@@ -719,7 +720,7 @@ export function AltitudeCalculator() {
                 >
                   ▶
                 </span>
-                ⚠️ Confidence and limitations
+                <span className="inline-flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />Confidence and limitations</span>
               </summary>
               <div className={detailsBodyClass}>
                 <p>

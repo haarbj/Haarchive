@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { Check, X } from "lucide-react";
 
 import { getKnowledgeCheckForTopic, submitKnowledgeCheckAnswer, type SafeKnowledgeCheck } from "@/app/knowledge-check-actions";
 import { recordConversionEvent } from "@/app/conversion-actions";
@@ -206,11 +207,16 @@ export function KnowledgeCheck({ question: initialQuestion, topicTitle, topicSlu
           <p
             ref={resultHeadingRef}
             tabIndex={-1}
-            className="rounded text-base font-semibold text-zinc-900 focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:text-white dark:focus:ring-white"
+            className="flex items-center gap-1.5 rounded text-base font-semibold text-zinc-900 focus:ring-2 focus:ring-zinc-900 focus:outline-none dark:text-white dark:focus:ring-white"
           >
             {/* Never color-only: an explicit glyph and word carry the
                 correctness, the tinted background underneath is secondary. */}
-            {result.correct ? "✓ Correct" : "○ Not quite"}
+            {result.correct ? (
+              <Check className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <X className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+            )}
+            {result.correct ? "Correct" : "Not quite"}
           </p>
 
           <p className="mt-2 text-sm leading-6 text-zinc-700 dark:text-zinc-300">{result.explanation}</p>

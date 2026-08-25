@@ -2,10 +2,16 @@
 // wind-calculator, and any future one) -- extracted so a design tweak
 // (e.g. the card border radius) happens in one place instead of being
 // hand-copied across every tool component.
+// tabular-nums on both card classes (inherited by whatever digit-bearing
+// element renders inside): result figures should line up in a fixed-width
+// grid rather than each digit claiming its own natural width, the same
+// "research instrument, not a generic calculator" precision signal a real
+// data table gets -- purely a font-feature setting, zero risk to the
+// calculation logic or markup that renders inside these cards.
 export const statCardClass =
-  "rounded-xl border border-black/10 bg-white p-4 dark:border-white/10 dark:bg-zinc-900";
+  "rounded-xl border border-black/10 bg-white p-4 tabular-nums dark:border-white/10 dark:bg-zinc-900";
 export const heroCardClass =
-  "rounded-xl border-2 border-zinc-900 bg-white p-5 dark:border-white dark:bg-zinc-900";
+  "rounded-xl border-2 border-zinc-900 bg-white p-5 tabular-nums dark:border-white dark:bg-zinc-900";
 export const statLabelClass =
   "text-[10.5px] tracking-wide text-zinc-600 uppercase dark:text-zinc-300";
 export const sectionLabelClass =

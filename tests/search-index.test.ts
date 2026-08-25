@@ -9,8 +9,8 @@ describe("search", () => {
   });
 
   it("finds a category by title", () => {
-    const results = search("coaching");
-    expect(results.some((r) => r.title === "Coaching & Training")).toBe(true);
+    const results = search("physiology");
+    expect(results.some((r) => r.title === "Physiology")).toBe(true);
   });
 
   it("finds a section by title", () => {

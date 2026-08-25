@@ -86,6 +86,13 @@
 }
 
 @theme inline {
+  /* Editorial display/heading face, set by layout.tsx via next/font
+     (--font-serif custom property on <html>). Body/interface text stays
+     Inter (see body{} below) -- this is the font-serif utility for
+     headline-scale moments only (Heading's "page" variant,
+     section-styles.ts's sectionHeadingClass), not a body-text swap. */
+  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -125,22 +132,40 @@
 
   /* Semantic container widths -- see src/design/layout.ts for the same
      numbers exposed to component logic, and the Container component
-     (src/components/ui/container.tsx) for how pages consume these. Four
+     (src/components/ui/container.tsx) for how pages consume these. Five
      variants total (plus --container-chrome for the header/footer bar,
      applied directly rather than through a Container variant) -- see
      container.tsx's own comment for what each one is for.
 
-     --container-chrome matches --container-content on purpose: with the
-     nav down to two real items (Learn, Tools) plus the account menu,
-     there's no longer content-width reason to keep the bar wider than the
-     page -- see site-header.tsx's own comment. Same number, kept as its
-     own token because the header still isn't a Container variant. */
-  --container-chrome: 1080px;
-  --container-content: 1080px;
+     --container-chrome, --container-content, and --container-wide are all
+     the same number on purpose: the homepage's own 1160px architectural
+     width is now the standard reading/browsing width for every non-
+     authenticated page (Foundations pages, category landings, tools,
+     articles), not a homepage-only exception -- header and content agree
+     on one width everywhere, not just on "/". content and wide stay
+     separate tokens/variants (not collapsed into one) because they still
+     mean different things -- content is "the reading/browsing width,"
+     wide is specifically "the homepage's own architectural width" -- they
+     just happen to resolve to the same number today. Individual long-form
+     text blocks inside a wide/content page still cap themselves at a real
+     reading measure locally (max-w-[66ch] etc., not via the container) --
+     widening the container doesn't widen the prose. Authenticated app
+     pages (dashboard/narrow/auth) are deliberately unaffected -- denser
+     tables and single-column forms have their own real width reasons, not
+     a reading-page one. */
+  --container-chrome: 1160px;
+  --container-content: 1160px;
+  --container-wide: 1160px;
   --container-dashboard: 900px;
   --container-narrow: 680px;
   --container-auth: 400px;
-  --container-article-prose: 72ch;
+  /* Matches sectionProseClass's own max-w-[66ch] (section-styles.ts,
+     already the tuned reading measure for about-page.tsx and its siblings)
+     -- was 72ch, which measured ~9% wider than the homepage's own prose at
+     the same font-size/line-height on a real render (815px vs. 747px at a
+     1440px viewport), so a long-form article/Foundations page read with a
+     visibly different rhythm than the rest of the site's long-form prose. */
+  --container-article-prose: 66ch;
 }
 
 /* Dark-mode token overrides. Gated on the .dark class, which layout.tsx now

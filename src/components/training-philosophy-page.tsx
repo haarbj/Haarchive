@@ -114,7 +114,7 @@ const INDIVIDUALIZATION_FACTORS = [
 const PROGRESSION = [
   { label: "Training Philosophy", href: undefined, blurb: "The beliefs about adaptation everything else follows from." },
   { label: "Exercise Physiology", href: "/exercise-physiology", blurb: "The mechanisms (VO₂ max, threshold, fatigue) that explain why those beliefs hold." },
-  { label: "Coaching", href: "/coaching-and-training", blurb: "Turning physiology into structured systems and training decisions." },
+  { label: "Coaching", href: "/practice", blurb: "Turning physiology into structured systems and training decisions." },
   { label: "Workouts", href: "/workout-library", blurb: "The specific sessions those systems prescribe." },
   { label: "Performance", href: undefined, blurb: "The race-day result all of the above was built toward." },
 ] as const;

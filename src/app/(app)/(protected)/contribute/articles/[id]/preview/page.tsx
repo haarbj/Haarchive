@@ -127,13 +127,13 @@ export default async function PreviewArticlePage({
     article.evidenceCategory,
   );
 
-  const parentCategory = categoryMap.get("writing-and-resources")!;
+  const parentCategory = categoryMap.get("archive")!;
   const previewSection: Section = {
     slug: article.slug,
     title: article.title,
     mission: article.subtitle ?? "",
     topics: [],
-    category: "writing-and-resources",
+    category: "archive",
     content: article.content,
   };
 
@@ -154,9 +154,14 @@ export default async function PreviewArticlePage({
       <ArticleHero
         title={previewSection.title}
         mission={article.subtitle}
-        coverImageUrl={article.coverImageUrl}
+        articleType={article.articleType}
         attribution={attribution}
         readingMinutes={estimateReadingMinutes(article.content)}
+        contentSlug={previewSection.slug}
+        content={previewSection.content ?? []}
+        // A still-unpublished draft can't have a real bookmark yet -- no
+        // query needed, this is trivially always false in a preview.
+        initialBookmarked={false}
       />
       <ArticleLayout
         section={previewSection}
@@ -164,6 +169,7 @@ export default async function PreviewArticlePage({
         content={previewSection.content ?? []}
         attribution={attribution}
         citations={citations}
+        coverImageUrl={article.coverImageUrl}
       />
     </Container>
   );

@@ -18,27 +18,32 @@ export function ArticleCitations({ citations }: { citations: PublicCitation[] })
     // a plain utility class on specificity -- border-t + pt-8 alone already
     // reads as a clear section break.
     <div className="border-t border-black/5 pt-8 dark:border-white/10">
-      <h2 className="text-sm font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Sources</h2>
+      <h2 className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Sources</h2>
       <ol className="mt-3 space-y-2 text-sm text-zinc-600 dark:text-zinc-300">
-        {citations.map((citation) => (
-          <li key={citation.id}>
-            {citation.authors ? `${citation.authors}. ` : ""}
-            {citation.paperTitle}
-            {citation.year ? ` (${citation.year})` : ""}
-            {citation.linkOrDoi ? (
-              isHttpUrl(citation.linkOrDoi) ? (
-                <>
-                  {". "}
-                  <a href={citation.linkOrDoi} target="_blank" rel="noreferrer" className={textLinkClass}>
-                    {citation.linkOrDoi}
-                  </a>
-                </>
+        {citations.map((citation, index) => (
+          <li key={citation.id} className="flex gap-3">
+            <span aria-hidden="true" className="tabular-nums text-zinc-400 dark:text-zinc-500">
+              {index + 1}.
+            </span>
+            <span>
+              {citation.authors ? `${citation.authors}. ` : ""}
+              {citation.paperTitle}
+              {citation.year ? ` (${citation.year})` : ""}
+              {citation.linkOrDoi ? (
+                isHttpUrl(citation.linkOrDoi) ? (
+                  <>
+                    {". "}
+                    <a href={citation.linkOrDoi} target="_blank" rel="noreferrer" className={textLinkClass}>
+                      {citation.linkOrDoi}
+                    </a>
+                  </>
+                ) : (
+                  `. ${citation.linkOrDoi}`
+                )
               ) : (
-                `. ${citation.linkOrDoi}`
-              )
-            ) : (
-              "."
-            )}
+                "."
+              )}
+            </span>
           </li>
         ))}
       </ol>

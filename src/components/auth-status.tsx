@@ -12,8 +12,13 @@ type AuthStatusProps = {
   onNavigate?: () => void;
 };
 
+// An outlined pill, not a solid-fill one -- the header is an editorial
+// masthead now (see site-header.tsx), and a bold black CTA button read as
+// the one SaaS-dashboard element left in an otherwise quiet nav. Same
+// shape/weight as the other header icon-controls' hover treatment
+// (border + subtle fill on interaction) rather than a standing-out button.
 const defaultLinkClass =
-  "rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200";
+  "rounded-full border border-black/15 px-4 py-1.5 text-sm font-semibold text-zinc-900 transition hover:border-black/30 hover:bg-black/5 dark:border-white/20 dark:text-white dark:hover:border-white/40 dark:hover:bg-white/10";
 const menuItemClass =
   "block w-full rounded-lg px-3 py-2 text-left text-sm text-zinc-700 transition hover:bg-black/5 dark:text-zinc-200 dark:hover:bg-white/10";
 

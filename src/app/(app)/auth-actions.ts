@@ -53,6 +53,7 @@ export async function signUp(
   await notifyAdmins({
     type: "user_signed_up",
     content: `New signup: ${data.user?.email ?? parsed.data.email}`,
+    relatedEntityId: data.user?.id ?? null,
   });
   await recordConversionEvent("account_created", "learning_progress", { method: "email" });
 

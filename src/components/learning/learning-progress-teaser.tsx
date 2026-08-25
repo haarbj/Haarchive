@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 import { recordConversionEvent } from "@/app/conversion-actions";
 import { useAuthStatus } from "@/lib/use-auth-status";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { inlineLinkClass } from "@/lib/section-styles";
 
 // Phase 12A -- the one new public-facing product surface in this phase.
-// Matches questions-cta.tsx's own end-of-article Card treatment exactly
-// (same padding, centered text, Button) rather than inventing a new visual
-// language for "one more CTA." Never a modal, never an interstitial:
-// everything above it is fully readable whether or not this ever renders,
-// and it renders nothing at all (not even a placeholder) for a loading or
-// authenticated session -- see the authStatus guard below.
+// Deliberately the quietest thing on the page: a single inline sentence,
+// not a Card/Button -- this is a product/account nudge, not an editorial
+// invitation (contrast questions-cta.tsx, which is the archive's own
+// section), so it should read as strictly secondary to everything above it.
+// Never a modal, never an interstitial: everything above it is fully
+// readable whether or not this ever renders, and it renders nothing at all
+// (not even a placeholder) for a loading or authenticated session -- see
+// the authStatus guard below.
 export function LearningProgressTeaser() {
   const authStatus = useAuthStatus();
   const shownRef = useRef(false);
@@ -32,18 +34,16 @@ export function LearningProgressTeaser() {
   if (authStatus !== "unauthenticated") return null;
 
   return (
-    <Card padding="md" className="mt-12 text-center">
-      <p className="text-base font-semibold text-zinc-900 dark:text-white">Build your running knowledge.</p>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-        Sign in to track your progress, test what you know, and build toward deeper mastery.
-      </p>
-      <Button
+    <p className="mt-10 text-center text-sm text-zinc-500 dark:text-zinc-400">
+      Want to track your progress and build toward deeper mastery?{" "}
+      <Link
         href="/login"
         onClick={() => recordConversionEvent("cta_clicked", "learning_progress", { surface: "article_end" })}
-        className="mt-4"
+        className={inlineLinkClass}
       >
-        Sign in to start
-      </Button>
-    </Card>
+        Sign in
+      </Link>{" "}
+      to start.
+    </p>
   );
 }

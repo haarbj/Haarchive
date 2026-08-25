@@ -12,7 +12,7 @@ describe("listFoundationsSuggestionTargets", () => {
     expect(targets.some((t) => t.slug === "nutrition-and-fueling")).toBe(true);
   });
 
-  it("excludes the writing-and-resources (Articles) category", () => {
+  it("excludes the archive/Library (Articles) category", () => {
     const targets = listFoundationsSuggestionTargets();
     expect(targets.some((t) => t.slug === "articles")).toBe(false);
     expect(targets.some((t) => t.slug === "why-running-is-valuable-for-everyone")).toBe(false);
@@ -27,7 +27,7 @@ describe("listFoundationsSuggestionTargets", () => {
   it("carries the correct parent category title", () => {
     const targets = listFoundationsSuggestionTargets();
     const recovery = targets.find((t) => t.slug === "recovery");
-    expect(recovery?.categoryTitle).toBe("Recovery & Fueling");
+    expect(recovery?.categoryTitle).toBe("Physiology");
   });
 });
 

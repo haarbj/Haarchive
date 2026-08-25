@@ -44,7 +44,7 @@ export function FitnessModelComparisonNote({ current }: { current: Tool }) {
       uses {METHOD_NOTE[secondOther]}. Different methods can genuinely disagree on a related but not identical
       question -- that&rsquo;s not a bug in either one. For a fuller breakdown of when each approach matters, see{" "}
       <Link href="/choosing-a-pace-calculator" className={LINK_CLASS}>
-        Which Pace Calculator Should I Use?
+        Choosing a Pace Calculator
       </Link>
     </p>
   );

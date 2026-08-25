@@ -37,7 +37,7 @@ describe("submitQuestionSchema", () => {
   });
 
   it("accepts a real category slug", () => {
-    const result = submitQuestionSchema.safeParse(baseInput({ category: "the-science" }));
+    const result = submitQuestionSchema.safeParse(baseInput({ category: "physiology" }));
     expect(result.success).toBe(true);
   });
 

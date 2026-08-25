@@ -24,6 +24,18 @@ type BugReportTriggerProps = {
   // itself, the same way NotificationBell already renders twice (desktop
   // cluster + mobile menu) without duplicating notification logic.
   variant?: "text" | "icon";
+  // Only meaningful for variant="icon". "md" (default, 48px) is the
+  // original size, still used in the mobile menu where a larger touch
+  // target genuinely matters more. "sm" (40px) matches the desktop header
+  // icon cluster's other buttons (search, Questions, ThemeToggle) -- see
+  // site-header.tsx's own space-budget comments for why that row is
+  // tighter than the mobile one.
+  size?: "md" | "sm";
+};
+
+const ICON_BUTTON_SIZE_CLASSES: Record<"md" | "sm", string> = {
+  md: "h-12 w-12",
+  sm: "h-10 w-10",
 };
 
 // The "Report a Bug" entry point -- houses the trigger button, the
@@ -33,7 +45,7 @@ type BugReportTriggerProps = {
 // screenshot -> preview -> describe -> submit" is the whole flow, and
 // nothing here uploads anything until the form itself is actually
 // submitted (see capture-screenshot.ts and bug-report-actions.ts).
-export function BugReportTrigger({ variant = "text" }: BugReportTriggerProps) {
+export function BugReportTrigger({ variant = "text", size = "md" }: BugReportTriggerProps) {
   const [open, setOpen] = useState(false);
   const [capture, setCapture] = useState<CaptureState>({ status: "idle" });
   // Bumped on every open so BugReportForm remounts fresh each time (a new
@@ -96,7 +108,7 @@ export function BugReportTrigger({ variant = "text" }: BugReportTriggerProps) {
             aria-haspopup="dialog"
             aria-expanded={open}
             aria-label="Report a bug"
-            className="flex h-12 w-12 items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+            className={`flex items-center justify-center rounded-full text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white ${ICON_BUTTON_SIZE_CLASSES[size]}`}
           >
             {/* A restrained line-art bug glyph, matching the header's other
                 icons (thin ~1.4 stroke, 18px, no fill) -- deliberately not

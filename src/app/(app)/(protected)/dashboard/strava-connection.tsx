@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 
 import { disconnectStrava } from "@/app/(app)/(protected)/dashboard/strava-actions";
 import { SyncStravaButton } from "@/app/(app)/(protected)/dashboard/sync-strava-button";
@@ -38,8 +39,9 @@ export function StravaConnection({ connected, lastSyncedAt, latestActivity }: St
                 <span className="font-semibold text-zinc-900 dark:text-white">Latest activity </span>
                 {formatMiles(latestActivity.distanceM)} {workoutTypeLabel(latestActivity.workoutType)}
               </p>
-              <p className="mt-0.5 text-xs text-emerald-700 dark:text-emerald-400">
-                Matched to {formatDate(latestActivity.matchedScheduledDate)} workout ✓
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400">
+                <Check className="h-3 w-3 shrink-0" strokeWidth={2} aria-hidden="true" />
+                Matched to {formatDate(latestActivity.matchedScheduledDate)} workout
               </p>
             </>
           )}

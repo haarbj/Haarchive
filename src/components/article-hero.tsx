@@ -1,137 +1,128 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
+import type { ContentBlock } from "@/lib/sections";
 import { formatDate } from "@/lib/format";
-import { EVIDENCE_CATEGORY_LABELS, type EvidenceCategory } from "@/lib/articles/constants";
+import { ARTICLE_TYPE_LABELS, EVIDENCE_CATEGORY_LABELS, type ArticleType, type EvidenceCategory } from "@/lib/articles/constants";
 import type { ArticleAttribution, ContributorAttribution } from "@/lib/articles/attribution";
-import { Badge } from "@/components/ui/badge";
-import { Heading } from "@/components/ui/heading";
+import { ArticleNotes } from "@/components/notes/article-notes";
 
 type ArticleHeroProps = {
   title: string;
   mission: string | null;
-  coverImageUrl: string | null;
+  articleType: string;
   attribution: ArticleAttribution;
   readingMinutes: number;
+  // Threaded through to ArticleNotes, rendered inline in the eyebrow row
+  // below (see that row's own comment) -- this is the one place a DB
+  // article's Save/Notes render now, not a separate row further down the
+  // page (see article-layout.tsx, which no longer renders it at all).
+  contentSlug: string;
+  content: ContentBlock[];
+  initialBookmarked: boolean;
 };
 
-// Replaces the old Title -> Subtitle -> ArticleOverview -> ArticleByline ->
-// cover-image chain (see [slug]/page.tsx and article-layout.tsx) for a
-// database-backed article specifically: those were five stacked, unrelated-
-// looking sections. Here, title/subtitle overlay the image itself (the
-// actual hero); credits/date/reading-time sit in their own strip directly
-// below it, inside the same bordered card, rather than competing with the
-// image for contrast. An article with no cover image falls back to a plain
-// (still unified, just un-imaged) header. Foundations pages never call
-// this; they keep ArticleOverview's breadcrumb+reading-time treatment
-// exactly as it was.
-export function ArticleHero({ title, mission, coverImageUrl, attribution, readingMinutes }: ArticleHeroProps) {
+// Text-only hero: eyebrow (+ Save/Notes inline on the same line), serif
+// title, subtitle, then a single restrained author/metadata line -- no
+// image here (see article-layout.tsx, which renders the cover image, if
+// any, as an editorial artifact further down the page). Matches the
+// homepage's own section-opening pattern (eyebrow -> serif heading ->
+// body-scale copy) rather than a boxed hero card. Foundations pages never
+// call this; they keep ArticleOverview's own breadcrumb+Save/Notes row.
+export function ArticleHero({
+  title,
+  mission,
+  articleType,
+  attribution,
+  readingMinutes,
+  contentSlug,
+  content,
+  initialBookmarked,
+}: ArticleHeroProps) {
   const { authors, contributors, reviewers, publishedAt, evidenceCategory } = attribution;
   const evidenceLabel =
     evidenceCategory && EVIDENCE_CATEGORY_LABELS[evidenceCategory as EvidenceCategory]
       ? EVIDENCE_CATEGORY_LABELS[evidenceCategory as EvidenceCategory]
       : null;
+  const typeLabel = ARTICLE_TYPE_LABELS[articleType as ArticleType] ?? "Article";
 
   // Every author renders at the same size/weight, whether there's one or
   // several -- some articles are genuinely co-written with no single lead,
   // so nothing here singles one out as "the" author. A solo author still
-  // gets their title shown underneath; with several, individual titles are
+  // gets their title shown inline; with several, individual titles are
   // dropped rather than picking whose to show.
   const creditsRow = authors.length > 0 && (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        <div className="flex shrink-0 gap-1.5">
-          {authors.slice(0, 4).map((author) =>
-            author.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL, see contributor-profile-form.tsx
-              <img
-                key={author.userId}
-                src={author.avatarUrl}
-                alt=""
-                className="h-11 w-11 rounded-full border border-black/10 object-cover dark:border-white/10"
-              />
-            ) : (
-              <div key={author.userId} className="h-11 w-11 rounded-full bg-black/5 dark:bg-white/10" />
-            ),
-          )}
-        </div>
-        <div>
-          <p className="text-base font-semibold text-zinc-900 dark:text-white">
-            By <NameList people={authors} />
-          </p>
-          {authors.length === 1 && authors[0].title ? (
-            <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">{authors[0].title}</p>
-          ) : null}
-          {contributors.length > 0 ? (
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              With contributions from <NameList people={contributors} />
-            </p>
-          ) : null}
-          {reviewers.length > 0 ? (
-            <p className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-              <CheckIcon />
-              Reviewed by <NameList people={reviewers} />
-            </p>
-          ) : null}
-        </div>
+    <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div className="flex shrink-0 -space-x-2">
+        {authors.slice(0, 4).map((author) =>
+          author.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL, see contributor-profile-form.tsx
+            <img
+              key={author.userId}
+              src={author.avatarUrl}
+              alt=""
+              className="h-8 w-8 rounded-full border border-zinc-50 object-cover dark:border-zinc-950"
+            />
+          ) : (
+            <div key={author.userId} className="h-8 w-8 rounded-full border border-zinc-50 bg-black/5 dark:border-zinc-950 dark:bg-white/10" />
+          ),
+        )}
       </div>
-
-      {/* One line, not two stacked <p>s -- matches the reading-time/date
-          format already used on the article preview card in
-          [slug]/page.tsx, and avoids the two lines butting up against each
-          other with no gap between them (every other line in this credits
-          block has a deliberate mt-*; these didn't). */}
-      <p className="text-sm text-zinc-500 sm:text-right dark:text-zinc-400">
-        {readingMinutes} min read
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <span className="font-semibold text-zinc-900 dark:text-white">
+          <NameList people={authors} />
+        </span>
+        {authors.length === 1 && authors[0].title ? ` · ${authors[0].title}` : ""}
+        {` · ${readingMinutes} min read`}
         {publishedAt ? ` · ${formatDate(publishedAt.slice(0, 10))}` : ""}
       </p>
     </div>
   );
 
-  if (coverImageUrl) {
-    return (
-      <div className="mt-8 overflow-hidden rounded-card border border-black/10 dark:border-white/10">
-        {/* aspect-video (16:9) only from sm: up. Below that, a fixed 16:9
-            box is too short for a long title at mobile width -- the title
-            wraps to more lines than the box has room for, and since it's
-            absolutely positioned inside that box, the overflow gets clipped
-            instead of pushing the box taller. On mobile the text block is
-            back in normal flow (no sm:absolute) so it drives the box's
-            height itself; min-h-64 is just a floor so a short title doesn't
-            leave a token sliver of image above it. The image is absolute
-            inset-0 at every breakpoint so it always fills however tall that
-            ends up being, sm:aspect-video and all. */}
-        <div className="relative min-h-64 sm:aspect-video">
-          {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL, not a local/optimized asset */}
-          <img src={coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          {/* Never fades to fully transparent -- the top of the image stays
-              tinted at 40% instead of bare, so a title that wraps to more
-              lines than expected doesn't run out of contrast floor. Matches
-              Evoke's own hero treatment (a single from-opaque/to-40% scrim),
-              just tied to the site's own near-black instead of a brand
-              color Haarchive doesn't have. */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black to-black/40" />
-          <div className="relative p-6 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-10">
-            {evidenceLabel ? <Badge tone="research">{evidenceLabel}</Badge> : null}
-            <Heading className={`text-white text-balance sm:text-5xl ${evidenceLabel ? "mt-3" : ""}`}>{title}</Heading>
-            {mission ? <p className="mt-3 max-w-3xl text-base text-white/80 sm:text-lg">{mission}</p> : null}
-          </div>
-        </div>
-        {creditsRow ? (
-          <div className="border-t border-black/5 bg-white px-6 py-5 dark:border-white/10 dark:bg-zinc-900 sm:px-10">
-            {creditsRow}
-          </div>
-        ) : null}
-      </div>
-    );
-  }
+  const supportingCredits = (contributors.length > 0 || reviewers.length > 0) && (
+    <div className="mt-2 space-y-1 text-sm text-zinc-500 dark:text-zinc-400">
+      {contributors.length > 0 ? (
+        <p>
+          With contributions from <NameList people={contributors} />
+        </p>
+      ) : null}
+      {reviewers.length > 0 ? (
+        <p className="flex items-center gap-1.5">
+          <CheckIcon />
+          Reviewed by <NameList people={reviewers} />
+        </p>
+      ) : null}
+    </div>
+  );
 
   return (
     <div className="mt-8">
-      {evidenceLabel ? <Badge tone="research">{evidenceLabel}</Badge> : null}
-      <Heading className={`text-balance ${evidenceLabel ? "mt-3" : ""}`}>{title}</Heading>
+      {/* Save/Notes render inline on the right of this same eyebrow line,
+          not as a separate row further down the page -- reads as the
+          masthead's own two lines of business (what shelf this belongs on,
+          and what you can do with it) rather than injected utility chrome
+          appearing mid-page. ArticleNotes' own returned fragment has more
+          than one possible child (its trigger row, the selection toolbar,
+          the notes drawer portal), so it's wrapped in its own div rather
+          than spread directly as a flex child -- otherwise a
+          conditionally-rendered sibling (e.g. the drawer opening) would
+          silently change how many items justify-between is distributing
+          space across. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+          {typeLabel}
+          {evidenceLabel ? ` · ${evidenceLabel}` : ""}
+        </p>
+        <div className="shrink-0">
+          <ArticleNotes contentSlug={contentSlug} content={content} initialBookmarked={initialBookmarked} />
+        </div>
+      </div>
+      <h1 className="font-serif mt-3 text-4xl leading-[1.1] font-medium tracking-tight text-balance text-zinc-900 sm:text-5xl lg:text-6xl dark:text-white">
+        {title}
+      </h1>
       {mission ? <p className="mt-4 max-w-3xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{mission}</p> : null}
-      {creditsRow ? <div className="mt-6 border-t border-black/5 pt-5 dark:border-white/10">{creditsRow}</div> : null}
+      {creditsRow}
+      {supportingCredits}
     </div>
   );
 }

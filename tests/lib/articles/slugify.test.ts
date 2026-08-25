@@ -27,7 +27,7 @@ describe("isReservedSlug", () => {
   });
 
   it("flags a real category slug as reserved", () => {
-    expect(isReservedSlug("the-science")).toBe(true);
+    expect(isReservedSlug("physiology")).toBe(true);
   });
 
   it("does not flag a slug that isn't part of the Foundations site map", () => {

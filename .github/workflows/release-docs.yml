@@ -48,26 +48,35 @@ jobs:
         with:
           node-version: 22
 
-      # --- A. Synchronize README ------------------------------------------
+      # --- A. Synchronize generated files ----------------------------------
       - name: Sync README status block
         run: node scripts/sync-readme-status.mjs
 
-      - name: Commit README if it changed
+      # Diffs this push's own before/after commits (empty for a manual
+      # workflow_dispatch run, in which case the script falls back to
+      # diffing HEAD -- see its own --before/--after handling) to find
+      # which Foundations sections actually changed, and bumps only their
+      # `lastUpdated` date. See scripts/sync-last-updated.mjs's own header.
+      - name: Sync Foundations last-updated dates
+        run: node scripts/sync-last-updated.mjs --before "${{ github.event.before }}" --after "${{ github.event.after }}"
+
+      - name: Commit generated changes if any
         run: |
-          if git diff --quiet -- README.md; then
-            echo "README.md's status block is already up to date -- nothing to commit."
+          if git diff --quiet -- README.md src/lib/sections.ts; then
+            echo "README.md and src/lib/sections.ts are already up to date -- nothing to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "Sync README status block
+          git add README.md src/lib/sections.ts
+          git commit -m "Sync generated docs
 
-          Automated, mechanical update from scripts/sync-readme-status.mjs,
-          regenerated from src/lib/release-notes.ts (the canonical release
-          history -- see that file's own header and
-          docs/release-documentation-investigation.md). No prose is
-          generated here; this only reformats data that already exists.
+          Automated, mechanical updates only, no invented content:
+          - README.md's status block, regenerated from src/lib/release-notes.ts
+            (see that file's own header and docs/release-documentation-investigation.md)
+          - src/lib/sections.ts's per-section lastUpdated dates, bumped for any
+            section whose content changed in this push (see
+            scripts/sync-last-updated.mjs)
 
           [skip ci]"
           git push

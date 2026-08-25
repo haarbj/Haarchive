@@ -20,29 +20,41 @@ type ContentCalloutProps = {
 };
 
 // Same --color-accent-* tokens Badge/StatusBadge use (globals.css) -- a
-// color choice made once there now governs both a status pill and a
-// callout box, instead of two separately hand-maintained sky/amber/
-// violet/emerald maps.
-const VARIANT_STYLES: Record<CalloutVariant, { label: string; classes: string }> = {
+// color choice made once there now governs a status pill, a callout's
+// rule, and its label, instead of separately hand-maintained color maps.
+// No background tint and no rounded box, per the editorial-identity pass
+// on article/Foundations content (see the design-migration plan): a
+// callout is a thin accent rule with an uppercase label, matching the
+// homepage's own eyebrow-label language and PullQuote's rule-only shell --
+// not a tinted card. Shared by every sections.ts page (Foundations essays
+// and DB-backed articles alike), so it has to read correctly on both the
+// light article/homepage theme and the site's dark default -- every color
+// here is a token, not a literal hex, so both themes resolve correctly.
+const VARIANT_STYLES: Record<CalloutVariant, { label: string; ruleClass: string; labelClass: string }> = {
   tip: {
     label: "Coaching Tip",
-    classes: "border-accent-tip/50 bg-accent-tip/5",
+    ruleClass: "border-accent-tip",
+    labelClass: "text-accent-tip",
   },
   mistake: {
     label: "Common Mistake",
-    classes: "border-accent-warning/50 bg-accent-warning/5",
+    ruleClass: "border-accent-warning",
+    labelClass: "text-accent-warning",
   },
   research: {
     label: "Research Insight",
-    classes: "border-accent-research/50 bg-accent-research/5",
+    ruleClass: "border-accent-research",
+    labelClass: "text-accent-research",
   },
   takeaway: {
     label: "Practical Takeaway",
-    classes: "border-accent-success/50 bg-accent-success/5",
+    ruleClass: "border-accent-success",
+    labelClass: "text-accent-success",
   },
   advanced: {
     label: "Advanced Topic",
-    classes: "border-zinc-400/50 bg-zinc-500/5 dark:border-zinc-500/50 dark:bg-zinc-400/5",
+    ruleClass: "border-zinc-400 dark:border-zinc-600",
+    labelClass: "text-zinc-500 dark:text-zinc-400",
   },
 };
 
@@ -86,8 +98,8 @@ export function ContentCallout({ variant, title, text, items, collapsed, linkHre
 
   if (variant === "advanced") {
     return (
-      <details open={collapsed === false} className={`rounded-xl border-l-4 px-5 py-4 ${style.classes}`}>
-        <summary className="cursor-pointer text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+      <details open={collapsed === false} className={`border-l-2 py-1 pl-5 ${style.ruleClass}`}>
+        <summary className={`cursor-pointer text-xs font-semibold tracking-[0.2em] uppercase ${style.labelClass}`}>
           {heading}
         </summary>
         <div className="mt-3">{body}</div>
@@ -96,10 +108,8 @@ export function ContentCallout({ variant, title, text, items, collapsed, linkHre
   }
 
   return (
-    <div className={`rounded-xl border-l-4 px-5 py-4 ${style.classes}`}>
-      <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
-        {heading}
-      </p>
+    <div className={`border-l-2 py-1 pl-5 ${style.ruleClass}`}>
+      <p className={`text-xs font-semibold tracking-[0.2em] uppercase ${style.labelClass}`}>{heading}</p>
       <div className="mt-2">{body}</div>
     </div>
   );

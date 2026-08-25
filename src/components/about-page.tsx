@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { CATEGORY_VISUALS } from "@/lib/category-visuals";
 import { categories } from "@/lib/sections";
 import { FeatureAnnouncementLoader as FeatureAnnouncement } from "@/components/feature-announcement-loader";
 import { FeaturedEssay } from "@/components/featured-essay";
@@ -8,7 +7,6 @@ import { PullQuote } from "@/components/pull-quote";
 import { Container } from "@/components/ui/container";
 import { Diagram } from "@/components/ui/diagram";
 import { Figure } from "@/components/ui/figure";
-import { Heading } from "@/components/ui/heading";
 import { ImageSlot } from "@/components/ui/image-slot";
 
 const timeline: {
@@ -121,6 +119,54 @@ const influences: { name: string; note: string }[] = [
   },
 ];
 
+// The four pillars mirror the logo's own internal four-line detail
+// (physiology / psychology / philosophy / practice) -- these are now the
+// site's actual four domain categories (see sections.ts), not just
+// homepage framing, so each links directly to its real canonical domain
+// page rather than an old category slug that now just redirects there.
+// note copy matches each domain's real categories.ts mission text.
+const pillars: { name: string; note: string; href: string }[] = [
+  {
+    name: "Physiology",
+    note: "The biological systems behind running: adaptation, endurance, recovery, fueling, strength, and the research that explains them.",
+    href: "/physiology",
+  },
+  {
+    name: "Psychology",
+    note: "The mental systems behind performance: motivation, identity, confidence, consistency, self-talk, and pressure.",
+    href: "/psychology",
+  },
+  {
+    name: "Philosophy",
+    note: "The ideas and assumptions behind training: how to weigh evidence, compare systems, and think about what running is for.",
+    href: "/philosophy",
+  },
+  {
+    name: "Practice",
+    note: "Putting knowledge into action: starting to run, workouts, race-specific training, plans, and coaching.",
+    href: "/practice",
+  },
+];
+
+// Each pillar's own top rule echoes one of the wordmark's four internal
+// lines at the same position (1st and 4th straight, 2nd and 3rd wavy) --
+// ties the pillars to the mark's own rhythm directly, not just a shared
+// generic divider repeated four times.
+const PILLAR_LINE_PATHS = [
+  "M0 3 H64",
+  "M0 3 Q16 0.3 32 3 T64 3",
+  "M0 3 Q16 5.7 32 3 T64 3",
+  "M0 3 H64",
+];
+
+function PillarLine({ index }: { index: number }) {
+  return (
+    <svg viewBox="0 0 64 6" className="h-1.5 w-full" preserveAspectRatio="none" role="presentation" aria-hidden="true">
+      <path d={PILLAR_LINE_PATHS[index]} stroke="currentColor" strokeWidth="1.4" fill="none" className="text-zinc-300 dark:text-zinc-700" />
+    </svg>
+  );
+}
+
 export function AboutPage() {
   return (
     <>
@@ -133,46 +179,513 @@ export function AboutPage() {
         href="/environmental-calculator"
       />
 
-      <Container variant="content">
-        <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-          Distance Running Knowledge Hub
-        </p>
-        <Heading className="mt-3">
-          For runners who want to understand the sport at the deepest level.
-        </Heading>
-        <p className="mt-6 max-w-[66ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
-          The Haarchive is a long-term resource dedicated to the physiology,
-          psychology, philosophy, and practice of distance running, helping
-          athletes learn not only how to train, but how to think about training.
-        </p>
-
-        <FeaturedEssay
-          href="/why-running-is-valuable-for-everyone"
-          title="Why Running Is Valuable for Everyone"
-          description="Running scales perfectly across ambition: the same physiology that produces an Olympic champion is what makes an easy run worth doing at all. A good place to start if you’re new here."
-          ctaLabel="Read the essay →"
-          // The article's own cover_image_url (queried directly from the
-          // articles table) -- hardcoded rather than fetched at render time
-          // since this component is otherwise entirely hand-authored,
-          // static content (the timeline/influences arrays below are the
-          // same). Update this if that article's cover image ever changes.
-          imageUrl="https://ngfdyupjoeobdwxevmuo.supabase.co/storage/v1/object/public/article-images/44bd11c7-a5c5-4df9-bd82-a1c07b537d6f/e73b9be4-731c-4a7a-8ba9-34dfd52034f3.jpg"
-        />
-
-        <a
-          href="#what-youll-find-here"
-          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 transition hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white"
-        >
-          See what&rsquo;s here <span aria-hidden="true">↓</span>
-        </a>
-
-        {/* Tools & Accounts */}
-        <section className="mt-16 border-t border-black/5 pt-14 dark:border-white/10">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-            Tools &amp; accounts
+      <Container variant="wide">
+        {/* Hero -- a hand-set h1 rather than the shared Heading primitive:
+            every other page's h1 stays the site's standard scale, but the
+            opening statement of the archive gets real, distinctive size
+            and horizontal room, which a shared component used by 24+ other
+            pages shouldn't inherit by proxy. */}
+        <div className="pt-12">
+          {/* The eyebrow stands alone -- no decorative mark above it. The
+              four-line motif stays tied to the wordmark itself (see the
+              header/footer logo, and PillarLine below, which draws its
+              lines from the mark's own rhythm for a specific, named
+              reason); it's deliberately not reused as generic hero
+              decoration, so removed here rather than replaced with
+              something else. */}
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+            Distance Running Knowledge Hub
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-            Free calculators. An optional account, if you want more.
+          {/* A prior pass scaled the original text-5xl/6xl/7xl (48/60/72px)
+              up ~12% to 54/68/80px, which read as too close to a marketing
+              hero. Dialed back down ~17-18% from that to 44/56/66px --
+              landing slightly below the *original* pre-refinement size,
+              since "editorial, literary, quiet" called for restraint over
+              the marketing-hero scale this had drifted toward, not just a
+              partial walk-back. */}
+          <h1 className="font-serif mt-6 max-w-4xl text-[2.75rem] leading-[1.1] font-medium tracking-tight text-zinc-900 sm:text-[3.5rem] lg:text-[4.125rem] dark:text-white">
+            For runners who want to understand the sport at the deepest level.
+          </h1>
+          <p className="mt-8 max-w-[62ch] text-xl leading-9 text-zinc-600 dark:text-zinc-300">
+            The Haarchive is a long-term resource dedicated to the physiology,
+            psychology, philosophy, and practice of distance running, helping
+            athletes learn not only how to train, but how to think about training.
+          </p>
+          <a
+            href="#the-archive"
+            className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 underline decoration-black/20 underline-offset-4 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+          >
+            Explore the archive <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        {/* Four Pillars -- a major brand moment, not four small columns:
+            large serif names, large tabular numerals, and each pillar's
+            own top rule drawn from the wordmark's four-line rhythm. */}
+        <section id="the-archive" className="mt-24 scroll-mt-24 border-t border-black/10 pt-16 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">The archive</p>
+          <h2 className="font-serif mt-3 text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+            Four questions, one archive
+          </h2>
+          <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+            {pillars.map((pillar, index) => (
+              <Link key={pillar.name} href={pillar.href} className="group block">
+                <PillarLine index={index} />
+                <p className="font-serif mt-5 text-5xl font-medium text-zinc-300 tabular-nums dark:text-zinc-700">
+                  0{index + 1}
+                </p>
+                <h3 className="font-serif mt-3 text-2xl font-medium tracking-tight text-zinc-900 dark:text-white">
+                  {pillar.name}
+                </h3>
+                <p className="mt-3 text-base leading-6 text-zinc-600 dark:text-zinc-300">{pillar.note}</p>
+                <span className="mt-4 inline-block text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-950 dark:text-zinc-400 dark:group-hover:text-white">
+                  Explore <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Featured Essay -- the opening editorial feature: large serif
+            title, the image given real width (not a thumbnail), asymmetric
+            rather than 50/50 so it reads as a considered layout. No
+            border-t/pt-* wrapper here (unlike every other section) --
+            FeaturedEssay already supplies its own top rule and spacing,
+            since it's also used bare (no wrapping section) in principle;
+            duplicating both here would have doubled the divider. */}
+        <section className="mt-10">
+          <FeaturedEssay
+            href="/why-running-is-valuable-for-everyone"
+            title="Why Running Is Valuable for Everyone"
+            description="Running scales perfectly across ambition: the same physiology that produces an Olympic champion is what makes an easy run worth doing at all. A good place to start if you’re new here."
+            ctaLabel="Read the essay →"
+            // The article's own cover_image_url (queried directly from the
+            // articles table) -- hardcoded rather than fetched at render
+            // time since this component is otherwise entirely hand-
+            // authored, static content (the timeline/influences arrays
+            // below are the same). Update this if that article's cover
+            // image ever changes.
+            imageUrl="https://ngfdyupjoeobdwxevmuo.supabase.co/storage/v1/object/public/article-images/44bd11c7-a5c5-4df9-bd82-a1c07b537d6f/e73b9be4-731c-4a7a-8ba9-34dfd52034f3.jpg"
+          />
+        </section>
+
+        {/* Why This Exists */}
+        <section className="mt-20 border-t border-black/10 pt-16 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+            Why this exists
+          </p>
+          <h2 className="font-serif mt-4 max-w-3xl text-4xl leading-[1.1] font-medium tracking-tight text-zinc-900 sm:text-5xl dark:text-white">
+            The gap between a reel and a research paper
+          </h2>
+          <div className="mt-8 max-w-[68ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            <p>
+              Search &ldquo;how to run a marathon&rdquo; and you get two kinds
+              of answers. One is a thirty-second video telling you to eat
+              bananas and believe in yourself. The other is a peer-reviewed
+              paper on substrate utilization that assumes you already have a
+              physiology degree. Almost nothing sits between them: a place that
+              explains why the banana works, in language built for someone who
+              wants to train intelligently.
+            </p>
+            <p>
+              That gap is what this site is trying to close. Every section here
+              is built the same way: start with the mechanism (why oxygen
+              delivery, muscle fiber type, or hormonal response works the way it
+              does) and only then get to the workout it produces. The goal is to
+              get you to the point where you could write your own plan, because
+              you understand the system well enough to reason about it instead
+              of just following it.
+            </p>
+          </div>
+
+          {/* Diagram, not ImageSlot -- this is the priority visual type per
+            the visual system doc: hand-authored inline SVG (one accent
+            color, thin line art), not a raster file, so it costs nothing
+            to ship. The accent line/dots still use var(--accent-research)
+            (it has real light *and* dark values, both legible on a dark
+            box). Labels/rules deliberately do NOT use var(--heading)/
+            var(--muted) though, unlike a normal themed element: Diagram's
+            own box is bg-zinc-950 unconditionally, regardless of the
+            page's light/dark state (see diagram.tsx) -- on this page's
+            light homepage theme, var(--heading)/var(--muted) resolve to
+            their *light-mode* (near-black/mid-gray) values, which go
+            almost invisible against that permanently-dark box. Fixed
+            light colors (#f4f4f5/#a1a1aa, the same values the dark theme
+            already used) are correct here regardless of page theme, since
+            the box itself never changes. Treated as a real editorial
+            figure: a wider max-width than the prose column above it and
+            more vertical room around it, rather than sitting flush with
+            the text at the same measure. */}
+          <div className="mt-12 max-w-[860px]">
+            <Figure caption="Illustrative, not measured data. A workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows, and fades if nothing follows it.">
+              <Diagram
+                aspect="video"
+                alt="A line diagram of the supercompensation curve: performance dips during training, recovers past its starting level during rest (supercompensation), then fades during detraining if not followed by another training stimulus"
+              >
+                <svg
+                  viewBox="0 30 640 330"
+                  className="h-full w-full"
+                  role="presentation"
+                >
+                  <rect
+                    x="140"
+                    y="55"
+                    width="120"
+                    height="275"
+                    fill="var(--accent-research)"
+                    opacity="0.07"
+                  />
+                  <rect
+                    x="380"
+                    y="55"
+                    width="80"
+                    height="275"
+                    fill="var(--accent-research)"
+                    opacity="0.07"
+                  />
+
+                  {[140, 260, 380, 460].map((x) => (
+                    <line
+                      key={x}
+                      x1={x}
+                      y1="55"
+                      x2={x}
+                      y2="330"
+                      stroke="#a1a1aa"
+                      strokeWidth="1"
+                      opacity="0.2"
+                    />
+                  ))}
+
+                  <text
+                    x="100"
+                    y="45"
+                    fontSize="13"
+                    fontWeight="600"
+                    textAnchor="middle"
+                    fill="#a1a1aa"
+                    fontFamily="inherit"
+                  >
+                    Before
+                  </text>
+                  <text
+                    x="200"
+                    y="45"
+                    fontSize="13"
+                    fontWeight="600"
+                    textAnchor="middle"
+                    fill="#f4f4f5"
+                    fontFamily="inherit"
+                  >
+                    Training
+                  </text>
+                  <text
+                    x="320"
+                    y="45"
+                    fontSize="13"
+                    fontWeight="600"
+                    textAnchor="middle"
+                    fill="#a1a1aa"
+                    fontFamily="inherit"
+                  >
+                    Recovery
+                  </text>
+                  <text
+                    x="420"
+                    y="45"
+                    fontSize="13"
+                    fontWeight="600"
+                    textAnchor="middle"
+                    fill="#f4f4f5"
+                    fontFamily="inherit"
+                  >
+                    Supercompensation
+                  </text>
+                  <text
+                    x="530"
+                    y="45"
+                    fontSize="13"
+                    fontWeight="600"
+                    textAnchor="middle"
+                    fill="#a1a1aa"
+                    fontFamily="inherit"
+                  >
+                    Detraining
+                  </text>
+
+                  <line
+                    x1="60"
+                    y1="220"
+                    x2="600"
+                    y2="220"
+                    stroke="#a1a1aa"
+                    strokeWidth="1.25"
+                    strokeDasharray="4 5"
+                    opacity="0.6"
+                  />
+                  <text
+                    x="60"
+                    y="238"
+                    fontSize="13"
+                    fill="#a1a1aa"
+                    fontFamily="inherit"
+                  >
+                    starting level
+                  </text>
+
+                  <path
+                    d="M 60 220 C 100 220, 140 250, 170 275 C 195 292, 205 292, 230 280 C 260 260, 290 235, 320 220 C 350 200, 390 165, 420 150 C 440 140, 450 135, 460 135 C 490 137, 520 150, 550 168 C 570 180, 585 190, 600 195"
+                    fill="none"
+                    stroke="var(--accent-research)"
+                    strokeWidth="2.25"
+                    strokeLinecap="round"
+                  />
+
+                  <circle
+                    cx="210"
+                    cy="288"
+                    r="4"
+                    fill="var(--accent-research)"
+                  />
+                  <circle
+                    cx="460"
+                    cy="135"
+                    r="4"
+                    fill="var(--accent-research)"
+                  />
+
+                  <text
+                    x="600"
+                    y="352"
+                    fontSize="13"
+                    textAnchor="end"
+                    fill="#a1a1aa"
+                    fontFamily="inherit"
+                  >
+                    time →
+                  </text>
+                  <text
+                    x="30"
+                    y="195"
+                    fontSize="13"
+                    textAnchor="middle"
+                    fill="#a1a1aa"
+                    fontFamily="inherit"
+                    transform="rotate(-90, 30, 195)"
+                  >
+                    performance
+                  </text>
+                </svg>
+              </Diagram>
+            </Figure>
+          </div>
+        </section>
+
+        {/* Explore the Archive -- editorial index, not eight icon cards.
+            Numbered 01-08 by the categories' own fixed, already-declared
+            order (see sections.ts) -- a real table-of-contents number, not
+            a fabricated chronological ID. Compact section on purpose (a
+            deliberate change of pace after the more expansive sections
+            above and below it -- see the section-rhythm note near the end
+            of this file for the overall intent). */}
+        <section className="mt-20 border-t border-black/10 pt-14 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+            Explore the archive
+          </p>
+          <h2 className="font-serif mt-3 text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+            A growing knowledge base
+          </h2>
+          <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            The site is organized around the four domains above, plus a
+            library and a set of tools, each one a question I keep adding
+            answers to rather than a folder of one-off posts:
+          </p>
+
+          <div className="mt-8 divide-y divide-black/10 dark:divide-white/10">
+            {categories.map((category, index) => (
+              <Link
+                key={category.slug}
+                href={`/${category.slug}`}
+                className="group flex items-baseline gap-6 py-6 transition"
+              >
+                <span className="font-serif w-10 shrink-0 text-2xl font-medium text-zinc-300 tabular-nums dark:text-zinc-700">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-xl font-semibold tracking-tight text-zinc-900 group-hover:underline dark:text-white">
+                    {category.title}
+                  </h3>
+                  <p className="mt-1 max-w-xl text-zinc-600 dark:text-zinc-300">
+                    {category.mission}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            New sections get added the same way this one did: I learn something,
+            verify it&rsquo;s solid, and write it down in the place a reader
+            would actually go looking for it.
+          </p>
+        </section>
+
+        {/* How I Learn -- the books photograph paired directly with the
+            heading (a real two-column editorial spread, image and intro
+            side by side) rather than stacked as image-then-wall-of-text,
+            to cut the perceived text density without cutting a single
+            sentence of the existing copy. */}
+        <section className="mt-20 border-t border-black/10 pt-16 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+            How I learn
+          </p>
+          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center">
+            {/* naturalSize (3005x1952, the file's real dimensions), not a
+              forced aspect box -- every crop attempt (plain center, an
+              objectPosition bias, then "contain" inside a 16:9 box) either
+              cut off a title or left the image looking artificially
+              letterboxed. naturalSize renders the whole photo at its own
+              real proportions, full width, no crop and no forced shape. */}
+            <Figure>
+              <ImageSlot
+                kind="archival"
+                naturalSize={{ width: 3005, height: 1952 }}
+                label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
+                alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
+                src="/homepage/how-i-learn-books.jpg"
+              />
+            </Figure>
+            <div>
+              <h2 className="font-serif text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+                Comparing systems instead of picking one
+              </h2>
+              <p className="mt-6 max-w-[52ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+                I compare coaching systems instead of committing to one, and
+                I&rsquo;m suspicious of anyone who does. The coaches and researchers
+                below all built real, medal-winning methods, yet they disagree with
+                each other: on how much of training should be aerobic base versus
+                race-specific work, or how precisely intensity should be measured.
+                Studying where they diverge teaches you more than adopting any one
+                of them wholesale. If you pushed me to pick the one closest to what
+                I actually believe, though, it&rsquo;s the 80/20 principle (Stephen
+                Seiler&rsquo;s research on polarized training, which I first ran
+                into through Matt Fitzgerald&rsquo;s book of the same name), not
+                because the others are wrong, but because that ratio is the version
+                of &ldquo;mostly easy, occasionally hard&rdquo; that&rsquo;s held up
+                best for me in practice.
+              </p>
+            </div>
+          </div>
+
+          {/* An intellectual index/lineage -- a single divided list, not a
+            grid of profile cards -- so it reads as one continuous line of
+            reasoning across seven names rather than seven separate tiles. */}
+          <ul className="mt-14 divide-y divide-black/10 dark:divide-white/10">
+            {influences.map((influence) => (
+              <li key={influence.name} className="py-4">
+                <h3 className="text-sm font-semibold tracking-[0.1em] text-zinc-900 uppercase dark:text-white">
+                  {influence.name}
+                </h3>
+                <p className="mt-1.5 max-w-[60ch] text-zinc-600 dark:text-zinc-300">
+                  {influence.note}
+                </p>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            The interesting question is always &ldquo;what adaptation is this
+            session actually trying to create,&rdquo; and every system above
+            answers that a little differently. The full comparison lives in the{" "}
+            <Link
+              href="/coaching-library"
+              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Coaching Library
+            </Link>
+            .
+          </p>
+        </section>
+
+        {/* Coaching Philosophy */}
+        <section className="mt-20 border-t border-black/10 pt-16 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+            Coaching philosophy
+          </p>
+          <h2 className="font-serif mt-4 max-w-3xl text-4xl leading-[1.1] font-medium tracking-tight text-zinc-900 sm:text-5xl dark:text-white">
+            Good coaching creates independent athletes
+          </h2>
+          <div className="mt-8 max-w-[68ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            <p>
+              A workout is only half the transaction. The other half is
+              understanding why it&rsquo;s there: what adaptation it&rsquo;s
+              chasing, how to judge whether the body is actually absorbing it,
+              when pushing through fatigue is productive and when it&rsquo;s
+              just damage. A coach who only hands out the first half produces
+              athletes who can follow a plan. A coach who teaches the second
+              half produces athletes who can build their own.
+            </p>
+          </div>
+
+          {/* Archival material, not a portrait of Lydiard -- a notebook page,
+            handwritten workout, or physiology sketch emphasizes the idea
+            over the person, and reads as a research archive rather than a
+            coaching-brand bio photo. Sized up from the earlier pass
+            (max-w-lg, not max-w-md) so the handwriting reads clearly at the
+            wider container this page now uses. naturalSize (2397x3627, the
+            file's real dimensions), not a forced aspect box -- the
+            source's own ratio (~0.66) doesn't exactly match aspect=
+            "portrait" (3/4, 0.75), and even "contain" inside that box left
+            it looking artificially letterboxed; naturalSize renders the
+            whole page at its own real shape. */}
+          <div className="mt-10 max-w-lg">
+            <Figure>
+              <ImageSlot
+                kind="archival"
+                naturalSize={{ width: 2397, height: 3627 }}
+                label="Brody's own training log from coach Mike Scannell -- a real page, handwritten annotations legible if possible. Emphasizes the coaching relationship and the idea of structured reflection, not a posed photo."
+                alt="A week of daily entries from Brody Haar's handwritten training log -- date, workout, location, distance, and comments for each day"
+                src="/homepage/coaching-training-log.jpg"
+              />
+            </Figure>
+          </div>
+
+          <div className="mt-10 max-w-[68ch]">
+            <PullQuote
+              size="large"
+              text={
+                'None of the American way: the guy with "Coach" on his back, a clipboard and a stopwatch in his hands, shoving kids through repetitions until they are falling down with fatigue... They had all had the competitive edge drilled out of them.'
+              }
+              attribution="Arthur Lydiard"
+            />
+          </div>
+
+          <p className="mt-10 max-w-[68ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            That&rsquo;s the failure mode I trained under before I understood
+            there was an alternative, and it&rsquo;s the reason
+            &ldquo;why&rdquo; comes before &ldquo;what&rdquo; everywhere on this
+            site. For the specific principles that come out of this, see{" "}
+            <Link
+              href="/training-philosophy"
+              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Training Philosophy
+            </Link>
+            .
+          </p>
+        </section>
+
+        {/* Tools -- an extension of the archive, not the reason it exists,
+            so this sits well below the editorial/philosophy sections
+            rather than second on the page. Leads with the tools themselves;
+            the account/privacy explanation stays, but as the secondary
+            paragraph, not the opening one. */}
+        <section className="mt-20 border-t border-black/10 pt-16 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
+            Tools
+          </p>
+          <h2 className="font-serif mt-3 text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+            Tools for understanding your running.
           </h2>
           <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
             <p>
@@ -218,17 +731,12 @@ export function AboutPage() {
             written guidance), not placeholder zeros -- captured directly
             from the live results card, cropped to just that card.
             naturalSize (1184x596, the file's real dimensions), not a
-            forced aspect box -- every edge of this screenshot is real
-            content, so both "cover" (crops) and "contain" (letterboxes
-            inside a box shape that still isn't this image's own shape)
-            were compromises. naturalSize renders it at its own real
-            proportions, full width, no crop and no empty bars.
-            No colored frame -- tried one (padding + tinted border) to signal
-            "this is an image," but the results card already has its own
-            ring styling baked into the captured pixels, and the two borders
-            nested together read as a rendering glitch, not a deliberate
-            frame. A caption does the same "this is a picture" job through
-            text instead, without a second border competing with the first. */}
+            forced aspect box. No colored frame -- tried one (padding +
+            tinted border) to signal "this is an image," but the results
+            card already has its own ring styling baked into the captured
+            pixels, and the two borders nested together read as a
+            rendering glitch, not a deliberate frame. A caption does the
+            same "this is a picture" job through text instead. */}
           <div className="mt-8 max-w-[66ch]">
             <Figure caption="A real result from the Pace & Heart Rate Calculator.">
               <ImageSlot
@@ -242,247 +750,14 @@ export function AboutPage() {
           </div>
         </section>
 
-        {/* Why This Exists */}
-        <section className="mt-16 border-t border-black/5 pt-14 dark:border-white/10">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-            Why this exists
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-            The gap between a reel and a research paper
-          </h2>
-          <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            <p>
-              Search &ldquo;how to run a marathon&rdquo; and you get two kinds
-              of answers. One is a thirty-second video telling you to eat
-              bananas and believe in yourself. The other is a peer-reviewed
-              paper on substrate utilization that assumes you already have a
-              physiology degree. Almost nothing sits between them: a place that
-              explains why the banana works, in language built for someone who
-              wants to train intelligently.
-            </p>
-            <p>
-              That gap is what this site is trying to close. Every section here
-              is built the same way: start with the mechanism (why oxygen
-              delivery, muscle fiber type, or hormonal response works the way it
-              does) and only then get to the workout it produces. The goal is to
-              get you to the point where you could write your own plan, because
-              you understand the system well enough to reason about it instead
-              of just following it.
-            </p>
-          </div>
-
-          {/* Diagram, not ImageSlot -- this is the priority visual type per
-            the visual system doc: hand-authored inline SVG (one accent
-            color, thin line art), not a raster file, so it costs nothing
-            to ship and inherits dark mode through the site's own
-            --accent-research/--muted/--heading custom properties rather
-            than baked-in colors. Redrawn with named phase bands (Before /
-            Training / Recovery / Supercompensation / Detraining) after the
-            first version's plain workout/adaptation labels tested as too
-            sparse against reference diagrams -- the bands are what make
-            this legible as a *sequence*, not just a wiggle. Single accent
-            color still holds (no red/yellow/green "too much / too little /
-            just right" like some published versions of this chart use --
-            that's a second idea, not this one). */}
-          {/* mt-2, not the mt-8 every other slot on this page uses -- the
-            diagram's own container adds its own padding (p-4, reduced from
-            p-6 -- see diagram.tsx) and the SVG's own phase-label row leaves
-            further headroom before the curve itself starts, so anything
-            more than a small nudge here stacked into a visibly large gap
-            under the last paragraph. mt-4 alone still wasn't tight enough. */}
-          <div className="mt-2 max-w-[66ch]">
-            <Figure caption="Illustrative, not measured data. A workout is a deliberate, temporary dip -- the adaptation only shows up during the rest that follows, and fades if nothing follows it.">
-              <Diagram
-                aspect="video"
-                alt="A line diagram of the supercompensation curve: performance dips during training, recovers past its starting level during rest (supercompensation), then fades during detraining if not followed by another training stimulus"
-              >
-                {/* viewBox starts at y=30, not y=0 -- nothing in this diagram
-                  renders above y=45 (the phase labels), so the top 30 units
-                  were pure empty margin baked into the SVG's own coordinate
-                  space, on top of the container's own padding and the mt-2
-                  above it. Cropping the viewBox (not the content) removes
-                  that margin without touching any coordinate below it --
-                  the bottom edge (360) is unchanged, only the top moved. */}
-                <svg
-                  viewBox="0 30 640 330"
-                  className="h-full w-full"
-                  role="presentation"
-                >
-                  {/* Phase bands -- shaded only where something is actively
-                    happening (Training, Supercompensation); Before/Recovery/
-                    Detraining stay unshaded so the two active phases read as
-                    the point of the chart. */}
-                  <rect
-                    x="140"
-                    y="55"
-                    width="120"
-                    height="275"
-                    fill="var(--accent-research)"
-                    opacity="0.07"
-                  />
-                  <rect
-                    x="380"
-                    y="55"
-                    width="80"
-                    height="275"
-                    fill="var(--accent-research)"
-                    opacity="0.07"
-                  />
-
-                  {/* Phase divider lines */}
-                  {[140, 260, 380, 460].map((x) => (
-                    <line
-                      key={x}
-                      x1={x}
-                      y1="55"
-                      x2={x}
-                      y2="330"
-                      stroke="var(--muted)"
-                      strokeWidth="1"
-                      opacity="0.2"
-                    />
-                  ))}
-
-                  {/* Phase labels */}
-                  <text
-                    x="100"
-                    y="45"
-                    fontSize="13"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    fill="var(--muted)"
-                    fontFamily="inherit"
-                  >
-                    Before
-                  </text>
-                  <text
-                    x="200"
-                    y="45"
-                    fontSize="13"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    fill="var(--heading)"
-                    fontFamily="inherit"
-                  >
-                    Training
-                  </text>
-                  <text
-                    x="320"
-                    y="45"
-                    fontSize="13"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    fill="var(--muted)"
-                    fontFamily="inherit"
-                  >
-                    Recovery
-                  </text>
-                  <text
-                    x="420"
-                    y="45"
-                    fontSize="13"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    fill="var(--heading)"
-                    fontFamily="inherit"
-                  >
-                    Supercompensation
-                  </text>
-                  <text
-                    x="530"
-                    y="45"
-                    fontSize="13"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    fill="var(--muted)"
-                    fontFamily="inherit"
-                  >
-                    Detraining
-                  </text>
-
-                  {/* Baseline -- starting performance level */}
-                  <line
-                    x1="60"
-                    y1="220"
-                    x2="600"
-                    y2="220"
-                    stroke="var(--muted)"
-                    strokeWidth="1.25"
-                    strokeDasharray="4 5"
-                    opacity="0.6"
-                  />
-                  <text
-                    x="60"
-                    y="238"
-                    fontSize="13"
-                    fill="var(--muted)"
-                    fontFamily="inherit"
-                  >
-                    starting level
-                  </text>
-
-                  {/* The curve: flat, then a dip through Training, a recovery
-                    back past baseline, a peak at Supercompensation, and a
-                    decline through Detraining -- showing the adaptation
-                    fades if nothing follows it, not just that it happened
-                    once. */}
-                  <path
-                    d="M 60 220 C 100 220, 140 250, 170 275 C 195 292, 205 292, 230 280 C 260 260, 290 235, 320 220 C 350 200, 390 165, 420 150 C 440 140, 450 135, 460 135 C 490 137, 520 150, 550 168 C 570 180, 585 190, 600 195"
-                    fill="none"
-                    stroke="var(--accent-research)"
-                    strokeWidth="2.25"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Markers at the two named moments the labels above call
-                    out: the low point of the dip, and the peak. */}
-                  <circle
-                    cx="210"
-                    cy="288"
-                    r="4"
-                    fill="var(--accent-research)"
-                  />
-                  <circle
-                    cx="460"
-                    cy="135"
-                    r="4"
-                    fill="var(--accent-research)"
-                  />
-
-                  {/* Axes */}
-                  <text
-                    x="600"
-                    y="352"
-                    fontSize="13"
-                    textAnchor="end"
-                    fill="var(--muted)"
-                    fontFamily="inherit"
-                  >
-                    time →
-                  </text>
-                  <text
-                    x="30"
-                    y="195"
-                    fontSize="13"
-                    textAnchor="middle"
-                    fill="var(--muted)"
-                    fontFamily="inherit"
-                    transform="rotate(-90, 30, 195)"
-                  >
-                    performance
-                  </text>
-                </svg>
-              </Diagram>
-            </Figure>
-          </div>
-        </section>
-
-        {/* My Story */}
-        <section className="mt-14 border-t border-black/5 pt-14 dark:border-white/10">
+        {/* My Story -- larger photography than the earlier pass (w-24/w-28,
+            not w-14/w-16) since this is meant to feel like the archive's
+            origin story, not a quick aside. */}
+        <section className="mt-20 border-t border-black/10 pt-16 dark:border-white/10">
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
             My story
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+          <h2 className="font-serif mt-4 max-w-3xl text-4xl leading-[1.1] font-medium tracking-tight text-zinc-900 sm:text-5xl dark:text-white">
             From racing to reverse-engineering why racing works
           </h2>
           <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
@@ -493,22 +768,18 @@ export function AboutPage() {
           {/* A small photo per stop, not one portrait -- the progression
             itself (Brophy -> Run22 -> Vanderbilt -> Marathon -> Coaching)
             is the point, the same way the timeline's own text already
-            moves stop to stop. compact ImageSlots since five of these in a
-            row need to be quick visual notes, not five repeated
-            paragraphs of guidance -- the full guidance for each still
-            lives in the timeline array above and in
-            public/homepage/README.md. */}
-          <ol className="mt-10 space-y-8 border-l border-black/10 pl-6 dark:border-white/10">
+            moves stop to stop. */}
+          <ol className="mt-12 space-y-10 border-l border-black/10 pl-8 dark:border-white/10">
             {timeline.map((stop) => (
               <li key={stop.label} className="relative">
-                <span className="absolute top-1.5 -left-[29px] h-2.5 w-2.5 rounded-full bg-zinc-900 dark:bg-white" />
+                <span className="absolute top-2 -left-[37px] h-3 w-3 rounded-full bg-zinc-900 dark:bg-white" />
                 <div
                   className={
-                    stop.photoAlt ? "flex items-start gap-4" : undefined
+                    stop.photoAlt ? "flex items-start gap-5" : undefined
                   }
                 >
                   {stop.photoAlt && stop.photoLabel ? (
-                    <div className="w-14 shrink-0 sm:w-16">
+                    <div className="w-24 shrink-0 sm:w-28">
                       <ImageSlot
                         compact
                         compactLabel={stop.photoCompactLabel}
@@ -517,20 +788,18 @@ export function AboutPage() {
                         alt={stop.photoAlt}
                         label={stop.photoLabel}
                         src={stop.photoSrc}
-                        // Overrides ImageSlot's default `sizes` (tuned for a
-                        // half/full-viewport image) -- this renders at a
-                        // fixed ~64px regardless of viewport, so the default
-                        // would make next/image fetch a far larger source
-                        // than ever gets displayed.
-                        sizes="64px"
+                        // Overrides ImageSlot's default `sizes` (tuned for
+                        // a half/full-viewport image) -- this renders at a
+                        // fixed ~112px regardless of viewport.
+                        sizes="112px"
                       />
                     </div>
                   ) : null}
                   <div>
-                    <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
                       {stop.label}
                     </h3>
-                    <p className="mt-1 max-w-[62ch] text-zinc-600 dark:text-zinc-300">
+                    <p className="mt-1.5 max-w-[62ch] text-zinc-600 dark:text-zinc-300">
                       {stop.note}
                       {stop.linkHref ? (
                         <>
@@ -550,241 +819,42 @@ export function AboutPage() {
               </li>
             ))}
           </ol>
+        </section>
+      </Container>
 
-          <p className="mt-10 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+      {/* The thesis statement and the closing statement both get real
+          visual weight, and both benefit from breaking out of the page's
+          own paper background -- a single deliberate contrast band (the
+          one contrast moment on this page, not a pattern repeated
+          elsewhere), full-bleed rather than container-constrained, so it
+          reads as a genuine chapter break between "My Story" and "Looking
+          Ahead" rather than one more paragraph the same weight as the rest.
+          Inverted, not fixed-dark: this band is deliberately always the
+          opposite of whatever the page's own current theme is (dark ink on
+          paper by default; light paper on ink in dark theme, matching the
+          same bg-stone-50/dark:bg-zinc-950 pairing layout.tsx's own <body>
+          uses, just flipped) -- now that the site has a real light/dark
+          toggle, a hardcoded-dark band would stop reading as a contrast
+          moment at all once the surrounding page itself went dark. */}
+      <div className="mt-20 bg-zinc-950 py-24 text-white dark:bg-stone-50 dark:text-zinc-900">
+        <Container variant="wide" className="!py-0">
+          <p className="font-serif max-w-3xl text-3xl leading-[1.35] font-medium sm:text-4xl sm:leading-[1.3]">
             This is the record of a realization that crept up slowly: I was more
             interested in why a workout worked than in how fast I could run it.
           </p>
-        </section>
+        </Container>
+      </div>
 
-        {/* How I Learn */}
-        <section className="mt-14 border-t border-black/5 pt-14 dark:border-white/10">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-            How I learn
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-            Comparing systems instead of picking one
-          </h2>
-          <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            I compare coaching systems instead of committing to one, and
-            I&rsquo;m suspicious of anyone who does. The coaches and researchers
-            below all built real, medal-winning methods, yet they disagree with
-            each other: on how much of training should be aerobic base versus
-            race-specific work, or how precisely intensity should be measured.
-            Studying where they diverge teaches you more than adopting any one
-            of them wholesale. If you pushed me to pick the one closest to what
-            I actually believe, though, it&rsquo;s the 80/20 principle (Stephen
-            Seiler&rsquo;s research on polarized training, which I first ran
-            into through Matt Fitzgerald&rsquo;s book of the same name), not
-            because the others are wrong, but because that ratio is the version
-            of &ldquo;mostly easy, occasionally hard&rdquo; that&rsquo;s held up
-            best for me in practice.
-          </p>
-
-          {/* naturalSize (3005x1952, the file's real dimensions), not a
-            forced aspect box -- every crop attempt (plain center, an
-            objectPosition bias, then "contain" inside a 16:9 box) either
-            cut off a title or left the image looking artificially
-            letterboxed. naturalSize renders the whole photo at its own
-            real proportions, full width, no crop and no forced shape. */}
-          <div className="mt-8 max-w-[66ch]">
-            <Figure>
-              <ImageSlot
-                kind="archival"
-                naturalSize={{ width: 3005, height: 1952 }}
-                label="A real photo of the actual coaching/running books stacked -- Fitzgerald, Hutchinson, Daniels, Stulberg & Magness, and whatever else is genuinely on the shelf. The literal source material for this section, not a staged 'bookshelf' stock photo."
-                alt="A stack of running and coaching books: How Bad Do You Want It?, The Competitive Edge, Endure, Peak Performance, Daniels' Running Formula, Running Rewired, and Training Young Distance Runners"
-                src="/homepage/how-i-learn-books.jpg"
-              />
-            </Figure>
-          </div>
-
-          <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
-            {influences.map((influence) => (
-              <div key={influence.name}>
-                <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
-                  {influence.name}
-                </h3>
-                <p className="mt-1 text-zinc-600 dark:text-zinc-300">
-                  {influence.note}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            The interesting question is always &ldquo;what adaptation is this
-            session actually trying to create,&rdquo; and every system above
-            answers that a little differently. The full comparison lives in the{" "}
-            <Link
-              href="/coaching-library"
-              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
-            >
-              Coaching Library
-            </Link>
-            .
-          </p>
-        </section>
-
-        {/* Coaching Philosophy */}
-        <section className="mt-14 border-t border-black/5 pt-14 dark:border-white/10">
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-            Coaching philosophy
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-            Good coaching creates independent athletes
-          </h2>
-          <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            <p>
-              A workout is only half the transaction. The other half is
-              understanding why it&rsquo;s there: what adaptation it&rsquo;s
-              chasing, how to judge whether the body is actually absorbing it,
-              when pushing through fatigue is productive and when it&rsquo;s
-              just damage. A coach who only hands out the first half produces
-              athletes who can follow a plan. A coach who teaches the second
-              half produces athletes who can build their own.
-            </p>
-          </div>
-
-          {/* Archival material, not a portrait of Lydiard -- a notebook page,
-            handwritten workout, or physiology sketch emphasizes the idea
-            over the person, and reads as a research archive rather than a
-            coaching-brand bio photo. Sized like a real supporting image
-            (not avatar-scale), since a document needs to be legible enough
-            to read as a document, not just recognized as a face would be.
-            Better than the original plan (source a period-appropriate
-            Lydiard artifact, with the rights questions that implies):
-            Brody's own training log from Mike Scannell, his real coach,
-            named earlier in "My Story." Same "emphasize the idea" goal,
-            zero rights question, more honestly tied to his own story than
-            a historical Lydiard document would have been.
-            w-48/w-56 (the original size) turned out too small to actually
-            read the handwriting -- the whole point of using a real,
-            legible page over a posed photo. max-w-md is still well short
-            of the full text column, but big enough that the day-by-day
-            entries are actually readable, not just recognizable as "a
-            document." naturalSize (2397x3627, the file's real dimensions),
-            not a forced aspect box -- the source's own ratio (~0.66)
-            doesn't exactly match aspect="portrait" (3/4, 0.75), and even
-            "contain" inside that box left it looking artificially
-            letterboxed; naturalSize renders the whole page at its own
-            real shape. */}
-          <div className="mt-8 max-w-[66ch]">
-            <div className="w-full max-w-md">
-              <Figure>
-                <ImageSlot
-                  kind="archival"
-                  naturalSize={{ width: 2397, height: 3627 }}
-                  label="Brody's own training log from coach Mike Scannell -- a real page, handwritten annotations legible if possible. Emphasizes the coaching relationship and the idea of structured reflection, not a posed photo."
-                  alt="A week of daily entries from Brody Haar's handwritten training log -- date, workout, location, distance, and comments for each day"
-                  src="/homepage/coaching-training-log.jpg"
-                />
-              </Figure>
-            </div>
-          </div>
-
-          <div className="mt-6 max-w-[66ch]">
-            <PullQuote
-              text={
-                'None of the American way: the guy with "Coach" on his back, a clipboard and a stopwatch in his hands, shoving kids through repetitions until they are falling down with fatigue... They had all had the competitive edge drilled out of them.'
-              }
-              attribution="Arthur Lydiard"
-            />
-          </div>
-
-          <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            That&rsquo;s the failure mode I trained under before I understood
-            there was an alternative, and it&rsquo;s the reason
-            &ldquo;why&rdquo; comes before &ldquo;what&rdquo; everywhere on this
-            site. For the specific principles that come out of this, see{" "}
-            <Link
-              href="/training-philosophy"
-              className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
-            >
-              Training Philosophy
-            </Link>
-            .
-          </p>
-        </section>
-
-        {/* What You'll Find Here */}
-        <section
-          id="what-youll-find-here"
-          className="mt-14 scroll-mt-24 border-t border-black/5 pt-14 dark:border-white/10"
-        >
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
-            What you&rsquo;ll find here
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-            A growing knowledge base
-          </h2>
-          <p className="mt-6 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            The site is organized into eight standing categories, each one a
-            question I keep adding answers to rather than a folder of one-off
-            posts:
-          </p>
-
-          <div className="mt-8 divide-y divide-black/5 dark:divide-white/10">
-            {categories.map((category) => {
-              const visual = CATEGORY_VISUALS[category.slug];
-              return (
-                <Link
-                  key={category.slug}
-                  href={`/${category.slug}`}
-                  className="group -mx-2 flex items-start justify-between gap-6 rounded-lg px-2 py-5 transition hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
-                >
-                  <div className="flex items-start gap-4">
-                    {visual ? (
-                      // Low-alpha gradient wash, not a solid fill -- same
-                      // technique as FeaturedTool's icon tile, chosen because
-                      // this row (unlike ToolCard's always-dark card) sits
-                      // directly on the page's own light/dark background, so
-                      // the chip needs to read on both without its own
-                      // separate dark: variant.
-                      <span
-                        aria-hidden="true"
-                        className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:-translate-y-0.5"
-                        style={{ backgroundImage: `linear-gradient(135deg, ${visual.accentFrom}26, ${visual.accentTo}40)` }}
-                      >
-                        <visual.icon aria-hidden="true" strokeWidth={1.5} className="h-5 w-5" style={{ color: visual.accentFrom }} />
-                      </span>
-                    ) : null}
-                    <div>
-                      <h3 className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
-                        {category.title}
-                      </h3>
-                      <p className="mt-1 max-w-xl text-zinc-600 dark:text-zinc-300">
-                        {category.mission}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    aria-hidden="true"
-                    className="mt-1 shrink-0 text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-950 dark:text-zinc-400 dark:group-hover:text-white"
-                  >
-                    →
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-
-          <p className="mt-8 max-w-[66ch] text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-            New sections get added the same way this one did: I learn something,
-            verify it&rsquo;s solid, and write it down in the place a reader
-            would actually go looking for it.
-          </p>
-        </section>
-
+      <Container variant="wide">
         {/* Looking Ahead */}
-        <section className="mt-14 border-t border-black/5 pt-14 pb-4 dark:border-white/10">
+        <section className="pt-4 pb-4">
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
             Looking ahead
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+          <h2 className="font-serif mt-3 text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
             Still being written
           </h2>
-          <div className="mt-6 max-w-[66ch] space-y-6 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+          <div className="mt-6 max-w-[66ch] space-y-8 text-lg leading-8 text-zinc-600 dark:text-zinc-300">
             <p>
               Ten years from now I&rsquo;d like this site to hold a few hundred
               connected pages on training, physiology, psychology, and coaching
@@ -793,7 +863,7 @@ export function AboutPage() {
               you&rsquo;re reading this early, you&rsquo;re reading a smaller
               version of what this is trying to become.
             </p>
-            <p className="font-medium text-zinc-900 italic dark:text-white">
+            <p className="font-serif text-2xl leading-9 font-medium text-zinc-900 italic dark:text-white">
               The archive grows the same way the aerobic system does: slowly,
               and only with consistent, unglamorous work.
             </p>

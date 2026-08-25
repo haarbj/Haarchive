@@ -9,13 +9,13 @@ function question(overrides: Partial<KnowledgeGapInput>): KnowledgeGapInput {
 describe("computeKnowledgeGaps", () => {
   it("counts questions per category", () => {
     const gaps = computeKnowledgeGaps([
-      question({ category: "the-science" }),
-      question({ category: "the-science" }),
-      question({ category: "mind-and-recovery" }),
+      question({ category: "physiology" }),
+      question({ category: "physiology" }),
+      question({ category: "psychology" }),
     ]);
 
-    const science = gaps.find((g) => g.label === "the-science");
-    const recovery = gaps.find((g) => g.label === "mind-and-recovery");
+    const science = gaps.find((g) => g.label === "physiology");
+    const recovery = gaps.find((g) => g.label === "psychology");
     expect(science?.count).toBe(2);
     expect(recovery?.count).toBe(1);
   });
@@ -32,22 +32,22 @@ describe("computeKnowledgeGaps", () => {
 
   it("flags a bucket once it reaches the threshold", () => {
     const gaps = computeKnowledgeGaps(
-      Array.from({ length: 3 }, () => question({ category: "the-science" })),
+      Array.from({ length: 3 }, () => question({ category: "physiology" })),
       3,
     );
-    expect(gaps.find((g) => g.label === "the-science")?.flagged).toBe(true);
+    expect(gaps.find((g) => g.label === "physiology")?.flagged).toBe(true);
   });
 
   it("does not flag a bucket below the threshold", () => {
-    const gaps = computeKnowledgeGaps([question({ category: "the-science" })], 3);
-    expect(gaps.find((g) => g.label === "the-science")?.flagged).toBe(false);
+    const gaps = computeKnowledgeGaps([question({ category: "physiology" })], 3);
+    expect(gaps.find((g) => g.label === "physiology")?.flagged).toBe(false);
   });
 
   it("excludes questions already added to the library from gap counts", () => {
     const gaps = computeKnowledgeGaps([
-      question({ category: "the-science", status: "added_to_library" }),
+      question({ category: "physiology", status: "added_to_library" }),
     ]);
-    expect(gaps.find((g) => g.label === "the-science")).toBeUndefined();
+    expect(gaps.find((g) => g.label === "physiology")).toBeUndefined();
   });
 
   it("sorts results by count descending", () => {

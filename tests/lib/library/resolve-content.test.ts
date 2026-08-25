@@ -5,7 +5,7 @@ import { resolveTopicMetadata } from "@/lib/library/resolve-content";
 describe("resolveTopicMetadata", () => {
   it("resolves a real taxonomy topic to its title and category", () => {
     const result = resolveTopicMetadata("exercise-physiology");
-    expect(result).toEqual({ title: "Exercise Physiology", categorySlug: "the-science", categoryTitle: "The Science" });
+    expect(result).toEqual({ title: "Exercise Physiology", categorySlug: "physiology", categoryTitle: "Physiology" });
   });
 
   it("returns null for a slug that isn't a real section (e.g. a DB-backed contributor article)", () => {

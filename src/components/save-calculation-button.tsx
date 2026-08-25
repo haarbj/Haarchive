@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Check } from "lucide-react";
 
 import { saveCalculation } from "@/components/pace-calculator-actions";
 import { useAuthStatus } from "@/lib/use-auth-status";
@@ -49,7 +50,16 @@ export function SaveCalculationButton({
         disabled={isPending || result?.ok === true}
         className="inline-flex items-center gap-1.5 rounded-full border border-zinc-900/15 px-4 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-black/5 disabled:opacity-60 dark:border-white/20 dark:text-zinc-200 dark:hover:bg-white/10"
       >
-        {result?.ok ? "Saved ✓" : isPending ? "Saving…" : "Save this result"}
+        {result?.ok ? (
+          <>
+            <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+            Saved
+          </>
+        ) : isPending ? (
+          "Saving…"
+        ) : (
+          "Save this result"
+        )}
       </button>
       {result && !result.ok && (
         <p className="text-xs text-red-700 dark:text-red-400">{result.message}</p>

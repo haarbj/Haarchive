@@ -208,15 +208,23 @@ export function ArticleNotes({ contentSlug, content, initialBookmarked }: Articl
 
   return (
     <>
-      {/* A plain row above the article, not docked into the grid gutter --
-          the gutter's actual free width varies with viewport and TOC
-          presence, which made a floating/sticky placement there fragile.
-          Right-aligned and unstyled beyond a hover state, the same
-          treatment as any other quiet text control on the site, so it
-          reads as one more small utility above the piece (like a reading
-          time) rather than injected product chrome. */}
-      <div className="flex items-center justify-end gap-1">
+      {/* Rendered inline in the masthead's own eyebrow line (see
+          article-hero.tsx / article-overview.tsx, the two call sites --
+          this component itself stays layout-agnostic, just a right-aligned
+          row), not a standalone utility row of its own further down the
+          page. Small text with a small icon each, not a pair of pill
+          buttons -- no border, no fill, no rounded hit-box -- consistent
+          with questions-cta.tsx's own "the archive itself is the CTA"
+          treatment rather than a second, competing button language on the
+          same page. The divider between the two is a real 1px drawn rule,
+          not a middot -- a middot reads as "more metadata" (the same
+          character joins every stat elsewhere on the page); a hairline
+          rule instead gives this its own quiet identity as a small piece
+          of apparatus, echoing the thin-rule language used throughout the
+          rest of the brand. */}
+      <div className="flex items-center justify-end gap-2">
         <BookmarkButton topicSlug={contentSlug} initialBookmarked={initialBookmarked} />
+        <span aria-hidden="true" className="h-3 w-px bg-zinc-300 dark:bg-zinc-600" />
         <div ref={hintRef} className="group relative">
           <button
             type="button"
@@ -224,16 +232,18 @@ export function ArticleNotes({ contentSlug, content, initialBookmarked }: Articl
             aria-haspopup={authStatus === "authenticated" ? "dialog" : undefined}
             aria-expanded={authStatus === "authenticated" ? open : undefined}
             aria-describedby={anonHintOpen ? hintId : authStatus === "authenticated" ? tooltipId : undefined}
-            className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm text-zinc-500 transition hover:bg-black/5 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+            className="-m-1 inline-flex items-center gap-1 p-1 text-sm text-zinc-500 transition hover:text-zinc-950 hover:underline dark:text-zinc-400 dark:hover:text-white"
           >
-            <svg className="h-[15px] w-[15px]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            {/* Same scaled-down treatment as BookmarkButton's icon -- see
+                its own comment. */}
+            <svg className="h-3 w-3 shrink-0" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path
                 d="M4.5 3.5h8l3 3v10a1 1 0 0 1-1 1h-10a1 1 0 0 1-1-1v-12a1 1 0 0 1 1-1Z"
                 stroke="currentColor"
-                strokeWidth="1.3"
+                strokeWidth="1.4"
                 strokeLinejoin="round"
               />
-              <path d="M7 9h6M7 12h6M7 15h3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+              <path d="M7 9h6M7 12h6M7 15h3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
             Notes
           </button>

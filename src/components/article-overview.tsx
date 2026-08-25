@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { Card } from "@/components/ui/card";
+import type { ContentBlock } from "@/lib/sections";
+import { ArticleNotes } from "@/components/notes/article-notes";
 
 type ArticleOverviewProps = {
   // Structural, not the full Category type -- ArticleLayout sometimes
@@ -18,6 +19,13 @@ type ArticleOverviewProps = {
   // Omitted (not a badge/callout) when false, matching every other stat
   // here, which is also conditionally rendered rather than shown empty.
   hasKnowledgeCheck?: boolean;
+  // Threaded through to ArticleNotes, rendered inline on the right of the
+  // breadcrumb row below -- the Foundations-page equivalent of ArticleHero's
+  // own eyebrow-line placement, so both header shapes carry Save/Notes in
+  // the same relative spot.
+  contentSlug: string;
+  content: ContentBlock[];
+  initialBookmarked: boolean;
 };
 
 export function ArticleOverview({
@@ -27,6 +35,9 @@ export function ArticleOverview({
   sectionCount,
   lastUpdated,
   hasKnowledgeCheck,
+  contentSlug,
+  content,
+  initialBookmarked,
 }: ArticleOverviewProps) {
   const formattedDate = lastUpdated
     ? new Date(`${lastUpdated}T00:00:00`).toLocaleDateString("en-US", {
@@ -36,48 +47,43 @@ export function ArticleOverview({
       })
     : null;
 
+  // A single middot-joined line, not a bordered/shadowed stat card -- matches
+  // ArticleHero's own DB-article metadata line (author · title · reading
+  // time · date) rather than a second, dashboard-flavored way of showing
+  // the same kind of quiet per-page facts.
+  const stats = [
+    `${readingMinutes} min read`,
+    sectionCount > 0 ? `${sectionCount} sections` : null,
+    formattedDate ? `Last updated ${formattedDate}` : null,
+    hasKnowledgeCheck ? "Includes a knowledge check" : null,
+  ].filter((stat): stat is string => stat !== null);
+
   return (
     <div className="mt-8">
-      <nav
-        aria-label="Breadcrumb"
-        className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400"
-      >
-        <Link
-          href={`/${category.slug}`}
-          className="transition hover:text-zinc-950 dark:hover:text-white"
-        >
-          {category.title}
-        </Link>
-        <span aria-hidden="true">→</span>
-        <span aria-current="page" className="font-medium text-zinc-900 dark:text-white">
-          {title}
-        </span>
-      </nav>
-
-      <Card as="dl" padding="sm" className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <div className="flex items-center gap-1.5">
-          <dt className="text-zinc-500 dark:text-zinc-400">Reading time</dt>
-          <dd className="font-semibold text-zinc-900 dark:text-white">{readingMinutes} min</dd>
+      {/* Save/Notes inline on the right of the breadcrumb, not a separate
+          row further down the page -- see ArticleHero's own matching
+          treatment for a DB article. Wrapped in its own div (not spread
+          directly as a flex child) since ArticleNotes' returned fragment
+          can have more than one child -- see that comment for why. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <Link
+            href={`/${category.slug}`}
+            className="transition hover:text-zinc-950 dark:hover:text-white"
+          >
+            {category.title}
+          </Link>
+          <span aria-hidden="true">→</span>
+          <span aria-current="page" className="font-medium text-zinc-900 dark:text-white">
+            {title}
+          </span>
+        </nav>
+        <div className="shrink-0">
+          <ArticleNotes contentSlug={contentSlug} content={content} initialBookmarked={initialBookmarked} />
         </div>
-        {sectionCount > 0 ? (
-          <div className="flex items-center gap-1.5">
-            <dt className="text-zinc-500 dark:text-zinc-400">Sections</dt>
-            <dd className="font-semibold text-zinc-900 dark:text-white">{sectionCount}</dd>
-          </div>
-        ) : null}
-        {formattedDate ? (
-          <div className="flex items-center gap-1.5">
-            <dt className="text-zinc-500 dark:text-zinc-400">Last updated</dt>
-            <dd className="font-semibold text-zinc-900 dark:text-white">{formattedDate}</dd>
-          </div>
-        ) : null}
-        {hasKnowledgeCheck ? (
-          <div className="flex items-center gap-1.5">
-            <dt className="text-zinc-500 dark:text-zinc-400">Includes</dt>
-            <dd className="font-semibold text-zinc-900 dark:text-white">A knowledge check</dd>
-          </div>
-        ) : null}
-      </Card>
+      </div>
+
+      <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">{stats.join(" · ")}</p>
     </div>
   );
 }

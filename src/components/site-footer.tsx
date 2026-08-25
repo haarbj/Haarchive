@@ -1,22 +1,37 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
 
 import { categories } from "@/lib/sections";
 import { BugReportTrigger } from "@/components/bug-report/bug-report-trigger";
+import { useTheme } from "@/lib/theme";
 
 const linkClass =
   "text-zinc-500 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white";
 
 export function SiteFooter() {
+  // The logo SVGs only ship in one color (the light cream #f2f0ec fill,
+  // designed for the site's dark background) -- there's no separate "ink"
+  // export for use on a light background. Whenever the reader's real theme
+  // (see src/lib/theme.ts) is light, invert flips that same asset to read
+  // as dark ink on paper rather than washing out near-invisible against
+  // white; in dark theme the logo needs no adjustment. Reactive, not
+  // route-based, so it flips the instant the toggle is clicked.
+  const { theme } = useTheme();
+  const isLightTheme = theme === "light";
+
   return (
     <footer className="mt-16 border-t border-black/5 py-12 text-sm dark:border-white/10">
       <div className="mx-auto grid w-full max-w-chrome gap-10 px-6 sm:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <p className="text-sm font-semibold tracking-wide text-zinc-900 uppercase dark:text-white">
-            The Haarchive
-          </p>
-          <p className="mt-2 max-w-xs text-zinc-500 dark:text-zinc-400">
-            Physiology. Psychology. Philosophy. Practice.
-          </p>
+          <Image
+            src="/brand/logo-horizontal-tagline.svg"
+            alt="The Haarchive -- Physiology. Psychology. Philosophy. Practice. Distance running knowledge hub."
+            width={390}
+            height={72}
+            className={isLightTheme ? "invert" : undefined}
+          />
         </div>
 
         <div>

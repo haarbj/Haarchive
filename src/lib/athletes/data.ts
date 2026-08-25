@@ -294,6 +294,92 @@ export const athletes: Athlete[] = [
       { label: "Performing Under Pressure", href: "/performing-under-pressure" },
     ],
   },
+
+  {
+    // Sourced entirely from Chris Lear's Running with the Buffaloes (2011
+    // ed.) -- see Mark Wetmore's own Coaching Library entry for the same
+    // sourcing note. Every training detail, quote, and result here traces to
+    // that single book; omitted rather than guessed wherever it doesn't say.
+    slug: "adam-goucher",
+    name: "Adam Goucher",
+    country: "United States",
+    primaryEvents: "5000m / Cross Country",
+    personalBests: [
+      { event: "3000m (indoor)", time: "7:46.03 (collegiate record, entering the 1998 season)" },
+      { event: "5000m", time: "13:11 (Zurich; described in the book's own account as the third-fastest time by an American at that point)" },
+    ],
+    majorResults: [
+      { competition: "1998 NCAA Cross Country Championships", result: "1st, individual champion (course record, 29:26.9)" },
+      { competition: "1994 NCAA Cross Country Championships", result: "2nd as a true freshman, the highest freshman finish since 1988" },
+      { competition: "1999 U.S. Outdoor Track & Field Championships", result: "1st, 5000m, defeating longtime U.S. champion Bob Kennedy" },
+      { competition: "2000 Sydney Olympics", result: "Reached the 5000m final" },
+      { competition: "2001 World Championships", result: "Reached the 5000m final" },
+    ],
+    oneLiner: "A three-time NCAA champion whose one real gap, by his own coach's read, was durability.",
+    philosophyNarrative: [
+      "Goucher is the clearest individual illustration of Mark Wetmore's whole system in application: entering his final collegiate season already a three-time NCAA champion, he trained almost entirely in singles (one run a day) at 90-100+ miles a week, including tiered group sessions where his own individual pace target was run essentially alone, well clear of the rest of the roster's own targets.",
+      "Wetmore's own four-factor evaluation framework (talent, durability, determination, courage) was applied to Goucher directly and specifically: real talent, above-average courage, adequate determination, and one genuine gap, named plainly by his coach: a history of injury and illness interruption. \"If he's got durability and can do ten years of one-hundred-plus-mile weeks, he'll have four out of four, and he'll be hard to beat,\" Wetmore said before the 1998 season began.",
+      "His high school development, under a different coach, followed a deliberate, patient, goal-driven model of its own: written, dated, specific goals displayed where he'd see them daily, and at least one full competitive season skipped on purpose to protect long-term motivation rather than chase an available result. Both coaches, in other words, were willing to trade a faster short-term result for a longer development horizon.",
+    ],
+    coachHistory: [
+      {
+        label: "High School Coach",
+        coachName: "Judy \"Flower\" Fellhauer",
+        years: "early-to-mid 1990s",
+        whatChanged:
+          "Recruited Goucher into distance running specifically because a football scholarship didn't fit his own physical profile, then built a program around written, displayed, publicly-reinforced goals and a deliberate decision to hold him out of an entire indoor season to protect his motivation for the long term rather than bank an available result.",
+      },
+      {
+        label: "Collegiate Coach",
+        coachName: "Mark Wetmore",
+        coachSlug: "wetmore",
+        years: "1994-1998",
+        whatChanged:
+          "Moved him onto a full aerobic-volume, singles-heavy program (90-100+ miles a week), with Wetmore's own four-factor framework used to evaluate him directly and name durability, not talent, as his one real developmental gap.",
+      },
+    ],
+    signatureTraining: [
+      { name: "Singles at 90-100+ Miles a Week", description: "The bulk of his training volume run as one session a day rather than split into doubles, consistent with the program's broader Lydiard-derived preference for consolidated aerobic runs." },
+      { name: "Tiered AT/Fartlek, Run Largely Alone", description: "The same nominal team session (e.g. 1:30 hard, 3:30 steady recovery) with his own individual pace target set well ahead of the rest of the roster's tiers." },
+      { name: "Written, Displayed, Publicly-Reinforced Goals", description: "As a high school senior, wrote five specific, dated goals on a poster board kept visible at home; his team separately carried a banner naming his specific target time to meets as a public-accountability layer." },
+    ],
+    famousSessions: [
+      {
+        name: "A 22-Mile Preseason Long Run",
+        description: "In August 1998, extended a prescribed long run to 22 miles (2:03), including an unplanned, competitively-triggered 5:13 21st mile after passing struggling teammates. His coach's real-time reaction was genuine, unresolved concern about cumulative volume, not praise: a real, honestly-documented overreaching-risk case rather than a straightforward success story.",
+      },
+      {
+        name: "A Sub-Race-Pace Training Effort",
+        description: "Ran 30:09 for 10K in a training session at 6:30am, in training shoes rather than racing spikes, at the end of a 100-mile week: equivalent to an automatic NCAA-qualifying mark, produced under deliberately unfavorable conditions rather than a taper.",
+      },
+    ],
+    physiologicalEmphasis: ["aerobicBase", "neuromuscularPower", "mentalPerformance", "fatigueResistance"],
+    mentalApproachSummary: [
+      "Goucher used both rehearsed visualization (a \"make a movie in your mind\" cue his coach repeated to him mid-workout, not only before races) and pre-written, present-tense self-talk immediately before competition. His own detailed post-race accounts are an honest complication of that practice, not a contradiction of it: even with real mental-skills preparation in place, he described genuine negative self-talk intruding under late-race fatigue, evidence that a trained practice reduces but doesn't eliminate the pattern.",
+    ],
+    mentalQuotes: [
+      {
+        quote: "You're ready, you're ready to go. If you just do what you're trained to do, if you just execute everything correctly, no one, no one, no one can beat you.",
+        context: "Internal self-talk on the morning of the 1998 NCAA Cross Country Championships",
+        theme: "race mindset",
+      },
+      {
+        quote: "My head was working against me. I was already condemning myself before the end.",
+        context: "On a hard-fought second-place finish at Pre-Nationals",
+        theme: "handling pressure",
+      },
+    ],
+    recoveryNotes: [
+      "Invested in deep-tissue sports massage roughly twice a week during his highest-volume training weeks as a deliberate recovery expense, despite describing the sessions themselves as acutely uncomfortable.",
+      "His subsequent professional career included real, recurring injury interruption (an eventual sports hernia among the ailments cited), a genuinely honest coda to a college career his own coach had already flagged durability as the one real risk in.",
+    ],
+    crossLinks: [
+      { label: "Mark Wetmore's Coaching Philosophy", href: "/coaching-library/wetmore" },
+      { label: "The Aerobic Base", href: "/exercise-physiology" },
+      { label: "Self-Talk & Mental Technique", href: "/self-talk" },
+      { label: "5K Training", href: "/5k-training" },
+    ],
+  },
 ];
 
 export const athleteMap = new Map(athletes.map((athlete) => [athlete.slug, athlete]));

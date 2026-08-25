@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 
 import { buildLinkableTargets, searchLinkableTargets, type LinkableTarget } from "@/lib/questions/section-picker";
 import { resolveLinkedSection } from "@/lib/sections";
@@ -69,8 +70,19 @@ export function LinkedSectionPicker({
 
       <div className="mt-1 flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-black/5 px-3 py-2 text-sm dark:border-white/10 dark:bg-white/5">
         {value ? (
-          <span className={selectedResolves ? "text-zinc-800 dark:text-zinc-200" : "text-red-700 dark:text-red-400"}>
-            {selectedTarget ? breadcrumb(selectedTarget) : selectedResolves ? value : `⚠ "${value}" doesn't match any real article`}
+          <span
+            className={`flex items-center gap-1.5 ${selectedResolves ? "text-zinc-800 dark:text-zinc-200" : "text-red-700 dark:text-red-400"}`}
+          >
+            {selectedTarget ? (
+              breadcrumb(selectedTarget)
+            ) : selectedResolves ? (
+              value
+            ) : (
+              <>
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                {`"${value}" doesn't match any real article`}
+              </>
+            )}
           </span>
         ) : (
           <span className="text-zinc-500 dark:text-zinc-400">Not linked to an article yet.</span>

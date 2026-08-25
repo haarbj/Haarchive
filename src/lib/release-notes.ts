@@ -52,6 +52,24 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-08-25",
+    headline: "Fixed missing \"new signup\" notifications for accounts confirmed by email",
+    detail:
+      "Admins were only ever notified about new signups completed through Google, since the check for \"is this really a brand-new account\" compared account-creation time to first-sign-in time and assumed the two would land within a few seconds of each other -- true for OAuth, but never true for an email/password signup, where a real person has to go check their inbox first. It's now a direct, idempotent check instead of a timing guess.",
+  },
+  {
+    date: "2026-08-25",
+    headline: "A real light/dark toggle, and the article and Library/Tools pages were rebuilt around the new editorial identity",
+    detail:
+      "The site now defaults to your system's light/dark preference with a real toggle in the header, instead of always opening dark. Article pages, the Articles overview, and the four domain landing pages (Physiology, Psychology, Philosophy, Practice) were rebuilt around quiet numbered/editorial indexes instead of bordered card grids. The Tools page now groups calculators into Pacing, Environment, and Physiology, keeps each tool's own icon for quick recognition, and separates \"Choosing a Pace Calculator\" out as guidance rather than presenting it as a 12th tool.",
+  },
+  {
+    date: "2026-08-25",
+    headline: "New Foundations content drawn from Running with the Buffaloes and Daniels' Running Formula",
+    detail:
+      "Real-world case studies and coaching detail from Chris Lear's Running with the Buffaloes and Jack Daniels' Running Formula were woven into existing pages across Physiology, Philosophy, and Practice (pacing execution, altitude and terrain training, recovery, coaching individualization), and Mark Wetmore, Jack Daniels, and Adam Goucher's Coaching/Athlete Library entries were enriched with newly-documented detail.",
+  },
+  {
     date: "2026-08-21",
     headline: "The Environmental Performance Calculator got more accurate on hilly routes, and can now factor in altitude",
     detail:

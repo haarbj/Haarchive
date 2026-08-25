@@ -19,8 +19,8 @@ function note(overrides: Partial<LibraryNote>): LibraryNote {
     createdAt: overrides.createdAt ?? "2026-08-01T00:00:00Z",
     updatedAt: overrides.updatedAt ?? "2026-08-01T00:00:00Z",
     topicTitle: overrides.topicTitle ?? "Exercise Physiology",
-    categorySlug: "categorySlug" in overrides ? overrides.categorySlug! : "the-science",
-    categoryTitle: "categoryTitle" in overrides ? overrides.categoryTitle! : "The Science",
+    categorySlug: "categorySlug" in overrides ? overrides.categorySlug! : "physiology",
+    categoryTitle: "categoryTitle" in overrides ? overrides.categoryTitle! : "Physiology",
   };
 }
 
@@ -62,20 +62,20 @@ describe("searchNotes", () => {
 describe("filterNotesByCategory", () => {
   it("filters to only the given category", () => {
     const notes = [
-      note({ id: "a", categorySlug: "the-science" }),
-      note({ id: "b", categorySlug: "recovery-and-fueling" }),
+      note({ id: "a", categorySlug: "physiology" }),
+      note({ id: "b", categorySlug: "psychology" }),
     ];
-    expect(filterNotesByCategory(notes, "the-science").map((n) => n.id)).toEqual(["a"]);
+    expect(filterNotesByCategory(notes, "physiology").map((n) => n.id)).toEqual(["a"]);
   });
 
   it("returns everything when categorySlug is null (no filter)", () => {
-    const notes = [note({ id: "a" }), note({ id: "b", categorySlug: "recovery-and-fueling" })];
+    const notes = [note({ id: "a" }), note({ id: "b", categorySlug: "psychology" })];
     expect(filterNotesByCategory(notes, null)).toHaveLength(2);
   });
 
   it("excludes a note with a null category (e.g. a contributor article) when a real category is selected", () => {
     const notes = [note({ id: "a", categorySlug: null })];
-    expect(filterNotesByCategory(notes, "the-science")).toEqual([]);
+    expect(filterNotesByCategory(notes, "physiology")).toEqual([]);
   });
 });
 

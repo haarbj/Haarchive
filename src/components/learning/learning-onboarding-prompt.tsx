@@ -20,11 +20,10 @@ const ORIENTATION_OPTIONS: { value: LearningOrientation; label: string }[] = [
 ];
 
 const INTEREST_OPTIONS: { value: LearningInterestCategory; label: string }[] = [
-  { value: "foundations", label: "Foundations" },
-  { value: "the-science", label: "The Science" },
-  { value: "coaching-and-training", label: "Coaching & Training" },
-  { value: "recovery-and-fueling", label: "Recovery & Fueling" },
-  { value: "mind-and-recovery", label: "Mental Performance" },
+  { value: "physiology", label: "Physiology" },
+  { value: "psychology", label: "Psychology" },
+  { value: "philosophy", label: "Philosophy" },
+  { value: "practice", label: "Practice" },
 ];
 
 // Full-width, stacked choice buttons -- segmentedButtonClass (tool-styles.ts)
