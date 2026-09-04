@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-09-04",
+    headline: "New Physiology content drawn from Marathon Excellence for Everyone",
+    detail:
+      "Exercise Physiology, Data & Analytics, the Workout Library, Nutrition & Fueling, the Research Library, and Marathon Training were substantially expanded, sourced from John J. Davis's Marathon Excellence for Everyone and independently verified against the research it cites. The most consequential single change: Exercise Physiology's existing \"lactic acid\" and acid/alkali framing, accurate to the physiology understood when Lydiard's programs were built, is now paired with a correction explaining what modern lactate-shuttle research actually found, without deleting the original coaching logic built on top of it. New sections cover what actually drives a sustainable pace ceiling versus VO2 max, the three physiological domains of training intensity, and why marathon pace erodes late in a race even when VO2max and running economy don't change.",
+  },
+  {
     date: "2026-08-25",
     headline: "Fixed the logo shown in link previews",
     detail:
