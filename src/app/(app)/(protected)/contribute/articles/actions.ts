@@ -7,6 +7,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { hasContentPermission } from "@/lib/auth/permissions";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { articleDraftSchema, citationsSchema, type CitationInput } from "@/lib/validation/articles";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL } from "@/lib/validation/image-upload";
 import { isArticleAuthor } from "@/lib/articles/is-author";
 import { isReservedSlug, slugifyTitle } from "@/lib/articles/slugify";
 
@@ -199,9 +200,6 @@ export async function updateArticleDraft(
 
 export type ImageUploadState = { url?: string; error?: string };
 
-const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
-
 // Lets a contributor use a photo they took themselves (no existing URL) --
 // same authorization gate as createArticleDraft, but doesn't require an
 // article to already exist since this is called mid-edit, before a draft
@@ -218,20 +216,30 @@ export async function uploadArticleImage(formData: FormData): Promise<ImageUploa
     return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
   }
   if (file.size > MAX_IMAGE_BYTES) {
-    return { error: "Image is too large. Keep it under 8 MB." };
+    return { error: `Image is too large. Keep it under ${MAX_IMAGE_BYTES_LABEL}.` };
   }
 
   const extension = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
   const path = `${session.userId}/${crypto.randomUUID()}.${extension}`;
 
-  const admin = createServiceRoleClient();
-  const { error: uploadError } = await admin.storage
-    .from("article-images")
-    .upload(path, file, { contentType: file.type });
-  if (uploadError) return { error: uploadError.message };
+  // Defense in depth: ImageUrlField's own caller already catches a thrown
+  // rejection instead of crashing (see its own comment), but a real
+  // Supabase Storage client bug/network failure could still throw
+  // something that isn't a recognized StorageError and therefore isn't
+  // returned as a normal { error } -- this makes sure that never escapes
+  // as an unhandled server action error either.
+  try {
+    const admin = createServiceRoleClient();
+    const { error: uploadError } = await admin.storage
+      .from("article-images")
+      .upload(path, file, { contentType: file.type });
+    if (uploadError) return { error: uploadError.message };
 
-  const { data } = admin.storage.from("article-images").getPublicUrl(path);
-  return { url: data.publicUrl };
+    const { data } = admin.storage.from("article-images").getPublicUrl(path);
+    return { url: data.publicUrl };
+  } catch {
+    return { error: "Couldn't upload that image. Try again." };
+  }
 }
 
 export type SubmitForReviewState = { error?: string; success?: boolean };

@@ -2,11 +2,9 @@
 
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL } from "@/lib/validation/image-upload";
 
 export type AvatarUploadState = { url?: string; error?: string };
-
-const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 // Shared by the contributor profile form and the community (runner)
 // profile form -- both edit the same profiles.avatar_url column, and any
@@ -27,16 +25,22 @@ export async function uploadAvatarImage(formData: FormData): Promise<AvatarUploa
     return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
   }
   if (file.size > MAX_IMAGE_BYTES) {
-    return { error: "Image is too large. Keep it under 8 MB." };
+    return { error: `Image is too large. Keep it under ${MAX_IMAGE_BYTES_LABEL}.` };
   }
 
   const extension = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
   const path = `${userId}/${crypto.randomUUID()}.${extension}`;
 
-  const admin = createServiceRoleClient();
-  const { error: uploadError } = await admin.storage.from("avatars").upload(path, file, { contentType: file.type });
-  if (uploadError) return { error: uploadError.message };
+  // Defense in depth -- see uploadArticleImage's own comment on this same
+  // try/catch shape.
+  try {
+    const admin = createServiceRoleClient();
+    const { error: uploadError } = await admin.storage.from("avatars").upload(path, file, { contentType: file.type });
+    if (uploadError) return { error: uploadError.message };
 
-  const { data: publicUrlData } = admin.storage.from("avatars").getPublicUrl(path);
-  return { url: publicUrlData.publicUrl };
+    const { data: publicUrlData } = admin.storage.from("avatars").getPublicUrl(path);
+    return { url: publicUrlData.publicUrl };
+  } catch {
+    return { error: "Couldn't upload that image. Try again." };
+  }
 }

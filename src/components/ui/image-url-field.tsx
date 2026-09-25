@@ -5,6 +5,7 @@ import { useState, useTransition, type ChangeEvent } from "react";
 import { fieldClass as baseFieldClass } from "@/lib/form-styles";
 import { FormError } from "@/components/ui/form-error";
 import { ImageCropModal } from "@/components/ui/image-crop-modal";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL } from "@/lib/validation/image-upload";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -41,15 +42,36 @@ export function ImageUrlField({ value, onChange, uploadAction, inputId, placehol
 
   function uploadFile(file: Blob, filename: string) {
     setUploadError(null);
+    // Checked here, before ever building the request, so an oversized file
+    // (a full-resolution phone photo easily clears 8-10MB) gets a normal
+    // inline message immediately -- rather than reaching Next's own
+    // serverActions.bodySizeLimit (next.config.ts), which rejects the
+    // request before the upload action's own size check ever runs.
+    if (file.size > MAX_IMAGE_BYTES) {
+      setUploadError(`Image is too large. Keep it under ${MAX_IMAGE_BYTES_LABEL}.`);
+      return;
+    }
     startUpload(async () => {
-      const formData = new FormData();
-      formData.set("file", file, filename);
-      const result = await uploadAction(formData);
-      if (result.error) {
-        setUploadError(result.error);
-        return;
+      try {
+        const formData = new FormData();
+        formData.set("file", file, filename);
+        const result = await uploadAction(formData);
+        if (result.error) {
+          setUploadError(result.error);
+          return;
+        }
+        if (result.url) onChange(result.url);
+      } catch {
+        // uploadAction's underlying fetch can reject instead of resolving
+        // -- e.g. a body-size-limit rejection that slipped past the check
+        // above (a differently-encoded file can still land over the wire
+        // limit), or any other unexpected server-side throw. Without this
+        // catch, that rejection propagates out of this useTransition
+        // callback and React treats it as a render error, bubbling to the
+        // nearest error boundary (a full-page "Something went wrong"
+        // crash) instead of the normal inline message this gives instead.
+        setUploadError("Couldn't upload that image. Try again.");
       }
-      if (result.url) onChange(result.url);
     });
   }
 
