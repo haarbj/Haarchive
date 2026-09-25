@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Aug 25, 2026](https://brodyhaar.com/release-notes)):** Fixed the logo shown in link previews
+**Latest update ([Sep 4, 2026](https://brodyhaar.com/release-notes)):** New Physiology content drawn from Marathon Excellence for Everyone
 
 Recent highlights:
+- Fixed the logo shown in link previews (Aug 25, 2026)
 - Mobile navigation now shows all six categories directly, and the homepage launch banner is gone (Aug 25, 2026)
 - Fixed missing "new signup" notifications for accounts confirmed by email (Aug 25, 2026)
-- A real light/dark toggle, and the article and Library/Tools pages were rebuilt around the new editorial identity (Aug 25, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

@@ -323,7 +323,7 @@ export const sections: Section[] = [
       "First-principles explanations of VO₂ max, threshold, fatigue, adaptation, and biomechanics.",
     topics: ["Energy systems", "Muscle fibers", "Recovery biology"],
     category: "physiology",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-09-04",
     content: [
       { type: "heading", text: "The Energy Systems" },
       { type: "heading", text: "The Oxygen Delivery Pipeline", level: 3 },
@@ -744,7 +744,7 @@ export const sections: Section[] = [
       "Summaries of books, papers, and historical methods that shaped distance running knowledge.",
     topics: ["Scientific papers", "Coaching texts", "Emerging research"],
     category: "physiology",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-09-04",
     content: [
       {
         type: "heading",
@@ -940,7 +940,7 @@ export const sections: Section[] = [
       "Use heart rate, pace, and training data to support sound coaching judgment.",
     topics: ["Training zones", "Race analytics", "Technology with context"],
     category: "physiology",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-09-04",
     content: [
       { type: "heading", text: "Three Layers of Measurement" },
       {
@@ -1297,7 +1297,7 @@ export const sections: Section[] = [
       "Structured marathon cycles with practical frameworks for workouts, fueling, tapering, and race execution.",
     topics: ["Workouts", "Fueling", "Race strategy"],
     category: "practice",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-09-04",
     content: [
       { type: "heading", text: "How Long a Buildup Should Actually Be" },
       {
@@ -1490,7 +1490,7 @@ export const sections: Section[] = [
       "Carbohydrate, hydration, electrolyte, and micronutrient strategy for training and racing, grounded in modern sports-nutrition evidence rather than folklore.",
     topics: ["Carbohydrate strategy", "Hydration & electrolytes", "Legal performance aids"],
     category: "physiology",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-09-04",
     content: [
       { type: "heading", text: "Whole Food Most of the Time, Fast Fuel When It Matters" },
       {
@@ -1806,7 +1806,7 @@ export const sections: Section[] = [
       "Workout references organized by objective, adaptation target, and training phase.",
     topics: ["Aerobic sessions", "Threshold sessions", "Specificity"],
     category: "practice",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-09-04",
     content: [
       { type: "heading", text: "Five Training Zones, Anchored to One Number" },
       {
