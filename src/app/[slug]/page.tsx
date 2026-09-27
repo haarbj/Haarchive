@@ -36,6 +36,8 @@ import { HrThresholdCalculator } from "@/components/hr-threshold-calculator";
 import { TinmanCalculator } from "@/components/tinman-calculator";
 import { MarathonPacingCalculator } from "@/components/marathon-pacing-calculator";
 import { AltitudeCalculator } from "@/components/altitude-calculator";
+import { AltitudeAdjustedPaceCalculator } from "@/components/altitude-adjusted-pace-calculator";
+import { EnduranceFuelingCalculator } from "@/components/endurance-fueling-calculator";
 import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
@@ -63,6 +65,8 @@ const sectionTools: Record<string, ComponentType> = {
   "tinman-calculator": TinmanCalculator,
   "marathon-pacing-calculator": MarathonPacingCalculator,
   "altitude-calculator": AltitudeCalculator,
+  "altitude-adjusted-pace-calculator": AltitudeAdjustedPaceCalculator,
+  "endurance-fueling-calculator": EnduranceFuelingCalculator,
   "training-plans": TrainingPlansHome,
   contact: ContactPage,
   "training-philosophy": TrainingPhilosophyPage,
@@ -152,6 +156,13 @@ async function loadArticleCitations(articleId: string): Promise<PublicCitation[]
     .from("article_citations")
     .select("id, paper_title, authors, year, link_or_doi")
     .eq("article_id", articleId)
+    // Ordered by insertion (created_at, with id as a stable tiebreak for
+    // rows sharing the same timestamp) -- ArticleCitations renders these as
+    // a NUMBERED list, and a numbered [n] citation woven into an article's
+    // own prose has to match this exact order every time the page renders,
+    // not whatever order Postgres happens to return an unordered query in.
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true })
     .returns<{ id: string; paper_title: string; authors: string | null; year: number | null; link_or_doi: string | null }[]>();
   return (data ?? []).map(mapPublicCitationRow);
 }

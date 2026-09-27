@@ -108,6 +108,18 @@ export type ContentBlock =
   | {
       type: "calculator";
       calculatorId: "training-heart-rate" | "easy-hr-ceiling" | "tempo-pace" | "hydration-baseline";
+    }
+  // A larger, article-specific interactive figure embedded inline in the
+  // prose flow (see components/article-figures) -- a sibling to
+  // "calculator" above, kept as its own block type because a figure isn't
+  // a worked-example calculator (a historical comparison card, an
+  // explorable chart, a labeled diagram). Same "hand-authored only"
+  // discipline: deliberately excluded from contentBlockSchema/
+  // content-block-editor.tsx so a contributor can never add one through
+  // the article editor.
+  | {
+      type: "figure";
+      figureId: "boston-marathon-fueling" | "gastric-emptying-explorer" | "carbohydrate-transport-diagram";
     };
 
 export type Section = {

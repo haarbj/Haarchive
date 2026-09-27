@@ -33,6 +33,8 @@ export function blockPlainText(block: ContentBlock): string {
       return block.caption ?? "";
     case "calculator":
       return "";
+    case "figure":
+      return "";
   }
 }
 

@@ -12,7 +12,8 @@
     "sync:readme": "node scripts/sync-readme-status.mjs",
     "sync:readme:check": "node scripts/sync-readme-status.mjs --check",
     "sync:last-updated": "node scripts/sync-last-updated.mjs",
-    "sync:last-updated:check": "node scripts/sync-last-updated.mjs --check"
+    "sync:last-updated:check": "node scripts/sync-last-updated.mjs --check",
+    "seed:fueling-fridays-1": "tsx --env-file-if-exists=.env.local scripts/seed-fueling-fridays-1.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.6",

@@ -5,6 +5,7 @@ import { headingId } from "@/lib/heading-id";
 import { linkifyContent } from "@/lib/linkify";
 import { ContentCallout } from "@/components/content-callout";
 import { InlineCalculator } from "@/components/inline-calculators";
+import { ArticleFigure } from "@/components/article-figures";
 import { PullQuote } from "@/components/pull-quote";
 import { textLinkClass } from "@/components/ui/text-link";
 
@@ -115,6 +116,13 @@ export function ContentBlocks({ content, sectionSlug }: ContentBlocksProps) {
           return (
             <div key={index} data-block-index={index}>
               <InlineCalculator calculatorId={block.calculatorId} />
+            </div>
+          );
+        }
+        if (block.type === "figure") {
+          return (
+            <div key={index} data-block-index={index}>
+              <ArticleFigure figureId={block.figureId} />
             </div>
           );
         }

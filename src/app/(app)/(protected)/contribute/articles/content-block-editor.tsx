@@ -24,6 +24,7 @@ const BLOCK_LABELS: Record<ContentBlock["type"], string> = {
   callout: "Callout",
   image: "Image",
   calculator: "Calculator",
+  figure: "Figure",
 };
 const CALLOUT_VARIANTS = ["tip", "mistake", "research", "takeaway", "advanced"] as const;
 
@@ -45,6 +46,10 @@ function defaultBlockFor(type: ContentBlock["type"]): ContentBlock {
       // Unreachable via the UI -- BLOCK_TYPES excludes "calculator", so this
       // case only exists to satisfy the exhaustive switch.
       return { type: "calculator", calculatorId: "training-heart-rate" };
+    case "figure":
+      // Unreachable via the UI -- BLOCK_TYPES excludes "figure" too, same
+      // reasoning as "calculator" above.
+      return { type: "figure", figureId: "boston-marathon-fueling" };
   }
 }
 

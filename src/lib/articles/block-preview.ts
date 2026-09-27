@@ -9,5 +9,6 @@ export function blockPreviewText(block: ContentBlock): string {
   }
   if (block.type === "image") return block.url;
   if (block.type === "calculator") return "";
+  if (block.type === "figure") return "";
   return block.text ?? "";
 }

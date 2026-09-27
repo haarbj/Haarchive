@@ -102,6 +102,11 @@ export default async function PreviewArticlePage({
       .from("article_citations")
       .select("id, paper_title, authors, year, link_or_doi")
       .eq("article_id", article.id)
+      // Same ordering as the live page's own loadArticleCitations -- a
+      // preview's numbered citation list has to match the published
+      // order, not an unordered query's arbitrary one.
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true })
       .returns<{ id: string; paper_title: string; authors: string | null; year: number | null; link_or_doi: string | null }[]>(),
   ]);
   const citations = (citationRows ?? []).map(mapPublicCitationRow);

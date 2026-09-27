@@ -62,6 +62,9 @@ export default async function EditArticleDraftPage({ params }: { params: Promise
       .from("article_citations")
       .select("paper_title, authors, year, link_or_doi, topic, claim_supported, notes")
       .eq("article_id", id)
+      // Same ordering as the live/preview pages -- the editor's own list
+      // should match the numbered order a reader will actually see.
+      .order("created_at", { ascending: true })
       .returns<CitationRow[]>(),
     admin
       .from("article_comments")
