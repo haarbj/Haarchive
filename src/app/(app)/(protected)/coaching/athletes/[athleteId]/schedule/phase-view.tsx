@@ -24,6 +24,7 @@ import { PlanHealthPanel } from "./plan-health-panel";
 import { EstimateReviewPanel } from "./estimate-review-panel";
 import { MultiCyclePanel } from "./multi-cycle-panel";
 import { PostRacePanel } from "./post-race-panel";
+import { AdvancedTechniquesPanel } from "./advanced-techniques-panel";
 import { formatTargetVolume } from "./week-plan-editor";
 import { clearAllTraining } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -189,6 +190,10 @@ export function PhaseView({
       {/* Part G, coach-only. Derived from the phases already on the
           schedule, so the history cannot drift from what happened. */}
       <MultiCyclePanel athleteId={athleteId} />
+
+      {/* Part J, coach-only. Stateless decision support for infrequent,
+          high-stakes techniques -- nothing here is saved. */}
+      <AdvancedTechniquesPanel />
 
       <Card padding="md">
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Goal Race</p>
