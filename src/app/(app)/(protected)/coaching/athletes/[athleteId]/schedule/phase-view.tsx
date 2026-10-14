@@ -25,6 +25,7 @@ import { EstimateReviewPanel } from "./estimate-review-panel";
 import { MultiCyclePanel } from "./multi-cycle-panel";
 import { PostRacePanel } from "./post-race-panel";
 import { AdvancedTechniquesPanel } from "./advanced-techniques-panel";
+import { FuelingOversightPanel } from "./fueling-oversight-panel";
 import { OnboardingPanel } from "./onboarding-panel";
 import { formatTargetVolume } from "./week-plan-editor";
 import { clearAllTraining } from "./actions";
@@ -200,6 +201,11 @@ export function PhaseView({
       {/* Part J, coach-only. Stateless decision support for infrequent,
           high-stakes techniques -- nothing here is saved. */}
       <AdvancedTechniquesPanel />
+
+      {/* Part L, coach-only. The gut-training check and ferritin trigger
+          load from real data; the under-fuelling signals are answered in
+          the moment and saved nowhere. */}
+      <FuelingOversightPanel athleteId={athleteId} />
 
       <Card padding="md">
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Goal Race</p>
