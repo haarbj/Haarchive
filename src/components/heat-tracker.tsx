@@ -9,6 +9,7 @@ import type { LocationMeta } from "@/lib/geocode";
 import { cToF, estimateWBGT, HEAT_ZONES, heatGuidance, heatZoneFor, type HeatZone, type HeatZoneName } from "@/lib/heat-physics";
 import { useLocationSearch } from "@/lib/use-location-search";
 import { logLearningEvent } from "@/app/learning-actions";
+import { segmentedButtonClass } from "@/lib/tool-styles";
 
 type ZoneStyle = {
   textClass: string;
@@ -22,6 +23,14 @@ type ZoneStyle = {
 };
 
 const ZONE_STYLES: Record<HeatZoneName, ZoneStyle> = {
+  cold: {
+    textClass: "text-sky-600 dark:text-sky-400",
+    fillClass: "fill-sky-600",
+    bandClass: "fill-sky-600/10",
+    swatchClass: "bg-sky-600",
+    ringClass: "stroke-sky-600",
+    hex: "#0284c7",
+  },
   green: {
     textClass: "text-green-600 dark:text-green-500",
     fillClass: "fill-green-600",
@@ -66,7 +75,7 @@ const ZONE_STYLES: Record<HeatZoneName, ZoneStyle> = {
 type Zone = HeatZone & ZoneStyle;
 const ZONES: Zone[] = HEAT_ZONES.map((zone) => ({ ...zone, ...ZONE_STYLES[zone.name] }));
 
-const BLACK_FLAG_C = 28;
+const BLACK_FLAG_C = HEAT_ZONES.find((zone) => zone.name === "red")!.maxC;
 const SCALE_MIN_C = -5;
 const SCALE_MAX_C = 35;
 const GAUGE_WIDTH = 34;
@@ -162,6 +171,7 @@ function buildSmoothPath(points: { x: number; y: number }[]): string {
 
 export function HeatTracker() {
   const [message, setMessage] = useState("Trying your device location…");
+  const [acclimated, setAcclimated] = useState(false);
   const [series, setSeries] = useState<WbgtPoint[] | null>(null);
   const [meta, setMeta] = useState<LocationMeta | null>(null);
   const [clock, setClock] = useState("");
@@ -219,7 +229,7 @@ export function HeatTracker() {
 
   const current = series?.[0] ?? null;
   const zone = current ? zoneFor(current.wbgtC) : null;
-  const guidance = current && zone ? heatGuidance(current.wbgtC, zone.name) : null;
+  const guidance = current && zone ? heatGuidance(current.wbgtC, zone.name, acclimated) : null;
 
   const values = series?.map((point) => point.wbgtC) ?? [];
   const minValue = Math.min(...values, 5);
@@ -283,6 +293,32 @@ export function HeatTracker() {
 
       <LocationSearchField search={search} message={message} />
 
+      <div>
+        <p className="mb-2 text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+          Heat acclimated?
+        </p>
+        <div className="flex max-w-xs gap-2">
+          <button
+            type="button"
+            onClick={() => setAcclimated(false)}
+            className={segmentedButtonClass(!acclimated)}
+          >
+            Not recently
+          </button>
+          <button
+            type="button"
+            onClick={() => setAcclimated(true)}
+            className={segmentedButtonClass(acclimated)}
+          >
+            2+ weeks in heat
+          </button>
+        </div>
+        <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+          Two or more weeks of regular training in the heat counts as
+          acclimated and measurably softens the guidance below.
+        </p>
+      </div>
+
       <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
@@ -306,6 +342,11 @@ export function HeatTracker() {
           {guidance && (
             <p className="mt-1 max-w-[46ch] text-sm text-zinc-600 dark:text-zinc-300">
               {guidance.sub}
+            </p>
+          )}
+          {guidance?.raceTip && (
+            <p className="mt-2 max-w-[46ch] rounded-lg border border-black/10 bg-black/[0.03] px-3 py-2 text-xs text-zinc-700 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200">
+              {guidance.raceTip}
             </p>
           )}
         </div>
@@ -636,24 +677,30 @@ export function HeatTracker() {
       <div className="flex flex-wrap gap-4 text-xs text-zinc-600 dark:text-zinc-300">
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[0].swatchClass}`} />
-          Green flag, under {cToF(ZONES[0].maxC).toFixed(0)}°F: train as
-          planned, easy or hard
+          Cold, under {cToF(ZONES[0].maxC).toFixed(0)}°F: gear (hat, gloves,
+          arm warmers) covers most of it
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[1].swatchClass}`} />
-          Yellow flag, {cToF(ZONES[0].maxC).toFixed(0)}–
-          {cToF(ZONES[1].maxC).toFixed(0)}°F: easy runs are fine, ease off
-          intervals and tempo
+          Green flag, {cToF(ZONES[0].maxC).toFixed(0)}–
+          {cToF(ZONES[1].maxC).toFixed(0)}°F: the ideal marathon band, train
+          as planned
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[2].swatchClass}`} />
-          Red flag, {cToF(ZONES[1].maxC).toFixed(0)}–
-          {cToF(ZONES[2].maxC).toFixed(0)}°F: easy runs by effort only,
-          intervals and tempo move indoors
+          Yellow flag, {cToF(ZONES[1].maxC).toFixed(0)}–
+          {cToF(ZONES[2].maxC).toFixed(0)}°F: heat starts costing time above
+          60°F, ease off intervals and tempo
         </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[3].swatchClass}`} />
-          Black flag, above {cToF(ZONES[2].maxC).toFixed(0)}°F: skip
+          Red flag, {cToF(ZONES[2].maxC).toFixed(0)}–
+          {cToF(ZONES[3].maxC).toFixed(0)}°F: easy runs by effort only,
+          intervals and tempo move indoors
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className={`h-2.5 w-2.5 rounded-sm ${ZONES[4].swatchClass}`} />
+          Black flag, above {cToF(ZONES[3].maxC).toFixed(0)}°F: skip
           outdoor training, easy or hard
         </span>
       </div>
@@ -741,21 +788,33 @@ export function HeatTracker() {
         </p>
 
         <p>
-          The flag categories and training notes follow the American College
-          of Sports Medicine&rsquo;s WBGT guidelines: green flag is a green
-          light for whatever&rsquo;s on the schedule, yellow flag calls for
-          easing off intervals, tempo, and other structured hard efforts
-          while easy mileage stays fine, red flag means shifting those hard
-          efforts to a treadmill or a cooler window of the day, and black
-          flag is the point where outdoor training itself carries real
-          heat-illness risk.<sup>3</sup> These aren&rsquo;t arbitrary lines:
-          at the Boston Marathon, every recorded exertional heat stroke case
-          over a multi-year period occurred once WBGT climbed into this
-          range, and incidence tracked the rise in WBGT from the start of
-          the race.<sup>4</sup> A separate 30-year analysis of the Twin
-          Cities Marathon found the same pattern: WBGT was a meaningful
-          predictor of medical tent volume and emergency transfers on
-          unexpectedly warm race days.<sup>5</sup>
+          The flag thresholds here are calibrated to how ambient conditions
+          actually affect marathon-distance performance rather than a flat
+          WBGT-formula split: below about 35°F, cold works against you but
+          proper gear (hat, gloves, arm warmers) counters most of it; 35-55°F
+          is the ideal band where temperature isn&rsquo;t a meaningful
+          limiter either way; above 60°F, heat starts costing real time, and
+          faster runners feel it more than slower ones; and humidity&rsquo;s
+          amplifying effect on that heat gets especially pronounced once
+          WBGT crosses the 70°F mark, with direct sun adding further load on
+          top of it. The underlying evidence for treating WBGT itself as the
+          right number to track, rather than air temperature alone, comes
+          from real-race data: at the Boston Marathon, every recorded
+          exertional heat stroke case over a multi-year period occurred once
+          WBGT climbed into the upper bands shown here, and incidence
+          tracked the rise in WBGT from the start of the race.<sup>3</sup> A
+          separate 30-year analysis of the Twin Cities Marathon found the
+          same pattern: WBGT was a meaningful predictor of medical tent
+          volume and emergency transfers on unexpectedly warm race
+          days.<sup>4</sup>
+        </p>
+        <p>
+          Hydration guidance follows the same calibration: drink to thirst,
+          not on a fixed schedule and not with the goal of fully replacing
+          sweat losses. Forcing fluids beyond thirst doesn&rsquo;t reliably
+          improve performance and can introduce its own risk (hyponatremia),
+          so thirst is the more reliable signal once conditions push into
+          the yellow flag band and above.
         </p>
         <p>
           This is general sports-science guidance, not a substitute for a
@@ -763,6 +822,48 @@ export function HeatTracker() {
           hard efforts, so when conditions sit near a flag boundary,
           it&rsquo;s worth erring conservative and listening to how the body
           actually feels that day.
+        </p>
+
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
+          Heat acclimation
+        </h2>
+        <p>
+          Two or more weeks of regular training in the heat counts as
+          acclimated, and it measurably blunts (though doesn&rsquo;t
+          eliminate) the impact of the yellow, red, and black flag bands
+          above. Full acclimation comes from 60-90 minutes a day in
+          conditions with a heat index of 85°F or higher; milder or less
+          frequent exposure still works, just on a longer timeline.
+          Meaningful adaptation shows up in as few as four consecutive days,
+          and full adaptation typically takes about two weeks, stretching to
+          as long as a month if the heat exposure only happens every two to
+          three days.
+        </p>
+        <p>
+          The adaptation decays if it isn&rsquo;t maintained: it starts
+          fading after two weeks without heat exposure and is mostly gone
+          after a month. Re-acclimating only takes a few days if you were
+          acclimated within roughly the last four weeks, and maintaining it
+          long-term just takes heat exposure at least twice a week.
+        </p>
+        <p>
+          A sauna (20-40 minutes at 175-220°F) or a hot bath (20 minutes at
+          104-111°F), taken after a run at least three times a week, is a
+          legitimate supplement to the adaptation above, since passive heat
+          exposure produces some of the same cardiovascular and sweating
+          adaptations. It&rsquo;s a supplement, though, not a substitute:
+          running in the heat itself is what actually drives the adaptation
+          that matters on race day.
+        </p>
+        <p>
+          On a hot training day, a few tactics compound with acclimation
+          rather than replacing it: run shaded routes, and shift to morning
+          or evening rather than midday heat; adjust pace targets for
+          conditions rather than chasing a number set on a cooler day (think
+          something like 90% of marathon pace in 90°F heat, not 100%); and
+          for a longer workout, break it into segments with brief walking
+          rests built in specifically to cool off and rehydrate rather than
+          pushing straight through.
         </p>
 
         <div className="border-t border-black/10 pt-4 dark:border-white/10">
@@ -796,21 +897,6 @@ export function HeatTracker() {
               </a>
               : independent validation of the approximation&rsquo;s accuracy
               and limitations against physical sensors.
-            </li>
-            <li>
-              Armstrong et al.,{" "}
-              <a
-                href="https://pubmed.ncbi.nlm.nih.gov/17473783/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-zinc-900 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/30 dark:hover:decoration-white"
-              >
-                American College of Sports Medicine position stand:
-                Exertional heat illness during training and competition
-              </a>
-              , <em>Medicine &amp; Science in Sports &amp; Exercise</em>{" "}
-              (2007): source of the flag thresholds and training guidance
-              used on this page.
             </li>
             <li>
               Chiampas et al.,{" "}
@@ -858,8 +944,9 @@ export function HeatTracker() {
 
       <p className="border-t border-black/10 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-zinc-300">
         Data: Open-Meteo forecast &amp; geocoding APIs · Formula: Australian
-        Bureau of Meteorology outdoor WBGT approximation · Flag categories:
-        ACSM heat guidelines · No data is stored anywhere.
+        Bureau of Meteorology outdoor WBGT approximation · Flag thresholds:
+        calibrated to marathon-performance temperature research · No data is
+        stored anywhere.
       </p>
     </div>
   );

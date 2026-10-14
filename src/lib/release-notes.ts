@@ -52,6 +52,18 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-14",
+    headline: "Heat Tracker recalibrated to marathon-performance research, with a new heat-acclimation toggle",
+    detail:
+      "The tracker's flag bands now follow how ambient conditions actually affect marathon-distance performance: a 35-55°F ideal band, a new cold zone under 35°F where gear (hat, gloves, arm warmers) covers most of the effect, heat starting to cost real time above 60°F, and humidity's amplifying effect called out once WBGT crosses 70°F. A new \"heat acclimated?\" toggle softens the heat-zone guidance for a runner with 2+ weeks of recent heat training, and hot conditions now surface a conservative, effort-over-pace race-day tip alongside a full acclimation protocol (build timeline, decay and maintenance, sauna/hot bath as a supplement, and hot-workout-day pacing tactics).",
+  },
+  {
+    date: "2026-10-14",
+    headline: "Race Pace Planner launched",
+    detail:
+      "A new tool turns a goal marathon pace into a race-day plan: a mile-by-mile pace table with a progressive or even start and a fast finish, a simplified grade adjustment for any climbs or descents you name, a gel-by-gel fueling schedule with an optional two-dose caffeine protocol, and segment-by-segment race strategy. It's a lighter-weight, course-map-based sibling of the Marathon Pacing Calculator for a quick plan without uploading a GPS route.",
+  },
+  {
     date: "2026-10-13",
     headline: "The five marathon frameworks and the 5K Crash Course are now assignable program templates",
     detail:
