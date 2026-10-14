@@ -12,6 +12,7 @@ import {
   type PlaybookView,
 } from "./plan-health-actions";
 import { fieldClass, labelClass } from "@/lib/form-styles";
+import { crossTrainingProtocol, detrainingReassurance } from "@/lib/private-coaching/setbacks";
 import { ADAPTATION_WINDOW_DAYS, type SessionLoadClass } from "@/lib/private-coaching/plan-health";
 import { formatDate } from "@/lib/format";
 import { Card } from "@/components/ui/card";
@@ -51,6 +52,11 @@ export function PlanHealthPanel({ athleteId }: { athleteId: string }) {
   const [raceDistanceInput, setRaceDistanceInput] = useState("");
   const [raceDateInput, setRaceDateInput] = useState("");
   const [racePending, setRacePending] = useState(false);
+  // Part I items 24-25, shown alongside the rest of the playbook for the
+  // same "coach is about to retool something" moment.
+  const [showSetback, setShowSetback] = useState(false);
+  const [missedWeeksInput, setMissedWeeksInput] = useState("");
+  const [lostMinutesInput, setLostMinutesInput] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -298,6 +304,55 @@ export function PlanHealthPanel({ athleteId }: { athleteId: string }) {
                         ))}
                       </ul>
                     ) : null}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="rounded-control border border-black/10 p-3 dark:border-white/10">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-white">Working around a setback</p>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setShowSetback((prev) => !prev)}>
+                    {showSetback ? "Hide" : "Show"}
+                  </Button>
+                </div>
+                {showSetback ? (
+                  <div className="mt-2 space-y-4">
+                    <div>
+                      <label className="block max-w-xs">
+                        <span className={labelClass}>Weeks missed, if known</span>
+                        <input
+                          value={missedWeeksInput}
+                          onChange={(e) => setMissedWeeksInput(e.target.value)}
+                          placeholder="e.g. 2"
+                          className={fieldClass}
+                        />
+                      </label>
+                      <div className="mt-2">
+                        <GuidanceBlock
+                          guidance={detrainingReassurance({
+                            missedWeeks: missedWeeksInput.trim() ? Number(missedWeeksInput) : undefined,
+                          })}
+                        />
+                      </div>
+                    </div>
+                    <div className="border-t border-black/10 pt-3 dark:border-white/10">
+                      <label className="block max-w-xs">
+                        <span className={labelClass}>Minutes of running lost per week, if cross-training</span>
+                        <input
+                          value={lostMinutesInput}
+                          onChange={(e) => setLostMinutesInput(e.target.value)}
+                          placeholder="e.g. 300"
+                          className={fieldClass}
+                        />
+                      </label>
+                      <div className="mt-2">
+                        <GuidanceBlock
+                          guidance={crossTrainingProtocol({
+                            lostRunningMinutesPerWeek: lostMinutesInput.trim() ? Number(lostMinutesInput) : undefined,
+                          })}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ) : null}
               </div>

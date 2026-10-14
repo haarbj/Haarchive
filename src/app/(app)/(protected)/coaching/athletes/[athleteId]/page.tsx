@@ -9,6 +9,8 @@ import { ATHLETE_LEVEL_LABELS, type ATHLETE_LEVELS } from "@/lib/validation/athl
 import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { mentionsPossibleIllness } from "@/lib/private-coaching/setbacks";
+import { IllnessPanel } from "./illness-panel";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -209,6 +211,17 @@ export default async function CoachingAthleteDetailPage({
             <EmptyState>No check-ins submitted yet.</EmptyState>
           </div>
         )}
+        {/* Part I item 22, coach-only. Offered, not forced: a keyword scan
+            over the check-in's own free text decides whether to SHOW this,
+            never anything about training. A false positive costs nothing;
+            a false negative costs nothing new either, since the coach was
+            always going to read the check-in's text regardless. */}
+        {checkin &&
+        (mentionsPossibleIllness(checkin.biggest_concern) ||
+          mentionsPossibleIllness(checkin.notes) ||
+          mentionsPossibleIllness(checkin.pain_notes)) ? (
+          <IllnessPanel />
+        ) : null}
       </div>
 
       <div className="mt-8">

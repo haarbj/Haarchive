@@ -32,6 +32,7 @@ import { MILE_METERS } from "@/lib/race-distances";
 import { mostRecentMonday } from "@/lib/week";
 import { CompletionForm, type CompletionFormInitial } from "./completion-form";
 import { missedWorkoutGuidance } from "@/lib/private-coaching/adjustment-playbook";
+import { InjuryTriagePanel } from "./injury-triage-panel";
 import { StravaMatchReview, type PendingStravaMatch } from "./strava-match-review";
 import { WorkoutComments, type CommentItem } from "./workout-comments";
 import { ExtrasDetail } from "./extras-detail";
@@ -600,6 +601,11 @@ export default async function WorkoutDetailPage({
               <div className="mb-3">
                 <Badge tone="error">Pain reported</Badge>
                 {completion.pain_notes ? <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{completion.pain_notes}</p> : null}
+                {/* Part I item 23, coach-only. The athlete's own completion
+                    report never sees the injury-paradigm classifier -- it is
+                    decision support for the coach's judgment call, not
+                    something to hand an athlete who is in pain right now. */}
+                {effectiveIsCoach ? <InjuryTriagePanel /> : null}
               </div>
             ) : null}
             {completion.activity_type ? (
