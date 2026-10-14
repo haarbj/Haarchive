@@ -116,3 +116,62 @@ export function explainerParagraphs(explainer: string): string[] {
     .map((paragraph) => paragraph.replace(/\s*\n\s*/g, " ").trim())
     .filter((paragraph) => paragraph.length > 0);
 }
+
+// ---------------------------------------------------------------------------
+// Part C: the final two weeks, and "plans adapt"
+// ---------------------------------------------------------------------------
+//
+// Both strings below are athlete-facing and follow Prompt 10's gating:
+// they render only for a coached athlete looking at their own training, or
+// for that athlete's coach. Original copy, same as everything above.
+
+// Deliberately the SHAPE of the lead-in and not the prescription. An
+// athlete reading this two months out should come away knowing what the
+// last fortnight looks like and stop worrying about it; they should not
+// come away with session details they might then hold their coach to, or
+// start comparing against what they were actually given. Every specific
+// number that does appear is a duration or a count of days, never a pace
+// or a distance.
+//
+// Hedged on purpose, twice: this describes the usual shape, and the note
+// says plainly that their own coach may do it differently. The standard
+// two-week lead-in is a template a coach edits per athlete (see
+// race-lead-in.ts), so stating it as a promise would be a claim this
+// module cannot keep.
+const TAPER_PREVIEW = `The last two weeks usually run to the same shape, and knowing it in advance takes most of the mystery out of race week.
+
+About two weeks out comes one more full-size session at marathon pace. It is the last real piece of training in the cycle and the final rehearsal of pace, fueling and gear together. Then several genuinely easy days, which is the part that tends to feel wrong: you will be tapering, you will feel sluggish, and nothing is going backwards.
+
+Somewhere in the second week there is one short tune-up slightly faster than marathon pace, at much lower volume than the same session would have carried mid-buildup. It is there to keep the legs sharp, not to add fitness. After that, short easy runs, some strides, and usually one light session that ends well before it gets difficult.
+
+Two things are worth expecting. Easy pace may feel laborious for a few days after the last big session, and faster paces may feel harder than the number suggests, because marathon-specialized fitness makes anything far from marathon pace feel unfamiliar. Neither is a sign of a problem.
+
+Your coach may shape this differently for you, and race week in particular often shifts around travel and the race's own day of the week. The constant is the intent: arrive rested, having rehearsed everything, with nothing new attempted.`;
+
+/**
+ * The taper preview, for the specific phase only.
+ *
+ * Returned separately from the phase explainer rather than appended to it,
+ * for two reasons. A coach can replace the specific-phase explainer
+ * entirely with their own, and that must not silently delete this; and the
+ * athlete's stored explainer is a copy frozen at assignment time, so
+ * folding this into it would mean athletes assigned before this shipped
+ * never see it.
+ */
+export function taperPreview(phaseType: string | null): string | null {
+  if (!phaseType) return null;
+  return normalizePhaseKey(phaseType) === "specific" ? TAPER_PREVIEW : null;
+}
+
+/**
+ * Part C item 6. The athlete-safe half of "don't get attached to the plan":
+ * moved workouts are normal and intended, and the measure is race day
+ * rather than a completion streak.
+ *
+ * Stops short of the coach-facing version of this idea, which includes how
+ * much of a plan typically goes uncompleted. That framing is useful to a
+ * coach deciding whether to retool and unhelpful to an athlete deciding
+ * whether to run today.
+ */
+export const PLANS_ADAPT_NOTE =
+  "Your coach may move workouts as training unfolds. The goal is race day, not checking every box.";

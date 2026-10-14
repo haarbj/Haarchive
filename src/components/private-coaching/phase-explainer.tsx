@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { resolvePhaseExplainer, explainerParagraphs } from "@/lib/private-coaching/phase-explainers";
+import { resolvePhaseExplainer, explainerParagraphs, taperPreview } from "@/lib/private-coaching/phase-explainers";
 
 // "Why this phase?" -- the educational half of a training phase, shown to
 // a coached athlete on their own roadmap and to their coach in Phase View.
@@ -29,6 +29,11 @@ export function PhaseExplainer({
   if (!resolved) return null;
 
   const paragraphs = explainerParagraphs(resolved);
+  // Part C item 5. Kept as its own labeled section rather than appended to
+  // the explainer text: a coach can replace the specific-phase explainer
+  // with their own, and an athlete assigned before this shipped carries a
+  // frozen copy of the old one. Either way this still shows.
+  const taper = taperPreview(phaseType);
 
   return (
     <details className="group mt-2">
@@ -41,6 +46,20 @@ export function PhaseExplainer({
             {paragraph}
           </p>
         ))}
+        {taper ? (
+          <section className="border-t border-black/10 pt-4 dark:border-white/10">
+            <h3 className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+              The final two weeks
+            </h3>
+            <div className="mt-3 space-y-4">
+              {explainerParagraphs(taper).map((paragraph, index) => (
+                <p key={index} className="text-sm leading-7 text-zinc-600 dark:text-zinc-300">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </section>
+        ) : null}
         {editHref ? (
           <Link
             href={editHref}

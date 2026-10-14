@@ -23,11 +23,13 @@
 //   npm run seed:framework-programs -- --coach-email=brody@example.com
 //   npm run seed:framework-programs -- --coach-email=... --frameworks=peak,summit
 //   npm run seed:framework-programs -- --coach-email=... --crash-course
+//   npm run seed:framework-programs -- --coach-email=... --race-lead-in
 //   npm run seed:framework-programs -- --coach-email=... --frameworks=canyon --replace
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { buildRaceLeadInSeed } from "@/lib/private-coaching/race-lead-in";
 import {
   buildCrashCourseSeeds,
   buildFrameworkSeed,
@@ -241,6 +243,7 @@ async function seedPlan(admin: Admin, coachId: string, plan: FrameworkSeedPlan, 
       difficulty_label: day.difficultyLabel,
       planned_rpe: day.plannedRpe,
       planned_rpe_max: day.plannedRpeMax,
+      is_event_day: day.isEventDay,
     })),
     program.frameworkKey,
   );
@@ -285,6 +288,11 @@ async function main() {
       ...buildCrashCourseSeeds(JSON.parse(readFileSync(path.join(SEED_DIR, "crash-course.json"), "utf8")) as RawCrashCourse),
     );
   }
+  // The two-week race lead-in (Part A item 2). Seeded as an ordinary
+  // editable Program so the coach can change the standard once instead of
+  // re-editing fourteen days per athlete; its default content lives in
+  // src/lib/private-coaching/race-lead-in.ts.
+  if (flag("race-lead-in")) plans.push(buildRaceLeadInSeed());
   console.log(`Validated ${plans.length} program(s) from ${SEED_DIR}`);
 
   let seeded = 0;

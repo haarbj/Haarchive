@@ -16,6 +16,12 @@ import {
   type ResolvedProgramGeneration,
 } from "@/lib/private-coaching/program-generation";
 import type { PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
+import {
+  proposePhaseLayout,
+  weeksAvailableBetween,
+  type PhaseLayoutProposal,
+  type PlannablePhase,
+} from "@/lib/private-coaching/race-anchored-planning";
 import { mondaysInRange } from "@/lib/private-coaching/training-phases";
 import { MILE_METERS } from "@/lib/race-distances";
 import { mostRecentMonday } from "@/lib/week";
@@ -86,6 +92,115 @@ export async function loadUsedPaceReferenceBases(programId: string, variantId: s
   for (const row of stepRows ?? []) if (row.target_pace_percent_basis) bases.add(row.target_pace_percent_basis);
 
   return { bases: [...bases] };
+}
+
+/**
+ * Part A item 1: propose a phase layout working backwards from race day.
+ *
+ * ADVISORY ONLY. This writes nothing and generates nothing -- it returns
+ * week counts and the reasoning behind them, which the assign form drops
+ * into the same inputs the coach was going to fill in by hand. They can
+ * change any of it before previewing, and nothing happens until they do.
+ *
+ * Peak mileage comes from the coach's own choice for this assignment (the
+ * selected volume variant, or the target peak they typed), never from the
+ * athlete's current mileage: the layout is being planned for the volume
+ * this buildup is aiming at. Experience comes from the athlete's own
+ * profile, which the coach can read but not edit.
+ */
+export async function proposePhaseLayoutFromRaceDay(input: {
+  programId: string;
+  variantId: string;
+  athleteId: string;
+  raceDate: string;
+  /** Defaults to today when the coach has not picked a start date. */
+  startDate: string | null;
+  peakMileage: number | null;
+}): Promise<{ error?: string; proposal?: PhaseLayoutProposal; weeksAvailable?: number; spareDays?: number }> {
+  const session = await getAppSession();
+  if (!session?.isPrivateCoach) return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { data: relationship } = await supabase
+    .from("coach_athletes")
+    .select("id")
+    .eq("coach_id", session.userId)
+    .eq("athlete_id", input.athleteId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!relationship) return { error: "You don't coach this athlete." };
+
+  const { data: variantPhaseRows } = await supabase
+    .from("program_variant_phases")
+    .select("position, program_phase_definitions(id, phase_key, duration_weeks_min, duration_weeks_max, is_optional)")
+    .eq("variant_id", input.variantId)
+    .order("position", { ascending: true })
+    .returns<
+      {
+        position: number;
+        program_phase_definitions: {
+          id: string;
+          phase_key: string;
+          duration_weeks_min: number;
+          duration_weeks_max: number;
+          is_optional: boolean;
+        } | null;
+      }[]
+    >();
+  const phases: PlannablePhase[] = (variantPhaseRows ?? [])
+    .map((row) => row.program_phase_definitions)
+    .filter((p): p is NonNullable<typeof p> => p != null)
+    .map((p) => ({
+      phaseDefinitionId: p.id,
+      phaseKey: p.phase_key,
+      durationWeeksMin: p.duration_weeks_min,
+      durationWeeksMax: p.duration_weeks_max,
+      isOptional: p.is_optional,
+    }));
+  if (phases.length === 0) return { error: "This plan length has no phases configured." };
+
+  // Peak mileage: the coach's choice for this assignment, falling back to
+  // the program's own range when they have not chosen one yet.
+  let peakMileage = input.peakMileage;
+  if (peakMileage == null) {
+    const { data: program } = await supabase
+      .from("training_programs")
+      .select("peak_mileage_min, peak_mileage_max")
+      .eq("id", input.programId)
+      .maybeSingle<{ peak_mileage_min: number | null; peak_mileage_max: number | null }>();
+    peakMileage = program?.peak_mileage_max ?? program?.peak_mileage_min ?? null;
+  }
+  if (peakMileage == null) {
+    return { error: "Choose a peak weekly volume, or set one on the program, before laying phases out from race day." };
+  }
+
+  // years_running is the athlete's own profile data -- readable by their
+  // coach, never editable by them (see the existing-table-access
+  // migration). Absent is a real answer: the proposal then goes on mileage
+  // alone rather than assuming a background.
+  const { data: profile } = await supabase
+    .from("athlete_profiles")
+    .select("years_running")
+    .eq("user_id", input.athleteId)
+    .maybeSingle<{ years_running: number | null }>();
+
+  const start = input.startDate ?? new Date().toISOString().slice(0, 10);
+  const { weeks, spareDays } = weeksAvailableBetween(start, input.raceDate);
+  if (weeks === 0) {
+    return { error: "That race date is less than a week away, so there is nothing to lay out." };
+  }
+
+  return {
+    proposal: proposePhaseLayout({
+      phases,
+      weeksAvailable: weeks,
+      peakMileage,
+      experienceYears: profile?.years_running ?? null,
+    }),
+    weeksAvailable: weeks,
+    spareDays,
+  };
 }
 
 type LoadResult = { error: string } | { generation: GenerateProgramGeneration };

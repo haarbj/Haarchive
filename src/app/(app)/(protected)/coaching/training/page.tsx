@@ -16,6 +16,7 @@ import { DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals
 import { ATHLETE_GUIDES } from "@/lib/private-coaching/athlete-education";
 import { mostRecentMonday } from "@/lib/week";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
+import { PLANS_ADAPT_NOTE } from "@/lib/private-coaching/phase-explainers";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -105,6 +106,11 @@ export default async function AthleteTrainingPage() {
           meantime.
         </p>
       ) : (
+        <>
+          {/* Part C item 6. Said once, up front, so a moved or dropped
+              workout reads as the plan working rather than as falling
+              behind. */}
+          <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">{PLANS_ADAPT_NOTE}</p>
         <div className="mt-8 space-y-6">
           {sections.map((section, i) =>
             section.kind === "phase" ? (
@@ -145,6 +151,7 @@ export default async function AthleteTrainingPage() {
             ),
           )}
         </div>
+        </>
       )}
 
       <div className="mt-12">

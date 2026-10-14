@@ -13,7 +13,7 @@ import {
   type DayPaceReference,
 } from "@/lib/private-coaching/steps";
 import type { WorkoutExtraInput } from "@/lib/private-coaching/extras";
-import { getWorkoutDisplayLabel, effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
+import { getWorkoutDisplayLabel, effectiveWorkoutVolume, computeWorkoutStatus } from "@/lib/private-coaching/workout-status";
 import { formatDistanceRange, formatDurationRange } from "@/lib/private-coaching/workout-distance";
 import { isBareXt } from "@/lib/private-coaching/day-type-visuals";
 import { getWorkoutGlossaryEntry } from "@/lib/private-coaching/workout-glossary";
@@ -31,6 +31,7 @@ import { formatClock } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
 import { mostRecentMonday } from "@/lib/week";
 import { CompletionForm, type CompletionFormInitial } from "./completion-form";
+import { missedWorkoutGuidance } from "@/lib/private-coaching/adjustment-playbook";
 import { StravaMatchReview, type PendingStravaMatch } from "./strava-match-review";
 import { WorkoutComments, type CommentItem } from "./workout-comments";
 import { ExtrasDetail } from "./extras-detail";
@@ -54,6 +55,7 @@ type WorkoutRow = {
   workout_type: WorkoutType | null;
   day_label: string | null;
   session_slot: string | null;
+  published_at: string | null;
   is_optional: boolean;
   alternative_text: string | null;
   notes_from_coach: string | null;
@@ -144,7 +146,7 @@ export default async function WorkoutDetailPage({
   const { data: workout } = await supabase
     .from("scheduled_workouts")
     .select(
-      "id, athlete_id, coach_id, scheduled_date, title, workout_type, day_label, session_slot, is_optional, alternative_text, notes_from_coach, planned_distance_m, planned_distance_max_m, planned_duration_s, planned_duration_max_s, planned_pace_s_per_mi, planned_pace_max_s_per_mi, pace_reference, pace_percent_basis, pace_percent_min, pace_percent_max, planned_volume_percent, planned_hr_bpm, planned_hr_max_bpm, planned_rpe, planned_rpe_max",
+      "id, athlete_id, coach_id, scheduled_date, published_at, title, workout_type, day_label, session_slot, is_optional, alternative_text, notes_from_coach, planned_distance_m, planned_distance_max_m, planned_duration_s, planned_duration_max_s, planned_pace_s_per_mi, planned_pace_max_s_per_mi, pace_reference, pace_percent_basis, pace_percent_min, pace_percent_max, planned_volume_percent, planned_hr_bpm, planned_hr_max_bpm, planned_rpe, planned_rpe_max",
     )
     .eq("id", workoutId)
     .maybeSingle<WorkoutRow>();
@@ -191,6 +193,7 @@ export default async function WorkoutDetailPage({
     mostRecentRace,
     fitnessEstimates,
     weekTargetRow,
+    { data: phaseRowsForWorkout },
   ] = await Promise.all([
       supabase
         .from("scheduled_workout_steps")
@@ -259,6 +262,17 @@ export default async function WorkoutDetailPage({
             .maybeSingle<{ target_volume_min: number | null; target_volume_max: number | null; target_volume_unit: "miles" | "minutes" | null }>()
             .then((r) => r.data)
         : Promise.resolve(null),
+      // The phase this workout's date falls in -- the containment rule
+      // training-phases.ts already uses. Needed only for the coach-facing
+      // missed-workout guidance, which is phase-specific.
+      supabase
+        .from("training_phases")
+        .select("phase_type")
+        .eq("athlete_id", workout.athlete_id)
+        .lte("start_date", workout.scheduled_date)
+        .gte("end_date", workout.scheduled_date)
+        .limit(1)
+        .returns<{ phase_type: string }[]>(),
     ]);
   const workoutWeekTarget: WeekTarget | null = weekTargetRow
     ? { targetVolumeMin: weekTargetRow.target_volume_min, targetVolumeMax: weekTargetRow.target_volume_max, targetVolumeUnit: weekTargetRow.target_volume_unit }
@@ -351,7 +365,41 @@ export default async function WorkoutDetailPage({
   // a real link when the viewer is that athlete themselves (which, for a
   // self-coached workout, is true in both the Athlete and Coach view-toggle
   // states, since it's the same session user either way).
+  const phaseForWorkout = phaseRowsForWorkout?.[0] ?? null;
   const viewerIsAthlete = session.userId === workout.athlete_id;
+
+  // Part E item 11, coach-only. Shown only for a session that genuinely
+  // went missing: published, in the past, and never completed. A draft or
+  // an upcoming session has nothing to advise about, and an athlete should
+  // not be handed the coach's retooling rulebook.
+  const workoutStatus = computeWorkoutStatus({
+    publishedAt: workout.published_at,
+    scheduledDate: workout.scheduled_date,
+    hasCompletion: completion != null,
+    today: new Date().toISOString().slice(0, 10),
+  });
+  const missedGuidance =
+    effectiveIsCoach && workoutStatus === "missed"
+      ? missedWorkoutGuidance({
+          phaseKey: phaseForWorkout?.phase_type ?? null,
+          workout: {
+            id: workout.id,
+            scheduledDate: workout.scheduled_date,
+            dayLabel: workout.day_label,
+            prescription: workout.notes_from_coach,
+            plannedRpe: workout.planned_rpe,
+            plannedRpeMax: workout.planned_rpe_max,
+            pacePercentBasis:
+              workout.pace_percent_basis === "marathon" || workout.pace_percent_basis === "5k"
+                ? workout.pace_percent_basis
+                : null,
+            pacePercentMin: workout.pace_percent_min,
+            pacePercentMax: workout.pace_percent_max,
+            isOptional: workout.is_optional,
+            phaseKey: phaseForWorkout?.phase_type ?? null,
+          },
+        })
+      : null;
   const hrText =
     workout.planned_hr_bpm != null
       ? workout.planned_hr_max_bpm != null && workout.planned_hr_max_bpm !== workout.planned_hr_bpm
@@ -405,6 +453,25 @@ export default async function WorkoutDetailPage({
       {/* The framework's own stated substitute, verbatim -- a
           single-session version of a double-threshold day, or a
           single-workout version of a special block. */}
+      {/* Part E item 11, coach-only. Advisory: it recommends, it changes
+          nothing, and it is deliberately phase-specific because the cost of
+          the same missed session differs by phase. */}
+      {missedGuidance ? (
+        <div className="mt-4 rounded-card border border-black/10 p-4 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+            Missed session
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-zinc-900 dark:text-white">{missedGuidance.title}</p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{missedGuidance.detail}</p>
+          <ul className="mt-1.5 list-disc space-y-1 pl-5">
+            {missedGuidance.actions.map((action) => (
+              <li key={action} className="text-sm text-zinc-600 dark:text-zinc-300">
+                {action}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {workout.alternative_text ? (
         <div className="mt-4 rounded-card border border-black/10 p-4 dark:border-white/10">
           <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Instead of this</p>

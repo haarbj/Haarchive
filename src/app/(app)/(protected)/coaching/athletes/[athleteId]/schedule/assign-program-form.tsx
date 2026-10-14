@@ -7,10 +7,12 @@ import {
   previewProgramAssignment,
   assignProgramToAthlete,
   loadUsedPaceReferenceBases,
+  proposePhaseLayoutFromRaceDay,
   type AssignProgramInput,
   type OverlappingPhase,
 } from "./assign-program-actions";
 import type { GeneratePhaseSelection, ResolvedProgramGeneration } from "@/lib/private-coaching/program-generation";
+import type { PhaseLayoutProposal } from "@/lib/private-coaching/race-anchored-planning";
 import { PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { raceDistanceMap } from "@/lib/race-distances";
 import { formatDate } from "@/lib/format";
@@ -114,6 +116,11 @@ export function AssignProgramForm({
   // below just tells the coach which distances the athlete needs to set in
   // their own settings for this program's paces to resolve to real numbers.
   const [usedBases, setUsedBases] = useState<PaceReferenceKey[]>([]);
+  // The most recent "lay out from race day" proposal, kept so its reasoning
+  // stays on screen next to the week inputs it filled. Cleared whenever the
+  // coach changes any of those inputs by hand, because the notes would then
+  // be describing numbers that are no longer there.
+  const [layout, setLayout] = useState<{ proposal: PhaseLayoutProposal; weeksAvailable: number; spareDays: number } | null>(null);
 
   useEffect(() => {
     // programs.length === 0 renders its own empty state below and never
@@ -149,6 +156,7 @@ export function AssignProgramForm({
     setProgramId(nextProgramId);
     const nextProgram = programs.find((p) => p.id === nextProgramId) ?? null;
     const nextVariant = nextProgram?.variants[0] ?? null;
+    setLayout(null);
     setVariantId(nextVariant?.id ?? "");
     setVolumeVariantId("");
     setPhaseSelections(defaultSelections(nextVariant));
@@ -158,6 +166,7 @@ export function AssignProgramForm({
     setConfirmedWarnings(false);
   }
   function updateVariant(nextVariantId: string) {
+    setLayout(null);
     setVariantId(nextVariantId);
     const nextVariant = program?.variants.find((v) => v.id === nextVariantId) ?? null;
     setPhaseSelections(defaultSelections(nextVariant));
@@ -167,6 +176,7 @@ export function AssignProgramForm({
     setConfirmedWarnings(false);
   }
   function updatePhaseSelection(phaseId: string, patch: Partial<PhaseSelectionState>) {
+    setLayout(null);
     setPhaseSelections((prev) => {
       const next = new Map(prev);
       const current = next.get(phaseId) ?? { include: false, weeksInput: "" };
@@ -240,6 +250,47 @@ export function AssignProgramForm({
         targetPeakWeeklyDurationS,
       },
     };
+  }
+
+
+  // Part A item 1. Fills the same per-phase week inputs the coach would
+  // otherwise type, then leaves them alone: this proposes, it never
+  // assigns, and the coach can overwrite any of it before previewing.
+  async function handleLayOutFromRaceDay() {
+    setError(null);
+    if (!program || !variant) return setError("Choose a program and plan length.");
+    if (!targetEventDateInput) return setError("Pick a target race date to lay phases out from.");
+
+    const chosenVolume = volumeVariants.find((v) => v.id === volumeVariantId) ?? null;
+    const typedPeak = targetPeakMilesInput.trim() ? Number(targetPeakMilesInput) : null;
+    const peakMileage =
+      chosenVolume?.peakMileage ?? (typedPeak != null && Number.isFinite(typedPeak) && typedPeak > 0 ? typedPeak : null);
+
+    setIsPending(true);
+    const result = await proposePhaseLayoutFromRaceDay({
+      programId: program.id,
+      variantId: variant.id,
+      athleteId,
+      raceDate: targetEventDateInput,
+      startDate: anchorMode === "startDate" && startDateInput ? startDateInput : null,
+      peakMileage,
+    });
+    setIsPending(false);
+    if (result.error || !result.proposal) return setError(result.error ?? "Couldn't lay this plan out.");
+
+    setPhaseSelections((prev) => {
+      const next = new Map(prev);
+      for (const proposed of result.proposal!.phases) {
+        const current = next.get(proposed.phaseDefinitionId) ?? { include: false, weeksInput: "" };
+        next.set(proposed.phaseDefinitionId, { ...current, include: proposed.include, weeksInput: String(proposed.weeks) });
+      }
+      return next;
+    });
+    setLayout({ proposal: result.proposal, weeksAvailable: result.weeksAvailable ?? 0, spareDays: result.spareDays ?? 0 });
+    setPreview(null);
+    setOverlappingPhases([]);
+    setClearOverlapping(false);
+    setConfirmedWarnings(false);
   }
 
   async function handlePreview() {
@@ -385,7 +436,31 @@ export function AssignProgramForm({
 
       {variant ? (
         <div>
-          <p className={labelClass}>Phases</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className={labelClass}>Phases</p>
+            <Button type="button" variant="ghost" size="sm" onClick={handleLayOutFromRaceDay} disabled={isPending}>
+              Lay out phases from race day
+            </Button>
+          </div>
+          {layout ? (
+            <div className="mt-1.5 rounded-control border border-black/10 p-3 dark:border-white/10">
+              <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+                Suggested layout
+              </p>
+              <p className="mt-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+                {layout.weeksAvailable} week{layout.weeksAvailable === 1 ? "" : "s"}
+                {layout.spareDays > 0 ? ` and ${layout.spareDays} day${layout.spareDays === 1 ? "" : "s"}` : ""} until race
+                day. These are suggestions. Adjust anything below before previewing.
+              </p>
+              <ul className="mt-2 space-y-1">
+                {layout.proposal.notes.map((note) => (
+                  <li key={note} className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {note}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div className="mt-1.5 space-y-2">
             {variant.phases.map((phase) => {
               const selection = phaseSelections.get(phase.id) ?? { include: false, weeksInput: "" };

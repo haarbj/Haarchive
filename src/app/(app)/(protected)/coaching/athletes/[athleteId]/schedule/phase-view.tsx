@@ -19,6 +19,10 @@ import type { AthleteMostRecentRace } from "@/lib/private-coaching/pace-referenc
 import { PhaseForm, type ExistingPhase, type PhaseGoalOption } from "./phase-form";
 import { ImportPlanForm } from "./import-plan-form";
 import { AssignProgramForm, type ProgramOption } from "./assign-program-form";
+import { applyRaceLeadIn, type ApplyRaceLeadInResult } from "./race-lead-in-actions";
+import { PlanHealthPanel } from "./plan-health-panel";
+import { EstimateReviewPanel } from "./estimate-review-panel";
+import { MultiCyclePanel } from "./multi-cycle-panel";
 import { formatTargetVolume } from "./week-plan-editor";
 import { clearAllTraining } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -74,6 +78,8 @@ export function PhaseView({
   preselectProgramId?: string | null;
 }) {
   const router = useRouter();
+  const [leadInPending, setLeadInPending] = useState(false);
+  const [leadInResult, setLeadInResult] = useState<ApplyRaceLeadInResult | null>(null);
   const [formTarget, setFormTarget] = useState<"new" | "import" | "assign-program" | ExistingPhase | null>(
     preselectProgramId ? "assign-program" : null,
   );
@@ -168,6 +174,17 @@ export function PhaseView({
         ),
       )}
 
+      {/* Part B, coach-only. Renders nothing when there is nothing to say. */}
+      <PlanHealthPanel athleteId={athleteId} />
+
+      {/* Part F, coach-only. On demand: a review is something the coach
+          chooses to run, not a number that should appear unbidden. */}
+      <EstimateReviewPanel athleteId={athleteId} />
+
+      {/* Part G, coach-only. Derived from the phases already on the
+          schedule, so the history cannot drift from what happened. */}
+      <MultiCyclePanel athleteId={athleteId} />
+
       <Card padding="md">
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Goal Race</p>
         {goalRace ? (
@@ -176,9 +193,44 @@ export function PhaseView({
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
               {formatDate(goalRace.goalDate)} · {formatWeeksAwayLabel(weeksUntilGoalRace(mostRecentMonday(new Date()), goalRace.goalDate))}
             </p>
+            {/* Part A item 2. Writes drafts onto the fourteen days ending on
+                race day and never touches a phase, so it can be run over an
+                existing plan's final two weeks. Occupied days are skipped
+                rather than overwritten, which also makes it re-runnable. */}
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={leadInPending}
+                onClick={async () => {
+                  setLeadInPending(true);
+                  setLeadInResult(null);
+                  const result = await applyRaceLeadIn({ athleteId, raceDate: goalRace.goalDate });
+                  setLeadInPending(false);
+                  setLeadInResult(result);
+                  if (!result.error) router.refresh();
+                }}
+              >
+                {leadInPending ? "Applying…" : "Apply standard 2-week lead-in"}
+              </Button>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">Creates editable drafts. Nothing is published.</span>
+            </div>
+            {leadInResult?.error ? (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{leadInResult.error}</p>
+            ) : leadInResult ? (
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                {leadInResult.created} draft session{leadInResult.created === 1 ? "" : "s"} written
+                {leadInResult.skippedDates && leadInResult.skippedDates.length > 0
+                  ? `. ${leadInResult.skippedDates.length} day${leadInResult.skippedDates.length === 1 ? "" : "s"} already had a workout and ${leadInResult.skippedDates.length === 1 ? "was" : "were"} left alone: ${leadInResult.skippedDates.map((d) => formatDate(d)).join(", ")}.`
+                  : "."}
+              </p>
+            ) : null}
           </>
         ) : (
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">No goal race set.</p>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">
+            No goal race set. Setting one unlocks laying phases out from race day and applying the two-week lead-in.
+          </p>
         )}
       </Card>
 

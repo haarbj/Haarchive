@@ -169,6 +169,8 @@ export type SeedDay = {
   difficultyLabel: string | null;
   plannedRpe: number | null;
   plannedRpeMax: number | null;
+  /** Marks the one day that IS the goal event, so assignment can anchor a plan to a real race date. At most one per program (enforced by a partial unique index). */
+  isEventDay: boolean;
 };
 
 export type FrameworkSeedPlan = {
@@ -398,6 +400,12 @@ export function buildFrameworkSeed(raw: RawFramework): FrameworkSeedPlan {
           difficultyLabel: difficulty.label,
           plannedRpe: difficulty.rpeMin,
           plannedRpeMax: difficulty.rpeMax,
+          // The frameworks' final Sunday is a race in the prose, but it is
+          // deliberately NOT marked as the program's event day: that flag
+          // drives date anchoring, and whether a given athlete's goal race
+          // is this exact slot is an assignment-time decision, not
+          // something the template should assert for everyone.
+          isEventDay: false,
         });
       }
     });
@@ -546,6 +554,7 @@ export function buildCrashCourseSeeds(raw: RawCrashCourse): FrameworkSeedPlan[] 
           difficultyLabel: difficulty.label,
           plannedRpe: difficulty.rpeMin,
           plannedRpeMax: difficulty.rpeMax,
+          isEventDay: false,
         });
       });
     }
