@@ -13,6 +13,8 @@ import {
 } from "./assign-program-actions";
 import type { GeneratePhaseSelection, ResolvedProgramGeneration } from "@/lib/private-coaching/program-generation";
 import type { PhaseLayoutProposal } from "@/lib/private-coaching/race-anchored-planning";
+import { checkRedemptionRaceGuardrail } from "./post-race-actions";
+import type { RedemptionGuardrail } from "@/lib/private-coaching/post-race";
 import { PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { raceDistanceMap } from "@/lib/race-distances";
 import { formatDate } from "@/lib/format";
@@ -121,6 +123,10 @@ export function AssignProgramForm({
   // coach changes any of those inputs by hand, because the notes would then
   // be describing numbers that are no longer there.
   const [layout, setLayout] = useState<{ proposal: PhaseLayoutProposal; weeksAvailable: number; spareDays: number } | null>(null);
+  // Part H item 20. Advisory and never blocking: it tells the coach this
+  // buildup starts too soon after a marathon, and they assign anyway if
+  // they judge that right.
+  const [redemption, setRedemption] = useState<RedemptionGuardrail | null>(null);
 
   useEffect(() => {
     // programs.length === 0 renders its own empty state below and never
@@ -305,6 +311,17 @@ export function AssignProgramForm({
     setPreview(result.result ?? null);
     setOverlappingPhases(result.overlappingPhases ?? []);
     setClearOverlapping(false);
+
+    // Checked against the plan's own first day, which is what the preview
+    // just worked out, rather than against whatever the coach typed.
+    if (result.result?.startDate && program) {
+      const guardrail = await checkRedemptionRaceGuardrail({
+        athleteId,
+        programId: program.id,
+        startDate: result.result.startDate,
+      });
+      setRedemption(guardrail.guardrail?.flagged ? guardrail.guardrail : null);
+    }
     setConfirmedWarnings(false);
   }
 
@@ -432,6 +449,26 @@ export function AssignProgramForm({
             at its limit is harder to recover from than starting a level below it.
           </span>
         </label>
+      ) : null}
+
+      {redemption ? (
+        <div className="rounded-card border border-black/10 p-4 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+            Worth a second look
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-zinc-900 dark:text-white">{redemption.title}</p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{redemption.detail}</p>
+          <ul className="mt-1.5 list-disc space-y-1 pl-5">
+            {redemption.actions.map((action) => (
+              <li key={action} className="text-sm text-zinc-600 dark:text-zinc-300">
+                {action}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+            This does not stop you assigning the plan.
+          </p>
+        </div>
       ) : null}
 
       {variant ? (

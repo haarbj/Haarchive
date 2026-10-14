@@ -122,3 +122,21 @@ describe("PLANS_ADAPT_NOTE", () => {
     expect(PLANS_ADAPT_NOTE).not.toMatch(/80|percent|%/);
   });
 });
+
+describe("recovery phases explain themselves too", () => {
+  it("resolves an explainer for the post-race recovery phases", () => {
+    // Part H item 21: an athlete assigned the recovery block gets the same
+    // "why this phase" treatment as a buildup phase.
+    expect(defaultPhaseExplainer("Return to running")).toMatch(/two full weeks of complete rest/i);
+    expect(defaultPhaseExplainer("return to training")).toMatch(/narrowed you on purpose/i);
+  });
+
+  it("still resolves nothing for a phase nobody has written copy for", () => {
+    expect(defaultPhaseExplainer("Sharpening")).toBeNull();
+    expect(defaultPhaseExplainer("Base")).toBeNull();
+  });
+
+  it("offers no taper preview for a recovery phase", () => {
+    expect(taperPreview("Return to running")).toBeNull();
+  });
+});

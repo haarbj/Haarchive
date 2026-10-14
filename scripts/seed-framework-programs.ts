@@ -24,11 +24,13 @@
 //   npm run seed:framework-programs -- --coach-email=... --frameworks=peak,summit
 //   npm run seed:framework-programs -- --coach-email=... --crash-course
 //   npm run seed:framework-programs -- --coach-email=... --race-lead-in
+//   npm run seed:framework-programs -- --coach-email=... --recovery-program
 //   npm run seed:framework-programs -- --coach-email=... --frameworks=canyon --replace
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { buildRecoveryProgramSeed } from "@/lib/private-coaching/post-race";
 import { buildRaceLeadInSeed } from "@/lib/private-coaching/race-lead-in";
 import {
   buildCrashCourseSeeds,
@@ -293,6 +295,10 @@ async function main() {
   // re-editing fourteen days per athlete; its default content lives in
   // src/lib/private-coaching/race-lead-in.ts.
   if (flag("race-lead-in")) plans.push(buildRaceLeadInSeed());
+  // The post-marathon recovery program (Part H item 19), seeded the same
+  // way and for the same reason: the coach edits one template rather than
+  // six weeks of days per athlete.
+  if (flag("recovery-program")) plans.push(buildRecoveryProgramSeed());
   console.log(`Validated ${plans.length} program(s) from ${SEED_DIR}`);
 
   let seeded = 0;

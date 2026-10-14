@@ -20,6 +20,8 @@
 // markdown: there's no markdown renderer in this project's dependencies
 // and this content doesn't need one.
 
+import { RECOVERY_PHASE_EXPLAINERS } from "@/lib/private-coaching/post-race";
+
 export type DefaultPhaseKey = "general" | "supportive" | "specific";
 
 const GENERAL = `This phase builds the raw material everything later in the cycle gets made from. Four capabilities are under construction at once: your aerobic ceiling, the fraction of that ceiling you can hold without fatigue running away from you, how efficiently you convert oxygen into forward motion, and the structural toughness of the tendons, bones and muscle that have to absorb thousands of foot strikes a week. General training leans hardest on the first and third of those. The intervals raise the ceiling. The volume and the relaxed, repeated miles sharpen the efficiency.
@@ -93,7 +95,17 @@ function normalizePhaseKey(phaseType: string): DefaultPhaseKey | null {
 export function defaultPhaseExplainer(phaseType: string | null): string | null {
   if (!phaseType) return null;
   const key = normalizePhaseKey(phaseType);
-  return key ? DEFAULT_PHASE_EXPLAINERS[key] : null;
+  if (key) return DEFAULT_PHASE_EXPLAINERS[key];
+
+  // The post-race recovery phases explain themselves too (Part H item 21).
+  // Their copy lives with the recovery program's own content rather than
+  // here, because it describes that program specifically; this is the one
+  // place that has to know it exists so an athlete assigned the recovery
+  // block gets the same "why this phase" treatment as a buildup phase.
+  const recovery = Object.entries(RECOVERY_PHASE_EXPLAINERS).find(
+    ([recoveryPhase]) => phaseType.trim().toLowerCase() === recoveryPhase.toLowerCase(),
+  );
+  return recovery ? recovery[1] : null;
 }
 
 // A stored explainer always wins, including over a newer default: it's the

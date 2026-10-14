@@ -23,6 +23,7 @@ import { applyRaceLeadIn, type ApplyRaceLeadInResult } from "./race-lead-in-acti
 import { PlanHealthPanel } from "./plan-health-panel";
 import { EstimateReviewPanel } from "./estimate-review-panel";
 import { MultiCyclePanel } from "./multi-cycle-panel";
+import { PostRacePanel } from "./post-race-panel";
 import { formatTargetVolume } from "./week-plan-editor";
 import { clearAllTraining } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -173,6 +174,10 @@ export function PhaseView({
           </div>
         ),
       )}
+
+      {/* Part H, coach-only. Fires once a goal race has passed and goes
+          quiet after eight weeks, so it sits above the rest while live. */}
+      <PostRacePanel athleteId={athleteId} />
 
       {/* Part B, coach-only. Renders nothing when there is nothing to say. */}
       <PlanHealthPanel athleteId={athleteId} />
