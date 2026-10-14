@@ -29,6 +29,8 @@ function createQueryBuilder(result: MockResult, calls: RecordedCall[]) {
     select: (...args: unknown[]) => record("select", args),
     insert: (...args: unknown[]) => record("insert", args),
     upsert: (...args: unknown[]) => record("upsert", args),
+    update: (...args: unknown[]) => record("update", args),
+    delete: (...args: unknown[]) => record("delete", args),
     eq: (...args: unknown[]) => record("eq", args),
     in: (...args: unknown[]) => record("in", args),
     contains: (...args: unknown[]) => record("contains", args),

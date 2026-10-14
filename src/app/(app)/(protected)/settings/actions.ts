@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/db/server";
+import { getAppSession } from "@/lib/auth/session";
+import { becomeSelfCoach } from "@/app/(app)/(protected)/coaching/self-coach-actions";
 import { athleteProfileSchema } from "@/lib/validation/athlete-profile";
 import { communityProfileSchema } from "@/lib/validation/community-profile";
 import { injurySchema, raceResultSchema } from "@/lib/validation/onboarding";
@@ -10,6 +12,11 @@ import { raceDistanceMap } from "@/lib/race-distances";
 import { parseTimeToSeconds } from "@/lib/running-format";
 
 export type UpdateProfileState = {
+  error?: string;
+  success?: boolean;
+};
+
+export type UpdateCoachSettingsState = {
   error?: string;
   success?: boolean;
 };
@@ -83,6 +90,103 @@ export async function updateProfile(
   revalidatePath("/settings");
   revalidatePath("/dashboard");
   return { success: true };
+}
+
+// Coach-only settings, kept as their own action (rather than folded into
+// updateProfile above) since they're a separate concern with their own
+// section on the page, and updateProfile requires a non-empty displayName
+// this form never collects. Available to update anytime, per the same
+// "can be updated later" requirement as the required onboarding prompt
+// this pairs with (setCoachTrainsSelf, below).
+export async function updateCoachSettings(
+  _prevState: UpdateCoachSettingsState,
+  formData: FormData,
+): Promise<UpdateCoachSettingsState> {
+  const session = await getAppSession();
+  if (!session?.isPrivateCoach) return { error: "Not authorized." };
+
+  const coachDisplayName = formData.get("coachDisplayName");
+  const trainsSelf = formData.get("coachTrainsSelf");
+  if (trainsSelf !== "true" && trainsSelf !== "false") {
+    return { error: "Choose whether you also train yourself." };
+  }
+  const coachBio = formData.get("coachBio");
+  const coachPhilosophy = formData.get("coachPhilosophy");
+  if (typeof coachBio === "string" && coachBio.length > 300) {
+    return { error: "Keep your bio under 300 characters." };
+  }
+  if (typeof coachPhilosophy === "string" && coachPhilosophy.length > 5000) {
+    return { error: "Keep your training philosophy under 5000 characters." };
+  }
+  const defaultVolumeUnit = formData.get("coachDefaultVolumeUnit");
+  if (defaultVolumeUnit !== "miles" && defaultVolumeUnit !== "minutes") {
+    return { error: "Choose a Weekly Load unit." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      coach_display_name: typeof coachDisplayName === "string" && coachDisplayName.trim() ? coachDisplayName.trim() : null,
+      coach_trains_self: trainsSelf === "true",
+      coach_bio: typeof coachBio === "string" && coachBio.trim() ? coachBio.trim() : null,
+      coach_philosophy: typeof coachPhilosophy === "string" && coachPhilosophy.trim() ? coachPhilosophy.trim() : null,
+      coach_default_volume_unit: defaultVolumeUnit,
+    })
+    .eq("id", session.userId);
+  if (error) return { error: error.message };
+
+  // Flipping this to "yes" from Settings (not just the onboarding prompt
+  // below) should have the same real effect -- see setCoachTrainsSelf's
+  // own comment for why.
+  if (trainsSelf === "true") {
+    const result = await becomeSelfCoach();
+    if (result.error) return { error: result.error };
+  }
+
+  revalidatePath("/settings");
+  revalidatePath("/coaching");
+  revalidatePath("/coaching/coach-profile");
+  return { success: true };
+}
+
+// The required-onboarding-prompt version of the same coach_trains_self
+// write above -- deliberately simpler (a single boolean, not a form) since
+// it's answered via two plain Yes/No buttons on /coaching, not a form
+// field. Never touches coach_display_name, so a coach who answers this
+// prompt first and sets a display name later in Settings doesn't have one
+// silently clobber the other.
+export async function setCoachTrainsSelf(trainsSelf: boolean): Promise<{ error?: string }> {
+  const session = await getAppSession();
+  if (!session?.isPrivateCoach) return { error: "Not authorized." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("profiles").update({ coach_trains_self: trainsSelf }).eq("id", session.userId);
+  if (error) return { error: error.message };
+
+  // "Yes, I train too" should actually make this coach self-coached, not
+  // just flip a display flag -- otherwise a coach whose private_coach
+  // permission was admin-granted (never went through the self-serve
+  // SelfCoachPrompt on /coaching, which only renders for someone with
+  // neither role) answers yes here and still has no coach_athletes row for
+  // themselves, so they can never reach their own schedule/check-in/
+  // coaching tools. becomeSelfCoach() is deliberately idempotent and
+  // already skips its own permission-grant step here since isPrivateCoach
+  // is already true -- see its own header comment.
+  //
+  // "No, coaching only" deliberately leaves any existing self-coach
+  // relationship untouched: this prompt is a "do you also train" display
+  // preference, not an "undo self-coaching" control, and silently
+  // deactivating that relationship here could hide real schedule/workout
+  // history a coach already built up for themselves.
+  if (trainsSelf) {
+    const result = await becomeSelfCoach();
+    if (result.error) return { error: result.error };
+  }
+
+  revalidatePath("/coaching");
+  revalidatePath("/settings");
+  return {};
 }
 
 export async function updateAthleteProfile(
@@ -394,6 +498,64 @@ export async function deleteInjury(injuryId: string): Promise<void> {
   if (!userId) return;
 
   await supabase.from("injuries").delete().eq("id", injuryId).eq("user_id", userId);
+
+  revalidatePath("/settings");
+}
+
+export type UpdateFitnessEstimateState = {
+  error?: string;
+  success?: boolean;
+};
+
+// "Your current 5K estimate," a single mutable value per reference_key --
+// see athlete_fitness_estimates' own migration comment for why this is an
+// upsert, not an ever-growing history list. Distinct from race_results:
+// this is a self-reported CURRENT fitness estimate, not a completed race,
+// and it's what any Program-assigned pace-percent day/step (e.g. "90-92%
+// MP") resolves against live, every time it's read -- updating it here is
+// reflected in every not-yet-completed workout automatically, without
+// touching anything already completed.
+export async function updateFitnessEstimate(
+  _prevState: UpdateFitnessEstimateState,
+  formData: FormData,
+): Promise<UpdateFitnessEstimateState> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return { error: "Not signed in." };
+
+  const referenceKey = formData.get("referenceKey");
+  if (referenceKey !== "5k" && referenceKey !== "marathon") {
+    return { error: "Pick a valid distance." };
+  }
+  const estimatedTimeS = parseTimeToSeconds(String(formData.get("estimatedTimeInput") ?? ""));
+  if (estimatedTimeS === null || estimatedTimeS <= 0) {
+    return { error: "Enter your estimate as mm:ss or h:mm:ss." };
+  }
+
+  const { error } = await supabase.from("athlete_fitness_estimates").upsert(
+    {
+      athlete_id: userId,
+      reference_key: referenceKey,
+      estimated_time_s: estimatedTimeS,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "athlete_id,reference_key" },
+  );
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+export async function deleteFitnessEstimate(referenceKey: "5k" | "marathon"): Promise<void> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return;
+
+  await supabase.from("athlete_fitness_estimates").delete().eq("athlete_id", userId).eq("reference_key", referenceKey);
 
   revalidatePath("/settings");
 }

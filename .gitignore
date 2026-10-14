@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# local Postgres cluster for tests/rls/ -- see tests/rls/README.md
+/.rls-test-db/
+
 # next.js
 /.next/
 /out/

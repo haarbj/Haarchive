@@ -40,3 +40,12 @@ export function renderDescription(description: string, scale: number, unit: Dist
 export function hasDistancePlaceholder(description: string): boolean {
   return /\[\[\s*\d+\s*\*\s*multiplier/.test(description);
 }
+
+// The one day per plan whose totalDistance is the race itself ("Goal
+// marathon 26.2mi"), not a training volume -- a marathon is always 26.2mi
+// regardless of what peak weekly mileage an athlete scales the rest of the
+// plan to, so this day's distance must never go through scaleDistance. All
+// ten source plans use this exact literal description for that day.
+export function isGoalRaceDay(description: string): boolean {
+  return description.startsWith("Goal ");
+}

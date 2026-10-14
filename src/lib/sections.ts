@@ -4149,7 +4149,28 @@ export const sections: Section[] = [
     title: "Altitude Calculator",
     mission:
       "Estimate how altitude affects aerobic capacity, and convert VO2 max between elevations, using acclimatized and unacclimatized altitude-performance models.",
-    topics: ["Available capacity at altitude", "VO2 max conversion between elevations", "Acclimatized vs. unacclimatized"],
+    topics: [
+      "Available capacity at altitude",
+      "VO2 max conversion between elevations",
+      "Acclimatized vs. unacclimatized",
+      "Workout split conversion",
+    ],
+    category: "tools",
+  },
+  {
+    slug: "altitude-adjusted-pace-calculator",
+    title: "Altitude-Adjusted Pace Calculator",
+    mission:
+      "Convert a specific race or training performance between altitudes, accounting for home-altitude acclimation -- independently reverse-engineered from a real, undisclosed third-party model.",
+    topics: ["Performance conversion between altitudes", "Home-altitude acclimation discount", "Any distance, 400m to marathon"],
+    category: "tools",
+  },
+  {
+    slug: "endurance-fueling-calculator",
+    title: "Endurance Fueling Calculator",
+    mission:
+      "Science-informed carb, fluid, and sodium targets for endurance efforts, based on your effort intensity, gut training, body weight, and conditions.",
+    topics: ["Carb rate by effort and GI training", "Fluid loss by weight, heat, and intensity", "Sodium loss and target rates"],
     category: "tools",
   },
 ];

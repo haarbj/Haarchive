@@ -16,6 +16,12 @@ export function formatMiles(meters: number): string {
   return `${(meters / MILE_METERS).toFixed(1)} mi`;
 }
 
+// "Mon"/"Tue" column headers for the coaching calendar's week grid -- no
+// existing formatter covers weekday-only.
+export function formatWeekday(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, { weekday: "short" });
+}
+
 export function formatDate(dateStr: string): string {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
     year: "numeric",

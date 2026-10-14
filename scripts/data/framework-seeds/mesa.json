@@ -1,0 +1,332 @@
+{
+  "framework": "mesa",
+  "source_plan_name": "Wind",
+  "source": "Marathon Excellence 18-week web PDF (marathonexcellence.com, imperial), cross-checked against Kindle screenshots; PDF wins on conflicts",
+  "distance": "marathon",
+  "duration_weeks": 18,
+  "variants": [
+    { "id": "mesa-55", "peak_mileage": 55, "initial_mileage": 40 },
+    { "id": "mesa-65", "peak_mileage": 65, "initial_mileage": 45 }
+  ],
+  "typical_goal_times": "2:40-3:45",
+  "recommended_for": "Running a PR; marathoners with two or more years of experience; post-collegiate middle-distance runners; runners aiming for time qualifiers at major-city marathons (e.g. Boston, London).",
+  "experience": "Two or more years of marathon training experience.",
+  "phases": [
+    { "name": "general", "weeks": [1, 2, 3, 4, 5, 6, 7, 8] },
+    { "name": "supportive", "weeks": [9, 10, 11, 12, 13] },
+    { "name": "specific", "weeks": [14, 15, 16, 17, 18] }
+  ],
+  "structural_features": [
+    "Occasional second midweek quality session (primary Tuesday workout + secondary Thursday workout in weeks 1, 2, 3, 5, 6, 7, 10).",
+    "Kenyan-style progression run as a recurring staple session (weeks 1, 2, 6, 8, 10, 17).",
+    "Pace basis is % of 5k pace through the general phase; fitness estimate converts to % of marathon pace at the end of week 8, and the supportive phase paces off an initial MP estimate from week 9 onward.",
+    "Float-recovery cruise intervals (repeats with 400m float at 80% 5k instead of jogs) in weeks 7 and 9.",
+    "Alternating-kilometer sessions (fast km / float km) in weeks 11, 13, 14, 16, 17.",
+    "Stepwise long fast runs (progressing pace stage by stage) in weeks 11 and 15.",
+    "Down weeks at weeks 4, 8, and 12 with reduced mileage and fewer workouts.",
+    "Fitness-estimate revision markers at the end of weeks 2, 4, 8, 11, 13, and 16.",
+    "Peak mileage (55 / 65 mi) held across weeks 9-11 and week 13.",
+    "Race-day options: longer races (8k to half marathon) may replace weekend long runs on select weeks; race-week and pre-race Sunday workouts adapt to Saturday vs Sunday marathon dates."
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "40", "mesa-65": "45" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6 mi Kenyan-style progression run + 1 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "5-7 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n8 x 2 min at 100% 5k with 1.5 min jog\n1.5 mi easy cool-down", "difficulty": "7.5/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "5-7 mi very easy to easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "6-8 mi easy progressing to moderate", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "11-12 mi easy through rolling hills", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Training opens with a Kenyan-style progression run that becomes a weekly staple: start very easy and build to roughly 80-85% of 5k pace by halfway. Wednesday's 8 x 2 min at 100% 5k is a controlled introduction to quality and a first check on your 5k fitness estimate. Keep Saturday's long run strictly easy on rolling hills."
+    },
+    {
+      "week": 2,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "44", "mesa-65": "50" },
+      "revise_fitness_estimate": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6 mi Kenyan-style progression run + 1 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n7 x 3 min at 90-92% 5k with 1 min jog\n1.5 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-9 mi easy progressing to moderate", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n5 mi at 85% 5k\n1.5 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-4 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "The progression run repeats at the same distance with more aggressive pacing through the middle. Wednesday's cruise intervals should feel smooth and controlled, the 1-minute jog almost unnecessary. Review your first workouts at week's end and update your fitness estimate if the paces feel too fast or too slow."
+    },
+    {
+      "week": 3,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "48", "mesa-65": "55" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n4 sets of:\n3 min at 95% 5k; 1 min jog\n2 min at 100% 5k; 3 min jog\n1.5 mi cool-down", "difficulty": "7.5-8/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n8 x 3 min at 90-92% 5k with 45 sec jog\n1.5 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "7-9 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-9 mi easy progressing to moderate with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "12-13 mi easy through rolling hills", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-4 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Monday adds a mixed-pace fartlek touching both 95% and 100% of 5k pace. Wednesday's cruise intervals grow to 8 x 3 min with shorter 45-second rests. With this much fast running in the week, keep Saturday's long run strictly easy."
+    },
+    {
+      "week": 4,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "40", "mesa-65": "45" },
+      "revise_fitness_estimate": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "5-7 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n6 mi at 85% 5k\n1.5 mi easy cool-down", "difficulty": "7.5/10", "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "4-6 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "5-7 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "4-6 mi easy progressing to moderate with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n10-11 mi at 75-80% 5k\nNo cool-down", "difficulty": "7.5-8/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "A down week with lower mileage and only two workouts: freshen up and evaluate the month's fitness gains. Saturday introduces the long moderate run with a deliberately shortened warm-up, previewing the abbreviated warm-ups used in later marathon-specific sessions. Revise your fitness estimate, weighting the longer aerobically-based sessions (90-92% cruise intervals, 85% strong runs) most."
+    },
+    {
+      "week": 5,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "48", "mesa-65": "55" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "5-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n5-6 x 1200m at 90-92% 5k with 1 min jog\n1.5 mi easy cool-down", "difficulty": "7-7.5/10", "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "5-7 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n4 sets of:\n3 min at 98% 5k, 1 min jog\n2 min at 100% 5k, 1 min jog\n1 min at 102% 5k, 3 min jog\n1.5 mi easy cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "14-15 mi easy through rolling hills", "difficulty": "5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-5 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Tuesday's cruise intervals go distance-based (1200m repeats). Thursday is a time-based fartlek climbing from controlled-5k to optimistic-5k pace within each set, with short recoveries inside the sets. Any fatigue on Saturday's long run should come from the duration, not the intensity; use it to practice fueling."
+    },
+    {
+      "week": 6,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "52", "mesa-65": "59" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n7 mi at 85% 5k\n1.5 mi easy cool-down", "difficulty": "7.5-8/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "7-9 mi easy progressing to moderate with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "8 mi Kenyan-style progression run + 1 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n12-13 mi at 80% 5k\nNo cool-down", "difficulty": "8.5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-5 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Monday extends the strong run to 7 miles at 85% 5k; some general muscular fatigue is normal as these runs lengthen. Finish Thursday's progression run feeling like you could do one more mile ten seconds faster. Run Saturday's long moderate effort at 80% of your 5k pace for today, not your fresh-and-rested 5k pace."
+    },
+    {
+      "week": 7,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "54", "mesa-65": "63" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi easy or easy progressing to moderate", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n4 sets of:\n1 km at 95% 5k pace, 2 min jog\n1 km at 98% 5k pace, 4 min jog\n1.5 mi easy cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "6-9 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n5-6 x (1200m at 90-92% 5k, 400m at 80% 5k)\n1.5 mi easy cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-9 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "16-18 mi easy through rolling hills", "difficulty": "6-7/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-5 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Tuesday pairs 1 km repeats at 95% and 98% 5k in alternating couples. Thursday upgrades the cruise intervals: the 'rest' becomes a 400m float at 80% 5k instead of a jog, so pacing precision matters. Let Saturday's long-run difficulty come from the duration and the hills, never from pushing the pace."
+    },
+    {
+      "week": 8,
+      "phase": "general",
+      "goal_mileage": { "mesa-55": "45", "mesa-65": "50" },
+      "revise_fitness_estimate": true,
+      "convert_fitness_estimate_to_mp": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "5-7 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 28 min of (1 min at ~95% 5k effort, 3 min easy) in the middle", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "8 mi Kenyan-style progression run with optional fast finish + 1 mi easy cool-down", "difficulty": "7-8/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy to easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n8-9 mi at 85% 5k\n1 mi easy cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "A down week. Tuesday's pickups are just long strides, not a workout. Wednesday's progression run offers an optional fast finish only if you're feeling good; skip it if you're worn down. Convert your fitness estimate to marathon pace at the end of the week, since the next phase paces off % MP."
+    },
+    {
+      "week": 9,
+      "phase": "supportive",
+      "goal_mileage": { "mesa-55": "55", "mesa-65": "65" },
+      "revise_fitness_estimate": false,
+      "convert_fitness_estimate_to_mp": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "8-10 mi easy to moderate with 24 min of (30 sec at ~5k effort, 2.5 min easy) in the middle", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n4-5 x (1600m at 90-92% 5k, 400m at 80% 5k)\n1.5 mi easy cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-9 mi easy progressing to moderate with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n14-15 mi at 90% MP\nNo cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-5 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Marathon-supportive training begins. Wednesday's float-recovery cruise intervals still use your 5k estimate, but by Saturday you need an initial marathon pace estimate (roughly 82% of 5k pace, adjusted by how your 85% and 80% runs have felt). Cap the long fast run at 90% MP and fuel with at least two gels. Peak mileage starts here."
+    },
+    {
+      "week": 10,
+      "phase": "supportive",
+      "goal_mileage": { "mesa-55": "55", "mesa-65": "65" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n3 x 2 km at 108-110% MP with 4 min jog\n2 x 1 km at 112% MP with 3 min jog\n1.5 mi easy cool-down", "difficulty": "8-8.5/10", "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "9 mi Kenyan-style progression run + 1 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-9 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n9-10 mi at 100% MP\n1 mi easy cool-down", "difficulty": "8-8.5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 5-7 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Tuesday mixes 2 km repeats near 8k-10k pace with 1 km repeats at 112% MP; run Thursday's progression purely by effort. Saturday's 9-10 miles at 100% MP is a checkup on your fitness estimate: it should feel like hard work, but you should finish feeling like you could do a few more miles. Some accumulated fatigue at peak mileage is normal."
+    },
+    {
+      "week": 11,
+      "phase": "supportive",
+      "goal_mileage": { "mesa-55": "55", "mesa-65": "65" },
+      "revise_fitness_estimate": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "5-7 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "7-9 mi easy with 28 min of (1 min at ~95% 5k effort, 3 min easy) in the middle", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n7-8 x (1 km at 105% MP, 1 km at 85% MP)\n1.5 mi easy cool-down", "difficulty": "8-8.5/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy to easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "8-10 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n6 mi at 90% MP\n5 mi at 92% MP\n5-6 mi at 94% MP\nNo cool-down", "difficulty": "8-8.5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-5 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Wednesday introduces alternating kilometers (1 km at 105% MP, 1 km at 85% MP), demanding careful pacing on flat terrain; take gels during the fast kilometers. Saturday debuts the stepwise long fast run, climbing from 90% to 94% MP stage by stage. Revise your fitness estimate afterward, weighting last week's 100% MP run and this week's alternating kilometers."
+    },
+    {
+      "week": 12,
+      "phase": "supportive",
+      "goal_mileage": { "mesa-55": "45", "mesa-65": "55" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "5-7 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 24 min of (30 sec at ~5k effort, 2.5 min easy) in the middle", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n4 x 2 km at 108-110% MP with 4 min walk/jog\n1.5 mi easy cool-down", "difficulty": "8.5/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "5-8 mi very easy to easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "5-8 mi easy progressing to moderate with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n8 x (2 km at 100% MP, 1 km at 85% MP)\n1 mi easy cool-down", "difficulty": "8/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "A down week, but Wednesday stays sharp: 4 x 2 km at 108-110% MP, starting at 108% and working down to 110% only if 8.5/10 difficulty holds. Saturday's 8 x (2 km at 100% MP, 1 km at 85% MP) is high volume at marathon pace without being crushing; take 50-60 g/hr of carbs and set the early repeats up on flat ground."
+    },
+    {
+      "week": 13,
+      "phase": "supportive",
+      "goal_mileage": { "mesa-55": "55", "mesa-65": "65" },
+      "revise_fitness_estimate": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "7-9 mi easy progressing to moderate", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n5 x (2 km at 105% MP, 1 km at 85% MP)\n1.5 mi easy cool-down", "difficulty": "8.5-9/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-9 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-9 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n18-20 mi at 90-92% MP\nNo cool-down", "difficulty": "8.5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-4 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Wednesday extends the alternating-kilometer format to 5 x (2 km at 105% MP, 1 km at 85% MP); the 2 km segments should feel near half-marathon effort. Saturday adds volume rather than intensity: 18-20 miles at 90-92% MP on marathon-specific terrain, fueled exactly as on race day. Revise your fitness estimate afterward, trusting your 100% and 105% MP sessions more than the 90% long run."
+    },
+    {
+      "week": 14,
+      "phase": "specific",
+      "goal_mileage": { "mesa-55": "50-55", "mesa-65": "55-62" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "7-9 mi easy with 27 min of (30 sec at ~5k effort, 2.5 min easy) in the middle", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n3 km at 108% MP, 4 min walk/jog\n2 km at 109% MP, 4 min walk/jog\n2 km at 110% MP, 4 min walk/jog\n1 km at 112-115% MP\n1.5 mi easy cool-down", "difficulty": "8.5/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "5-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "5-7 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n6 x (3 km at 100% MP, 1 km at 85% MP)\n1 mi easy cool-down", "difficulty": "8-9/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-4 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Marathon-specific phase begins. Wednesday is a front-loaded cut-down interval session (3 km / 2 km / 2 km / 1 km, descending pace); precise pacing matters less than bringing the effort down across the workout. Saturday is 6 x (3 km at 100% MP, 1 km at 85% MP), a long look at what marathon pace feels like for extended blocks, on race-specific terrain with race-day fueling. Mileage now matters less than recovering well between workouts."
+    },
+    {
+      "week": 15,
+      "phase": "specific",
+      "goal_mileage": { "mesa-55": "50-55", "mesa-65": "55-60" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy or easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "7-9 mi easy with 24 min of (30 sec at ~5k effort, 2.5 min easy) in the middle", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n3.5-5 mi at 105% MP\n1.5 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "7-8 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n6 mi at 90% MP\n5 mi at 92% MP\n5 mi at 94% MP\n4-5 mi at 96% MP", "difficulty": "9-9.5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Recovery is the priority after last weekend's big session; keep early-week runs on the short end of the range if you're still fatigued. Wednesday's fast continuous run is regenerative: adjust the distance, not the pace, to keep it at 7/10. Saturday's stepwise long fast run is the toughest workout of the plan; fuel and dress exactly as on race day and focus on the structure of the stages rather than percentage-perfect pacing."
+    },
+    {
+      "week": 16,
+      "phase": "specific",
+      "goal_mileage": { "mesa-55": "45-50", "mesa-65": "55-60" },
+      "revise_fitness_estimate": true,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "5-8 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "7-9 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n12 x 500m at 108-110% MP with 30-45 sec walk\n1.5 mi easy cool-down", "difficulty": "7/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "5-7 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive warm-up + 4 strides\n6 km at 98-100% MP, 1 km at 85% MP\n5 km at 100% MP, 1 km at 85% MP\n4 km at 100% MP, 1 km at 85% MP\n3 km at 101-102% MP\n1 mi easy cool-down", "difficulty": "8.5/10", "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "Off or 3-4 mi very easy", "difficulty": null, "optional": false }] }
+      ],
+      "notes": "Keep Monday very easy after Saturday's long fast run. Wednesday's 500m repeats at 108-110% MP are regenerative speed: the effort should feel threshold-like with no fatigue accumulating rep to rep. Saturday is a full race-day dress rehearsal: race gear, race-specific terrain, race-day fueling before and during. Use it to make one final adjustment to your goal marathon pace, keeping the session at a manageable 8.5/10."
+    },
+    {
+      "week": 17,
+      "phase": "specific",
+      "goal_mileage": { "mesa-55": "40-50", "mesa-65": "45-50" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "6-8 mi very easy to easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy progressing to moderate", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "7-9 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n6-7 x (1 km at 103-105% MP, 1 km at 90% MP)\n1.5 mi easy cool-down", "difficulty": "7.5-8/10", "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "5-7 mi very easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "6-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "8 mi Kenyan-style progression run + 1 mi easy cool-down (if marathon is on a Sunday), or: 8 mi easy progressing to moderate (if marathon is on a Saturday)", "difficulty": "7/10", "optional": false }] }
+      ],
+      "notes": "Early-week easy-to-moderate days set up Thursday's final full workout: alternating kilometers with a faster 90% MP float. Since fitness is so specialized now, 103% MP may be all you can manage for the fast segments as long as the floats feel like true recovery; take gels mid-workout. Keep the taper at the upper end of the mileage range unless you know from experience that a bigger drop works better for you."
+    },
+    {
+      "week": 18,
+      "phase": "specific",
+      "goal_mileage": { "mesa-55": "n/a", "mesa-65": "n/a" },
+      "revise_fitness_estimate": false,
+      "days": [
+        { "day": "M", "sessions": [{ "slot": "single", "workout": "4-5 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy with 5 x 20 sec strides (remove if race is on Saturday)", "difficulty": null, "optional": false }] },
+        { "day": "W", "sessions": [{ "slot": "single", "workout": "1.5 mi progressive warm-up + 4 strides\n5-6 x 4 min at 104-107% MP with 1 min jog\n1.5 mi easy cool-down", "difficulty": "6/10", "optional": false }] },
+        { "day": "T", "sessions": [{ "slot": "single", "workout": "6-8 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "F", "sessions": [{ "slot": "single", "workout": "5-7 mi easy", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "3-5 mi easy with 5 x 20 sec strides", "difficulty": null, "optional": false }] },
+        { "day": "S", "sessions": [{ "slot": "single", "workout": "1 mi progressive + 4 strides\nMarathon race", "difficulty": "10/10", "optional": false }] }
+      ],
+      "notes": "Race week. Wednesday's session stays controlled like the general-phase cruise intervals: start at 104% MP and only work down to 107% if it still feels easy. Adjust the length of your runs in the final three days based on feel. The marathon itself won't ask anything you haven't practiced; follow the same rhythms and routines from training and you'll be on your way to a great race."
+    }
+  ],
+  "conflicts_resolved": [
+    { "week": 7, "day": "S", "kindle": "16-17 mi easy through rolling hills", "pdf": "16-18 mi easy through (rolling) hills", "used": "pdf" },
+    { "week": 13, "day": "S", "kindle": "18-20 mi at 90% MP", "pdf": "18-20 mi at 90-92% MP", "used": "pdf" },
+    { "week": 14, "day": "goal_mileage", "kindle": "50-55 / 55-60 mi", "pdf": "50-55 / 55-62 (from mileage-at-a-glance table)", "used": "pdf" },
+    { "week": 15, "day": "S", "kindle": "5 mi at 90% MP (first stage of stepwise run)", "pdf": "6 mi at 90% (workouts-at-a-glance)", "used": "pdf" },
+    { "week": 16, "day": "goal_mileage", "kindle": "45-55 / 55-60 mi", "pdf": "45-50 / 55-60 (from mileage-at-a-glance table)", "used": "pdf" },
+    { "week": 17, "day": "goal_mileage", "kindle": "40-50 / 50-55 mi", "pdf": "40-50 / 45-50 (from mileage-at-a-glance table)", "used": "pdf" },
+    { "week": 18, "day": "W", "kindle": "5-6 x 4 min at 104-107% MP with 2-3 min walk/jog", "pdf": "5-6 x 4 min at 104-107% MP w/ 1 min jog", "used": "pdf" }
+  ]
+}

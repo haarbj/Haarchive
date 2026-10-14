@@ -52,6 +52,54 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-13",
+    headline: "The five marathon frameworks and the 5K Crash Course are now assignable program templates",
+    detail:
+      "Canyon, Mesa, Ridge, Peak and Summit are available in a coach's program library as complete 18-week templates, each with its own phase boundaries, per-week goal mileage, and day-by-day prescriptions carried verbatim from the source plans. A coach picks the peak-volume level at assignment time (Canyon at 40 or 50 miles a week, Summit at 100, 110 or 120), which is what drives the week-by-week mileage targets the athlete sees. The three levels of the 5K Crash Course ship alongside them, for athletes who need a first fitness estimate before a marathon buildup can be paced at all.",
+  },
+  {
+    date: "2026-10-13",
+    headline: "Coached athletes now get the \"why\" behind each phase and each workout, plus a training education library",
+    detail:
+      "Every training phase a coach assigns can carry its own explanation of what the block is for, which capabilities it builds, and what its paces are based on, and the athlete reads it on a new roadmap page of their own at /coaching/training. Each workout detail page now also explains what that kind of session is and what it builds, and three new guides cover how training works, pacing and effort, and fueling and hydration. The workout log asks for effort level and conditions alongside RPE, so a coach reviewing a fitness estimate can tell a bad day apart from a wrong estimate. All of it is visible only to athletes with an active coach, and to that coach.",
+  },
+  {
+    date: "2026-10-13",
+    headline: "Workout notifications now say \"updated\" instead of \"assigned\" on an edit, and cover moving or deleting a live workout",
+    detail:
+      "Re-saving a published workout after a small edit used to notify the athlete as if it were a brand-new assignment every time, and moving or deleting a workout the athlete could already see sent no notification at all. Athletes now get an \"updated\" notification for a re-published edit, a moved date, or a removal -- never for an unpublished draft, which stays invisible to them either way. Unchecking \"Published\" on an already-live workout while editing it also now asks for confirmation first, since an athlete may already be following it.",
+  },
+  {
+    date: "2026-10-13",
+    headline: "Assigning a Program over an existing training block, and resyncing an assigned phase, both got real options",
+    detail:
+      "Assigning a Program to an athlete used to abort entirely if its date range overlapped an existing training phase, with no supported way to replace that block short of clearing it manually first. The assign flow now shows exactly which phase(s) would be removed and lets a coach confirm \"clear and assign\" in one step. Separately, editing a Program after it's already been assigned to an athlete never used to reach that athlete -- a new \"resync from program\" action on an assigned phase pulls in the Program's current content, after a confirm that shows how many workouts would be replaced.",
+  },
+  {
+    date: "2026-10-13",
+    headline: "Fixed the marathon plans showing the goal race as 26.1mi instead of 26.2mi",
+    detail:
+      "Every marathon plan's own goal-race day was being rescaled along with the rest of the week whenever the plan's target peak weekly mileage didn't round to a whole number -- which it almost never does -- quietly shaving a tenth of a mile off a fixed, real-world distance. The goal race day no longer scales with the rest of the plan. The pace calculator's \"Coming Soon\" button for a personalized training plan, left over from before the plan builder shipped, now links to it directly.",
+  },
+  {
+    date: "2026-09-25",
+    headline: "Fixed a full-page crash when uploading a large photo (article images, avatars)",
+    detail:
+      "Uploading an image over roughly 8-9MB -- an easy size for an unedited phone photo -- crashed the whole page instead of showing a normal \"image too large\" message, because the size check only ran after the file had already been sent, past the point a normal error could be shown. Oversized files are now caught immediately, before upload, with a clear inline message.",
+  },
+  {
+    date: "2026-09-24",
+    headline: "Threshold, CV & VO2 Max Pace Calculator upgraded to a substantially larger fitness model, and the age input is gone",
+    detail:
+      "The calculator's underlying model was rebuilt on its source project's newest fit -- 613,889 real race performances instead of roughly 8,600 -- which no longer includes age as an input at all, so that field has been removed here too. In its place, uncertainty ranges are now adjustable (80%, 90%, 95%, or hidden) instead of fixed at 90%. The Marathon Pacing Calculator, which shares this same fitness model, picked up the same change.",
+  },
+  {
+    date: "2026-09-22",
+    headline: "Two new calculators launched: Altitude-Adjusted Pace and Endurance Fueling",
+    detail:
+      "Both were built the same way as the Tinman and Threshold/CV/VO2max calculators: independently reverse-engineered by collecting real inputs and outputs from a specific third-party calculator, not by reading its source. Altitude-Adjusted Pace converts a race or training performance between altitudes, accounting for home-altitude acclimation, and sits alongside (not in place of) the existing Altitude Calculator's VO2max/capacity conversion, which answers a related but different question. Endurance Fueling gives carb, fluid, and sodium targets by effort intensity, gut training, body weight, and heat.",
+  },
+  {
     date: "2026-09-04",
     headline: "New Physiology content drawn from Marathon Excellence for Everyone",
     detail:

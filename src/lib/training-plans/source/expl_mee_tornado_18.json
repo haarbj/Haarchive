@@ -4,11 +4,11 @@
     "workouts": [
         {
             "description": "[[ 7 * multiplier|number:0 ]] [[ units ]] Kenyan-style progression run",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "8–9 × 3 min at 90–92% 5k with 45 sec jog",
@@ -16,7 +16,7 @@
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate",
@@ -24,487 +24,634 @@
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]] [[ units ]] easy + [[ 5 * multiplier|number:0 ]] [[ units ]] progressing moderate to ~90% 5k + cooldown",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "[[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 4.0
+            "totalDistance": 4
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]] [[ units ]] at 85% 5k",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "10 × 2 min at 100–102% 5k with 1.5 min jog",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 9.0
+            "totalDistance": 9
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]] [[ units ]] Kenyan-style progression run",
-            "totalDistance": 9.0
+            "totalDistance": 9
         },
         {
             "description": "[[ 14 * multiplier|number:0 ]]-[[ 15 * multiplier|number:0 ]] [[ units ]] easy through rolling hills",
-            "totalDistance": 14.0
+            "totalDistance": 14
         },
         {
             "description": "[[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 3.0
+            "totalDistance": 3
         },
         {
             "description": "8 × 1 km at 95% 5k with 2 min jog",
-            "totalDistance": 9.0
+            "totalDistance": 9
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]] [[ units ]] at 85% 5k",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy to moderate with 40 min of (1 min at ~95% 5k effort, 3 min easy to moderate)",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "[[ 13 * multiplier|number:0 ]]-[[ 14 * multiplier|number:0 ]] [[ units ]] at 80% 5k through rolling hills",
-            "totalDistance": 15.0
+            "totalDistance": 15
         },
         {
             "description": "[[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 4.0
+            "totalDistance": 4
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "2 × (4-3-2-1 min at 96-98-100-102% 5k with 1 min moderate, 2–3 min jog between sets)",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 6.0
+            "totalDistance": 6
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "7–8 × 4 min at 90–92% 5k with 1 min jog",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 6.0
+            "totalDistance": 6
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 30 min of (30 sec at ~5k effort, 2.5 min easy)",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "5 × [[ 1 * multiplier|number:0 ]] [[ units ]] at 95% 5k with 3 min jog",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy or easy to moderate with 5 × 25 sec strides",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "[[ 9 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] at 85% 5k",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "[[ 16 * multiplier|number:0 ]]-[[ 18 * multiplier|number:0 ]] [[ units ]] easy through rolling hills",
-            "totalDistance": 16.0
+            "totalDistance": 16
         },
         {
             "description": "[[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 2.0
+            "totalDistance": 2
         },
         {
             "description": "2 × (3 km, 2 km, 1 km) at 86–88% 5k with 2 min walk between all",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "7 × (1200m at 90–92% 5k, 400m at 80% 5k)",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 40 min of (1 min at ~95% 5k effort, 3 min easy)",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "[[ 15 * multiplier|number:0 ]]-[[ 16 * multiplier|number:0 ]] [[ units ]] at 80% 5k through rolling hills",
-            "totalDistance": 17.0
+            "totalDistance": 17
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy*",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 30 min of (30 sec at ~5k effort, 2.5 min easy)",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: 3 × (2 km at 108% MP, 2 min walk/jog, 1 km at 110–112% MP, 4–5 min walk/jog)",
-            "totalDistance": 14.0
+            "totalDistance": 14
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] very easy or easy",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "[[ 10 * multiplier|number:0 ]]-[[ 11 * multiplier|number:0 ]] [[ units ]] at 100% MP",
-            "totalDistance": 14.0
+            "totalDistance": 14
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 40 min of (1 min at ~110% MP effort, 3 min easy)",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "6 × (1600m at 105–107% MP, 400m at 95–98% MP)",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] very easy to easy",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate / PM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] moderate progressing to strong",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "4-1, 3-1, 2-1, 1-1 km at 101–103% / 105% MP with 2 min walk between all",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 40 min of (1 min at ~95% 5k effort, 3 min easy)",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: 5 × 2 km at 108–110% MP with 4 min jog",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 12 × (1 min fast, 1 min easy run) (~112–115% MP)",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 11 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "[[ 17 * multiplier|number:0 ]]-[[ 19 * multiplier|number:0 ]] [[ units ]] at 90–92% MP through rolling hills",
-            "totalDistance": 19.0
+            "totalDistance": 19
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy*",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate with 30 min of (30 sec at 5k effort, 2.5 min moderate)",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "AM: 7 × 1 km progressing 103–106% MP with 1 min jog / PM: 12 × 500m at 108–110% MP with 30 sec walk",
-            "totalDistance": 14.0
+            "totalDistance": 14
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] very easy or easy",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 11 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "[[ 12 * multiplier|number:0 ]]-[[ 13 * multiplier|number:0 ]] [[ units ]] at 100% MP",
-            "totalDistance": 15.0
+            "totalDistance": 15
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] very easy*",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] moderate",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "10 × (1 km at 105% MP, 1 km at 90–92% MP)",
-            "totalDistance": 16.0
+            "totalDistance": 16
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 11 * multiplier|number:0 ]] [[ units ]] easy with 40 min of (1 min at ~95% 5k effort, 3 min easy)",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "5-5-5-[[ 3 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] at 90-92-94-96% MP",
-            "totalDistance": 19.0
+            "totalDistance": 19
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy*",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: 5–6 × 2 km at 103% MP with 2 min walk / PM: 4 × 500m at 108–110% MP with 30 sec walk, 4 min rest, 3–5 km at 108–110% MP",
-            "totalDistance": 17.0
+            "totalDistance": 17
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 6.0
+            "totalDistance": 6
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy to easy with 5 × 25 sec strides",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "6 × (3 km at 100% MP, 1 km at 90% MP)",
-            "totalDistance": 18.0
+            "totalDistance": 18
         },
         {
             "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 5.0
+            "totalDistance": 5
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "4–5 × 3 km at 103–105% MP with 2–3 min walk",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 5 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 9.0
+            "totalDistance": 9
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 40 min of (1 min at ~95% 5k effort, 3 min easy)",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 2.0
+            "totalDistance": 2
         },
         {
             "description": "[[ 20 * multiplier|number:0 ]]-[[ 22 * multiplier|number:0 ]] [[ units ]] at 95% MP",
-            "totalDistance": 20.0
+            "totalDistance": 20
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy with 30 min of (30 sec at ~5k effort, 2.5 min easy)",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: 3-2-1-1 km at 102–106% MP with 2 min walk / PM: 12–15 × 400m at 108–110% MP with 25 sec walk",
-            "totalDistance": 13.0
+            "totalDistance": 13
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "6 × (4 km at 100% MP, 1 km at 90% MP)",
-            "totalDistance": 21.0
+            "totalDistance": 21
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy*",
-            "totalDistance": 9.0
+            "totalDistance": 9
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy / PM: [[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] moderate",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "AM: [[ 5 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] easy progressing to strong (~98% MP) / PM: 8–10 × 3 min at 104–107% MP with 30 sec jog",
-            "totalDistance": 12.0
+            "totalDistance": 12
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "7-6-5-[[ 2 * multiplier|number:0 ]]-[[ 4 * multiplier|number:0 ]] [[ units ]] at 92-94-96-98% MP",
-            "totalDistance": 21.0
+            "totalDistance": 21
         },
         {
             "description": "Off or [[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 4.0
+            "totalDistance": 4
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 32 min of (1 min at ~110% MP effort, 3 min easy)",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate* / PM: 12 × 500m at 108–110% MP with 30 sec walk",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "[[ 8 * multiplier|number:0 ]]-[[ 10 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 9.0
+            "totalDistance": 9
         },
         {
             "description": "[[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "6-5-4-3-2-1 km at 98–102% MP with 1 km at 90% MP (optional 2 km and 1 km at end)",
-            "totalDistance": 17.0
+            "totalDistance": 17
         },
         {
             "description": "[[ 4 * multiplier|number:0 ]]-[[ 6 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy progressing to moderate",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "8 × (1 km at 103–105% MP, 1 km at 92–94% MP)",
-            "totalDistance": 14.0
+            "totalDistance": 14
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 7.0
+            "totalDistance": 7
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy with 24 min of (30 sec at ~5k effort, 2.5 min easy)",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "2 × 2 km at 107% MP with 3 min jog; 2–4 × 1 km at 108–110% MP with 2–3 min jog",
-            "totalDistance": 10.0
+            "totalDistance": 10
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] very easy",
-            "totalDistance": 6.0
+            "totalDistance": 6
         },
         {
             "description": "AM: [[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] very easy* / PM: [[ 7 * multiplier|number:0 ]]-[[ 9 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 11.0
+            "totalDistance": 11
         },
         {
             "description": "6–8 × 3 min at 105–107% MP with 45 sec jog",
-            "totalDistance": 8.0
+            "totalDistance": 8
         },
         {
             "description": "[[ 6 * multiplier|number:0 ]]-[[ 8 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 6.0
+            "totalDistance": 6
         },
         {
             "description": "[[ 5 * multiplier|number:0 ]]-[[ 7 * multiplier|number:0 ]] [[ units ]] easy",
-            "totalDistance": 5.0
+            "totalDistance": 5
         },
         {
             "description": "[[ 4 * multiplier|number:0 ]]-[[ 5 * multiplier|number:0 ]] [[ units ]] easy with 5 × 25 sec strides",
-            "totalDistance": 4.0
+            "totalDistance": 4
         },
         {
             "description": "Goal marathon 26.2mi",
             "totalDistance": 26.2
+        }
+    ],
+    "weeklyNotes": [
+        {
+            "phaseLabel": "General phase begins",
+            "paragraphs": [
+                "Training starts up with a Kenyan-style progression run. Remember to start very easy and always feel like you're holding back a little bit. Especially early on in training, it's better to prioritize being smooth, relaxed, and efficient, even if it means going a little slower in these kinds of high-end aerobic workouts. Keep the focus on effort, not pace—if you can help it, don't check your watch at all during this workout.",
+                "Wednesday's cruise interval session will feel familiar if you've done classical threshold workouts before. Start at 90% 5k pace, though you might be able to progress down to as fast as 92% 5k, depending on your fitness level. Use fatigue—or more precisely, the lack thereof—as a guide for pacing in this workout: you should not have any fatigue accumulating in your legs from one rep to the next, even with the very short rest.",
+                "Saturday has a longer run with some quality in the second half. Precise pacing is less important than progressing smoothly throughout the last five miles. The final 1.5 miles or so can be around 90% of 5k pace, which should feel pretty close to half marathon effort, but don't worry too much about the exact splits."
+            ]
+        },
+        {
+            "paragraphs": [
+                "This week introduces doubles to add extra mileage. The \"default\" Tornado schedule relies extensively on doubles to split up mileage so the overall weekly volume is less stressful on your body. However, if your work or school schedule makes it harder to double as often as prescribed by the training calendar, you can remove or rearrange some of the doubles and increase the distance of your easy runs to compensate.",
+                "If you cut out the doubles, do be mindful of the balance between stress and recovery—long \"singles\" (e.g., a 14 mi easy run) are harder to recover from versus a 5 mi / 9 mi easy double, all else equal. Next week, for example, it's important to follow up Saturday's long moderate run with a shorter run at a very easy effort—and that will become increasingly the case with tougher weekend sessions later on in training.",
+                "Monday's strong run should feel strong but fully aerobic, with no fatigue accumulating in your legs as the run continues. You should finish this run feeling like you could pretty comfortably do another mile or two at the same pace.",
+                "Wednesday's workout should have a less structured, fartlek-style feel to it, as opposed to feeling like a high-stakes track session. Hitting the pace precisely is less important than pushing yourself a bit on each repeat, then recovering and feeling ready to go again for the next rep.",
+                "Keep the pace strictly easy on Saturday—this is a \"time on feet\" session, and you've already had three quality sessions during the week. Total elevation gain can be around 300–800 feet but don't fret about the exact details.",
+                "At the end of this week, do a quick review of your workouts so far to see if your fitness estimate needs any fine-tuning, and adjust it up or down as necessary."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Monday has some relaxed pace work at around 8k–10k effort. Each individual repeat should feel pretty controlled, though you'll eventually get some fatigue accumulating in your legs by the middle of the workout. Aim to finish feeling like you could do another one or two reps without straining too much.",
+                "Wednesday's strong run adds one more mile compared with last time. As usual, aim to finish ready to do another mile (or more) at the same pace. It's ok if you feel some fatigue from the volume, but you shouldn't have any real fatigue from the intensity itself: if the pace feels like you're hanging on for dear life, you're going too fast!",
+                "This week introduces mid-run pickups within an easy run. These pickups should be \"layered on top of\" the run; the 3 min stretch in between the pickups is still at your normal easy run pace. Aim for 10k effort, but you should emphatically not worry about the pace. These are effort-based pickups, not a real workout—your legs should feel better at the end than they did at the start.",
+                "Saturday has your first long moderate run of the training plan. You can start a bit slower than the target pace if needed; you have plenty of time to progress down to 80% 5k pace. Obviously, the hills will affect the pace, but as long as you're hitting 80% 5k on the flat sections, you're getting the effort right."
+            ]
+        },
+        {
+            "paragraphs": [
+                "This week is a down week with lower overall volume, only two quality sessions, and no long run. Use this week to freshen up and consolidate your fitness gains.",
+                "Tuesday's fartlek looks a little complicated, but don't get bogged down with the exact paces for each repeat. Focus on the big picture: each set of 4-3-2-1 min should start out with 4 min around 8k–10k effort, then each rep should get progressively faster, with the final 1 min rep being on the optimistic side of 5k pace. Note that the recovery within sets is at a moderate, floating effort. The recovery between sets is a jog, though.",
+                "If you want more of a challenge, you can do Tuesday's fartlek through rolling hills or over cross-country terrain. That will also help keep the workout feeling more like a playful Swedish fartlek and less like a strictly paced interval session. Keep in mind that paces will be totally out the window if you run on tough terrain!",
+                "Friday has a straightforward cruise interval session. This session should feel very controlled—almost like you don't even need the recovery interval. Adjust the number of reps to make sure the difficulty doesn't exceed 7/10.",
+                "As you revise your current fitness estimate, your paces and notes from your strong runs at 85% 5k and your cruise intervals at 90–92% 5k will be especially helpful. When you have the correct effort dialed in, these workouts often get naturally faster on their own, making them a great reference point for your current 5k fitness.",
+                "Sunday has another set of mid-run pickups; again, just aim for around 5k effort and don't worry about the pace. This is a regenerative session, not a real workout."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Some of the doubles this week (and in many of the following weeks) are optional. Based on how you're feeling, and your mileage needs, you can choose whether or not to do these runs. Feel free to move them to other days in the week as well, though do not double on long run days like Saturday.",
+                "I often hesitate to schedule mile repeats because runners tend to run them far too fast, obsessing over their splits as opposed to focusing on the effort. That said, 1.6 km is a good intermediate distance between the 1 km repeats two weeks ago and the 2 km repeats scheduled for Week 7. Make sure the intensity is manageable and the effort truly feels like 8k–10k pace, not faster. Keeping the recovery to only 3 min should help discourage any overly aggressive pacing. Finish feeling capable of another repeat, though perhaps glad you don't have to actually do it.",
+                "Thursday's strong run is long enough that you will probably have some fatigue and heaviness in your legs by the last few miles. Even so, the pace itself should not feel too intense to sustain. Remember, the goal with these workouts is to run at a fast but sustainable intensity, focusing on maintaining a relaxed, smooth rhythm throughout the duration of the run.",
+                "If you want more of a challenge on Saturday, opt for a hillier route—keep the pace strictly easy, though. This run isn't fast enough to require aggressive fueling, but if you want to experiment with gels or sports drinks, this run is a low-stakes opportunity to try out a few different options."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Monday is essentially a broken-up interval-style counterpart to strong continuous runs at 85% 5k effort. Although the volume of the workout is fairly high, the controlled intensity should make the workout as a whole a very manageable. Effort-wise, these repeats should feel a little faster than marathon pace but also slower than half marathon pace.",
+                "Wednesday's float recovery cruise intervals are best done either on a track or on a flat, uninterrupted road loop. If you're on the roads, set your watch to auto-split every 0.4 km for consistent pace feedback. This session is very similar to the 4 min repeats from Week 4, except that the recovery is a \"floating\" 400m. Take care to get the pacing right: the two most common errors in this workout are slowing down too much at the end of each 1200m repeat and speeding up too much when starting another set.",
+                "If you have been yearning to push yourself in a workout, Saturday's long moderate run is a good opportunity to do it. You can ramp up the challenge by choosing a hilly course, as well as aiming for the higher end of the distance range.",
+                "When converting your fitness estimate to marathon pace, pay attention to how your body has felt at 80, 85, 86–88, and 90% 5k pace across your workouts in the last few weeks. While assuming MP = 84% 5k pace is a good starting point, you can refine your estimate based on how you've felt in workouts at 80 and 85% 5k pace."
+            ]
+        },
+        {
+            "phaseLabel": "Marathon-supportive phase begins",
+            "paragraphs": [
+                "If you're feeling fatigued from last weekend's long fast run, take an extra easy day before Tuesday's workout and shift the whole rest of the week back one day. The strong run at the end of the week has three easy days afterwards on the original schedule, so it won't be too hard to get back on the schedule if you take an extra easy day.",
+                "Tuesday's workout is pretty tough, partly because of the volume and partly because of the short rest before the faster 1 km repeats. Bump up the recovery interval between the sets if needed, and if you're really struggling, dial back the 1 km repeats to 110% MP—try to keep the recovery interval within sets to 2 min, though. Effort-wise, the 2 km repeats should feel like 10k pace, with the 1 km repeats at more like optimistic 8k to controlled 5k pace. If you're feeling good, you can run faster on the later sets as well.",
+                "Go into Friday's strong run with the intent of doing 10 mi, and only extend the distance to 11 mi if you feel great. You'll certainly be tired after ten miles at 100% MP, but you shouldn't have the steady ramp-up in fatigue that you experienced during Tuesday's interval session. This workout will be a good test of whether your current marathon pace estimate is realistic, but focus more on whether 100% MP feels like a controlled steady-state, and less on whether you could actually run this pace for a full 26.2 miles right now—we'll take care of going the distance later on in training."
+            ]
+        },
+        {
+            "paragraphs": [
+                "This week is a down week, mileage-wise, though the Tornado plan is less drastic in its mileage drops than lower-volume plans, favoring consistency instead. As a result, the day-to-day rhythm looks pretty much the same, even though the mileage is lower.",
+                "Tuesday's float recovery session is a natural extension of the 1200s from Week 6. The main differences are that the repeats are longer and the float recovery is faster. Aim for 98% MP if possible on the float 400m, but back off to 95% MP if it feels like the workout is getting out of control. Hitting the paces and maintaining 8/10 difficulty would be ideal, but if you have to push it to 8.5/10 that's fine.",
+                "Friday uses a pair of moderate and strong runs to get in a bit more high-end aerobic running during the week, but neither of these should be difficult at all. Even the evening \"moderate to strong\" run should only register as 4/10 difficulty—nowhere near enough to leave you feeling fatigued for Saturday.",
+                "Saturday has a slightly different take on marathon-specific speed: this session is structured like a traditional interval workout with walking recovery, with the goal of allowing you to run a little faster than your current MP. Think of this 101–103% MP pace range as \"optimistic marathon pace.\" Do this workout on a flat, uninterrupted course."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Since you're hitting peak mileage this week, it's normal to have some fatigue. Don't be alarmed if your workouts in the next few weeks are a little lackluster.",
+                "Tuesday has a tough interval session at 8k–10k effort. Start this workout at 108% MP, but push the pace to 110% MP if you feel good. Make sure your pacing within the reps is consistent: setting your watch to split at 1 km can help in this regard if you're not doing this workout on a track.",
+                "Thursday's pickups are a more structured way to include some speed in a low-stress manner. Aim for an intensity that feels close to 5k pace, or a little faster, without worrying much about the actual splits on your watch.",
+                "Saturday's long fast run should feel controlled from an intensity perspective. While the difficulty can get as high as 8.5/10, that difficulty should come from the distance and the hills—throughout the run, you should feel like you could be going at least 5% faster if you wanted to. We'll be adding more intensity to long fast runs like this in the near future, so make sure you leave some room to grow and develop this workout. Fuel with at least 30–50 g/hr of carbs during this run."
+            ]
+        },
+        {
+            "paragraphs": [
+                "This week introduces double threshold workouts (Chapter 47), which are optional in the Tornado plan—if they won't work with your schedule, you can do a pared-down single session instead. Double threshold is all about consistency and control—each individual session should only reach 7/10 difficulty. On the 500s in the evening, the effort should feel threshold-like even though the pace is closer to 8k–10k pace. The repeats and the recovery intervals are so short that the net effect is a quasi-steady-state, with basically no fatigue accumulating from rep to rep.",
+                "The single threshold alternative is 6 × 1 km progressing 102–105% MP with 1 min walk; 3 min rest; then 10 × 500m at 106–108% MP with 30 sec walk (note the slower paces).",
+                "On Saturday, you can start a bit dialed back from marathon pace (circa 98% MP) if you're unsure about your fitness estimate, but as long as you're feeling good, you can work down to 100% MP for the majority of this workout. Set yourself up for success in this workout by fueling at 50–60 g/hr and doing the run on similar terrain as the marathon. This workout might get tough in the last few miles, but it should not be extremely difficult."
+            ]
+        },
+        {
+            "paragraphs": [
+                "One pattern to notice about training is that we're moving to significantly more recovery after bigger, tougher workouts. Wednesday, for example, is preceded by three days of easy to moderate running. Even though your overall mileage is the same, this increase in day-to-day variability will help you feel more recovered for your workouts.",
+                "Wednesday's alternating kilometer session should feel pretty close to half marathon pace for the fast kilometers. Control the pace carefully, since the fatigue you accumulate in the fast kilometers is absorbed rather slowly in the float kilometers. Focus on consistent pacing within each float recovery as well: resist the temptation to \"cheat\" by running the first 20–30 seconds of the float recovery at an easy pace.",
+                "Saturday's step-wise progression has a late-workout ramp-up in difficulty. Halfway through, this workout will feel pretty manageable—it's pushing things to 94% MP, and then 96% MP, that cranks up the challenge. On the final stage, aim for 96% MP but modulate the difficulty by how far you go on the final stage, not how fast. Fuel with at least 60 g/hr of carbohydrates if your stomach can tolerate it, and do this workout on marathon-specific terrain."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Wednesday features a special block (Chapter 48) that provides a more potent training stimulus than a normal mid-week workout. Note that both sessions use a longer, more structured progressive warm-up.",
+                "The evening session is similar to the 500m repeat session from Week 10, except the last chunk of the workout has no rest at all. In the fast continuous run, aim to stay on pace, modulating the difficulty by adjusting the distance. You may need an extra recovery day after the special block; if so, push Saturday's workout back to Sunday.",
+                "The single workout alternative for Wednesday is a standard 2 mi progressive warm-up, followed by 3 × 2 km at 103% MP with 2 min walk; 4 min rest; then 4 km continuous at 108% MP—still a hefty workout, but not as tough as the special block.",
+                "Either way, when you do the 6 × (3 km, 1 km) workout, focus on getting a feel for 100% MP. Each 3 km repeat should feel smooth and controlled, and each float kilometer should feel like you're actively recovering, not just hanging on. Do the first half of this workout on flat ground to get the pace dialed in, then run on marathon-specific terrain for the rest of the session—hills for a hilly race, flat terrain for a flat race. Take 50–60 g/hr of carbohydrates during this workout as well."
+            ]
+        },
+        {
+            "phaseLabel": "Marathon-specific phase begins",
+            "paragraphs": [
+                "Wednesday departs from the float-recovery scheme you used in the 10 × 1 km / 1 km session from Week 11 to make the pace feel more manageable. If you're feeling worn down from the tough workouts in the past few weeks, stick to four repeats at 103% MP, but if you're ready for more of a challenge, you can increase the pace to 105% MP and the number of reps up to five. Do this on flat terrain on an uninterrupted loop so you can focus on consistent pacing.",
+                "Keep things very easy on your non-workout days this week. This stretch of training has several tough workouts in a row, so make sure you're doing everything you can to recover after these tough marathon-specific workouts.",
+                "Sunday has one of the toughest workouts in the Tornado plan. Go into it aiming to run 20 mi, but if you feel good, you can go 21 or even 22 mi. Do this on race-specific terrain, and fuel with at least 60 g/hr of carbs throughout the run.",
+                "Your paces (and your effort level) from your weekend sessions at 100% MP will be the most useful recent workouts when revising your current fitness estimate, but you should also put some weight on your workouts at 95% and 105% MP."
+            ]
+        },
+        {
+            "paragraphs": [
+                "After Sunday's workout last week, you'll likely be pretty sore and tired for a few days. Make sure you keep the effort easy on your easy runs—that might mean slowing down by 30 or even 60 seconds per mile compared with your usual pace. Trust that your body will bounce back if you take things easy enough for a few days.",
+                "Wednesday leverages the low-stress nature of double threshold days to touch on marathon-supportive and marathon-specific speed in a controlled manner. Adjust the number of reps in the evening to ensure the workout does not exceed 7.5/10 difficulty: this is supposed to be a regenerative day, not a hard workout.",
+                "Wednesday's single threshold alternative is 3-2-2-1-1 km at 102–106% MP (skipping the 400m repeats completely).",
+                "Saturday's marathon-specific workout is a high-volume session designed to carefully calibrate your sense of marathon pace. It's very similar to the 3 km / 1 km workout from Week 12; you're just doing 4 km / 1 km instead. Visualize yourself in the race running this pace so you can fully internalize marathon effort. The difficulty may creep up to 9/10, but if you can hit the paces while keeping at 8.5/10, that's even better. Do this workout on marathon-specific terrain with your race-day fueling strategy."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Wednesday isn't technically a real double threshold session, but it uses the same structure of moderate-volume quality in the morning and evening. The morning run, which is optional, is an effort-based progression with less emphasis on exact pacing. The evening workout is a throwback to general-phase cruise interval workouts. Keep in mind that there's a good chance you'll still be feeling a bit sore and sluggish after Saturday's workout, so don't force the pace on either session.",
+                "Saturday is one of the toughest workouts in the Tornado plan. Like other stepwise progressions, the difficulty is \"back-loaded\"—the first 13 mi will feel very manageable. Even the third segment will not be too tough, seeing as you already ran at least 20 mi at 95% MP two weeks ago. The real challenge is the final segment. Push the pace up to 98% MP, adjusting the difficulty via the distance of the final segment. If this is your first time with Marathon Excellence-style training, keep the difficulty to 9/10 and keep the final segment to only two miles. More experienced runners can push harder, both in terms of distance and difficulty. This session, though, should not reach all-out 10/10 difficulty.",
+                "As usual, Saturday's long fast run should use race-specific fueling and race-specific terrain."
+            ]
+        },
+        {
+            "paragraphs": [
+                "The first part of this week is focused on recovery after last weekend's big workout. Like you did after the last couple weekend sessions, keep your easy runs easy, and don't be alarmed if your pace is slower than usual for a few days.",
+                "Wednesday's workout is a light, regenerative workout aimed at getting your legs feeling ready to run fast again. Start on the slow end of the pace range and see how you're feeling. It's fine if the whole workout stays at 108% MP. Like last week, there's an optional progressive run in the morning—but skip it if your legs are still feeling beat up.",
+                "Saturday is a dress-rehearsal workout that should be structured the same way you'll run the marathon itself. The opening 6 km should be paced the way you'll pace the first few miles of the race: either even-paced or progressive (Chapter 18). On the 4 km and 3 km, you should be clicking off miles as smoothly and as efficiently as possible. The 2 km and 1 km at the end—which are optional—simulate the final stages of the marathon, where you'll be closing faster. Don't do these final reps if it will push the difficulty above 8.5/10, or if you prefer a bigger taper in your last two weeks of training.",
+                "Wear your racing gear (shoes, socks, shorts, etc.) for this workout, use your race-day fueling strategy, and do this workout on race-specific terrain."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Thursday's alternating kilometers put some finishing touches on your marathon-specific fitness. Notice that the recovery pace is faster than the last time you did this workout—94% MP instead of 92% MP. By now, your fitness is so specialized for the marathon that 105% MP might feel a little fast. If that's the case, keep the pace at 103% MP, but still aim for 94% MP on the float recovery. Make sure this workout does not get above 8/10 difficulty. Aim to feel like you're actively recovering, not just hanging on, during the float recovery.",
+                "Sunday touches on marathon-supportive speed one more time. If you tend to do better with a more significant taper, or if your race is on a Saturday, only do two or three 1 km repeats instead of four. Again, because your fitness is highly specialized for the marathon, you may find that 108–110% MP feels a little tougher than expected. This is totally normal, and pushing into this difficulty a little—but not a lot—will help make marathon pace feel easier. Stick to the low end of the pace range if 110% MP feels too fast."
+            ]
+        },
+        {
+            "paragraphs": [
+                "Race week is not particularly exciting in terms of workouts. Tuesday and Thursday have optional doubles, which you should do only if (a) they won't interfere with your sleep and (b) you've been doubling consistently enough that it would feel like a disruption not to double this week.",
+                "If your marathon is on a Saturday, drop Thursday's run, move Friday and Saturday back one day, and only do 6 × 3 min on Wednesday.",
+                "Wednesday's workout is a \"throwback\" to the cruise intervals you did very early on in training. The focus here is being smooth, relaxed, and efficient at a pace that's somewhat faster than marathon pace. This workout should be very controlled and comfortable; adjust the number of reps as needed to ensure you finish feeling good.",
+                "Run distances are more flexible this week, which gives you the ability to adjust how much you want to taper down your running volume leading into the race. My recommendation is to lean towards the high side of the mileage range for each run, but if you know from experience that you'll feel better on race day with a sharper decrease in weekly mileage, feel free to do shorter runs.",
+                "You should approach the race itself like any other tough workout. The marathon is really just the next logical step in your progression of long fast runs and marathon-specific workouts. Simply by taking the same approach to the race that you've practiced already in training, you'll give yourself your best shot at a great race."
+            ]
         }
     ]
 }

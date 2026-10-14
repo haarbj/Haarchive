@@ -60,6 +60,7 @@ function buildPlan(track: TrackKey, durationWeeks: DurationWeeks): TrainingPlan 
     referencePeakWeeklyMiles: Math.max(...weeklyTotals),
     referenceAvgWeeklyMiles: referenceTotalMiles / weeklyTotals.length,
     referenceTotalMiles,
+    weeklyNotes: raw.weeklyNotes,
   };
 }
 

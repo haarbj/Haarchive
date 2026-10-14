@@ -9,10 +9,26 @@ export type RawWorkout = {
   totalDistance: number;
 };
 
+// One week's real, authored guidance on how to actually run that week's
+// workouts (pacing nuance, effort cues, what to do if a session goes
+// poorly) -- the book's own "Notes:" section, transcribed verbatim, not a
+// paraphrase. Optional: only Tornado has this transcribed so far (see
+// weeklyNotes below); other plans render without it rather than a
+// fabricated substitute.
+export type WeeklyNote = {
+  // Set only on the week a new training phase begins (e.g. "General phase
+  // begins"), matching the book's own per-week header text exactly.
+  phaseLabel?: string;
+  // Real paragraphs, in order, exactly as authored.
+  paragraphs: string[];
+};
+
 export type RawPlanFile = {
   raceType: string;
   raceDistance: number;
   workouts: RawWorkout[];
+  // One entry per week (length === workouts.length / 7) when present.
+  weeklyNotes?: WeeklyNote[];
 };
 
 // The five volume tracks, lowest to highest weekly mileage -- see data.ts
@@ -33,4 +49,5 @@ export type TrainingPlan = {
   referencePeakWeeklyMiles: number;
   referenceAvgWeeklyMiles: number;
   referenceTotalMiles: number;
+  weeklyNotes?: WeeklyNote[];
 };

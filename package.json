@@ -13,6 +13,13 @@
     "sync:readme:check": "node scripts/sync-readme-status.mjs --check",
     "sync:last-updated": "node scripts/sync-last-updated.mjs",
     "sync:last-updated:check": "node scripts/sync-last-updated.mjs --check",
+    "test:rls:up": "node scripts/rls-test-db.mjs up",
+    "test:rls:down": "node scripts/rls-test-db.mjs down",
+    "test:rls": "vitest run --config vitest.rls.config.ts",
+    "audit:knowledge-checks": "tsx --env-file-if-exists=.env.local scripts/audit-knowledge-checks.ts",
+    "generate:knowledge-checks": "tsx --env-file-if-exists=.env.local scripts/generate-knowledge-checks.ts",
+    "seed:canyon-program": "tsx --env-file-if-exists=.env.local scripts/seed-canyon-program.ts",
+    "seed:framework-programs": "tsx --env-file-if-exists=.env.local scripts/seed-framework-programs.ts",
     "seed:fueling-fridays-1": "tsx --env-file-if-exists=.env.local scripts/seed-fueling-fridays-1.ts"
   },
   "dependencies": {
@@ -33,13 +40,17 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "happy-dom": "^20.10.6",
+    "pg": "^8.23.0",
+    "playwright": "^1.63.0",
     "supabase": "^2.109.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.10"

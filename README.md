@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Sep 4, 2026](https://brodyhaar.com/release-notes)):** New Physiology content drawn from Marathon Excellence for Everyone
+**Latest update ([Oct 13, 2026](https://brodyhaar.com/release-notes)):** The five marathon frameworks and the 5K Crash Course are now assignable program templates
 
 Recent highlights:
-- Fixed the logo shown in link previews (Aug 25, 2026)
-- Mobile navigation now shows all six categories directly, and the homepage launch banner is gone (Aug 25, 2026)
-- Fixed missing "new signup" notifications for accounts confirmed by email (Aug 25, 2026)
+- Coached athletes now get the "why" behind each phase and each workout, plus a training education library (Oct 13, 2026)
+- Workout notifications now say "updated" instead of "assigned" on an edit, and cover moving or deleting a live workout (Oct 13, 2026)
+- Assigning a Program over an existing training block, and resyncing an assigned phase, both got real options (Oct 13, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

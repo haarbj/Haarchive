@@ -1,0 +1,18 @@
+-- Self-coaching: lets any signed-in user plan/track their own training with
+-- the private-coaching toolset without being an admin-approved coach. See
+-- becomeSelfCoach (src/app/(app)/(protected)/coaching/self-coach-actions.ts),
+-- which is the ONLY intended caller that ever inserts coach_id = athlete_id.
+--
+-- Safe to drop only because both existing coach_athletes insert call sites
+-- (inviteAthlete in roster/actions.ts, acceptPrivateCoachInvite in
+-- coaching-invite/[token]/actions.ts) now explicitly reject
+-- coach_id === athlete_id themselves before ever reaching this table --
+-- audited exhaustively (coach_athletes has zero authenticated insert
+-- policy, so a service-role write from one of those two Server Actions, or
+-- the signup-redemption trigger, which is structurally incapable of a
+-- self-referential insert since it always mints a brand-new auth.users id
+-- as athlete_id, are the only ways a row here is ever created). This
+-- constraint was, until this migration, the only thing preventing a coach
+-- from accidentally inviting/accepting themselves -- see the app-level
+-- guards added alongside this migration for the real, ongoing protection.
+alter table public.coach_athletes drop constraint coach_athletes_not_self;

@@ -117,3 +117,18 @@ export async function loadEligibleContributors(): Promise<BasicUser[]> {
   const eligibleIds = new Set((permissionRows ?? []).map((p) => p.user_id));
   return users.filter((u) => eligibleIds.has(u.id));
 }
+
+// A single-user email lookup (auth.users is the only source of email --
+// see loadAllUsers' own comment) via getUserById rather than paginating
+// listUsers() for one row. Used for access checks that need "is THIS
+// specific user's email on the admin allowlist" without pulling in every
+// user's details -- e.g. gating a feature on "is the athlete's coach an
+// admin" (coaching/pace-zones/page.tsx), where the caller only has a
+// coach_id, not an email, and RLS doesn't expose another user's email at
+// all.
+export async function getUserEmailById(userId: string): Promise<string | null> {
+  const admin = createServiceRoleClient();
+  const { data, error } = await admin.auth.admin.getUserById(userId);
+  if (error || !data?.user) return null;
+  return data.user.email ?? null;
+}

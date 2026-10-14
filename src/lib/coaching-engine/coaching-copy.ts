@@ -1,5 +1,25 @@
 import { type DistanceBucket } from "@/lib/coaching-engine/distance-buckets";
-import type { MesocyclePhase, WorkoutPrescription } from "@/lib/coaching-engine/types";
+import type { MesocyclePhase, WorkoutPrescription, WorkoutType } from "@/lib/coaching-engine/types";
+
+// Hoisted from the signed-in plan route's own format-workout.ts (which now
+// re-exports this instead of defining a second copy) when the public plan-
+// preview page needed the identical label set -- a cross-route-group
+// import from a page under (app)/(protected)/plan/ would have been a real
+// layering violation, and a second hand-maintained copy would drift the
+// moment a WorkoutType is ever added.
+const WORKOUT_TYPE_LABEL: Record<WorkoutType, string> = {
+  easy: "Easy run",
+  recovery: "Recovery",
+  long: "Long run",
+  tempo: "Tempo",
+  vo2: "Intervals",
+  race: "Race day",
+  strength: "Strength",
+};
+
+export function workoutTypeLabel(workoutType: WorkoutType): string {
+  return WORKOUT_TYPE_LABEL[workoutType];
+}
 
 // Coaching copy is grounded in two of this program's own written training
 // philosophies rather than generic exercise-science phrasing: the XC

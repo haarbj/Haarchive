@@ -1,0 +1,252 @@
+"use client";
+
+import { useState } from "react";
+
+import { rescheduleWorkout, type ExtraPresetOption } from "./actions";
+import type { CalendarWorkout } from "./calendar-types";
+import { WorkoutCard } from "./workout-card";
+import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
+import type { TemplateOption } from "./workout-form";
+import { effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
+import { computeWeeklyLoad, formatWeeklyLoadText, type WeeklyLoadEntry } from "@/lib/private-coaching/weekly-load";
+import { formatTargetVolume, type WeekPlanValues } from "./week-plan-editor";
+import { formatWeekday, formatDate } from "@/lib/format";
+import { FormError } from "@/components/ui/form-error";
+
+// The calendar's grid + weekly footer. Week navigation itself (prev/next/
+// today, the athlete switcher, phase/goal-race context, surrounding-week
+// strips) lives in the server-rendered page header around this component
+// -- pure links need no client JS. This component owns drag-and-drop and,
+// via useCalendarWorkoutEditor, the create/edit panels.
+//
+// Mount this with key={weekStart} from the parent page: navigating
+// ?week=... is a normal Next.js navigation, and without a key change React
+// would otherwise reuse this client component's instance across weeks,
+// leaving stale local state (drag/edit state, the optimistic workoutsByDate
+// copy) from the previous week in place.
+export function WeekCalendar({
+  athleteId,
+  days,
+  workoutsByDate: initialWorkoutsByDate,
+  templates,
+  extraPresets,
+  today,
+  easyPaceSPerMi,
+  volumeUnitPreference,
+  weekPlan,
+}: {
+  athleteId: string;
+  days: string[];
+  workoutsByDate: Record<string, CalendarWorkout[]>;
+  templates: TemplateOption[];
+  extraPresets: ExtraPresetOption[];
+  today: string;
+  // Weekly Load's own reconciliation inputs -- see weekly-load.ts. Both
+  // coach-facing only: an athlete never sees this page's own footer.
+  easyPaceSPerMi: number | null;
+  volumeUnitPreference: "miles" | "minutes";
+  // The coach's own stated target for this week (WeekPlanEditor, rendered
+  // above the grid) -- shown again here so "did I plan close to target"
+  // never requires scrolling back up and holding two numbers in your head.
+  weekPlan: WeekPlanValues;
+}) {
+  const [workoutsByDate, setWorkoutsByDate] = useState(initialWorkoutsByDate);
+
+  // workoutsByDate is seeded once on mount and otherwise only touched by
+  // the optimistic drag/drop handler below -- router.refresh() (called
+  // after create/edit/delete/duplicate/move all succeed) re-runs the
+  // server page and gives this component fresh props, but by itself does
+  // NOT reset already-mounted client state, so without this the calendar
+  // would silently keep showing stale data (a deleted card staying
+  // visible, an edit not appearing) even though the mutation succeeded
+  // server-side. Resetting during render (React's documented pattern for
+  // "adjusting state when a prop changes") rather than in a useEffect
+  // avoids an extra commit and satisfies react-hooks/set-state-in-effect.
+  // initialWorkoutsByDate only gets a new object reference when the
+  // server actually re-rendered (i.e. exactly when a refresh happened),
+  // so this can't clobber an in-flight optimistic drag, which never calls
+  // router.refresh() itself.
+  const [syncedProps, setSyncedProps] = useState(initialWorkoutsByDate);
+  if (initialWorkoutsByDate !== syncedProps) {
+    setSyncedProps(initialWorkoutsByDate);
+    setWorkoutsByDate(initialWorkoutsByDate);
+  }
+
+  const [dragging, setDragging] = useState<{ workoutId: string; fromDate: string } | null>(null);
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null);
+  const [dragError, setDragError] = useState<string | null>(null);
+  const { openCreate, openEdit, editorModals } = useCalendarWorkoutEditor({ athleteId, templates, extraPresets });
+
+  function clearDrag() {
+    setDragging(null);
+    setDragOverDate(null);
+  }
+
+  function handleDrop(date: string) {
+    setDragOverDate(null);
+    if (!dragging) return;
+    const { workoutId, fromDate } = dragging;
+    setDragging(null);
+    if (fromDate === date) return;
+
+    const snapshot = workoutsByDate;
+    const moved = snapshot[fromDate]?.find((w) => w.id === workoutId);
+    if (!moved) return;
+
+    // Optimistic: move it in local state immediately, don't wait for the
+    // round trip -- waiting would make a direct-manipulation gesture feel
+    // broken. Reverted below if the write actually fails.
+    setWorkoutsByDate({
+      ...snapshot,
+      [fromDate]: (snapshot[fromDate] ?? []).filter((w) => w.id !== workoutId),
+      [date]: [...(snapshot[date] ?? []), { ...moved, scheduledDate: date }],
+    });
+    setDragError(null);
+
+    rescheduleWorkout(workoutId, athleteId, date).then((result) => {
+      if (result.error) {
+        setWorkoutsByDate(snapshot); // never silently leave a card in a column the write didn't reach
+        setDragError(result.error);
+      }
+    });
+  }
+
+  const allWorkouts = days.flatMap((d) => workoutsByDate[d] ?? []);
+  const publishedWorkouts = allWorkouts.filter((w) => w.publishedAt);
+  const completedCount = allWorkouts.filter((w) => w.status === "completed").length;
+
+  // Everything except cross-training counts toward mileage -- a
+  // duration-only non-XT day is estimated via the athlete's own easy pace;
+  // XT always stays separate, shown additively. See weekly-load.ts. Each
+  // entry's distance/duration is already the workout's EFFECTIVE value
+  // (a volume-percent day's own resolved figure, same merge every other
+  // surface on this calendar uses).
+  const weeklyLoadEntries: WeeklyLoadEntry[] = allWorkouts.map((w) => {
+    const effective = effectiveWorkoutVolume(w);
+    return {
+      dayLabel: w.dayLabel,
+      publishedAt: w.publishedAt,
+      distanceM: effective.distanceM,
+      durationS: effective.durationS,
+      actualDistanceM: w.completion?.actualDistanceM ?? null,
+      actualDurationS: w.completion?.actualDurationS ?? null,
+    };
+  });
+  const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, easyPaceSPerMi);
+  const { scheduledText, completedText } = formatWeeklyLoadText(weeklyLoad, volumeUnitPreference, easyPaceSPerMi);
+  const targetText = formatTargetVolume(weekPlan);
+
+  // Signed, not clamped to 0 -- completed exceeding scheduled is a real
+  // signal (an athlete running more than prescribed, an overtraining risk
+  // a coach should actually see), not the same thing as "exactly on
+  // target." "Remaining"/"Over" makes the direction explicit rather than
+  // leaving a bare, ambiguous "Difference" number.
+  const rawDifferenceM = weeklyLoad.scheduledMileageM - weeklyLoad.completedMileageM;
+  const differenceLabel = rawDifferenceM >= 0 ? "Remaining" : "Over";
+  const { scheduledText: differenceText } = formatWeeklyLoadText(
+    { scheduledMileageM: Math.abs(rawDifferenceM), scheduledXtDurationS: 0, completedMileageM: 0, completedXtDurationS: 0, estimatedCount: 0 },
+    volumeUnitPreference,
+    easyPaceSPerMi,
+  );
+
+  return (
+    <div>
+      <div className="overflow-x-auto">
+        <div className="grid min-w-[1100px] grid-cols-7 gap-2">
+          {days.map((date) => {
+            const isToday = date === today;
+            const isDragOver = dragOverDate === date;
+            return (
+              <div
+                key={date}
+                onDragOver={(e) => {
+                  if (!dragging) return;
+                  e.preventDefault();
+                  setDragOverDate(date);
+                }}
+                onDragLeave={() => setDragOverDate((d) => (d === date ? null : d))}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  handleDrop(date);
+                }}
+                className={`rounded-control border p-2 ${
+                  isDragOver
+                    ? "border-accent-tip ring-2 ring-accent-tip"
+                    : isToday
+                      ? "border-black/20 dark:border-white/20"
+                      : "border-black/10 dark:border-white/10"
+                }`}
+              >
+                <p className={`text-xs font-semibold tracking-wide uppercase ${isToday ? "text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400"}`}>
+                  {formatWeekday(date)}
+                </p>
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-500">{formatDate(date)}</p>
+
+                <div className="mt-2 space-y-2">
+                  {(workoutsByDate[date] ?? []).map((workout) => (
+                    <WorkoutCard
+                      key={workout.id}
+                      workout={workout}
+                      athleteId={athleteId}
+                      draggable={dragging === null || dragging.workoutId === workout.id}
+                      onDragStart={(workoutId, fromDate) => setDragging({ workoutId, fromDate })}
+                      onDragEnd={clearDrag}
+                      onEdit={() => openEdit(date, workout)}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => openCreate(date)}
+                  className="mt-2 w-full rounded-control border border-dashed border-black/15 py-1.5 text-xs font-semibold text-zinc-500 hover:border-black/30 hover:text-zinc-700 dark:border-white/15 dark:text-zinc-400 dark:hover:border-white/30 dark:hover:text-zinc-200"
+                >
+                  + Add
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {editorModals}
+
+      {dragError ? (
+        <div className="mt-3">
+          <FormError>{dragError}</FormError>
+        </div>
+      ) : null}
+
+      <div className="mt-6 rounded-control border border-black/10 p-4 dark:border-white/10">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Weekly Load</p>
+          {targetText ? (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Target: <span className="font-semibold text-zinc-700 dark:text-zinc-200">{targetText}</span>
+            </p>
+          ) : null}
+        </div>
+        <div className="mt-2 flex flex-wrap gap-x-8 gap-y-1 text-sm">
+          <p>
+            <span className="text-zinc-500 dark:text-zinc-400">Scheduled: </span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{scheduledText}</span>
+          </p>
+          <p>
+            <span className="text-zinc-500 dark:text-zinc-400">Completed: </span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{completedText}</span>
+          </p>
+          <p>
+            <span className="text-zinc-500 dark:text-zinc-400">{differenceLabel}: </span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{differenceText}</span>
+          </p>
+        </div>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          {completedCount} / {publishedWorkouts.length} workouts completed
+          {weeklyLoad.estimatedCount > 0
+            ? ` · ${weeklyLoad.estimatedCount} duration-only ${weeklyLoad.estimatedCount === 1 ? "day" : "days"} estimated from easy pace`
+            : ""}
+        </p>
+      </div>
+    </div>
+  );
+}

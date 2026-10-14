@@ -15,7 +15,7 @@ export {
 } from "@/lib/coaching-engine/adaptations";
 export { describePrescription, estimatedDurationRangeMin } from "@/lib/coaching-engine/describe-prescription";
 export { workoutPrescriptionSchema } from "@/lib/coaching-engine/types";
-export { CORE_PRINCIPLE, phaseSummary, trainingVoiceFor, workoutKindCoaching } from "@/lib/coaching-engine/coaching-copy";
+export { CORE_PRINCIPLE, phaseSummary, trainingVoiceFor, workoutKindCoaching, workoutTypeLabel } from "@/lib/coaching-engine/coaching-copy";
 export { generateCompletionFeedback } from "@/lib/coaching-engine/completion-feedback";
 export { summarizeWeek } from "@/lib/coaching-engine/weekly-summary";
 export { distanceBucket } from "@/lib/coaching-engine/distance-buckets";

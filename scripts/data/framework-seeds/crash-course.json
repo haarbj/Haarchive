@@ -1,0 +1,557 @@
+{
+  "program": "5k-crash-course",
+  "source": "Marathon Excellence web PDFs (marathonexcellence.com)",
+  "purpose": "Optional four-week effort-based introductory phase for athletes with no known fitness. Low-key sessions built to be robust against poor pacing and miscalibrated effort, so athletes can bootstrap their way to an initial fitness estimate before starting marathon training.",
+  "effort_guidelines": [
+    {
+      "effort": "Very easy",
+      "feels_like": "Relaxing recovery run"
+    },
+    {
+      "effort": "Easy",
+      "feels_like": "Normal training run"
+    },
+    {
+      "effort": "Moderate",
+      "feels_like": "An uptempo run with smooth, rhythmic breathing"
+    },
+    {
+      "effort": "Strong",
+      "feels_like": "Marathon to half marathon pace"
+    },
+    {
+      "effort": "Fast",
+      "feels_like": "About 5k pace"
+    },
+    {
+      "effort": "Very fast",
+      "feels_like": "About 3k / two-mile pace, ~5% faster than 5k pace"
+    }
+  ],
+  "levels": [
+    {
+      "level": "I",
+      "mileage": "25 mi/wk",
+      "metric_equivalent": "40 km/wk",
+      "workout_notes": "Warm up with 1 mi progressing from easy to moderate, then 4 x 25 sec strides. Cool down with 1 mi easy. Adjust easy run lengths as needed to hit the weekly mileage total; time-based workouts cover varying distance by pace.",
+      "weeks": [
+        {
+          "week": 1,
+          "weekly_mileage": "25 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "5 x 3 min cut-down from moderate to fast with 1 min walk",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "4 mi moderate + 4 strides",
+              "difficulty": "5/10"
+            },
+            {
+              "day": "T",
+              "workout": "Off",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "6 x 2 min fast with 1.5 min jog",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "S",
+              "workout": "7-8 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "weekly_mileage": "26 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "6 x 3 min cut-down from moderate to fast with 1 min walk",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "7 x 2 min fast, 1.5 min jog",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "T",
+              "workout": "3-4 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "4-5 mi easy + 4 strides",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "1 mi easy + 2 mi moderate + 2 mi strong",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "weekly_mileage": "27 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "8 x 2 min fast with 1.5 min jog",
+              "difficulty": "8/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "7 x 3 min cut-down from moderate to fast with 1 min walk",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "T",
+              "workout": "Off",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "5 mi moderate + 4 strides",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "S",
+              "workout": "8-9 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "weekly_mileage": "28 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "2 mi easy + 3 mi strong",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "8 x 1 min very fast with 1 min jog",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "3-4 mi very easy + 4 strides",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "5k race",
+              "difficulty": "10/10"
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        }
+      ],
+      "culminating_event": "Week-4 Saturday 5K race or time trial, run by effort — result becomes the athlete's initial 5K fitness estimate"
+    },
+    {
+      "level": "II",
+      "mileage": "32 mi/wk",
+      "metric_equivalent": "50 km/wk",
+      "workout_notes": "Warm up with 1.5 mi progressing from easy to moderate, then 4 x 25 sec strides at a fast but relaxed pace. Cool down with 1 mi easy. Adjust easy run lengths as needed to hit the weekly mileage total; time-based workouts cover varying distance by pace.",
+      "weeks": [
+        {
+          "week": 1,
+          "weekly_mileage": "32 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "6 x 3 min cut-down from moderate to fast with 1 min walk",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "1 mi easy + 4 mi moderate + 4 strides",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "7 x 2 min fast with 1.5 min jog",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "S",
+              "workout": "8-9 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "weekly_mileage": "33 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "7 x 3 min cut-down from moderate to fast with 1 min jog",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "8 x 2 min fast with 1.5 min jog",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "T",
+              "workout": "3-4 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "4-6 mi easy + 4 strides",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "1 mi easy + 1 mi moderate + 3 mi strong",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "weekly_mileage": "35 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "9 x 2 min fast with 1.5 min jog",
+              "difficulty": "8/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "8 x 3 min cut-down from moderate to fast with 1 min jog",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "T",
+              "workout": "3-5 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "1 mi easy + 5 mi moderate + 4 strides",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "S",
+              "workout": "9-10 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "weekly_mileage": "32 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "1 mi easy + 4 mi strong",
+              "difficulty": "8/10"
+            },
+            {
+              "day": "T",
+              "workout": "5-6 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "9 x 1 min very fast with 1 min jog",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "3-4 mi easy + 4 strides",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "5k race",
+              "difficulty": "10/10"
+            },
+            {
+              "day": "S",
+              "workout": "Off",
+              "difficulty": null
+            }
+          ]
+        }
+      ],
+      "culminating_event": "Week-4 Saturday 5K race or time trial, run by effort — result becomes the athlete's initial 5K fitness estimate"
+    },
+    {
+      "level": "III",
+      "mileage": "40 mi/wk",
+      "metric_equivalent": "65 km/wk",
+      "workout_notes": "Warm up with 1.5 mi progressing from easy to moderate, then 4 x 25 sec strides. Cool down with 1.5 mi easy. Adjust easy run lengths as needed to hit the weekly mileage total; time-based workouts cover varying distance by pace.",
+      "weeks": [
+        {
+          "week": 1,
+          "weekly_mileage": "40 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "7 x 3 min cut-down from moderate to fast with 1 min walk",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "1 mi easy + 4 mi moderate + 4 strides",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "T",
+              "workout": "5-6 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "8 x 2 min fast with 1.5 min jog",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "S",
+              "workout": "9-10 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "Off or 3-4 mi very easy",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 2,
+          "weekly_mileage": "40 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "8 x 3 min cut-down from moderate to fast with 1 min jog",
+              "difficulty": "7.5/10"
+            },
+            {
+              "day": "T",
+              "workout": "5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "9 x 2 min fast with 1.5 min jog",
+              "difficulty": "8/10"
+            },
+            {
+              "day": "T",
+              "workout": "4-6 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "6-7 mi easy + 4 strides",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "1 mi easy + 4 mi strong",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "S",
+              "workout": "5-6 mi very easy",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 3,
+          "weekly_mileage": "40 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "7 x 2.5 min fast with 1.5 min jog",
+              "difficulty": "8.5/10"
+            },
+            {
+              "day": "T",
+              "workout": "5 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "6 x 4 min cut-down from moderate to fast with 1 min jog",
+              "difficulty": "8/10"
+            },
+            {
+              "day": "T",
+              "workout": "3-4 mi very easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "1 mi easy + 5 mi moderate + 4 strides",
+              "difficulty": "6/10"
+            },
+            {
+              "day": "S",
+              "workout": "10-11 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "Off or 3-4 mi very easy",
+              "difficulty": null
+            }
+          ]
+        },
+        {
+          "week": 4,
+          "weekly_mileage": "40 mi",
+          "days": [
+            {
+              "day": "M",
+              "workout": "1 mi easy + 5 mi strong + 1 mi easy",
+              "difficulty": "8/10"
+            },
+            {
+              "day": "T",
+              "workout": "6-7 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "W",
+              "workout": "10 x 1 min very fast with 1 min jog",
+              "difficulty": "7/10"
+            },
+            {
+              "day": "T",
+              "workout": "6-7 mi easy",
+              "difficulty": null
+            },
+            {
+              "day": "F",
+              "workout": "4-5 mi very easy + 4 strides",
+              "difficulty": null
+            },
+            {
+              "day": "S",
+              "workout": "5k race",
+              "difficulty": "10/10"
+            },
+            {
+              "day": "S",
+              "workout": "Off or 3-5 mi very easy",
+              "difficulty": null
+            }
+          ]
+        }
+      ],
+      "culminating_event": "Week-4 Saturday 5K race or time trial, run by effort — result becomes the athlete's initial 5K fitness estimate"
+    }
+  ],
+  "metric_versions_available": [
+    "40 km/wk",
+    "50 km/wk",
+    "65 km/wk"
+  ]
+}
