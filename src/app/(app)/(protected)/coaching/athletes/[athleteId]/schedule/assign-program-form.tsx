@@ -15,6 +15,8 @@ import type { GeneratePhaseSelection, ResolvedProgramGeneration } from "@/lib/pr
 import type { PhaseLayoutProposal } from "@/lib/private-coaching/race-anchored-planning";
 import { checkRedemptionRaceGuardrail } from "./post-race-actions";
 import type { RedemptionGuardrail } from "@/lib/private-coaching/post-race";
+import { checkMileageMatch } from "./onboarding-actions";
+import type { MileageMatchResult } from "@/lib/private-coaching/onboarding";
 import { PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { raceDistanceMap } from "@/lib/race-distances";
 import { formatDate } from "@/lib/format";
@@ -127,6 +129,9 @@ export function AssignProgramForm({
   // buildup starts too soon after a marathon, and they assign anyway if
   // they judge that right.
   const [redemption, setRedemption] = useState<RedemptionGuardrail | null>(null);
+  // Part D item 8 / Part K item 31: whether this plan's starting mileage
+  // is a real stretch from the athlete's current running.
+  const [mileageMatch, setMileageMatch] = useState<MileageMatchResult | null>(null);
 
   useEffect(() => {
     // programs.length === 0 renders its own empty state below and never
@@ -321,6 +326,13 @@ export function AssignProgramForm({
         startDate: result.result.startDate,
       });
       setRedemption(guardrail.guardrail?.flagged ? guardrail.guardrail : null);
+
+      const mileage = await checkMileageMatch({
+        athleteId,
+        programId: program.id,
+        volumeVariantId: volumeVariantId || null,
+      });
+      setMileageMatch(mileage.result?.isStretch ? mileage.result : null);
     }
     setConfirmedWarnings(false);
   }
@@ -449,6 +461,16 @@ export function AssignProgramForm({
             at its limit is harder to recover from than starting a level below it.
           </span>
         </label>
+      ) : null}
+
+      {mileageMatch ? (
+        <div className="rounded-card border border-black/10 p-4 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+            Mileage check
+          </p>
+          <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-300">{mileageMatch.detail}</p>
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">This does not stop you assigning the plan.</p>
+        </div>
       ) : null}
 
       {redemption ? (

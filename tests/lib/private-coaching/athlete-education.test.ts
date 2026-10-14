@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import { ATHLETE_GUIDES, getAthleteGuide } from "@/lib/private-coaching/athlete-education";
 import { EFFORT_LEVELS, EFFORT_LEVEL_VALUES, effortLevelLabel } from "@/lib/private-coaching/effort-levels";
 import { WORKOUT_GLOSSARY } from "@/lib/private-coaching/workout-glossary";
+import { CRASH_COURSE_EFFORT_GUIDE } from "@/lib/private-coaching/onboarding";
 
 describe("ATHLETE_GUIDES", () => {
   it("has the four guides linked from the coaching surfaces, with unique slugs", () => {
@@ -63,5 +64,18 @@ describe("EFFORT_LEVELS", () => {
         EFFORT_LEVELS.every((level) => block.items.some((item) => String(item).startsWith(level.label))),
     );
     expect(listed).toBe(true);
+  });
+
+  // Part K item 33: the Crash Course's own effort table feeds this same
+  // guide as the beginner-friendly reference.
+  it("carries the Crash Course's effort table as a beginner-friendly reference in the same guide", () => {
+    const guide = getAthleteGuide("pacing-and-effort");
+    const text = (guide?.content ?? [])
+      .map((block) => ("text" in block ? String(block.text) : ""))
+      .join(" ");
+    for (const level of CRASH_COURSE_EFFORT_GUIDE) {
+      expect(text).toContain(level.effort);
+    }
+    expect(text).toMatch(/5K Crash Course uses/);
   });
 });

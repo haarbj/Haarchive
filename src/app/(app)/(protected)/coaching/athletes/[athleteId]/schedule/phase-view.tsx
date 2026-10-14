@@ -25,6 +25,7 @@ import { EstimateReviewPanel } from "./estimate-review-panel";
 import { MultiCyclePanel } from "./multi-cycle-panel";
 import { PostRacePanel } from "./post-race-panel";
 import { AdvancedTechniquesPanel } from "./advanced-techniques-panel";
+import { OnboardingPanel } from "./onboarding-panel";
 import { formatTargetVolume } from "./week-plan-editor";
 import { clearAllTraining } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -175,6 +176,11 @@ export function PhaseView({
           </div>
         ),
       )}
+
+      {/* Part K, coach-only. The most upstream concern of all of these:
+          whether a marathon plan should even be assigned yet. Renders
+          nothing once both prerequisites are met. */}
+      <OnboardingPanel athleteId={athleteId} />
 
       {/* Part H, coach-only. Fires once a goal race has passed and goes
           quiet after eight weeks, so it sits above the rest while live. */}

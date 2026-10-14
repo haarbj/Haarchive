@@ -19,6 +19,7 @@
 import type { ContentBlock } from "@/lib/sections";
 import { WORKOUT_GLOSSARY, GLOSSARY_PHASE_LABELS, GLOSSARY_PHASE_ORDER } from "./workout-glossary";
 import { EFFORT_LEVELS } from "./effort-levels";
+import { CRASH_COURSE_EFFORT_GUIDE } from "./onboarding";
 
 export type AthleteGuide = {
   slug: string;
@@ -168,6 +169,18 @@ const PACING_AND_EFFORT: ContentBlock[] = [
   {
     type: "paragraph",
     text: "These are the same labels as the effort field on your workout log, so logging one is a direct answer to the question your coach is actually asking.",
+  },
+  {
+    // Item 33. A simpler six-level table for anyone new to structured
+    // training, most often an athlete working through the 5K Crash
+    // Course before their first real fitness estimate exists. Kept
+    // alongside the main seven-level scale rather than instead of it: the
+    // two serve different moments, and an athlete who outgrows this one
+    // keeps reading the fuller scale above it.
+    type: "callout",
+    variant: "tip",
+    title: "New to structured training? A simpler version",
+    text: `${CRASH_COURSE_EFFORT_GUIDE.map((level) => `${level.effort}: ${level.feelsLike}.`).join(" ")} This is the scale the 5K Crash Course uses, and it is a fine substitute for the fuller one above until pacing by feel is itself familiar.`,
   },
 
   { type: "heading", text: "A compact map of the three domains" },
