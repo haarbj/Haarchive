@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 13, 2026](https://brodyhaar.com/release-notes)):** The five marathon frameworks and the 5K Crash Course are now assignable program templates
+**Latest update ([Oct 14, 2026](https://brodyhaar.com/release-notes)):** Heat Tracker recalibrated to marathon-performance research, with a new heat-acclimation toggle
 
 Recent highlights:
+- Race Pace Planner launched (Oct 14, 2026)
+- The five marathon frameworks and the 5K Crash Course are now assignable program templates (Oct 13, 2026)
 - Coached athletes now get the "why" behind each phase and each workout, plus a training education library (Oct 13, 2026)
-- Workout notifications now say "updated" instead of "assigned" on an edit, and cover moving or deleting a live workout (Oct 13, 2026)
-- Assigning a Program over an existing training block, and resyncing an assigned phase, both got real options (Oct 13, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
