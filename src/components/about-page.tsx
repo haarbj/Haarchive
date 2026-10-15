@@ -201,12 +201,28 @@ export function AboutPage() {
             psychology, philosophy, and practice of distance running, helping
             athletes learn not only how to train, but how to think about training.
           </p>
-          <a
-            href="#the-archive"
-            className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 underline decoration-black/20 underline-offset-4 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
-          >
-            Explore the archive <span aria-hidden="true">→</span>
-          </a>
+          {/* Two CTAs, not one -- the archive link alone sent every visitor
+              down the same editorial path regardless of why they actually
+              came, and the tools (the site's most differentiated, most
+              immediately useful asset) sat undiscoverable six sections
+              down the page unless someone scrolled the whole way. Tools
+              itself stays right where it is, well below the editorial
+              sections (see that section's own comment on why) -- this is
+              a direct entry point, not a reordering of the page. */}
+          <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+            <a
+              href="#the-archive"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 underline decoration-black/20 underline-offset-4 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Explore the archive <span aria-hidden="true">→</span>
+            </a>
+            <Link
+              href="/tools"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 underline decoration-black/20 underline-offset-4 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+            >
+              Try the calculators <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </div>
 
         {/* Four Pillars -- a major brand moment, not four small columns:
@@ -666,10 +682,16 @@ export function AboutPage() {
         </section>
 
         {/* Tools -- an extension of the archive, not the reason it exists,
-            so this sits well below the editorial/philosophy sections
-            rather than second on the page. Leads with the tools themselves;
-            the account/privacy explanation stays, but as the secondary
-            paragraph, not the opening one. */}
+            so this section itself stays well below the editorial/
+            philosophy sections rather than second on the page. The tools
+            being the site's single most differentiated, most immediately
+            useful asset was getting buried by that position, though --
+            addressed with a direct "Try the calculators" CTA in the hero
+            (see above) rather than by moving this section, so the
+            editorial sequencing stays intact and a visitor who does want
+            the tools first never has to scroll for them. Leads with the
+            tools themselves; the account/privacy explanation stays, but
+            as the secondary paragraph, not the opening one. */}
         <section className="mt-20 border-t border-black/10 pt-16 dark:border-white/10">
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-zinc-500">
             Tools
@@ -697,11 +719,14 @@ export function AboutPage() {
               anywhere; it stays in your browser.
             </p>
             <p>
-              Creating a free account, with an email and password or by signing
-              in with Google, unlocks a dashboard: track a goal race, log recent
-              results, and keep calculator results saved across visits instead
-              of losing them when you close the tab. You can also connect a
-              Strava account to link your training data.
+              Nothing a guest enters is kept -- close the tab, and your last 5K
+              time is gone until you type it in again. A free account (email
+              and password, or Google sign-in) fixes that: it keeps a running
+              history of your race results, so you can see whether you&rsquo;re
+              actually getting faster instead of comparing one number to your
+              memory of the last one, and it keeps calculator results saved
+              between visits. You can also connect a Strava account to link
+              your training data automatically.
             </p>
             <p>
               When you sign in with Google, we only ever request your name,
