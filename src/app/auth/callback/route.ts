@@ -4,6 +4,7 @@ import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { notifyAdmins } from "@/lib/notifications/create-notification";
 import { recordConversionEvent } from "@/app/conversion-actions";
+import { safeRedirectPath } from "@/lib/auth/safe-redirect";
 
 // This route handles both a brand-new OAuth signup/email-confirmation
 // completion and a returning user's OAuth sign-in -- Supabase's code
@@ -25,7 +26,7 @@ import { recordConversionEvent } from "@/app/conversion-actions";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  const next = safeRedirectPath(searchParams.get("next"), "/dashboard");
 
   if (code) {
     const supabase = await createClient();
@@ -33,7 +34,14 @@ export async function GET(request: Request) {
     if (!error) {
       const { data } = await supabase.auth.getUser();
       const user = data.user;
-      if (user?.id) {
+      // A password-reset code exchange (see auth-actions.ts's
+      // requestPasswordReset -- redirectTo carries this exact `next`) is
+      // neither a signup nor a first sign-in for an EXISTING account, and
+      // must never fire the "New signup" admin notification / account_created
+      // conversion event below just because that account happens to predate
+      // this notification system (no prior user_signed_up row to match on).
+      const isPasswordReset = next === "/reset-password";
+      if (user?.id && !isPasswordReset) {
         const admin = createServiceRoleClient();
         const { data: existing } = await admin
           .from("notifications")

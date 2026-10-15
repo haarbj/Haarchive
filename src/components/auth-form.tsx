@@ -22,6 +22,7 @@ type AuthFormProps = {
   footer: ReactNode;
   defaultEmail?: string;
   emailReadOnly?: boolean;
+  next?: string;
 };
 
 export function AuthForm({
@@ -33,11 +34,13 @@ export function AuthForm({
   footer,
   defaultEmail,
   emailReadOnly,
+  next,
 }: AuthFormProps) {
   const [state, formAction, isPending] = useActionState(action, {});
 
   return (
     <form action={formAction} className="space-y-5">
+      {next && <input type="hidden" name="next" value={next} />}
       <div>
         <label htmlFor="email" className={labelClass}>
           Email

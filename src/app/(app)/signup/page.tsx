@@ -8,6 +8,7 @@ import { GoogleSignInButton } from "@/components/oauth-buttons";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { FormError } from "@/components/ui/form-error";
+import { safeRedirectPath } from "@/lib/auth/safe-redirect";
 
 export const metadata: Metadata = {
   title: "Sign up",
@@ -15,12 +16,13 @@ export const metadata: Metadata = {
 };
 
 type SignupPageProps = {
-  searchParams: Promise<{ invite?: string }>;
+  searchParams: Promise<{ invite?: string; next?: string }>;
 };
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
-  const { invite: inviteToken } = await searchParams;
+  const { invite: inviteToken, next: nextParam } = await searchParams;
   const invite = inviteToken ? await resolveInvite(inviteToken) : null;
+  const next = nextParam ? safeRedirectPath(nextParam, "/dashboard") : undefined;
 
   return (
     <Container variant="auth">
@@ -37,7 +39,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
       )}
 
       <div className="mt-8">
-        <GoogleSignInButton />
+        <GoogleSignInButton next={next} />
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-black/10 dark:bg-white/10" />
@@ -55,11 +57,12 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
           passwordMinLength={8}
           defaultEmail={invite?.email}
           emailReadOnly={!!invite}
+          next={next}
           footer={
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
               Already have an account?{" "}
               <Link
-                href="/login"
+                href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
                 className="font-semibold text-zinc-900 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/30 dark:hover:decoration-white"
               >
                 Sign in

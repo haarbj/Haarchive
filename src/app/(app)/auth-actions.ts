@@ -1,11 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 import { createClient } from "@/lib/db/server";
 import { notifyAdmins } from "@/lib/notifications/create-notification";
 import { recordConversionEvent } from "@/app/conversion-actions";
-import { signInSchema, signUpSchema } from "@/lib/validation/auth";
+import { signInSchema, signUpSchema, forgotPasswordSchema, resetPasswordSchema } from "@/lib/validation/auth";
+import { safeRedirectPath } from "@/lib/auth/safe-redirect";
 
 export type AuthActionState = {
   error?: string;
@@ -23,6 +25,7 @@ export async function signUp(
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
+  const next = safeRedirectPath(formData.get("next") as string | null, "/dashboard");
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp(parsed.data);
@@ -57,7 +60,7 @@ export async function signUp(
   });
   await recordConversionEvent("account_created", "learning_progress", { method: "email" });
 
-  redirect("/dashboard");
+  redirect(next);
 }
 
 export async function signIn(
@@ -71,6 +74,7 @@ export async function signIn(
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
+  const next = safeRedirectPath(formData.get("next") as string | null, "/dashboard");
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
@@ -78,11 +82,64 @@ export async function signIn(
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  redirect(next);
 }
 
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
+}
+
+// Deliberately returns the same generic message whether or not the email
+// actually has an account -- Supabase's own resetPasswordForEmail already
+// doesn't reveal account existence via its error, and this action doesn't
+// add a check that would (never leak "no account for that email" from a
+// public, unauthenticated form). The reset link itself carries a Supabase
+// recovery code, exchanged by the existing /auth/callback route (same
+// exchangeCodeForSession call OAuth/email-confirmation already use) --
+// landing the user on /reset-password with a short-lived authenticated
+// session, not a separate token-handling path of its own.
+export async function requestPasswordReset(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = forgotPasswordSchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const origin = (await headers()).get("origin") ?? "";
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+  });
+
+  return { message: "If an account exists for that email, we've sent a link to reset your password." };
+}
+
+// Only reachable with a valid (recovery) session already established by
+// /auth/callback -- updateUser fails on its own if there isn't one, and
+// the /reset-password page itself also redirects out before this can be
+// submitted without a session, so this isn't the only guard, just the
+// authoritative one.
+export async function updatePassword(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = resetPasswordSchema.safeParse({
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    return { error: error.message };
+  }
+
+  redirect("/dashboard");
 }

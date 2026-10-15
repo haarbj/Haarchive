@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/db/client";
 import { recordConversionEvent } from "@/app/conversion-actions";
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({ next }: { next?: string } = {}) {
   const pathname = usePathname();
 
   async function handleClick() {
@@ -20,11 +20,14 @@ export function GoogleSignInButton() {
     // `metadata.page` at least preserves which page it was clicked from.
     recordConversionEvent("google_signup_clicked", "learning_progress", { page: pathname });
 
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    if (next) callbackUrl.searchParams.set("next", next);
+
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
       },
     });
   }

@@ -6,13 +6,21 @@ import { AuthForm } from "@/components/auth-form";
 import { GoogleSignInButton } from "@/components/oauth-buttons";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { safeRedirectPath } from "@/lib/auth/safe-redirect";
 
 export const metadata: Metadata = {
   title: "Sign in",
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{ next?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { next: nextParam } = await searchParams;
+  const next = nextParam ? safeRedirectPath(nextParam, "/dashboard") : undefined;
+
   return (
     <Container variant="auth">
       <Heading variant="compact">
@@ -24,7 +32,7 @@ export default function LoginPage() {
       </p>
 
       <div className="mt-8">
-        <GoogleSignInButton />
+        <GoogleSignInButton next={next} />
 
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-black/10 dark:bg-white/10" />
@@ -39,14 +47,22 @@ export default function LoginPage() {
           submitLabel="Sign in"
           pendingLabel="Signing in…"
           passwordAutoComplete="current-password"
+          next={next}
           footer={
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
               Need an account?{" "}
               <Link
-                href="/signup"
+                href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"}
                 className="font-semibold text-zinc-900 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/30 dark:hover:decoration-white"
               >
                 Sign up
+              </Link>
+              <br />
+              <Link
+                href="/forgot-password"
+                className="font-semibold text-zinc-900 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/30 dark:hover:decoration-white"
+              >
+                Forgot password?
               </Link>
             </p>
           }
