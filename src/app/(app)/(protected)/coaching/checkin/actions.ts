@@ -62,6 +62,24 @@ export async function submitCoachingCheckin(
   // Must match checkin/page.tsx's own computation exactly, or the form
   // would display one week while this writes a different one.
   const weekStart = mostRecentCompletedMonday(new Date());
+
+  // Read before the upsert below -- same reasoning as completion-actions.ts's
+  // isFirstCompletion/isNewlyReportedPain: this upsert also handles editing
+  // an already-submitted check-in for the week (onConflict: "user_id,week_start"),
+  // so it can't unconditionally notify the coach on every submit. That used
+  // to re-fire "X submitted a check-in" (and, if pain was already flagged,
+  // "X reported pain") on every edit -- caught live on staging. Only notify
+  // for what's actually new: a first-time submission for the week, or pain
+  // reported for the first time this week.
+  const { data: existingCheckin } = await supabase
+    .from("weekly_checkins")
+    .select("id, pain")
+    .eq("user_id", session.userId)
+    .eq("week_start", weekStart)
+    .maybeSingle<{ id: string; pain: boolean }>();
+  const isFirstSubmission = !existingCheckin;
+  const isNewlyReportedPain = (parsed.data.pain ?? false) && !(existingCheckin?.pain ?? false);
+
   const { error } = await supabase.from("weekly_checkins").upsert(
     {
       user_id: session.userId,
@@ -102,13 +120,15 @@ export async function submitCoachingCheckin(
       .maybeSingle<{ display_name: string }>();
     const athleteName = athleteProfile?.display_name ?? "An athlete";
 
-    await createNotification({
-      userId: relationship.coach_id,
-      type: "checkin_submitted",
-      content: `${athleteName} submitted a check-in for the week of ${weekStart}`,
-      relatedEntityId: session.userId,
-    });
-    if (parsed.data.pain) {
+    if (isFirstSubmission) {
+      await createNotification({
+        userId: relationship.coach_id,
+        type: "checkin_submitted",
+        content: `${athleteName} submitted a check-in for the week of ${weekStart}`,
+        relatedEntityId: session.userId,
+      });
+    }
+    if (isNewlyReportedPain) {
       await createNotification({
         userId: relationship.coach_id,
         type: "pain_reported",

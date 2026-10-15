@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-15",
+    headline: "Notification fixes: no more duplicate check-in alerts, program assignments now notify",
+    detail:
+      "A coach was getting a fresh \"X submitted a check-in\" (and, if pain was flagged, a second \"X reported pain\") every time an athlete edited an already-submitted weekly check-in, not just the first submission -- caught live on staging and fixed to only notify on what's actually new. Assigning a program to an athlete now also sends them a real notification that their schedule changed, which it previously didn't.",
+  },
+  {
+    date: "2026-10-15",
     headline: "Strength training scheduled into assigned programs",
     detail:
       "A coach assigning a program can now attach a real strength-training routine, and it's scheduled onto the athlete's actual calendar rather than noted as a side recommendation. Placement is purely additive: it only attaches to easy-run days the program already scheduled, so a long run, threshold day, or interval session is never touched or displaced.",

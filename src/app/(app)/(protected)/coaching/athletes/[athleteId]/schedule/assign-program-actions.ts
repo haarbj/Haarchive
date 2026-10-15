@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
+import { createNotification } from "@/lib/notifications/create-notification";
 import {
   resolveProgramGeneration,
   type GenerateProgramAnchor,
@@ -716,6 +717,25 @@ export async function assignProgramToAthlete(
     entity_type: "training_programs",
     entity_id: input.programId,
     metadata: { athleteId: input.athleteId, variantId: input.variantId, ...data },
+  });
+
+  // One summary notification for the whole assignment, not one per workout --
+  // the RPC above writes every scheduled_workouts row directly rather than
+  // going through saveScheduledWorkout, so nothing else notifies the athlete
+  // that a program landed on their calendar at all. Fired once here
+  // regardless of how many days/weeks it created.
+  const { data: program } = await supabase
+    .from("training_programs")
+    .select("name")
+    .eq("id", input.programId)
+    .maybeSingle<{ name: string }>();
+  await createNotification({
+    userId: input.athleteId,
+    type: "program_assigned",
+    content: program?.name
+      ? `Your coach assigned "${program.name}" to your schedule`
+      : "Your coach assigned a new training block to your schedule",
+    relatedEntityId: input.athleteId,
   });
 
   revalidatePath(`/coaching/athletes/${input.athleteId}/schedule`);

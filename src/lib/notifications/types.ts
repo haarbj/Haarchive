@@ -30,4 +30,9 @@ export type NotificationType =
   // when the coach sends the post-season review, submitted to the coach
   // when the athlete finishes it.
   | "post_season_review_sent"
-  | "post_season_review_submitted";
+  | "post_season_review_submitted"
+  // Fired once per assignProgramToAthlete call, regardless of how many
+  // days/weeks it created -- that RPC writes scheduled_workouts rows
+  // directly rather than through saveScheduledWorkout, so nothing else
+  // notifies the athlete that a program landed on their calendar at all.
+  | "program_assigned";

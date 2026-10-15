@@ -69,6 +69,15 @@ export function notificationHref(type: NotificationType, relatedEntityId: string
     // shows the structured answers.
     return relatedEntityId ? `/coaching/athletes/${relatedEntityId}/schedule` : "/coaching";
   }
+  if (type === "program_assigned") {
+    // Recipient is the athlete themselves (see assignProgramToAthlete),
+    // and relatedEntityId is their own user id -- not useful as a path
+    // segment here since the coach-only /coaching/athletes/[athleteId]/
+    // schedule route would just redirect them away (requireCoachOf-gated).
+    // /coaching/training is the athlete-facing equivalent, where the newly
+    // assigned phase actually shows.
+    return "/coaching/training";
+  }
   if (type === "pain_reported" || type === "race_approaching") {
     // pain_reported is fired from two different places with two different
     // relatedEntityId shapes (checkin/actions.ts passes the athlete's user
