@@ -118,14 +118,73 @@ export async function syncStravaActivities(_prevState: SyncStravaState): Promise
       groupWorkout = groupWorkouts?.[0];
     }
 
-    if (!workout && !groupWorkout) continue;
+    if (workout || groupWorkout) {
+      const { error } = await supabase.from("workout_completions").insert({
+        ...(workout ? { workout_id: workout.id } : { group_plan_workout_id: groupWorkout!.id }),
+        user_id: userId,
+        ...mapToWorkoutCompletion(activity),
+      });
+      if (!error) syncedCount += 1;
+      continue;
+    }
 
-    const { error } = await supabase.from("workout_completions").insert({
-      ...(workout ? { workout_id: workout.id } : { group_plan_workout_id: groupWorkout!.id }),
-      user_id: userId,
-      ...mapToWorkoutCompletion(activity),
-    });
-    if (!error) syncedCount += 1;
+    // Private coaching (Phase 8): a third, independent pipeline from the
+    // two above (see the Phase 1 migration -- scheduled_workouts is
+    // deliberately decoupled from both workouts and group_plan_workouts).
+    // Reuses this same sync/token/matching machinery rather than a
+    // separate Strava integration -- the abstraction the product brief
+    // asks for already exists one level up, at connected_accounts.provider
+    // (garmin/strava/coros/apple_health); a real Garmin provider would
+    // plug in here as its own fetch+map module without touching this
+    // matching logic's shape, just what feeds it.
+    const { data: privateCoachingWorkouts } = await supabase
+      .from("scheduled_workouts")
+      .select("id")
+      .eq("athlete_id", userId)
+      .eq("scheduled_date", date)
+      .not("published_at", "is", null)
+      .limit(1);
+    const privateCoachingWorkout = privateCoachingWorkouts?.[0];
+    if (!privateCoachingWorkout) continue;
+
+    const { data: existingCompletion } = await supabase
+      .from("completed_workouts")
+      .select("id")
+      .eq("scheduled_workout_id", privateCoachingWorkout.id)
+      .limit(1);
+    if (existingCompletion && existingCompletion.length > 0) continue;
+
+    // Deliberately does NOT write to completed_workouts (and so is never
+    // visible to the coach, who can only ever see completed_workouts rows)
+    // -- a Strava match only ever suggests data. It lands in
+    // strava_pending_matches for the athlete to review and explicitly
+    // approve (or dismiss) on the workout's own page; see
+    // completion-actions.ts's approveStravaMatch/dismissStravaMatch.
+    // Upserted (not inserted) so a re-sync before the athlete has acted
+    // just refreshes an existing candidate's own data rather than erroring.
+    // Keyed on (workout, activity) rather than workout alone -- two runs on
+    // the same day both matching the same scheduled workout used to
+    // collapse into a single row here (whichever activity this loop
+    // processed last silently overwrote the other's data before the
+    // athlete ever saw it); each distinct activity now gets to coexist as
+    // its own real candidate. dismissed_at is deliberately never part of
+    // this payload, so ON CONFLICT DO UPDATE never resurrects a candidate
+    // the athlete already said "not this one" to.
+    const mapped = mapToWorkoutCompletion(activity);
+    const { error: pendingError } = await supabase.from("strava_pending_matches").upsert(
+      {
+        scheduled_workout_id: privateCoachingWorkout.id,
+        athlete_id: userId,
+        strava_activity_id: mapped.strava_activity_id,
+        activity_name: activity.name,
+        activity_distance_m: mapped.actual_distance_m,
+        activity_duration_s: mapped.actual_time_s,
+        activity_avg_hr: mapped.avg_hr,
+        activity_started_at: activity.start_date_local,
+      },
+      { onConflict: "scheduled_workout_id,strava_activity_id" },
+    );
+    if (!pendingError) syncedCount += 1;
   }
 
   await supabase
