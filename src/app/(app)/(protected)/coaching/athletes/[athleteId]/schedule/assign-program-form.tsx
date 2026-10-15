@@ -12,11 +12,12 @@ import {
   type OverlappingPhase,
 } from "./assign-program-actions";
 import type { GeneratePhaseSelection, ResolvedProgramGeneration } from "@/lib/private-coaching/program-generation";
-import type { PhaseLayoutProposal } from "@/lib/private-coaching/race-anchored-planning";
+import { type PhaseLayoutProposal, weeksAvailableBetween } from "@/lib/private-coaching/race-anchored-planning";
 import { checkRedemptionRaceGuardrail } from "./post-race-actions";
 import type { RedemptionGuardrail } from "@/lib/private-coaching/post-race";
 import { checkMileageMatch } from "./onboarding-actions";
 import type { MileageMatchResult } from "@/lib/private-coaching/onboarding";
+import { durationSelectionGuidance, type DurationGuidance } from "@/lib/private-coaching/plan-selection-guidance";
 import { PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { raceDistanceMap } from "@/lib/race-distances";
 import { formatDate } from "@/lib/format";
@@ -132,6 +133,10 @@ export function AssignProgramForm({
   // Part D item 8 / Part K item 31: whether this plan's starting mileage
   // is a real stretch from the athlete's current running.
   const [mileageMatch, setMileageMatch] = useState<MileageMatchResult | null>(null);
+  // Part D item 9: whether the weeks until race day match a standard
+  // layout, and if not, what to do about it. Pure and DB-free, so computed
+  // straight from the preview's own start date rather than a server action.
+  const [durationGuidance, setDurationGuidance] = useState<DurationGuidance | null>(null);
 
   useEffect(() => {
     // programs.length === 0 renders its own empty state below and never
@@ -333,6 +338,16 @@ export function AssignProgramForm({
         volumeVariantId: volumeVariantId || null,
       });
       setMileageMatch(mileage.result?.isStretch ? mileage.result : null);
+
+      if (targetEventDateInput) {
+        const { weeks } = weeksAvailableBetween(result.result.startDate, targetEventDateInput);
+        const guidance = durationSelectionGuidance(weeks);
+        setDurationGuidance(guidance.flagged ? guidance : null);
+      } else {
+        setDurationGuidance(null);
+      }
+    } else {
+      setDurationGuidance(null);
     }
     setConfirmedWarnings(false);
   }
@@ -469,6 +484,24 @@ export function AssignProgramForm({
             Mileage check
           </p>
           <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-300">{mileageMatch.detail}</p>
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">This does not stop you assigning the plan.</p>
+        </div>
+      ) : null}
+
+      {durationGuidance ? (
+        <div className="rounded-card border border-black/10 p-4 dark:border-white/10">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+            Plan length
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-zinc-900 dark:text-white">{durationGuidance.title}</p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{durationGuidance.detail}</p>
+          <ul className="mt-1.5 list-disc space-y-1 pl-5">
+            {durationGuidance.actions.map((action) => (
+              <li key={action} className="text-sm text-zinc-600 dark:text-zinc-300">
+                {action}
+              </li>
+            ))}
+          </ul>
           <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">This does not stop you assigning the plan.</p>
         </div>
       ) : null}

@@ -5,15 +5,16 @@
 //
 // ONE ITEM BUILT HERE THAT BELONGS TO PART D. The mileage-match check
 // (originally Part D item 8) was never implemented as its own function --
-// Part D's items 7-10 were not built as a separate deliverable, and only
-// the phase-layout tool (Part A, which doubles as a rough tier
-// recommender via selectPhaseProfile) exists from that part. Part K's own
-// item 31 explicitly needs the mileage-match check ("don't start barely
-// hanging on," linking Part D's check), so it is built here, as a plain,
-// reusable function, rather than left as a dangling reference to
+// Part D's items 7-10 were not built as a single deliverable, and for a
+// while only the phase-layout tool (Part A, which doubles as a rough tier
+// recommender via selectPhaseProfile) existed from that part. Part K's
+// own item 31 explicitly needs the mileage-match check ("don't start
+// barely hanging on," linking Part D's check), so it is built here, as a
+// plain, reusable function, rather than left as a dangling reference to
 // something that does not exist. Part D items 9 and 10 (nonstandard
-// durations, risk-framing copy) remain unbuilt; see the session's own
-// report rather than this file for that status.
+// durations, risk-framing copy) have since been built in
+// plan-selection-guidance.ts, alongside this one but as their own module
+// rather than folded into Part K's file.
 
 export const MARATHON_READINESS_MILEAGE = 25;
 
