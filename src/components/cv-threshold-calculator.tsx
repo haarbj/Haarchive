@@ -8,11 +8,13 @@ import { FitnessModelComparisonNote } from "@/components/fitness-model-compariso
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import {
-  type CvThresholdModel,
+  type CvPiecesModel,
   type EstimateMode,
-  isWithinModelDomain,
+  extrapolationNote,
   predictSpeeds,
+  type RangeLevel,
   selectTrainingPaces,
+  speedInModelRange,
   uncertaintyRangeMS,
 } from "@/lib/cv-threshold-math";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -58,33 +60,33 @@ const DISTANCE_OPTIONS: DistanceOption[] = [
 
 const CUSTOM_UNIT_METERS: Record<CustomUnit, number> = { m: 1, mi: 1609.344, km: 1000 };
 const OUTPUT_UNITS: PaceUnit[] = ["mi", "km", "400m", "200m"];
-const MODEL_URL = "/data/cv-threshold-model.json";
+const MODEL_URL = "/data/cv-threshold-pieces-v2026-09-05.json";
 const STORAGE_KEY = "haarchive-cv-threshold-calculator-state";
+const RANGE_OPTIONS: (RangeLevel | "off")[] = [80, 90, 95, "off"];
 
 type PersistedState = {
   distanceKey: DistanceKey;
   customInput: string;
   customUnit: CustomUnit;
   timeInput: string;
-  ageInput: string;
   mode: EstimateMode;
-  showUncertainty: boolean;
+  rangeLevel: RangeLevel | "off";
   outputUnit: PaceUnit;
   showMethodology: boolean;
 };
 
-// Fetched once and cached at module scope -- 693KB of pre-fit model
+// Fetched once and cached at module scope -- 210KB of pre-fit spline
 // coefficients has no reason to ever be re-requested within a session, and
 // keeping it out of the component's own static imports means it's never
 // bundled into the shared client JS every other page on the site would
 // otherwise pay for (this tool lives behind the same catch-all route as
 // every other Foundations section).
-let modelPromise: Promise<CvThresholdModel> | null = null;
-function loadModel(): Promise<CvThresholdModel> {
+let modelPromise: Promise<CvPiecesModel> | null = null;
+function loadModel(): Promise<CvPiecesModel> {
   if (!modelPromise) {
     modelPromise = fetch(MODEL_URL).then((res) => {
       if (!res.ok) throw new Error(`Failed to load model data (${res.status})`);
-      return res.json() as Promise<CvThresholdModel>;
+      return res.json() as Promise<CvPiecesModel>;
     });
   }
   return modelPromise;
@@ -100,6 +102,7 @@ type PaceRowProps = {
   paceSeconds: number;
   unit: PaceUnit;
   rangeSeconds?: { fastSeconds: number; slowSeconds: number };
+  rangeLevel: RangeLevel;
   learnMoreHref: string;
   // Threshold and VO2max shift in OPPOSITE directions under "safe estimate"
   // mode (threshold gets slower, VO2max gets faster) -- without calling
@@ -110,7 +113,7 @@ type PaceRowProps = {
   safeModeNote?: string;
 };
 
-function PaceRow({ label, description, paceSeconds, unit, rangeSeconds, learnMoreHref, safeModeNote }: PaceRowProps) {
+function PaceRow({ label, description, paceSeconds, unit, rangeSeconds, rangeLevel, learnMoreHref, safeModeNote }: PaceRowProps) {
   return (
     <div className={statCardClass}>
       <p className={statLabelClass}>{label}</p>
@@ -120,7 +123,7 @@ function PaceRow({ label, description, paceSeconds, unit, rangeSeconds, learnMor
       </p>
       {rangeSeconds && (
         <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-          90% range: {formatPaceOutput(rangeSeconds.fastSeconds, unit)}–{formatPaceOutput(rangeSeconds.slowSeconds, unit)}
+          {rangeLevel}% range: {formatPaceOutput(rangeSeconds.fastSeconds, unit)}–{formatPaceOutput(rangeSeconds.slowSeconds, unit)}
           {PACE_UNIT_LABEL[unit]}
         </p>
       )}
@@ -137,17 +140,18 @@ function PaceRow({ label, description, paceSeconds, unit, rangeSeconds, learnMor
 
 // Threshold, CV, and VO2max training paces predicted from a single race
 // performance -- adapted from John Davis's cv-threshold-calculator
-// (github.com/johnjdavisiv/cv-threshold-calculator, MIT licensed). Unlike a
-// formula-based pace calculator, this is a statistical model fit on ~8,600
-// real race performances (see lib/cv-threshold-math.ts), which is why it
-// returns a percentile range rather than one number -- two runners with an
-// identical race time genuinely can have different threshold/CV/VO2max
-// paces depending on their aerobic/anaerobic orientation.
+// (github.com/johnjdavisiv/cv-threshold-calculator, MIT licensed). This is
+// the v2 (2026-09-05) model: a sinh-arcsinh distributional GAM fit on
+// 613,889 real race performances (see lib/cv-threshold-math.ts for the
+// full model description), which is why it returns a percentile range
+// rather than one number -- two runners with an identical race time
+// genuinely can have different threshold/CV/VO2max paces depending on
+// their aerobic/anaerobic orientation.
 export function CvThresholdCalculator() {
   const baseId = useId();
   const persisted = usePersistedJSON<PersistedState>(STORAGE_KEY);
 
-  const [model, setModel] = useState<CvThresholdModel | null>(null);
+  const [model, setModel] = useState<CvPiecesModel | null>(null);
   const [modelError, setModelError] = useState(false);
 
   useEffect(() => {
@@ -160,9 +164,8 @@ export function CvThresholdCalculator() {
   const [customInput, setCustomInput] = usePersistedField(persisted?.customInput, "5000");
   const [customUnit, setCustomUnit] = usePersistedField<CustomUnit>(persisted?.customUnit, "m");
   const [timeInput, setTimeInput] = usePersistedField(persisted?.timeInput, "18:00");
-  const [ageInput, setAgeInput] = usePersistedField(persisted?.ageInput, "25");
   const [mode, setMode] = usePersistedField<EstimateMode>(persisted?.mode, "safe");
-  const [showUncertainty, setShowUncertainty] = usePersistedField(persisted?.showUncertainty, true);
+  const [rangeLevel, setRangeLevel] = usePersistedField<RangeLevel | "off">(persisted?.rangeLevel, 90);
   const [outputUnit, setOutputUnit] = usePersistedField<PaceUnit>(persisted?.outputUnit, "mi");
   const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
 
@@ -173,9 +176,8 @@ export function CvThresholdCalculator() {
         customInput,
         customUnit,
         timeInput,
-        ageInput,
         mode,
-        showUncertainty,
+        rangeLevel,
         outputUnit,
         showMethodology,
       };
@@ -183,22 +185,23 @@ export function CvThresholdCalculator() {
     } catch {
       // Ignore unavailable storage (e.g. private browsing).
     }
-  }, [distanceKey, customInput, customUnit, timeInput, ageInput, mode, showUncertainty, outputUnit, showMethodology]);
+  }, [distanceKey, customInput, customUnit, timeInput, mode, rangeLevel, outputUnit, showMethodology]);
 
   const distanceOption = DISTANCE_OPTIONS.find((d) => d.key === distanceKey);
   const customMeters = Number(customInput) * CUSTOM_UNIT_METERS[customUnit];
   const customValid = customInput.trim() !== "" && Number.isFinite(customMeters) && customMeters > 0;
   const distanceMeters = distanceKey === "custom" ? (customValid ? customMeters : null) : (distanceOption?.meters ?? null);
+  const distanceLabel = distanceKey === "custom" ? `${customInput}${customUnit}` : (distanceOption?.label ?? "");
 
   const timeSeconds = parseTimeToSeconds(timeInput);
-  const ageRaw = Number(ageInput);
-  const ageValid = ageInput.trim() !== "" && Number.isFinite(ageRaw) && ageRaw > 0;
 
-  const canPredict = model !== null && distanceMeters !== null && timeSeconds !== null && ageValid;
-  const prediction = canPredict ? predictSpeeds(model, distanceMeters, timeSeconds, ageRaw) : null;
-  const inDomain = canPredict ? isWithinModelDomain(model, distanceMeters, timeSeconds, ageRaw) : true;
+  const raceSpeedMS = distanceMeters !== null && timeSeconds !== null && timeSeconds > 0 ? distanceMeters / timeSeconds : null;
+  const canPredict = model !== null && raceSpeedMS !== null && speedInModelRange(raceSpeedMS);
+  const prediction = canPredict ? predictSpeeds(model, distanceMeters!, timeSeconds!) : null;
+  const note = canPredict ? extrapolationNote(model, distanceMeters!, timeSeconds!, distanceLabel) : null;
   const paces = prediction ? selectTrainingPaces(prediction, mode) : null;
-  const ranges = prediction ? uncertaintyRangeMS(prediction) : null;
+  const effectiveRangeLevel: RangeLevel = rangeLevel === "off" ? 90 : rangeLevel;
+  const ranges = prediction ? uncertaintyRangeMS(prediction, effectiveRangeLevel) : null;
 
   return (
     <div className="mt-10 space-y-10">
@@ -259,32 +262,20 @@ export function CvThresholdCalculator() {
             </div>
           )}
 
-          <div className="flex flex-wrap gap-6">
-            <div>
-              <LabeledInput
-                id={`${baseId}-time`}
-                label="Finish time"
-                type="text"
-                value={timeInput}
-                onChange={(event) => setTimeInput(event.target.value)}
-                placeholder="mm:ss"
-                autoComplete="off"
-                className="w-28"
-              />
-              {timeSeconds === null && (
-                <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">Enter as mm:ss, e.g. 18:00.</p>
-              )}
-            </div>
+          <div>
             <LabeledInput
-              id={`${baseId}-age`}
-              label="Age"
-              type="number"
-              min={10}
-              max={90}
-              value={ageInput}
-              onChange={(event) => setAgeInput(event.target.value)}
-              className="w-20"
+              id={`${baseId}-time`}
+              label="Finish time"
+              type="text"
+              value={timeInput}
+              onChange={(event) => setTimeInput(event.target.value)}
+              placeholder="mm:ss"
+              autoComplete="off"
+              className="w-28"
             />
+            {timeSeconds === null && (
+              <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">Enter as mm:ss, e.g. 18:00.</p>
+            )}
           </div>
         </div>
       </div>
@@ -301,12 +292,16 @@ export function CvThresholdCalculator() {
         <p className="text-sm text-zinc-600 dark:text-zinc-300">Loading model data…</p>
       )}
 
-      {model && !inDomain && canPredict && (
+      {model && distanceMeters !== null && timeSeconds !== null && !canPredict && (
         <ContentCallout
           variant="mistake"
           title="Outside the model's range"
-          text="This performance (or age) falls outside the ~800m–12,000m, ~90 second–80 minute, age 10–90 range the model was actually fit on. Treat the result as a rough extrapolation, not a reliable estimate."
+          text="This performance implies an average speed outside the 2.1-10 m/s range the model can evaluate at all. Double-check the distance and time."
         />
+      )}
+
+      {note && (
+        <ContentCallout variant="mistake" title="Extrapolated" text={note} />
       )}
 
       {paces && ranges && (
@@ -353,22 +348,17 @@ export function CvThresholdCalculator() {
             <div>
               <p className={labelClass}>Uncertainty range</p>
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowUncertainty(true)}
-                  aria-pressed={showUncertainty}
-                  className={segmentedButtonClass(showUncertainty)}
-                >
-                  Show
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowUncertainty(false)}
-                  aria-pressed={!showUncertainty}
-                  className={segmentedButtonClass(!showUncertainty)}
-                >
-                  Hide
-                </button>
+                {RANGE_OPTIONS.map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setRangeLevel(level)}
+                    aria-pressed={rangeLevel === level}
+                    className={segmentedButtonClass(rangeLevel === level)}
+                  >
+                    {level === "off" ? "Off" : `${level}%`}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -379,8 +369,9 @@ export function CvThresholdCalculator() {
               description="The fastest pace that's still a metabolic steady state: heart rate, lactate, and VO2 hold roughly stable over time."
               paceSeconds={speedToPaceSeconds(paces.thresholdSpeedMS, outputUnit)}
               unit={outputUnit}
+              rangeLevel={effectiveRangeLevel}
               rangeSeconds={
-                showUncertainty
+                rangeLevel !== "off"
                   ? {
                       fastSeconds: speedToPaceSeconds(ranges.threshold.fastMS, outputUnit),
                       slowSeconds: speedToPaceSeconds(ranges.threshold.slowMS, outputUnit),
@@ -395,8 +386,9 @@ export function CvThresholdCalculator() {
               description="Critical velocity: the exact boundary between sustainable and unsustainable. Always the median estimate, in both modes."
               paceSeconds={speedToPaceSeconds(paces.cvSpeedMS, outputUnit)}
               unit={outputUnit}
+              rangeLevel={effectiveRangeLevel}
               rangeSeconds={
-                showUncertainty
+                rangeLevel !== "off"
                   ? {
                       fastSeconds: speedToPaceSeconds(ranges.cv.fastMS, outputUnit),
                       slowSeconds: speedToPaceSeconds(ranges.cv.slowMS, outputUnit),
@@ -410,8 +402,9 @@ export function CvThresholdCalculator() {
               description="The slowest pace that reliably drives VO2 up to its max, not a sprint, just the pace where the clock inevitably runs out."
               paceSeconds={speedToPaceSeconds(paces.vo2maxSpeedMS, outputUnit)}
               unit={outputUnit}
+              rangeLevel={effectiveRangeLevel}
               rangeSeconds={
-                showUncertainty
+                rangeLevel !== "off"
                   ? {
                       fastSeconds: speedToPaceSeconds(ranges.vo2max.fastMS, outputUnit),
                       slowSeconds: speedToPaceSeconds(ranges.vo2max.slowMS, outputUnit),
@@ -425,13 +418,13 @@ export function CvThresholdCalculator() {
 
           <SaveCalculationButton
             calculatorType="cv-threshold-calculator"
-            input={{ distanceKey, customInput, customUnit, timeInput, ageInput, mode }}
+            input={{ distanceKey, customInput, customUnit, timeInput, mode, rangeLevel }}
             output={{
               thresholdPace: `${formatPaceOutput(speedToPaceSeconds(paces.thresholdSpeedMS, outputUnit), outputUnit)}${PACE_UNIT_LABEL[outputUnit]}`,
               cvPace: `${formatPaceOutput(speedToPaceSeconds(paces.cvSpeedMS, outputUnit), outputUnit)}${PACE_UNIT_LABEL[outputUnit]}`,
               vo2maxPace: `${formatPaceOutput(speedToPaceSeconds(paces.vo2maxSpeedMS, outputUnit), outputUnit)}${PACE_UNIT_LABEL[outputUnit]}`,
             }}
-            label={`${timeInput} for ${distanceKey === "custom" ? `${customInput}${customUnit}` : distanceOption?.label}`}
+            label={`${timeInput} for ${distanceLabel}`}
           />
         </div>
       )}
@@ -459,14 +452,13 @@ export function CvThresholdCalculator() {
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  This is a statistical model, not a formula: it was fit on roughly 8,600 real race performances
-                  from about 1,600 high school, college, adult, and master&rsquo;s runners, using the critical
-                  speed model (the standard physiology method for separating sustainable from unsustainable
-                  paces) as its outcome. A quantile regression surface over distance, time, and age predicts the
-                  10th, 50th, and 90th percentile of threshold, CV, and VO2 max pace for a given performance,
-                  which is why the result is a range, not one number: two runners with an identical race time can
-                  have genuinely different training paces depending on how aerobically or anaerobically oriented
-                  they are.
+                  This is a statistical model, not a formula: a distributional model (one that predicts a full
+                  shape, not just an average) fit on 613,889 real race performances across 185,965 athlete
+                  seasons, using the critical speed model (the standard physiology method for separating
+                  sustainable from unsustainable paces) as its outcome. A surface over distance and time predicts
+                  the threshold, CV, and VO2 max pace distribution for a given performance, which is why the
+                  result is a range, not one number: two runners with an identical race time can have genuinely
+                  different training paces depending on how aerobically or anaerobically oriented they are.
                 </p>
               </div>
             </details>
@@ -480,17 +472,20 @@ export function CvThresholdCalculator() {
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  Consider an 18:00 5K runner: the average (median) threshold pace among runners at that level is
-                  roughly 6:08/mile, but at that exact pace, any given 18:00 5K runner has close to a 50/50
-                  chance of actually being over threshold, not under it. If the goal is a reliable metabolic
-                  steady state, a 50/50 shot isn&rsquo;t reliable. That&rsquo;s why threshold pace defaults to a{" "}
-                  <strong>safe estimate</strong>: the 10th percentile of the threshold-speed distribution, slow
-                  enough that roughly 90% of runners at that performance level are genuinely below threshold at
-                  it. VO2 max pace uses the same logic in the other direction (the 90th percentile of speed, fast
-                  enough that it reliably is unsustainable). CV pace doesn&rsquo;t get a &ldquo;safe&rdquo;
-                  direction: it&rsquo;s defined as the 50/50 boundary itself, so it&rsquo;s always the median in
-                  both modes. Switching to median estimate mode gives the 50th percentile for all three, closer
-                  to what a traditional (non-uncertainty-aware) calculator would show.
+                  Consider an 18:00 5K runner: the average (median) threshold pace among runners at that level
+                  isn&rsquo;t a pace any specific runner is guaranteed to hit, and at that exact pace, any given
+                  18:00 5K runner has close to a 50/50 chance of actually being over threshold, not under it. If
+                  the goal is a reliable metabolic steady state, a 50/50 shot isn&rsquo;t reliable. That&rsquo;s
+                  why threshold pace defaults to a <strong>safe estimate</strong>: the 10th percentile of the
+                  threshold-speed distribution, slow enough that roughly 90% of runners at that performance level
+                  are genuinely below threshold at it. VO2 max pace uses the same logic in the other direction
+                  (the 90th percentile of speed, fast enough that it reliably is unsustainable). CV pace
+                  doesn&rsquo;t get a &ldquo;safe&rdquo; direction: it&rsquo;s defined as the 50/50 boundary
+                  itself, so it&rsquo;s always the median in both modes. Switching to median estimate mode gives
+                  the 50th percentile for all three, closer to what a traditional (non-uncertainty-aware)
+                  calculator would show. The uncertainty range shown alongside each pace (80/90/95%, or hidden
+                  entirely) is a separate choice from safe/median: it&rsquo;s how wide a band to display, not which
+                  point estimate to use.
                 </p>
               </div>
             </details>
@@ -525,14 +520,13 @@ export function CvThresholdCalculator() {
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  Every runner in the underlying dataset raced three distances between 800m and 5K in the same
-                  season. A &ldquo;true&rdquo; middle-distance specialist who only ever races 400m–800m isn&rsquo;t
-                  well represented, so predictions skew &ldquo;too aerobic&rdquo; for that kind of runner; the wide
-                  uncertainty range for 800m–1600m performances is the model being honest about that gap, not a
-                  flaw to ignore. The model is fit on times roughly equivalent to a 14:00–25:00 5K and doesn&rsquo;t
-                  extrapolate well far beyond that, and it&rsquo;s built from high school, college, adult, and
-                  master&rsquo;s performances specifically, not elite or true-recreational runners, who aren&rsquo;t
-                  well represented in either direction.
+                  The model&rsquo;s real fitted range spans 800m to 10K, at times from about 2:00 (a fast 800m)
+                  out to 60:00 (a slow 10K) -- outside that, results are extrapolated, and this calculator flags
+                  it by name (e.g. &ldquo;few runners in our dataset ran slower than 30:00 for 5 km&rdquo;) rather
+                  than a generic warning. Unlike the version of this model this codebase originally ported, the
+                  current one (2026-09-05) doesn&rsquo;t take age as an input at all -- it&rsquo;s fit at a fixed
+                  &ldquo;college&rdquo; competitive level, so an age-adjustable prediction genuinely isn&rsquo;t
+                  something this model (or the source calculator) offers anymore.
                 </p>
                 <div className="mt-3 border-t border-black/10 pt-3 dark:border-white/10">
                   <h3 className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
@@ -548,9 +542,8 @@ export function CvThresholdCalculator() {
                     >
                       threshold/CV/VO2 max pace calculator
                     </a>{" "}
-                    (Running Writings, MIT licensed): same underlying model data, rebuilt with a plain-text
-                    entry, an adjustable age input the original tool doesn&rsquo;t expose, and saved-result
-                    support.
+                    (Running Writings, MIT licensed): same underlying model data, rebuilt with a plain-text entry
+                    and saved-result support.
                   </p>
                 </div>
               </div>

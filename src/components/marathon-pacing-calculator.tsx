@@ -13,7 +13,7 @@ import {
   isWithinModelDomain,
   predictSpeeds,
   selectTrainingPaces,
-  type CvThresholdModel,
+  type CvPiecesModel,
 } from "@/lib/cv-threshold-math";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
 import { useEnvironmentalWeather } from "@/lib/environmental/use-environmental-weather";
@@ -45,7 +45,7 @@ import {
 
 const METERS_PER_MILE = 1609.344;
 const MARATHON_METERS = 42195;
-const MODEL_URL = "/data/cv-threshold-model.json";
+const MODEL_URL = "/data/cv-threshold-pieces-v2026-09-05.json";
 const STORAGE_KEY = "haarchive-marathon-pacing-calculator-state";
 
 // Same 800m-10K range the CV Threshold Calculator offers -- the underlying
@@ -105,7 +105,6 @@ const SCENARIO_TYPE_OPTIONS: { key: ScenarioType; label: string }[] = [
 type PersistedState = {
   fitnessDistanceKey: FitnessDistanceKey;
   fitnessTimeInput: string;
-  ageInput: string;
   goalTimeInput: string;
   weightLbInput: string;
   durability: Durability;
@@ -133,12 +132,12 @@ type PersistedState = {
 // Same module-scope fetch-once cache pattern as cv-threshold-calculator.tsx
 // -- a separate promise here (not a shared import) since each component
 // owns its own private cache the same way that one does.
-let modelPromise: Promise<CvThresholdModel> | null = null;
-function loadModel(): Promise<CvThresholdModel> {
+let modelPromise: Promise<CvPiecesModel> | null = null;
+function loadModel(): Promise<CvPiecesModel> {
   if (!modelPromise) {
     modelPromise = fetch(MODEL_URL).then((res) => {
       if (!res.ok) throw new Error(`Failed to load model data (${res.status})`);
-      return res.json() as Promise<CvThresholdModel>;
+      return res.json() as Promise<CvPiecesModel>;
     });
   }
   return modelPromise;
@@ -263,6 +262,7 @@ function buildWeatherConditions(tempF: number, humidityPct: number, windMph: num
     // own (mile-cost-model.ts doesn't consume it) -- null is inert here,
     // not a missing feature.
     elevationM: null,
+    source: "manual",
   };
 }
 
@@ -319,7 +319,7 @@ export function MarathonPacingCalculator() {
   const baseId = useId();
   const persisted = usePersistedJSON<PersistedState>(STORAGE_KEY);
 
-  const [model, setModel] = useState<CvThresholdModel | null>(null);
+  const [model, setModel] = useState<CvPiecesModel | null>(null);
   const [modelError, setModelError] = useState(false);
   useEffect(() => {
     loadModel()
@@ -329,7 +329,6 @@ export function MarathonPacingCalculator() {
 
   const [fitnessDistanceKey, setFitnessDistanceKey] = usePersistedField<FitnessDistanceKey>(persisted?.fitnessDistanceKey, "5k");
   const [fitnessTimeInput, setFitnessTimeInput] = usePersistedField(persisted?.fitnessTimeInput, "20:00");
-  const [ageInput, setAgeInput] = usePersistedField(persisted?.ageInput, "35");
   const [goalTimeInput, setGoalTimeInput] = usePersistedField(persisted?.goalTimeInput, "3:45:00");
   const [weightLbInput, setWeightLbInput] = usePersistedField(persisted?.weightLbInput, "155");
   const [durability, setDurability] = usePersistedField<Durability>(persisted?.durability, "average");
@@ -369,10 +368,6 @@ export function MarathonPacingCalculator() {
         return;
       }
       let appliedAnything = false;
-      if (snapshot.age !== null && snapshot.age > 0) {
-        setAgeInput(String(Math.round(snapshot.age)));
-        appliedAnything = true;
-      }
       if (snapshot.weightLb !== null) {
         setWeightLbInput(String(Math.round(snapshot.weightLb)));
         appliedAnything = true;
@@ -408,14 +403,12 @@ export function MarathonPacingCalculator() {
 
   const fitnessDistance = FITNESS_DISTANCE_OPTIONS.find((d) => d.key === fitnessDistanceKey);
   const fitnessTimeSeconds = parseTimeToSeconds(fitnessTimeInput);
-  const ageRaw = Number(ageInput);
-  const ageValid = ageInput.trim() !== "" && Number.isFinite(ageRaw) && ageRaw > 0;
-  const canPredictFitness = model !== null && fitnessDistance !== undefined && fitnessTimeSeconds !== null && ageValid;
+  const canPredictFitness = model !== null && fitnessDistance !== undefined && fitnessTimeSeconds !== null;
 
   const fitnessPrediction = canPredictFitness
-    ? predictSpeeds(model, fitnessDistance.meters, fitnessTimeSeconds, ageRaw)
+    ? predictSpeeds(model, fitnessDistance.meters, fitnessTimeSeconds)
     : null;
-  const fitnessInDomain = canPredictFitness ? isWithinModelDomain(model, fitnessDistance.meters, fitnessTimeSeconds, ageRaw) : true;
+  const fitnessInDomain = canPredictFitness ? isWithinModelDomain(model, fitnessDistance.meters, fitnessTimeSeconds) : true;
   const fitnessPaces = fitnessPrediction ? selectTrainingPaces(fitnessPrediction, "safe") : null;
 
   const goalTimeSeconds = parseTimeToSeconds(goalTimeInput);
@@ -493,7 +486,7 @@ export function MarathonPacingCalculator() {
         weatherConditions,
         costBreakdown: plan.costBreakdown,
       },
-      fitnessPrediction.cvSpeedMS,
+      { p10: fitnessPrediction.cs.q10, p50: fitnessPrediction.cs.q50, p90: fitnessPrediction.cs.q90 },
     );
   }, [simulationEnabled, plan, fitnessPrediction, course, fitnessPaces, strategyId, risk, weightKg, weatherConditions]);
 
@@ -650,7 +643,6 @@ export function MarathonPacingCalculator() {
       const state: PersistedState = {
         fitnessDistanceKey,
         fitnessTimeInput,
-        ageInput,
         goalTimeInput,
         weightLbInput,
         durability,
@@ -702,7 +694,7 @@ export function MarathonPacingCalculator() {
               </Button>
               {profileLoadState === "loaded" && (
                 <p className="text-xs text-zinc-600 dark:text-zinc-300">
-                  Loaded age/weight from your profile and your most recent matching race result, where available.
+                  Loaded your weight from your profile and your most recent matching race result, where available.
                 </p>
               )}
               {profileLoadState === "no-data" && (
@@ -749,19 +741,6 @@ export function MarathonPacingCalculator() {
               className="w-28"
             />
             <LabeledInput
-              id={`${baseId}-age`}
-              label="Age"
-              type="number"
-              min={10}
-              max={90}
-              value={ageInput}
-              onChange={(event) => {
-                setAgeInput(event.target.value);
-                persistState();
-              }}
-              className="w-20"
-            />
-            <LabeledInput
               id={`${baseId}-weight`}
               label="Weight (lb, optional)"
               type="number"
@@ -795,7 +774,7 @@ export function MarathonPacingCalculator() {
           </div>
           {model && canPredictFitness && !fitnessInDomain && (
             <p className="text-xs text-zinc-600 dark:text-zinc-300">
-              That performance (or age) is outside the fitness model&rsquo;s well-tested range -- treat the pacing plan
+              That performance is outside the fitness model&rsquo;s well-tested range -- treat the pacing plan
               below as a rougher estimate.
             </p>
           )}
@@ -1037,15 +1016,25 @@ export function MarathonPacingCalculator() {
                   className="w-56"
                 />
                 <p className="text-xs text-zinc-600 dark:text-zinc-300">
-                  Past dates use historical weather records; future dates (up to ~16 days out) use the forecast --
-                  further out than that, this falls back to the ideal-conditions baseline until closer to race day.
+                  Past dates use historical weather records; future dates within Open-Meteo&rsquo;s real forecast
+                  window (about 15 days out) use the forecast -- further out than that, this averages the last few
+                  years&rsquo; actual weather on that same calendar date into a seasonal estimate, so planning months
+                  ahead still gets a real, if less certain, number instead of a generic baseline.
                 </p>
                 {envWeather.fetchedConditions && (
-                  <p className="text-sm text-zinc-700 dark:text-zinc-200">
-                    {Math.round(cToF(envWeather.fetchedConditions.tempC))}°F, {Math.round(envWeather.fetchedConditions.relativeHumidityPct)}% humidity,{" "}
-                    {Math.round(msToMph(envWeather.fetchedConditions.windSpeedMS))} mph wind from{" "}
-                    {compassPointLabel(envWeather.fetchedConditions.windFromBearingDeg)}
-                  </p>
+                  <>
+                    <p className="text-sm text-zinc-700 dark:text-zinc-200">
+                      {Math.round(cToF(envWeather.fetchedConditions.tempC))}°F, {Math.round(envWeather.fetchedConditions.relativeHumidityPct)}% humidity,{" "}
+                      {Math.round(msToMph(envWeather.fetchedConditions.windSpeedMS))} mph wind from{" "}
+                      {compassPointLabel(envWeather.fetchedConditions.windFromBearingDeg)}
+                    </p>
+                    {envWeather.fetchedConditions.source === "climatology" && (
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        Seasonal estimate (averaged from recent years), not a forecast -- real conditions on race day
+                        could differ.
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -1420,7 +1409,7 @@ export function MarathonPacingCalculator() {
 
       {!canGeneratePlan && (
         <p className="text-sm text-zinc-600 dark:text-zinc-300">
-          Enter a recent race performance, age, and marathon goal time above to generate a pacing plan.
+          Enter a recent race performance and marathon goal time above to generate a pacing plan.
         </p>
       )}
 
@@ -1538,7 +1527,7 @@ export function MarathonPacingCalculator() {
 
           <SaveCalculationButton
             calculatorType="marathon-pacing-calculator"
-            input={{ fitnessDistanceKey, fitnessTimeInput, ageInput, goalTimeInput, strategyId, risk, durability }}
+            input={{ fitnessDistanceKey, fitnessTimeInput, goalTimeInput, strategyId, risk, durability }}
             output={{ projectedTime: formatClock(displayTotalSeconds ?? plan.totalTimeSeconds), avgPace: `${formatClock(avgPaceSeconds)}/mi` }}
             label={`${goalTimeInput} marathon, ${PACING_STRATEGIES[strategyId].label}`}
           />
