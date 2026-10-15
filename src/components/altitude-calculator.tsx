@@ -16,9 +16,11 @@ import {
   capacityPercentAtAltitude,
   convertTimeBetweenAltitudes,
   convertVo2MaxBetweenAltitudes,
+  convertWorkoutSplits,
   isAltitudeInModelDomain,
   kmToAltitude,
   kmToMeters,
+  parseWorkoutSplitsInput,
 } from "@/lib/altitude-vo2max-math";
 import { PACE_UNIT_LABEL, PACE_UNIT_METERS, type PaceUnit, formatPaceOutput, parsePaceInput } from "@/lib/pace-percent-math";
 import { RACE_DISTANCES, raceDistanceMap } from "@/lib/race-distances";
@@ -38,7 +40,7 @@ import {
 const STORAGE_KEY = "haarchive-altitude-calculator-state";
 const ALTITUDE_UNIT_LABEL: Record<AltitudeUnit, string> = { ft: "ft", m: "m" };
 
-type RunMode = "pace" | "time";
+type RunMode = "pace" | "time" | "splits";
 
 type PersistedState = {
   altitudeUnit: AltitudeUnit;
@@ -51,6 +53,9 @@ type PersistedState = {
   runPaceUnit: PaceUnit;
   runDistanceKey: string;
   runTimeInput: string;
+  splitRepeatUnit: PaceUnit;
+  splitsInput: string;
+  homeAltitudeInput: string;
   showMethodology: boolean;
 };
 
@@ -85,6 +90,9 @@ export function AltitudeCalculator() {
   const [runPaceUnit, setRunPaceUnit] = usePersistedField<PaceUnit>(persisted?.runPaceUnit, "mi");
   const [runDistanceKey, setRunDistanceKey] = usePersistedField(persisted?.runDistanceKey, "5k");
   const [runTimeInput, setRunTimeInput] = usePersistedField(persisted?.runTimeInput, "");
+  const [splitRepeatUnit, setSplitRepeatUnit] = usePersistedField<PaceUnit>(persisted?.splitRepeatUnit, "mi");
+  const [splitsInput, setSplitsInput] = usePersistedField(persisted?.splitsInput, "");
+  const [homeAltitudeInput, setHomeAltitudeInput] = usePersistedField(persisted?.homeAltitudeInput, "");
   const [showMethodology, setShowMethodology] = usePersistedField(persisted?.showMethodology, false);
 
   useEffect(() => {
@@ -100,6 +108,9 @@ export function AltitudeCalculator() {
         runPaceUnit,
         runDistanceKey,
         runTimeInput,
+        splitRepeatUnit,
+        splitsInput,
+        homeAltitudeInput,
         showMethodology,
       };
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -117,6 +128,9 @@ export function AltitudeCalculator() {
     runPaceUnit,
     runDistanceKey,
     runTimeInput,
+    splitRepeatUnit,
+    splitsInput,
+    homeAltitudeInput,
     showMethodology,
   ]);
 
@@ -132,6 +146,20 @@ export function AltitudeCalculator() {
   const targetAltitudeValid = targetAltitudeInput.trim() !== "" && Number.isFinite(targetAltitudeRaw);
   const targetAltitudeKm = targetAltitudeValid ? altitudeToKm(targetAltitudeRaw, altitudeUnit) : null;
   const targetAltitudeInDomain = targetAltitudeKm !== null && isAltitudeInModelDomain(targetAltitudeKm);
+
+  // Only feeds the pace/time/splits conversion below, not the VO2 max/
+  // capacity conversion above -- that side keeps its existing Acclimatized/
+  // Unacclimatized toggle on purpose, since it's a direct read of what
+  // Bassett and Peronnet's own two studies actually measured (one fixed
+  // state each, not a continuum); inventing a continuous version of their
+  // model would claim more precision than either study supports. Blank
+  // leaves the pace/time/splits conversion exactly as it always was
+  // (fully unacclimatized), so this is purely additive.
+  const homeAltitudeRaw = Number(homeAltitudeInput);
+  const homeAltitudeValid = homeAltitudeInput.trim() !== "" && Number.isFinite(homeAltitudeRaw) && homeAltitudeRaw >= 0;
+  const homeAltitudeKm = homeAltitudeValid ? altitudeToKm(homeAltitudeRaw, altitudeUnit) : null;
+  const homeAltitudeInDomain = homeAltitudeKm === null || isAltitudeInModelDomain(homeAltitudeKm);
+  const homeAltitudeMeters = homeAltitudeKm !== null && homeAltitudeInDomain ? kmToMeters(homeAltitudeKm) : 0;
 
   const capacityPercent =
     altitudeKm !== null && altitudeInDomain ? capacityPercentAtAltitude(altitudeKm, acclimatization) : null;
@@ -159,7 +187,7 @@ export function AltitudeCalculator() {
   const runTimeValid = runTimeSeconds !== null && runTimeSeconds > 0;
 
   const actualTimeSeconds =
-    runDistance === undefined
+    runMode === "splits" || runDistance === undefined
       ? null
       : runMode === "pace"
         ? runPaceValid
@@ -175,10 +203,35 @@ export function AltitudeCalculator() {
           actualTimeSeconds,
           kmToMeters(altitudeKm),
           kmToMeters(targetAltitudeKm !== null && targetAltitudeInDomain ? targetAltitudeKm : altitudeKm),
+          homeAltitudeMeters,
         )
       : null;
 
   const showRunTargetResult = timeConversion !== null && targetAltitudeKm !== null && targetAltitudeInDomain;
+
+  // Workout splits mode: each entry is converted independently rather than
+  // blended into one duration, since a set of short reps and one long
+  // continuous run scale very differently under Daniels' duration curve
+  // (see convertWorkoutSplits's own comment). A malformed entry keeps its
+  // position (null) rather than being silently dropped, so the error
+  // message below can point at exactly which one to fix.
+  const parsedSplitEntries = runMode === "splits" ? parseWorkoutSplitsInput(splitsInput) : [];
+  const firstInvalidSplitIndex = parsedSplitEntries.findIndex((seconds) => seconds === null);
+  const validSplitSeconds = parsedSplitEntries.filter((seconds): seconds is number => seconds !== null);
+  const canConvertSplits = runMode === "splits" && altitudeKm !== null && altitudeInDomain && validSplitSeconds.length > 0;
+  // Sea-level is always shown, same convention as the pace/time modes above
+  // (their own seaLevelTimeSeconds is unconditional; a target altitude is a
+  // bonus on top of it, not a replacement for it) -- computed as its own
+  // pass to sea level (0m) rather than falling back to a same-altitude
+  // no-op when no target is entered.
+  const seaLevelSplitResults = canConvertSplits
+    ? convertWorkoutSplits(validSplitSeconds, kmToMeters(altitudeKm!), 0, homeAltitudeMeters)
+    : [];
+  const targetSplitResults =
+    canConvertSplits && targetAltitudeKm !== null && targetAltitudeInDomain
+      ? convertWorkoutSplits(validSplitSeconds, kmToMeters(altitudeKm!), kmToMeters(targetAltitudeKm), homeAltitudeMeters)
+      : [];
+  const showSplitTargetResult = targetSplitResults.length > 0;
 
   // Pace mode still lets the user pick a display unit for entry/output;
   // race-time mode has no unit of its own (the user picked a distance, not
@@ -332,24 +385,32 @@ export function AltitudeCalculator() {
         <p className={sectionLabelClass}>Your run (optional)</p>
         <div className={`${statCardClass} flex flex-wrap gap-6`}>
           <div className="min-w-0">
-            <label htmlFor={`${baseId}-run-distance`} className={labelClass}>
-              Distance
+            <label htmlFor={`${baseId}-home-altitude`} className={labelClass}>
+              Home / training altitude ({ALTITUDE_UNIT_LABEL[altitudeUnit]})
             </label>
-            <select
-              id={`${baseId}-run-distance`}
-              value={runDistanceKey}
-              onChange={(event) => setRunDistanceKey(event.target.value)}
-              className={fieldClass}
-            >
-              {RACE_DISTANCES.map((distance) => (
-                <option key={distance.key} value={distance.key}>
-                  {distance.label}
-                </option>
-              ))}
-            </select>
+            <input
+              id={`${baseId}-home-altitude`}
+              type="number"
+              inputMode="decimal"
+              placeholder="e.g. 0"
+              value={homeAltitudeInput}
+              onChange={(event) => setHomeAltitudeInput(event.target.value)}
+              autoComplete="off"
+              className={`w-28 ${fieldClass}`}
+            />
+            {homeAltitudeValid && !homeAltitudeInDomain && (
+              <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-400">
+                Outside the model&rsquo;s supported range -- treated as sea level (fully unacclimatized) below.
+              </p>
+            )}
+            {!homeAltitudeValid && (
+              <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                Leave blank to assume you&rsquo;re not acclimatized to the altitude above at all.
+              </p>
+            )}
           </div>
 
-          <div className="min-w-[220px]">
+          <div className="min-w-[260px]">
             <p className={labelClass}>Enter as</p>
             <div className="flex gap-2">
               <button
@@ -368,63 +429,144 @@ export function AltitudeCalculator() {
               >
                 Race time
               </button>
+              <button
+                type="button"
+                onClick={() => setRunMode("splits")}
+                aria-pressed={runMode === "splits"}
+                className={segmentedButtonClass(runMode === "splits")}
+              >
+                Workout splits
+              </button>
             </div>
           </div>
 
-          {runMode === "pace" ? (
-            <div className="min-w-0">
-              <label htmlFor={`${baseId}-run-pace`} className={labelClass}>
-                Pace at this altitude
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id={`${baseId}-run-pace`}
-                  type="text"
-                  placeholder="mm:ss"
-                  value={runPaceInput}
-                  onChange={(event) => setRunPaceInput(event.target.value)}
+          {runMode === "splits" ? (
+            <>
+              <div className="min-w-[180px]">
+                <p className={labelClass}>Repeat length</p>
+                <div className="flex gap-1">
+                  {(["mi", "km", "400m", "200m"] as PaceUnit[]).map((unit) => (
+                    <button
+                      key={unit}
+                      type="button"
+                      onClick={() => setSplitRepeatUnit(unit)}
+                      aria-pressed={splitRepeatUnit === unit}
+                      className={segmentedButtonClass(splitRepeatUnit === unit)}
+                    >
+                      {PACE_UNIT_LABEL[unit]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="min-w-[260px] flex-1">
+                <label htmlFor={`${baseId}-splits`} className={labelClass}>
+                  Splits at this altitude (one per {PACE_UNIT_LABEL[splitRepeatUnit]})
+                </label>
+                <textarea
+                  id={`${baseId}-splits`}
+                  rows={2}
+                  placeholder="8:00, 7:30, 7:00, 6:30, 6:15, 6:05, 5:55"
+                  value={splitsInput}
+                  onChange={(event) => setSplitsInput(event.target.value)}
                   autoComplete="off"
-                  className={`w-24 ${fieldClass}`}
+                  className={`w-full ${fieldClass}`}
                 />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="min-w-0">
+                <label htmlFor={`${baseId}-run-distance`} className={labelClass}>
+                  Distance
+                </label>
                 <select
-                  aria-label="Pace unit"
-                  value={runPaceUnit}
-                  onChange={(event) => setRunPaceUnit(event.target.value as PaceUnit)}
+                  id={`${baseId}-run-distance`}
+                  value={runDistanceKey}
+                  onChange={(event) => setRunDistanceKey(event.target.value)}
                   className={fieldClass}
                 >
-                  {(["mi", "km", "400m"] as PaceUnit[]).map((unit) => (
-                    <option key={unit} value={unit}>
-                      {PACE_UNIT_LABEL[unit]}
+                  {RACE_DISTANCES.map((distance) => (
+                    <option key={distance.key} value={distance.key}>
+                      {distance.label}
                     </option>
                   ))}
                 </select>
               </div>
-            </div>
-          ) : (
-            <div className="min-w-0">
-              <label htmlFor={`${baseId}-run-time`} className={labelClass}>
-                Time at this altitude
-              </label>
-              <input
-                id={`${baseId}-run-time`}
-                type="text"
-                placeholder="mm:ss or h:mm:ss"
-                value={runTimeInput}
-                onChange={(event) => setRunTimeInput(event.target.value)}
-                autoComplete="off"
-                className={`w-32 ${fieldClass}`}
-              />
-            </div>
+
+              {runMode === "pace" ? (
+                <div className="min-w-0">
+                  <label htmlFor={`${baseId}-run-pace`} className={labelClass}>
+                    Pace at this altitude
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id={`${baseId}-run-pace`}
+                      type="text"
+                      placeholder="mm:ss"
+                      value={runPaceInput}
+                      onChange={(event) => setRunPaceInput(event.target.value)}
+                      autoComplete="off"
+                      className={`w-24 ${fieldClass}`}
+                    />
+                    <select
+                      aria-label="Pace unit"
+                      value={runPaceUnit}
+                      onChange={(event) => setRunPaceUnit(event.target.value as PaceUnit)}
+                      className={fieldClass}
+                    >
+                      {(["mi", "km", "400m"] as PaceUnit[]).map((unit) => (
+                        <option key={unit} value={unit}>
+                          {PACE_UNIT_LABEL[unit]}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                <div className="min-w-0">
+                  <label htmlFor={`${baseId}-run-time`} className={labelClass}>
+                    Time at this altitude
+                  </label>
+                  <input
+                    id={`${baseId}-run-time`}
+                    type="text"
+                    placeholder="mm:ss or h:mm:ss"
+                    value={runTimeInput}
+                    onChange={(event) => setRunTimeInput(event.target.value)}
+                    autoComplete="off"
+                    className={`w-32 ${fieldClass}`}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
+        {runMode === "splits" && firstInvalidSplitIndex !== -1 && (
+          <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-400">
+            Split {firstInvalidSplitIndex + 1} isn&rsquo;t a valid mm:ss (or h:mm:ss) time -- check it and try
+            again.
+          </p>
+        )}
         <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
-          Distance is required in both modes because Jack Daniels&rsquo; altitude tables scale the cost by how long
-          the effort actually lasts, and a bare pace -- a rate, not a duration -- can&rsquo;t supply that on its
-          own. Pace + distance derives a duration the same way distance + race time does; either way you get a
-          real effort length to scale by. This is the same altitude model the Environmental Performance Calculator
-          uses, so the two tools agree on what this altitude costs -- but it has no acclimatized/unacclimatized
-          distinction, so this result doesn&rsquo;t change with the Acclimatization toggle above (see Behind the
-          calculator).
+          {runMode === "splits" ? (
+            <>
+              Each split is converted on its own, not blended into one average -- a hard, short repeat and a
+              longer one cost differently under Daniels&rsquo; duration-scaling curve (see Behind the calculator).
+              Like Race time, this mode has no acclimatized/unacclimatized distinction, so it doesn&rsquo;t change
+              with the Acclimatization toggle above.
+            </>
+          ) : (
+            <>
+              Distance is required in both modes because Jack Daniels&rsquo; altitude tables scale the cost by how
+              long the effort actually lasts, and a bare pace -- a rate, not a duration -- can&rsquo;t supply that
+              on its own. Pace + distance derives a duration the same way distance + race time does; either way you
+              get a real effort length to scale by. This is the same altitude model the Environmental Performance
+              Calculator uses, so the two tools agree on what this altitude costs -- but it has no
+              acclimatized/unacclimatized distinction, so this result doesn&rsquo;t change with the Acclimatization
+              toggle above (see Behind the calculator).
+            </>
+          )}
         </p>
       </div>
 
@@ -473,6 +615,11 @@ export function AltitudeCalculator() {
                       {seaLevelTimeDisplay} for {runDistance.label}
                     </p>
                   )}
+                  {homeAltitudeValid && homeAltitudeInDomain && (
+                    <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
+                      Discounted for training at {formatAltitude(homeAltitudeRaw, altitudeUnit)} -- see Behind the calculator.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -493,12 +640,58 @@ export function AltitudeCalculator() {
                 </div>
               )}
 
-              {targetAltitudeValid && !targetAltitudeInDomain && (vo2MaxValid || actualTimeSeconds !== null) && (
-                <p className="mt-3 text-xs text-amber-700 dark:text-amber-400">
-                  Target altitude is outside the model&rsquo;s supported range ({MIN_ALTITUDE_FT.toLocaleString()}
-                  –{MAX_ALTITUDE_FT.toLocaleString()} ft), so no target result is shown for it.
-                </p>
+              {seaLevelSplitResults.length > 0 && (
+                <div className="mt-4 border-t border-black/10 pt-4 dark:border-white/10">
+                  <p className={statLabelClass}>
+                    {showSplitTargetResult
+                      ? `Splits converted to ${formatAltitude(targetAltitudeRaw, altitudeUnit)}`
+                      : "Sea-level-equivalent splits"}
+                  </p>
+                  <div className="mt-2 overflow-x-auto">
+                    <table className="w-full min-w-[320px] text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-black/10 text-xs tracking-wide text-zinc-600 uppercase dark:border-white/10 dark:text-zinc-300">
+                          <th className="py-2 pr-3">Split</th>
+                          <th className="py-2 pr-3">At {formatAltitude(altitudeRaw, altitudeUnit)}</th>
+                          <th className="py-2 pr-3">
+                            {showSplitTargetResult ? `At ${formatAltitude(targetAltitudeRaw, altitudeUnit)}` : "Sea level"}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {seaLevelSplitResults.map((split, i) => (
+                          <tr key={split.index} className="border-b border-black/5 last:border-0 dark:border-white/5">
+                            <td className="py-1.5 pr-3 font-semibold text-zinc-900 dark:text-white">{split.index + 1}</td>
+                            <td className="py-1.5 pr-3">
+                              {formatPaceOutput(split.actualTimeSeconds, splitRepeatUnit)}
+                              {PACE_UNIT_LABEL[splitRepeatUnit]}
+                            </td>
+                            <td className="py-1.5 pr-3">
+                              {formatPaceOutput(showSplitTargetResult ? targetSplitResults[i].targetTimeSeconds : split.targetTimeSeconds, splitRepeatUnit)}
+                              {PACE_UNIT_LABEL[splitRepeatUnit]}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+                    Each split converted on its own, not as one blended average -- see Behind the calculator.
+                    {homeAltitudeValid && homeAltitudeInDomain
+                      ? ` Discounted for training at ${formatAltitude(homeAltitudeRaw, altitudeUnit)}.`
+                      : ""}
+                  </p>
+                </div>
               )}
+
+              {targetAltitudeValid &&
+                !targetAltitudeInDomain &&
+                (vo2MaxValid || actualTimeSeconds !== null || validSplitSeconds.length > 0) && (
+                  <p className="mt-3 text-xs text-amber-700 dark:text-amber-400">
+                    Target altitude is outside the model&rsquo;s supported range ({MIN_ALTITUDE_FT.toLocaleString()}
+                    –{MAX_ALTITUDE_FT.toLocaleString()} ft), so no target result is shown for it.
+                  </p>
+                )}
 
               <p className="mt-4 text-xs text-zinc-600 dark:text-zinc-300">
                 At {formatAltitude(altitudeRaw, altitudeUnit)}, the model estimates that approximately{" "}
@@ -520,6 +713,9 @@ export function AltitudeCalculator() {
                   runPaceUnit,
                   runDistanceKey,
                   runTimeInput,
+                  splitRepeatUnit,
+                  splitsInput,
+                  homeAltitudeInput,
                 }}
                 output={{
                   currentCapacityPercent: capacityPercent,
@@ -527,6 +723,7 @@ export function AltitudeCalculator() {
                   targetVo2Max: showTargetResult ? conversion!.targetVo2Max : null,
                   seaLevelPace: seaLevelPaceDisplay ? `${seaLevelPaceDisplay}${PACE_UNIT_LABEL[paceDisplayUnit]}` : null,
                   targetPace: showRunTargetResult ? `${targetPaceDisplay}${PACE_UNIT_LABEL[paceDisplayUnit]}` : null,
+                  seaLevelSplits: seaLevelSplitResults.map((s) => `${formatPaceOutput(s.actualTimeSeconds, splitRepeatUnit)}${PACE_UNIT_LABEL[splitRepeatUnit]} → ${formatPaceOutput(s.targetTimeSeconds, splitRepeatUnit)}${PACE_UNIT_LABEL[splitRepeatUnit]}`),
                 }}
                 label={`${formatAltitude(altitudeRaw, altitudeUnit)}, ${acclimatization}`}
               />
@@ -703,11 +900,40 @@ export function AltitudeCalculator() {
                   This is why a distance is required for pace entry now, not just race-time entry -- Daniels&rsquo;
                   duration scaling needs a real effort length to work from, which a bare pace (a rate, not a
                   duration) can&rsquo;t supply on its own. The trade-off for reusing this model: Daniels&rsquo;
-                  tables have no acclimatized/unacclimatized distinction at all, so this result is the same
-                  regardless of which Acclimatization option is selected above -- only the VO2 max conversion
-                  varies with it. Daniels&rsquo; tables are also only calibrated up to 8,000 ft (this engine clamps
+                  tables themselves have no acclimatized/unacclimatized distinction at all, so this result doesn&rsquo;t
+                  change with the Acclimatization toggle above -- that toggle only ever affects the VO2 max
+                  conversion. Daniels&rsquo; tables are also only calibrated up to 8,000 ft (this engine clamps
                   its extrapolation at 14,000 ft), a narrower range than the 20,000 ft this page otherwise allows
                   for the capacity/VO2 max model above.
+                </p>
+                <p className="mt-2">
+                  Workout splits mode runs a structured session (mile repeats, a fartlek ladder, progression
+                  splits) through this exact same math, once per split rather than once for the whole workout.
+                  That distinction matters: a workout&rsquo;s total time (say, 46 minutes for 7 miles) sits much
+                  closer to Daniels&rsquo; 5K/marathon anchors than any individual ~6-8 minute repeat does on its
+                  own, so converting the total would overstate altitude&rsquo;s cost on each rep by scaling the
+                  whole session as if it were one long, more aerobic-dominant effort. Each split&rsquo;s own
+                  duration decides its own scaling instead, which is also why a hard, short repeat and a longer
+                  one in the same workout can show a slightly different converted cost rather than all shifting by
+                  the same flat amount.
+                </p>
+                <p className="mt-2">
+                  &ldquo;Home / training altitude&rdquo; is a separate lever from the Acclimatization toggle,
+                  built specifically to give Daniels&rsquo; own tables the acclimatization sensitivity they
+                  otherwise lack. It doesn&rsquo;t use a new, independently-fitted curve: it compares this
+                  page&rsquo;s own acclimatized and unacclimatized capacity-percent curves (the same two studies
+                  cited in Confidence and limitations below) at the race altitude, and treats the gap between
+                  them as the amount acclimatization can realistically &ldquo;buy back.&rdquo; A home altitude at
+                  or above the race altitude gets the full discount that gap allows; sea level (or blank) gets
+                  none, matching this feature&rsquo;s own prior behavior; anything in between is a straight-line
+                  blend. This is a simplification of a genuinely continuous physiological process, not a third
+                  independently-validated study of its own -- treat it as directionally right rather than
+                  precisely calibrated. (A real, published tool takes a more rigorous approach to exactly this
+                  question: runningwritings.com&rsquo;s Altitude-Adjusted Pace Calculator, by exercise
+                  physiologist John J. Davis, fits a continuous home-altitude discount directly to a large dataset
+                  of real track results across many venues and events, rather than blending two existing curves
+                  the way this page does. Worth a look for a second, independently-derived opinion, especially at
+                  an altitude or distance this page&rsquo;s own Daniels-table foundation covers less precisely.)
                 </p>
               </div>
             </details>

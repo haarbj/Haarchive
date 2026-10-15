@@ -55,6 +55,7 @@
 // Calculator's "Behind the calculator" section for the full caveat.
 
 import { altitudeDurationScale, marathonImpairmentFraction } from "@/lib/environmental/altitude-engine";
+import { parseTimeToSeconds } from "@/lib/running-format";
 
 const FT_PER_M = 3.28084;
 
@@ -141,6 +142,53 @@ export function convertVo2MaxBetweenAltitudes(
   return { currentCapacityPercent, seaLevelVo2Max, targetCapacityPercent, targetVo2Max };
 }
 
+// How acclimatized an athlete living at `homeAltitudeM` is when racing at
+// `raceAltitudeM`, as a simple 0-1 fraction: 0 (home at or below sea level)
+// means fully unacclimatized to that race altitude, 1 (home at or above
+// the race altitude) means fully acclimatized, linear in between. This is
+// a deliberately simple proxy for a genuinely continuous physiological
+// process this site has no finer-grained data to model directly -- Bassett
+// and Peronnet's own underlying studies (see this file's header) each
+// measured exactly one fixed acclimatization state (several weeks vs. 1-7
+// days), not a continuum, so nothing below claims to reproduce a
+// third, independently-fitted curve. (A similar real, published tool --
+// runningwritings.com's Altitude-Adjusted Pace Calculator, by exercise
+// physiologist John J. Davis -- models home-altitude acclimation as a
+// continuous discount fit to its own independently-collected race-result
+// dataset; this function is built from this site's own already-cited
+// sources rather than reproducing that tool's specific, unpublished
+// coefficients.)
+export function acclimatizationBlendFraction(homeAltitudeM: number, raceAltitudeM: number): number {
+  if (raceAltitudeM <= 0) return 1;
+  return Math.min(1, Math.max(0, homeAltitudeM / raceAltitudeM));
+}
+
+// How much of the "fully unacclimatized" Daniels-table penalty (see
+// convertTimeBetweenAltitudes below) a partially-acclimatized athlete
+// actually experiences at `raceAltitudeM`, expressed as a multiplier on
+// that penalty (1 = full penalty, smaller = less impaired). Built by
+// comparing this file's own two already-cited capacity-percent curves at
+// the same altitude: full acclimatization retains more capacity (a higher
+// %) than none at all, so the gap between the unacclimatized and
+// acclimatized percentages, scaled by acclimatizationBlendFraction, is
+// treated as the fraction of the penalty that acclimatization "buys back."
+// Deliberately reuses the two sources already cited in this file rather
+// than introducing a new coefficient -- see the file header for why this
+// file's own two curves, not a new fit, are the input here.
+export function homeAltitudeImpairmentMultiplier(homeAltitudeM: number, raceAltitudeM: number): number {
+  if (raceAltitudeM <= 0) return 1;
+  const raceAltitudeKm = metersToKm(raceAltitudeM);
+  const unacclimatizedPercent = unacclimatizedCapacityPercent(raceAltitudeKm);
+  const acclimatizedPercent = acclimatizedCapacityPercent(raceAltitudeKm);
+  const fraction = acclimatizationBlendFraction(homeAltitudeM, raceAltitudeM);
+  const effectivePercent = unacclimatizedPercent + fraction * (acclimatizedPercent - unacclimatizedPercent);
+  if (effectivePercent <= 0) return 1;
+  // effectivePercent >= unacclimatizedPercent whenever acclimatization
+  // helps (the normal case), so this ratio is <= 1 -- it shrinks the
+  // Daniels-based penalty for a more-acclimatized athlete, never grows it.
+  return unacclimatizedPercent / effectivePercent;
+}
+
 export type TimeConversionResult = {
   actualTimeSeconds: number;
   currentFraction: number;
@@ -166,14 +214,74 @@ export type TimeConversionResult = {
 // equation for a marginal precision gain. altitudeM inputs are in meters
 // (marathonImpairmentFraction's own unit), not the km this file's
 // capacity-percent functions use -- see kmToMeters for the conversion.
+//
+// `homeAltitudeM` (optional, defaults to 0 -- sea level, i.e. fully
+// unacclimatized, exactly reproducing this function's own prior behavior
+// when omitted) is the one real acclimatization lever Daniels' own tables
+// don't provide on their own -- see homeAltitudeImpairmentMultiplier above
+// for how it's derived. It's applied independently at the current and
+// target altitude, since an athlete's real acclimatization to each is
+// governed by the same home altitude but a different race altitude.
 export function convertTimeBetweenAltitudes(
   actualTimeSeconds: number,
   currentAltitudeM: number,
   targetAltitudeM: number,
+  homeAltitudeM: number = 0,
 ): TimeConversionResult {
-  const currentFraction = marathonImpairmentFraction(currentAltitudeM) * altitudeDurationScale(actualTimeSeconds);
+  const currentFraction =
+    marathonImpairmentFraction(currentAltitudeM) *
+    altitudeDurationScale(actualTimeSeconds) *
+    homeAltitudeImpairmentMultiplier(homeAltitudeM, currentAltitudeM);
   const seaLevelTimeSeconds = actualTimeSeconds * (1 - currentFraction);
-  const targetFraction = marathonImpairmentFraction(targetAltitudeM) * altitudeDurationScale(actualTimeSeconds);
+  const targetFraction =
+    marathonImpairmentFraction(targetAltitudeM) *
+    altitudeDurationScale(actualTimeSeconds) *
+    homeAltitudeImpairmentMultiplier(homeAltitudeM, targetAltitudeM);
   const targetTimeSeconds = seaLevelTimeSeconds / (1 - targetFraction);
   return { actualTimeSeconds, currentFraction, seaLevelTimeSeconds, targetFraction, targetTimeSeconds };
+}
+
+export type WorkoutSplitResult = {
+  index: number;
+  actualTimeSeconds: number;
+  targetTimeSeconds: number;
+};
+
+// A structured workout (mile repeats, a fartlek ladder, progression splits)
+// is a series of short, independent efforts, not one continuous run -- each
+// split gets its own call to convertTimeBetweenAltitudes rather than one
+// call for the workout's total time. This matters physiologically, not
+// just mechanically: altitudeDurationScale reads each split's own duration,
+// so a set of ~6-8 minute mile reps is correctly scaled as a series of
+// short, largely-Mile-anchored efforts (per DURATION_ANCHORS in
+// altitude-engine.ts), rather than being averaged into one ~50-minute
+// blended duration that would push the whole workout toward the much
+// larger 5K/marathon-anchored scale a single continuous run of the same
+// total time would warrant. Converting the total instead of each part
+// would systematically overstate altitude's cost on a hard, short-interval
+// session.
+export function convertWorkoutSplits(
+  splitTimesSeconds: number[],
+  currentAltitudeM: number,
+  targetAltitudeM: number,
+  homeAltitudeM: number = 0,
+): WorkoutSplitResult[] {
+  return splitTimesSeconds.map((actualTimeSeconds, index) => {
+    const { targetTimeSeconds } = convertTimeBetweenAltitudes(actualTimeSeconds, currentAltitudeM, targetAltitudeM, homeAltitudeM);
+    return { index, actualTimeSeconds, targetTimeSeconds };
+  });
+}
+
+// Accepts a workout pasted or typed as free text -- newlines and/or commas
+// as separators, since that's how someone would naturally type "8:00, 7:30,
+// 7:00" or paste one split per line from a training log. Returns null for
+// any entry that isn't a valid mm:ss/h:mm:ss time rather than silently
+// dropping it, so the UI can point at exactly which split is malformed
+// instead of quietly producing a shorter list than the athlete entered.
+export function parseWorkoutSplitsInput(input: string): (number | null)[] {
+  return input
+    .split(/[,\n]/)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+    .map((part) => parseTimeToSeconds(part));
 }
