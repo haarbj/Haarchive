@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { TRAINING_PLANS } from "@/lib/training-plans/data";
+import { TRACK_PROFILES } from "@/lib/training-plans/track-profiles";
 import type { TrackKey } from "@/lib/training-plans/types";
 import { Card } from "@/components/ui/card";
 import {
@@ -43,10 +44,29 @@ export function TrainingPlansHome() {
         instead: these plans assume a real aerobic base already exists.
       </p>
 
+      {/* The generator, not the five fixed tracks -- a prominent link, not
+          buried after the five cards below, since this is the more
+          customized answer for anyone whose own numbers don't land neatly
+          on one of the five reference tracks. */}
+      <Card padding="md" emphasis className="mt-8">
+        <p className="font-semibold text-zinc-900 dark:text-white">Want a plan built from your own numbers instead?</p>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+          Enter your goal race, date, mileage, and days per week to generate a custom day-by-day plan -- free, no
+          account needed.
+        </p>
+        <Link
+          href="/training-plans/build"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 underline decoration-black/20 underline-offset-4 transition hover:decoration-black/60 dark:text-white dark:decoration-white/30 dark:hover:decoration-white/70"
+        >
+          Build my plan <span aria-hidden="true">→</span>
+        </Link>
+      </Card>
+
       <div className="mt-8 space-y-4">
         {TRACK_ORDER.map((track) => {
           const plans = TRAINING_PLANS.filter((plan) => plan.track === track);
           const reference = plans[0];
+          const profile = TRACK_PROFILES[track];
           return (
             <Card key={track} padding="md">
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -56,7 +76,10 @@ export function TrainingPlansHome() {
                   </h3>
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
                     ~{formatMiles(reference.referenceAvgWeeklyMiles)}/week average · peak week{" "}
-                    {formatMiles(reference.referencePeakWeeklyMiles)}
+                    {formatMiles(reference.referencePeakWeeklyMiles)} · goal times {profile.goalTimeRange}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">
+                    Best for: {profile.recommendedFor.join(" · ")}
                   </p>
                 </div>
                 <div className="flex gap-2">

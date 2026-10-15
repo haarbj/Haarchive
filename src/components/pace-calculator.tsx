@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { FitnessModelComparisonNote } from "@/components/fitness-model-comparison-note";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
+import { Button } from "@/components/ui/button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { bpmFromPercent, estimateMaxHr } from "@/lib/hr-model";
@@ -1215,17 +1216,11 @@ export function PaceCalculator() {
 
       <div className={`${statCardClass} text-center`}>
         <p className="text-sm text-zinc-700 dark:text-zinc-200">
-          Want a training plan built around your goals, mileage, schedule,
-          and training history?
+          Want a training plan built around your goal, mileage, and schedule?
         </p>
-        <button
-          type="button"
-          disabled
-          title="Personalized training plans are coming soon"
-          className="mt-4 inline-flex cursor-not-allowed items-center gap-1.5 rounded-full bg-black/5 px-5 py-2.5 text-sm font-semibold text-zinc-400 dark:bg-white/5 dark:text-zinc-500"
-        >
-          Coming Soon
-        </button>
+        <Button href="/training-plans/build" size="lg" className="mt-4">
+          Build my plan
+        </Button>
         <p className="mt-4 border-t border-black/10 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-zinc-300">
           Or browse the{" "}
           <Link

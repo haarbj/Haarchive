@@ -5,9 +5,11 @@ import Link from "next/link";
 
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { segmentedButtonClass, sectionLabelClass, statCardClass } from "@/lib/tool-styles";
+import { eyebrowClass } from "@/lib/section-styles";
 import {
   type DistanceUnit,
   hasDistancePlaceholder,
+  isGoalRaceDay,
   renderDescription,
   scaleDistance,
   scaleForTargetPeak,
@@ -145,9 +147,15 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
 
       <div className="space-y-8">
         {weeks.map((week, weekIndex) => {
-          const weekTotal = week.reduce((sum, day) => sum + scaleDistance(day.totalDistance, scale), 0);
+          const weekTotal = week.reduce(
+            (sum, day) =>
+              sum + (isGoalRaceDay(day.description) ? day.totalDistance : scaleDistance(day.totalDistance, scale)),
+            0,
+          );
+          const weekNote = plan.weeklyNotes?.[weekIndex];
           return (
             <div key={weekIndex}>
+              {weekNote?.phaseLabel ? <p className={`${eyebrowClass} mb-1`}>{weekNote.phaseLabel}</p> : null}
               <div className="flex items-baseline justify-between">
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Week {weekIndex + 1}</h3>
                 <p className="text-sm text-zinc-600 dark:text-zinc-300">
@@ -157,7 +165,9 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
               <div className="mt-3 divide-y divide-black/5 overflow-hidden rounded-xl border border-black/10 dark:divide-white/10 dark:border-white/10">
                 {week.map((day, dayIndex) => {
                   const isQuality = day.description !== "Rest" && !hasDistancePlaceholder(day.description);
-                  const dayDistance = scaleDistance(day.totalDistance, scale);
+                  const dayDistance = isGoalRaceDay(day.description)
+                    ? day.totalDistance
+                    : scaleDistance(day.totalDistance, scale);
                   return (
                     <div
                       key={dayIndex}
@@ -190,6 +200,16 @@ export function PlanPage({ plan }: { plan: TrainingPlan }) {
                   );
                 })}
               </div>
+              {weekNote?.paragraphs.length ? (
+                <div className="mt-4 space-y-3">
+                  <p className={eyebrowClass}>Notes</p>
+                  {weekNote.paragraphs.map((paragraph, i) => (
+                    <p key={i} className="text-sm leading-6 text-zinc-600 dark:text-zinc-300">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
             </div>
           );
         })}
