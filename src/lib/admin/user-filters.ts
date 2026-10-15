@@ -10,9 +10,10 @@ export type FilterableUser = {
   contentContributor: boolean;
   reviewer: boolean;
   trainingDashboardAccess: boolean;
+  privateCoach: boolean;
 };
 
-export type UserTypeFilter = "admin" | "contributor" | "reviewer" | "coach" | "none";
+export type UserTypeFilter = "admin" | "contributor" | "reviewer" | "coach" | "private_coach" | "none";
 
 export function matchesUserSearch(user: FilterableUser, query: string): boolean {
   const q = query.trim().toLowerCase();
@@ -30,8 +31,16 @@ export function matchesUserType(user: FilterableUser, type: UserTypeFilter | und
       return user.reviewer;
     case "coach":
       return user.trainingDashboardAccess;
+    case "private_coach":
+      return user.privateCoach;
     case "none":
-      return !user.isAdmin && !user.contentContributor && !user.reviewer && !user.trainingDashboardAccess;
+      return (
+        !user.isAdmin &&
+        !user.contentContributor &&
+        !user.reviewer &&
+        !user.trainingDashboardAccess &&
+        !user.privateCoach
+      );
     default:
       return true;
   }

@@ -1,9 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { formatMiles, formatRelativeTime } from "@/lib/format";
+import { formatMiles, formatRelativeTime, formatWeekday } from "@/lib/format";
 
 function isoMinutesAgo(minutes: number): string {
   return new Date(Date.now() - minutes * 60 * 1000).toISOString();
 }
+
+describe("formatWeekday", () => {
+  it("returns a short weekday label for a known Monday", () => {
+    // Locale-tolerant on purpose (toLocaleDateString's exact string is
+    // environment-dependent) -- just confirms it's a short, non-numeric
+    // label distinct from a full weekday name.
+    const result = formatWeekday("2026-08-24");
+    expect(result.length).toBeGreaterThan(0);
+    expect(result).not.toMatch(/^\d/);
+  });
+
+  it("gives different weekdays for consecutive days", () => {
+    expect(formatWeekday("2026-08-24")).not.toBe(formatWeekday("2026-08-25"));
+  });
+});
 
 describe("formatRelativeTime", () => {
   it("says just now for anything under a minute", () => {

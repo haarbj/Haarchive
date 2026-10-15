@@ -10,6 +10,7 @@ describe("updateUserPermissionsSchema", () => {
       expect(result.data.contentContributor).toBe(false);
       expect(result.data.reviewer).toBe(false);
       expect(result.data.trainingDashboardAccess).toBe(false);
+      expect(result.data.privateCoach).toBe(false);
     }
   });
 
@@ -18,12 +19,14 @@ describe("updateUserPermissionsSchema", () => {
       userId: "11111111-1111-4111-8111-111111111111",
       contentContributor: "true",
       reviewer: "true",
+      privateCoach: "true",
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.contentContributor).toBe(true);
       expect(result.data.reviewer).toBe(true);
       expect(result.data.trainingDashboardAccess).toBe(false);
+      expect(result.data.privateCoach).toBe(true);
     }
   });
 

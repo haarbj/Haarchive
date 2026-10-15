@@ -28,23 +28,25 @@ export async function updateUserPermissions(
     contentContributor: formData.get("contentContributor"),
     reviewer: formData.get("reviewer"),
     trainingDashboardAccess: formData.get("trainingDashboardAccess"),
+    privateCoach: formData.get("privateCoach"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
 
-  const { userId, contentContributor, reviewer, trainingDashboardAccess } = parsed.data;
+  const { userId, contentContributor, reviewer, trainingDashboardAccess, privateCoach } = parsed.data;
   const admin = createServiceRoleClient();
 
   const { error: deleteError } = await admin
     .from("user_permissions")
     .delete()
     .eq("user_id", userId)
-    .in("permission", ["content_contributor", "reviewer"]);
+    .in("permission", ["content_contributor", "reviewer", "private_coach"]);
   if (deleteError) return { error: deleteError.message };
 
   const toGrant = [
     contentContributor && "content_contributor",
     reviewer && "reviewer",
-  ].filter((permission): permission is "content_contributor" | "reviewer" => Boolean(permission));
+    privateCoach && "private_coach",
+  ].filter((permission): permission is "content_contributor" | "reviewer" | "private_coach" => Boolean(permission));
 
   if (toGrant.length > 0) {
     const { error: insertError } = await admin

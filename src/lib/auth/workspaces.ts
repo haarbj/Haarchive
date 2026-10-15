@@ -26,6 +26,20 @@ export function buildAccountWorkspaces(session: AppSession): Workspace[] {
   const workspaces: Workspace[] = [];
   workspaces.push({ label: "Dashboard", href: "/dashboard", showTrainingPlanLink: session.isAthlete });
   if (session.isCoach) workspaces.push({ label: "Coach Dashboard", href: "/coach" });
+  // Private 1-on-1 coaching -- shown for either side of the relationship:
+  // a coach managing their roster, or an athlete who's been accepted by
+  // one. isPrivateCoach and isCoachedAthlete are independent (see
+  // AppSession), but both land on the same role-aware /coaching entry
+  // point, so one shared menu item covers both. The label itself still
+  // needs to differ, though: a bare "Coaching" read by an athlete who
+  // isn't also a coach could plausibly be misread as "the people I
+  // coach," not "the coaching I receive" -- "My Coaching" removes that
+  // ambiguity. A coach (whether or not also a coached athlete themselves)
+  // keeps the plain label, since the page's own internal "Your Coaching"/
+  // "Your Own Training" sub-headers already disambiguate the dual-role case.
+  if (session.isPrivateCoach || session.isCoachedAthlete) {
+    workspaces.push({ label: session.isPrivateCoach ? "Coaching" : "My Coaching", href: "/coaching" });
+  }
   if (hasAnyContentPermission(session.permissions) || session.isAdmin) {
     workspaces.push({ label: "Contributor Workspace", href: "/contribute" });
   }

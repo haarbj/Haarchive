@@ -32,14 +32,32 @@ describe("hasAnyContentPermission", () => {
     expect(hasAnyContentPermission([])).toBe(false);
   });
 
-  it("returns true when at least one permission is present", () => {
+  it("returns true when at least one real content-collaboration permission is present", () => {
     expect(hasAnyContentPermission(["reviewer"])).toBe(true);
+    expect(hasAnyContentPermission(["content_contributor"])).toBe(true);
+  });
+
+  it("returns false for private_coach alone -- it shares the enum but is not a content-collaboration permission", () => {
+    expect(hasAnyContentPermission(["private_coach"])).toBe(false);
+  });
+
+  it("returns true if a real content permission is present alongside private_coach", () => {
+    expect(hasAnyContentPermission(["private_coach", "reviewer"])).toBe(true);
   });
 });
 
 describe("CONTENT_PERMISSIONS", () => {
   it("never includes admin -- admin stays ADMIN_EMAILS-only", () => {
     expect(CONTENT_PERMISSIONS).not.toContain("admin");
-    expect(CONTENT_PERMISSIONS).toEqual(["content_contributor", "reviewer"]);
+    expect(CONTENT_PERMISSIONS).toEqual(["content_contributor", "reviewer", "private_coach"]);
+  });
+});
+
+describe("private_coach permission", () => {
+  it("is a real ContentPermission value, independent of the other two", () => {
+    const permissions: ContentPermission[] = ["private_coach"];
+    expect(hasContentPermission(permissions, "private_coach")).toBe(true);
+    expect(hasContentPermission(permissions, "reviewer")).toBe(false);
+    expect(hasContentPermission(permissions, "content_contributor")).toBe(false);
   });
 });

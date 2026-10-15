@@ -10,6 +10,7 @@ function makeUser(overrides: Partial<FilterableUser> = {}): FilterableUser {
     contentContributor: false,
     reviewer: false,
     trainingDashboardAccess: false,
+    privateCoach: false,
     ...overrides,
   };
 }
@@ -54,10 +55,19 @@ describe("matchesUserType", () => {
     expect(matchesUserType(makeUser({ trainingDashboardAccess: false }), "coach")).toBe(false);
   });
 
+  it("private_coach filter matches only private coach access, independent of the team coach flag", () => {
+    expect(matchesUserType(makeUser({ privateCoach: true }), "private_coach")).toBe(true);
+    expect(matchesUserType(makeUser({ privateCoach: false }), "private_coach")).toBe(false);
+    expect(matchesUserType(makeUser({ trainingDashboardAccess: true, privateCoach: false }), "private_coach")).toBe(
+      false,
+    );
+  });
+
   it("none filter matches only users with no elevated role at all", () => {
     expect(matchesUserType(makeUser(), "none")).toBe(true);
     expect(matchesUserType(makeUser({ reviewer: true }), "none")).toBe(false);
     expect(matchesUserType(makeUser({ isAdmin: true }), "none")).toBe(false);
+    expect(matchesUserType(makeUser({ privateCoach: true }), "none")).toBe(false);
   });
 
   it("undefined type matches everyone (the 'All' pill)", () => {

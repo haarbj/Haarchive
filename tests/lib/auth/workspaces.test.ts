@@ -15,6 +15,9 @@ function baseSession(overrides: Partial<NonNullable<AppSession>> = {}): AppSessi
     approved: false,
     isAdmin: false,
     permissions: [],
+    isPrivateCoach: false,
+    isSelfServeCoach: false,
+    isCoachedAthlete: false,
     ...overrides,
   };
 }
@@ -87,6 +90,32 @@ describe("buildAccountWorkspaces", () => {
       baseSession({ isAdmin: true, permissions: ["content_contributor"] }),
     );
     expect(workspaces.filter((w) => w.href === "/contribute")).toHaveLength(1);
+  });
+
+  it("shows Coaching for a private coach", () => {
+    const workspaces = buildAccountWorkspaces(baseSession({ isPrivateCoach: true }));
+    expect(workspaces).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
+      { label: "Coaching", href: "/coaching" },
+    ]);
+  });
+
+  it("shows 'My Coaching' for a privately-coached athlete who isn't also a coach -- a bare 'Coaching' reads ambiguously as if they coach someone", () => {
+    const workspaces = buildAccountWorkspaces(baseSession({ isCoachedAthlete: true }));
+    expect(workspaces).toEqual([
+      { label: "Dashboard", href: "/dashboard", showTrainingPlanLink: false },
+      { label: "My Coaching", href: "/coaching" },
+    ]);
+  });
+
+  it("keeps the plain 'Coaching' label for a coach, even if they're also a coached athlete themselves", () => {
+    const workspaces = buildAccountWorkspaces(baseSession({ isPrivateCoach: true, isCoachedAthlete: true }));
+    expect(workspaces).toContainEqual({ label: "Coaching", href: "/coaching" });
+  });
+
+  it("does not duplicate the coaching workspace for a user who is both a private coach and (separately) a coached athlete", () => {
+    const workspaces = buildAccountWorkspaces(baseSession({ isPrivateCoach: true, isCoachedAthlete: true }));
+    expect(workspaces.filter((w) => w.href === "/coaching")).toHaveLength(1);
   });
 
   it("shows every workspace, in a fixed order, for athlete + coach + contributor + admin", () => {

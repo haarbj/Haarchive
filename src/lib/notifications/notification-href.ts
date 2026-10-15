@@ -29,6 +29,43 @@ export function notificationHref(type: NotificationType, relatedEntityId: string
   if (type === "question_submitted") {
     return relatedEntityId ? `/admin/questions/${relatedEntityId}` : "/admin/questions";
   }
+  if (type === "coaching_invite_received") {
+    // relatedEntityId is the invite's token (see inviteAthlete) -- routes
+    // straight to the same accept-or-sign-in page the copy-link workflow
+    // already uses, /coaching-invite/[token], not a separate destination.
+    return relatedEntityId ? `/coaching-invite/${relatedEntityId}` : "/coaching";
+  }
+  if (
+    type === "workout_assigned" ||
+    type === "workout_updated" ||
+    type === "workout_completed" ||
+    type === "workout_comment" ||
+    type === "missed_workout"
+  ) {
+    return relatedEntityId ? `/coaching/workouts/${relatedEntityId}` : "/coaching";
+  }
+  if (type === "message_received") {
+    // relatedEntityId is the coach_athlete_id (see sendCoachAthleteMessage)
+    // -- routes straight into that specific thread, which now exists
+    // (/coaching/messages/[coachAthleteId]).
+    return relatedEntityId ? `/coaching/messages/${relatedEntityId}` : "/coaching";
+  }
+  if (type === "checkin_submitted") {
+    // relatedEntityId is the submitting athlete's user id (see
+    // checkin/actions.ts) -- the coach's per-athlete page now renders their
+    // latest check-in directly.
+    return relatedEntityId ? `/coaching/athletes/${relatedEntityId}` : "/coaching";
+  }
+  if (type === "pain_reported" || type === "race_approaching") {
+    // pain_reported is fired from two different places with two different
+    // relatedEntityId shapes (checkin/actions.ts passes the athlete's user
+    // id; completion-actions.ts passes a scheduled_workout id) -- there's
+    // no way to tell which one a bare id is here, so this deliberately
+    // stays on the generic, always-valid /coaching landing rather than
+    // guessing and risking a 404 for the other source. race_approaching is
+    // never actually fired yet (see attention.ts) -- same safe fallback.
+    return "/coaching";
+  }
   if (type === "bug_report_submitted") {
     // No per-report detail page exists (out of scope for this feature) --
     // relatedEntityId is still stored on the notification (see

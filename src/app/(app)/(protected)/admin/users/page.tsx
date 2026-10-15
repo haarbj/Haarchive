@@ -27,6 +27,8 @@ export type UserRow = {
   contentContributor: boolean;
   reviewer: boolean;
   trainingDashboardAccess: boolean;
+  /** Private 1-on-1 coaching product access -- see user_permissions' "private_coach" value. */
+  privateCoach: boolean;
   isAdmin: boolean;
   createdAt: string;
   lastSignInAt: string | null;
@@ -45,7 +47,8 @@ const TYPE_OPTIONS: { key: TypeKey; label: string }[] = [
   { key: "contributor", label: "Content Contributor" },
   { key: "reviewer", label: "Reviewer" },
   { key: "coach", label: "Coach (Training Dashboard)" },
-  // "Non-contributor": holds none of the four roles above -- a plain
+  { key: "private_coach", label: "Private Coach" },
+  // "Non-contributor": holds none of the roles above -- a plain
   // signed-up community member with no elevated access at all.
   { key: "none", label: "Non-contributor" },
 ];
@@ -90,6 +93,9 @@ async function loadUsers(): Promise<UserRow[]> {
   const reviewerIds = new Set(
     (permissionRows ?? []).filter((p) => p.permission === "reviewer").map((p) => p.user_id),
   );
+  const privateCoachIds = new Set(
+    (permissionRows ?? []).filter((p) => p.permission === "private_coach").map((p) => p.user_id),
+  );
 
   const countByUser = (rows: { user_id: string }[] | null) => {
     const counts = new Map<string, number>();
@@ -104,6 +110,7 @@ async function loadUsers(): Promise<UserRow[]> {
     contentContributor: contributorIds.has(u.id),
     reviewer: reviewerIds.has(u.id),
     trainingDashboardAccess: coachIds.has(u.id),
+    privateCoach: privateCoachIds.has(u.id),
     isAdmin: isAdminEmail(u.email),
     status: approvedIds.has(u.id) ? "active" : "pending",
     learningEventCount: learningEventCounts.get(u.id) ?? 0,
@@ -128,8 +135,8 @@ export default async function UsersPermissionsPage({
       <BackLink href="/admin">Back to Admin</BackLink>
       <Heading>Users & Permissions</Heading>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
-        Grant or remove Content Contributor, Reviewer, and Training Dashboard access. These are independent
-        of each other and of Admin, which is only ever set via the ADMIN_EMAILS environment variable.
+        Grant or remove Content Contributor, Reviewer, Training Dashboard, and Private Coach access. These are
+        independent of each other and of Admin, which is only ever set via the ADMIN_EMAILS environment variable.
       </p>
 
       <form className="mt-8" action="/admin/users">

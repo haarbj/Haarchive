@@ -9,6 +9,10 @@ export const updateUserPermissionsSchema = z.object({
   contentContributor: z.coerce.boolean().optional().default(false),
   reviewer: z.coerce.boolean().optional().default(false),
   trainingDashboardAccess: z.coerce.boolean().optional().default(false),
+  // Gates the private 1-on-1 coaching product (coach_athletes) -- see
+  // 20260825050000_private_coaching_permission_and_audit.sql. Independent
+  // of trainingDashboardAccess, which gates the unrelated team product.
+  privateCoach: z.coerce.boolean().optional().default(false),
 });
 
 export type UpdateUserPermissionsInput = z.infer<typeof updateUserPermissionsSchema>;

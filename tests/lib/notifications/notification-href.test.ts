@@ -50,6 +50,54 @@ describe("notificationHref -- existing types (regression, unchanged by the bug-r
   });
 });
 
+describe("notificationHref -- private coaching", () => {
+  it("coaching_invite_received deep-links to the invite page (relatedEntityId = invite token)", () => {
+    expect(notificationHref("coaching_invite_received", "token-1")).toBe("/coaching-invite/token-1");
+  });
+
+  it("coaching_invite_received falls back to /coaching without an id", () => {
+    expect(notificationHref("coaching_invite_received", null)).toBe("/coaching");
+  });
+
+  it.each(["workout_assigned", "workout_completed", "workout_comment", "missed_workout"] as const)(
+    "%s deep-links to the specific workout when an id is present",
+    (type) => {
+      expect(notificationHref(type, "workout-1")).toBe("/coaching/workouts/workout-1");
+    },
+  );
+
+  it.each(["workout_assigned", "workout_completed", "workout_comment", "missed_workout"] as const)(
+    "%s falls back to /coaching without an id",
+    (type) => {
+      expect(notificationHref(type, null)).toBe("/coaching");
+    },
+  );
+
+  it("message_received deep-links to the specific thread (relatedEntityId = coach_athlete_id)", () => {
+    expect(notificationHref("message_received", "rel-1")).toBe("/coaching/messages/rel-1");
+  });
+
+  it("message_received falls back to /coaching without an id", () => {
+    expect(notificationHref("message_received", null)).toBe("/coaching");
+  });
+
+  it("checkin_submitted deep-links to the athlete's page (relatedEntityId = athlete user id)", () => {
+    expect(notificationHref("checkin_submitted", "athlete-1")).toBe("/coaching/athletes/athlete-1");
+  });
+
+  it("checkin_submitted falls back to /coaching without an id", () => {
+    expect(notificationHref("checkin_submitted", null)).toBe("/coaching");
+  });
+
+  it.each(["pain_reported", "race_approaching"] as const)(
+    "%s always links to /coaching -- relatedEntityId shape is ambiguous (pain_reported) or never fired yet (race_approaching)",
+    (type) => {
+      expect(notificationHref(type, "some-id")).toBe("/coaching");
+      expect(notificationHref(type, null)).toBe("/coaching");
+    },
+  );
+});
+
 describe("notificationHref -- bug_report_submitted", () => {
   it("links to the bug-report inbox", () => {
     expect(notificationHref("bug_report_submitted", "report-1")).toBe("/admin/bug-reports");

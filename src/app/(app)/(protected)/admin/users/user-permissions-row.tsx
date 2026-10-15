@@ -17,6 +17,7 @@ type Props = {
   contentContributor: boolean;
   reviewer: boolean;
   trainingDashboardAccess: boolean;
+  privateCoach: boolean;
   isAdmin: boolean;
   createdAt: string;
   lastSignInAt: string | null;
@@ -31,6 +32,7 @@ export function UserPermissionsRow({
   contentContributor,
   reviewer,
   trainingDashboardAccess,
+  privateCoach,
   isAdmin,
   createdAt,
   lastSignInAt,
@@ -108,6 +110,10 @@ export function UserPermissionsRow({
         <label className="flex items-center gap-2">
           <input type="checkbox" name="trainingDashboardAccess" defaultChecked={trainingDashboardAccess} />
           Training Dashboard Access
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" name="privateCoach" defaultChecked={privateCoach} />
+          Private Coach
         </label>
       </div>
 
