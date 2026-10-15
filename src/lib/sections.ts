@@ -4053,13 +4053,19 @@ export const sections: Section[] = [
         linkText: "Marathon Pacing Calculator",
       },
       {
+        type: "paragraph",
+        text: "The Race Pace Planner takes a goal pace as a given, the same way this page's three models each produce one, and turns it into a race-day plan: a simplified mile-by-mile pace table, a fueling schedule, and segment-by-segment strategy. It's deliberately a lighter-weight sibling of the Marathon Pacing Calculator, built from what you can read off a course map rather than an uploaded GPS file, so reach for it when you want a quick, approachable plan and the Marathon Pacing Calculator when you want physics-level precision.",
+        linkHref: "/race-pace-planner",
+        linkText: "Race Pace Planner",
+      },
+      {
         type: "callout",
         variant: "takeaway",
         title: "Key Takeaways",
         items: [
           "Pace & HR, CV-Threshold, and Tinman all predict training paces from one recent race result, using three genuinely different methods, so disagreement between them is expected, not a sign one is wrong.",
           "Riegel is the fastest default, the statistical model is the most honest about its own uncertainty, and Tinman's curve is built specifically for Tom Schwartz's own thirteen-zone system.",
-          "Race Pace and Pace Percent are conversion tools, not predictions. GAP and Environmental adjust for terrain and weather. HR Threshold is a population reference. Marathon Pacing simulates race day using one of the three models as an input, it doesn't compete with it.",
+          "Race Pace and Pace Percent are conversion tools, not predictions. GAP and Environmental adjust for terrain and weather. HR Threshold is a population reference. Marathon Pacing and the Race Pace Planner both simulate race day using one of the three models as an input, they don't compete with it -- the Planner is the lighter-weight, course-map version of what Marathon Pacing does with an uploaded GPS file.",
         ],
       },
     ],
@@ -4142,6 +4148,14 @@ export const sections: Section[] = [
     mission:
       "Mile-by-mile marathon pacing built from real terrain, weather, and fatigue physiology -- not a preset pace table. Upload a course, pick a strategy and risk tolerance, and get paces, fueling, and an explanation for every mile.",
     topics: ["Terrain- and weather-adjusted pacing", "Glycogen and durability tracking", "Course-adaptive strategies"],
+    category: "tools",
+  },
+  {
+    slug: "race-pace-planner",
+    title: "Race Pace Planner",
+    mission:
+      "Turn a goal marathon pace into a race-day plan: a mile-by-mile pace table, a gel-by-gel fueling schedule, and segment-by-segment strategy -- built from a course map you can read, not a GPS file.",
+    topics: ["Progressive or even start", "Grade, heat, and altitude flags", "Fueling and caffeine protocol"],
     category: "tools",
   },
   {

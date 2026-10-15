@@ -1,5 +1,21 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, CloudSun, Compass, Flag, Gauge, HeartPulse, MountainSnow, Mountain, Percent, Route, Thermometer } from "lucide-react";
+import {
+  Activity,
+  ArrowUpDown,
+  CloudSun,
+  Compass,
+  Flag,
+  Gauge,
+  HeartPulse,
+  Milestone,
+  MountainSnow,
+  Mountain,
+  Percent,
+  Route,
+  Thermometer,
+  Utensils,
+  Wheat,
+} from "lucide-react";
 
 // Derived from what each tool's own mission/content actually says it does
 // (see choosing-a-pace-calculator's own essay in sections.ts, which is
@@ -8,11 +24,12 @@ import { Activity, CloudSun, Compass, Flag, Gauge, HeartPulse, MountainSnow, Mou
 // Three categories, not four or five: the tools genuinely split into "what
 // pace should I run" (predicts or converts a pace from your own fitness --
 // six tools, the largest and most central group), "how do real-world
-// conditions change that" (grade, heat, altitude, and weather -- four
-// tools), and "what do these numbers in my body actually mean" (a
-// population physiological reference -- currently just one tool, kept as
-// its own category rather than folded into either of the others since
-// it's neither a pace prediction nor a conditions adjustment).
+// conditions change that" (grade, heat, altitude, and weather -- five
+// tools), and "what do these numbers in my body actually mean or need" (a
+// population physiological reference plus fueling/hydration targets --
+// kept as its own category rather than folded into either of the others
+// since neither is a pace prediction or a conditions-based pace
+// adjustment, even though fueling takes temperature as an input).
 // Deliberately not "Calculators/Trackers/References/Converters" -- that
 // taxonomy describes implementation, not the problem a runner is actually
 // trying to solve, which is the one CATEGORY_LABELS is meant to answer.
@@ -73,6 +90,11 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   // pacing plan like every tool above it -- see this file's own header
   // comment on why that puts it here, not in Environment.
   "marathon-pacing-calculator": { icon: Route, accentFrom: "#06b6d4", accentTo: "#2563eb", category: "pacing" },
+  // Same reasoning as marathon-pacing-calculator above (its output -- a
+  // race-day plan -- is what puts it in Pacing), but a distinct icon/color
+  // since the two are deliberately different-weight siblings, not the
+  // same tool twice.
+  "race-pace-planner": { icon: Milestone, accentFrom: "#14b8a6", accentTo: "#0f766e", category: "pacing" },
   // Environment -- adjusts effort/pace for grade, heat, altitude, or
   // weather, rather than predicting fitness from a result or producing a
   // pacing plan.
@@ -80,6 +102,17 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   "environmental-calculator": { icon: CloudSun, accentFrom: "#06b6d4", accentTo: "#0ea5e9", category: "environment" },
   "heat-tracker": { icon: Thermometer, accentFrom: "#f97316", accentTo: "#dc2626", category: "environment" },
   "altitude-calculator": { icon: MountainSnow, accentFrom: "#94a3b8", accentTo: "#312e81", category: "environment" },
+  // Converts one specific performance between altitudes -- a genuinely
+  // different question from altitude-calculator's VO2max/capacity
+  // conversion (see that tool's own "Behind the calculator" section for
+  // the distinction), but still squarely an environmental adjustment, not
+  // a from-scratch pace prediction.
+  "altitude-adjusted-pace-calculator": {
+    icon: ArrowUpDown,
+    accentFrom: "#0891b2",
+    accentTo: "#1e3a8a",
+    category: "environment",
+  },
   // Physiology -- a population physiological reference, not a personal
   // pace prediction or a conditions adjustment; its own category rather
   // than folded into either of the other two for that reason, even though
@@ -87,4 +120,15 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   // own essay, which explicitly separates "population reference" from
   // both the pace-prediction models and the conditions-adjustment tools).
   "hr-threshold-calculator": { icon: HeartPulse, accentFrom: "#ef4444", accentTo: "#f43f5e", category: "physiology" },
+  // Fueling/hydration targets are a physiological prescription, not a
+  // pace prediction or a conditions-based pace adjustment -- same
+  // reasoning that puts hr-threshold-calculator here rather than in
+  // Environment despite temperature being one of its inputs.
+  "endurance-fueling-calculator": { icon: Utensils, accentFrom: "#f59e0b", accentTo: "#b45309", category: "physiology" },
+  // A race-week fueling prescription (carb-loading, breakfast, caffeine,
+  // and a gel schedule from a flat goal duration), not a per-hour target
+  // driven by effort intensity -- same category as
+  // endurance-fueling-calculator for the same reason, a distinct icon and
+  // color since the two are siblings, not the same tool twice.
+  "fueling-calculator": { icon: Wheat, accentFrom: "#ca8a04", accentTo: "#854d0e", category: "physiology" },
 };
