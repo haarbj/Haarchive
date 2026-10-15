@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 14, 2026](https://brodyhaar.com/release-notes)):** Fueling Calculator launched
+**Latest update ([Oct 15, 2026](https://brodyhaar.com/release-notes)):** Notification fixes: no more duplicate check-in alerts, program assignments now notify
 
 Recent highlights:
-- Heat Tracker recalibrated to marathon-performance research, with a new heat-acclimation toggle (Oct 14, 2026)
-- Race Pace Planner launched (Oct 14, 2026)
-- The five marathon frameworks and the 5K Crash Course are now assignable program templates (Oct 13, 2026)
+- Strength training scheduled into assigned programs (Oct 15, 2026)
+- Training-background intake for new athletes (Oct 15, 2026)
+- Structured post-season review for athletes (Oct 15, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
