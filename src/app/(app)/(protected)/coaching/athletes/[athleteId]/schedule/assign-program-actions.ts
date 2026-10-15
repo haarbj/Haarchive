@@ -25,6 +25,12 @@ import {
 import { mondaysInRange } from "@/lib/private-coaching/training-phases";
 import { MILE_METERS } from "@/lib/race-distances";
 import { mostRecentMonday } from "@/lib/week";
+import {
+  scheduleStrengthTraining,
+  type AppliedStrengthOption,
+  type StrengthGatingInput,
+  type StrengthSelections,
+} from "@/lib/private-coaching/strength-scheduling";
 
 export type AssignProgramInput = {
   programId: string;
@@ -43,6 +49,9 @@ export type AssignProgramInput = {
   anchor: GenerateProgramAnchor;
   targetPeakWeeklyMiles: number | null;
   targetPeakWeeklyDurationS: number | null;
+  /** Item 30's foundation + three performance options -- see strength-scheduling.ts. */
+  strengthSelections: StrengthSelections;
+  strengthGating: StrengthGatingInput;
 };
 
 // Which PaceReferenceKey values this Program's variant actually uses as a
@@ -203,7 +212,7 @@ export async function proposePhaseLayoutFromRaceDay(input: {
   };
 }
 
-type LoadResult = { error: string } | { generation: GenerateProgramGeneration };
+type LoadResult = { error: string } | { generation: GenerateProgramGeneration; appliedStrengthOptions: AppliedStrengthOption[] };
 type GenerateProgramGeneration = ResolvedProgramGeneration;
 
 /**
@@ -347,7 +356,23 @@ async function loadResolvedGeneration(input: AssignProgramInput): Promise<LoadRe
   });
 
   if ("error" in generationResult) return { error: generationResult.error };
-  return { generation: generationResult.result };
+
+  // Strength training placement happens here, after the generation
+  // itself resolves, rather than inside resolveProgramGeneration --
+  // program-generation.ts stays methodology-agnostic (its own header
+  // comment says so explicitly), and this feature is specifically Item
+  // 30's framework, not something every Program needs to know about.
+  const { days: daysWithStrength, appliedOptions } = scheduleStrengthTraining(
+    generationResult.result.days,
+    generationResult.result.phases,
+    input.strengthSelections,
+    input.strengthGating,
+  );
+
+  return {
+    generation: { ...generationResult.result, days: daysWithStrength },
+    appliedStrengthOptions: appliedOptions,
+  };
 }
 
 type ProgramDayRow = {
@@ -538,13 +563,18 @@ async function findOverlappingPhases(
 
 export async function previewProgramAssignment(
   input: AssignProgramInput,
-): Promise<{ error?: string; result?: ResolvedProgramGeneration; overlappingPhases?: OverlappingPhase[] }> {
+): Promise<{
+  error?: string;
+  result?: ResolvedProgramGeneration;
+  overlappingPhases?: OverlappingPhase[];
+  appliedStrengthOptions?: AppliedStrengthOption[];
+}> {
   const loaded = await loadResolvedGeneration(input);
   if ("error" in loaded) return { error: loaded.error };
 
   const supabase = await createClient();
   const overlappingPhases = await findOverlappingPhases(supabase, input.athleteId, loaded.generation.phases);
-  return { result: loaded.generation, overlappingPhases };
+  return { result: loaded.generation, overlappingPhases, appliedStrengthOptions: loaded.appliedStrengthOptions };
 }
 
 export type AssignProgramResult = {
@@ -555,6 +585,7 @@ export type AssignProgramResult = {
   clearedWorkouts?: number;
   clearedWeekPlans?: number;
   clearedPhases?: number;
+  appliedStrengthOptions?: AppliedStrengthOption[];
 };
 
 export async function assignProgramToAthlete(
@@ -695,6 +726,7 @@ export async function assignProgramToAthlete(
     clearedWorkouts: data?.clearedWorkouts,
     clearedWeekPlans: data?.clearedWeekPlans,
     clearedPhases: data?.clearedPhases,
+    appliedStrengthOptions: loaded.appliedStrengthOptions,
   };
 }
 

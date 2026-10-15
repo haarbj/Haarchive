@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-15",
+    headline: "Strength training scheduled into assigned programs",
+    detail:
+      "A coach assigning a program can now attach a real strength-training routine, and it's scheduled onto the athlete's actual calendar rather than noted as a side recommendation. Placement is purely additive: it only attaches to easy-run days the program already scheduled, so a long run, threshold day, or interval session is never touched or displaced.",
+  },
+  {
+    date: "2026-10-15",
     headline: "Training-background intake for new athletes",
     detail:
       "A coached athlete can now record what their training actually looked like before joining -- a previous coach, a self-trained buildup, or no structured training at all, with peak/recent mileage and injury history where it applies. The coach sees this in the athlete's schedule view and it feeds plan-selection guidance, so a self-trained athlete's real history counts the same as a prior coach's, and a true beginner gets routed to the 5K Crash Course instead of an assumed buildup.",

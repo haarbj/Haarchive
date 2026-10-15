@@ -13,6 +13,12 @@ import {
 } from "./assign-program-actions";
 import type { GeneratePhaseSelection, ResolvedProgramGeneration } from "@/lib/private-coaching/program-generation";
 import { type PhaseLayoutProposal, weeksAvailableBetween } from "@/lib/private-coaching/race-anchored-planning";
+import {
+  DEFAULT_STRENGTH_SELECTIONS,
+  plyometricsEligibility,
+  type AppliedStrengthOption,
+  type StrengthSelections,
+} from "@/lib/private-coaching/strength-scheduling";
 import { checkRedemptionRaceGuardrail } from "./post-race-actions";
 import type { RedemptionGuardrail } from "@/lib/private-coaching/post-race";
 import { checkMileageMatch } from "./onboarding-actions";
@@ -108,6 +114,19 @@ export function AssignProgramForm({
   const volumeVariants = program?.volumeVariants ?? [];
 
   const [phaseSelections, setPhaseSelections] = useState<Map<string, PhaseSelectionState>>(() => defaultSelections(variant));
+  // Item 30's foundation + three performance options. Foundation defaults
+  // on for every athlete ("when in doubt, stability work only" --
+  // strengthTrainingGuidance); the three performance options default off,
+  // since each is a real coaching judgment about this specific athlete,
+  // not something to guess at. The three gating facts below are the same
+  // coach-asserted, never-persisted inputs specialBlockEligibility's own
+  // UI (advanced-techniques-panel.tsx) already uses -- this module makes
+  // no diagnosis and reads none; an injury or setback case routes to the
+  // existing injury paradigms and a professional, same as everywhere else.
+  const [strengthSelections, setStrengthSelections] = useState<StrengthSelections>(DEFAULT_STRENGTH_SELECTIONS);
+  const [strengthInjuryProne, setStrengthInjuryProne] = useState(false);
+  const [strengthRebounding, setStrengthRebounding] = useState(false);
+  const [strengthExperienced, setStrengthExperienced] = useState(false);
   const [anchorMode, setAnchorMode] = useState<"startDate" | "targetEventDate">("startDate");
   const [startDateInput, setStartDateInput] = useState("");
   const [targetEventDateInput, setTargetEventDateInput] = useState("");
@@ -159,6 +178,7 @@ export function AssignProgramForm({
   const [confirmedWarnings, setConfirmedWarnings] = useState(false);
   const [overlappingPhases, setOverlappingPhases] = useState<OverlappingPhase[]>([]);
   const [clearOverlapping, setClearOverlapping] = useState(false);
+  const [appliedStrengthOptions, setAppliedStrengthOptions] = useState<AppliedStrengthOption[]>([]);
   const [assignResult, setAssignResult] = useState<{
     phasesCreated?: number;
     workoutsCreated?: number;
@@ -166,7 +186,30 @@ export function AssignProgramForm({
     clearedWorkouts?: number;
     clearedWeekPlans?: number;
     clearedPhases?: number;
+    appliedStrengthOptions?: AppliedStrengthOption[];
   } | null>(null);
+
+  // How many weeks this assignment currently selects, in total -- plyometrics'
+  // eight-week floor (plyometricsEligibility) is checked against this live,
+  // before the coach ever previews, so an ineligible choice shows its
+  // rationale immediately rather than only after a round trip. Cheap
+  // enough to recompute every render; not memoized because `variant` is
+  // itself a plain derived value, not a stable reference to depend on.
+  let selectedWeeksTotal = 0;
+  for (const phase of variant?.phases ?? []) {
+    const selection = phaseSelections.get(phase.id);
+    const included = !phase.isOptional || (selection?.include ?? false);
+    if (!included) continue;
+    const weeks = Number(selection?.weeksInput);
+    if (Number.isFinite(weeks) && weeks > 0) selectedWeeksTotal += weeks;
+  }
+
+  const plyometricsGate = plyometricsEligibility({
+    injuryProne: strengthInjuryProne,
+    reboundingFromSetback: strengthRebounding,
+    experiencedAthlete: strengthExperienced,
+    totalWeeks: selectedWeeksTotal,
+  });
 
   function updateProgram(nextProgramId: string) {
     setProgramId(nextProgramId);
@@ -264,6 +307,12 @@ export function AssignProgramForm({
             : { kind: "startDate", startDate: startDateInput, targetEventDate: targetEventDateInput || null },
         targetPeakWeeklyMiles,
         targetPeakWeeklyDurationS,
+        strengthSelections,
+        strengthGating: {
+          injuryProne: strengthInjuryProne,
+          reboundingFromSetback: strengthRebounding,
+          experiencedAthlete: strengthExperienced,
+        },
       },
     };
   }
@@ -320,6 +369,7 @@ export function AssignProgramForm({
     if (result.error) return setError(result.error);
     setPreview(result.result ?? null);
     setOverlappingPhases(result.overlappingPhases ?? []);
+    setAppliedStrengthOptions(result.appliedStrengthOptions ?? []);
     setClearOverlapping(false);
 
     // Checked against the plan's own first day, which is what the preview
@@ -392,6 +442,9 @@ export function AssignProgramForm({
             {assignResult.skippedDates.length} {assignResult.skippedDates.length === 1 ? "day" : "days"} already had a
             workout and {assignResult.skippedDates.length === 1 ? "was" : "were"} left as-is.
           </p>
+        ) : null}
+        {assignResult.appliedStrengthOptions && assignResult.appliedStrengthOptions.length > 0 ? (
+          <StrengthOptionsSummary options={assignResult.appliedStrengthOptions} />
         ) : null}
         <Button
           type="button"
@@ -596,6 +649,114 @@ export function AssignProgramForm({
       ) : null}
 
       <div>
+        <p className={labelClass}>Strength training</p>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          The foundation is on by default for every athlete -- when in doubt, stability work only. Add a performance
+          option only when there&rsquo;s a specific reason to.
+        </p>
+        <div className="mt-2 space-y-2">
+          <label className="flex items-start gap-2 rounded-control border border-black/10 p-2 text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-300">
+            <input
+              type="checkbox"
+              checked={strengthSelections.foundation}
+              onChange={(e) => {
+                setStrengthSelections((prev) => ({ ...prev, foundation: e.target.checked }));
+                setPreview(null);
+              }}
+              className="mt-0.5 h-4 w-4"
+            />
+            <span>
+              <span className="font-medium text-zinc-900 dark:text-white">Foundation</span> -- modified pedestal + hip
+              stability, on every easy day. No equipment, minimal time, never impairs the next day&rsquo;s run.
+            </span>
+          </label>
+          <label className="flex items-start gap-2 rounded-control border border-black/10 p-2 text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-300">
+            <input
+              type="checkbox"
+              checked={strengthSelections.heavyLifting}
+              onChange={(e) => {
+                setStrengthSelections((prev) => ({ ...prev, heavyLifting: e.target.checked }));
+                setPreview(null);
+              }}
+              className="mt-0.5 h-4 w-4"
+            />
+            <span>
+              <span className="font-medium text-zinc-900 dark:text-white">Heavy lifting</span> -- twice weekly after an
+              easy run, never before it. Full volume in the general phase, 60-70% maintenance in supportive/specific.
+            </span>
+          </label>
+          <label className="flex items-start gap-2 rounded-control border border-black/10 p-2 text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-300">
+            <input
+              type="checkbox"
+              checked={strengthSelections.hillSprints}
+              onChange={(e) => {
+                setStrengthSelections((prev) => ({ ...prev, hillSprints: e.target.checked }));
+                setPreview(null);
+              }}
+              className="mt-0.5 h-4 w-4"
+            />
+            <span>
+              <span className="font-medium text-zinc-900 dark:text-white">Hill sprints</span> -- appended after easy
+              runs, year-round. The most running-specific option, minimal soreness.
+            </span>
+          </label>
+          <div className="rounded-control border border-black/10 p-2 dark:border-white/10">
+            <label className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+              <input
+                type="checkbox"
+                checked={strengthSelections.plyometrics}
+                onChange={(e) => {
+                  setStrengthSelections((prev) => ({ ...prev, plyometrics: e.target.checked }));
+                  setPreview(null);
+                }}
+                className="mt-0.5 h-4 w-4"
+              />
+              <span>
+                <span className="font-medium text-zinc-900 dark:text-white">Plyometrics</span> -- once weekly after an
+                easy run. The highest injury risk of the three performance options.
+              </span>
+            </label>
+            {strengthSelections.plyometrics ? (
+              <div className="mt-2 space-y-1.5 border-t border-black/10 pt-2 dark:border-white/10">
+                <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">
+                  Eligibility
+                </p>
+                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={strengthExperienced}
+                    onChange={(e) => setStrengthExperienced(e.target.checked)}
+                  />
+                  Healthy, experienced athlete
+                </label>
+                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={strengthInjuryProne}
+                    onChange={(e) => setStrengthInjuryProne(e.target.checked)}
+                  />
+                  Injury-prone
+                </label>
+                <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={strengthRebounding}
+                    onChange={(e) => setStrengthRebounding(e.target.checked)}
+                  />
+                  Rebounding from a recent setback
+                </label>
+                {!plyometricsGate.eligible ? (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Will be withheld: {plyometricsGate.reasons.join(" ")}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div>
         <p className={labelClass}>Anchor</p>
         <div className="mt-1.5 flex gap-2">
           <button
@@ -724,6 +885,8 @@ export function AssignProgramForm({
             </WarningList>
           ) : null}
 
+          {appliedStrengthOptions.length > 0 ? <StrengthOptionsSummary options={appliedStrengthOptions} /> : null}
+
           {hasWarnings ? (
             <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
               <input type="checkbox" checked={confirmedWarnings} onChange={(e) => setConfirmedWarnings(e.target.checked)} className="h-4 w-4" />
@@ -798,6 +961,39 @@ function defaultSelections(variant: ProgramOptionVariant | null | undefined): Ma
 
 function phaseLabel(variant: ProgramOptionVariant | null, phaseDefinitionId: string): string {
   return variant?.phases.find((p) => p.id === phaseDefinitionId)?.label ?? "a phase";
+}
+
+const STRENGTH_OPTION_LABELS: Record<AppliedStrengthOption["key"], string> = {
+  foundation: "Foundation",
+  "heavy-lifting": "Heavy lifting",
+  plyometrics: "Plyometrics",
+  "hill-sprints": "Hill sprints",
+};
+
+// The coach-facing summary of which strength options actually landed on
+// this assignment's calendar, and why -- including, by design, why one
+// the coach asked for was withheld (e.g. plyometrics withheld for an
+// athlete rebounding from a setback). Shown both in the preview, before
+// anything is written, and on the confirmation screen after assigning.
+function StrengthOptionsSummary({ options }: { options: AppliedStrengthOption[] }) {
+  return (
+    <div className="border-t border-black/10 pt-3 dark:border-white/10">
+      <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+        Strength training
+      </p>
+      <ul className="mt-1.5 space-y-1.5">
+        {options.map((option) => (
+          <li key={option.key} className="text-sm text-zinc-600 dark:text-zinc-300">
+            <span className={`font-medium ${option.included ? "text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400"}`}>
+              {STRENGTH_OPTION_LABELS[option.key]}
+              {option.included ? " — included" : " — not included"}:
+            </span>{" "}
+            {option.rationale}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 function WarningList({ title, children }: { title: string; children: ReactNode }) {
