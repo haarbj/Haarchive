@@ -12,6 +12,7 @@ import {
   POST_SEASON_REVIEW_SECTIONS,
   postRaceFlow,
   postSeasonReviewMessage,
+  postSeasonReviewQuestions,
   redemptionRaceGuardrail,
 } from "@/lib/private-coaching/post-race";
 import { explainerParagraphs } from "@/lib/private-coaching/phase-explainers";
@@ -253,5 +254,27 @@ describe("post-season review", () => {
     // The received markdown read "Would you cahange anything".
     expect(postSeasonReviewMessage()).toMatch(/Would you change anything/);
     expect(postSeasonReviewMessage()).not.toMatch(/cahange/);
+  });
+});
+
+describe("postSeasonReviewQuestions", () => {
+  it("flattens every section's questions in order, with a stable per-question key", () => {
+    const questions = postSeasonReviewQuestions();
+    expect(questions).toHaveLength(19);
+    expect(questions[0]).toEqual({
+      sectionHeading: "Reviewing your training",
+      questionIndex: 0,
+      question: "On which days did you feel your strongest in workouts?",
+    });
+    expect(questions[18]).toEqual({
+      sectionHeading: "Reviewing the race",
+      questionIndex: 8,
+      question: "If you could run it again tomorrow at the same fitness, what would you do differently?",
+    });
+  });
+
+  it("carries one entry per question with no duplicate (section, index) pairs", () => {
+    const keys = postSeasonReviewQuestions().map((q) => `${q.sectionHeading}:${q.questionIndex}`);
+    expect(new Set(keys).size).toBe(keys.length);
   });
 });

@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { loadPostRaceFlow, sendPostSeasonReview, type PostRaceView } from "./post-race-actions";
+import {
+  loadPostRaceFlow,
+  loadPostSeasonReviewAnswers,
+  sendPostSeasonReview,
+  type PostRaceView,
+  type PostSeasonReviewAnswerView,
+} from "./post-race-actions";
 import { formatDate } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +25,9 @@ export function PostRacePanel({ athleteId }: { athleteId: string }) {
   const [view, setView] = useState<PostRaceView | null>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<PostSeasonReviewAnswerView[] | null>(null);
+  const [answersLoading, setAnswersLoading] = useState(false);
+  const [answersError, setAnswersError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,24 +95,67 @@ export function PostRacePanel({ athleteId }: { athleteId: string }) {
                   const result = await sendPostSeasonReview({ athleteId });
                   setSending(false);
                   if (result.error) return setError(result.error);
-                  setView((prev) =>
-                    prev?.flow
-                      ? {
-                          ...prev,
-                          flow: {
-                            ...prev.flow,
-                            steps: prev.flow.steps.map((s) =>
-                              s.key === "post-season-review" ? { ...s, done: true } : s,
-                            ),
-                          },
-                        }
-                      : prev,
-                  );
+                  // Re-fetch rather than patch the step's done flag locally
+                  // -- the new request's id (reviewRequestId) is what lets
+                  // "View answers" appear below, and it only comes from the
+                  // real load.
+                  loadPostRaceFlow({ athleteId }).then(setView);
                   router.refresh();
                 }}
               >
                 {sending ? "Sending…" : "Send it in the message thread"}
               </Button>
+            ) : null}
+
+            {step.done && step.key === "post-season-review" && view.reviewRequestId ? (
+              <div className="mt-2">
+                {answers === null ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={answersLoading}
+                    onClick={async () => {
+                      setAnswersLoading(true);
+                      setAnswersError(null);
+                      const result = await loadPostSeasonReviewAnswers({
+                        athleteId,
+                        requestId: view.reviewRequestId!,
+                      });
+                      setAnswersLoading(false);
+                      if (result.error) return setAnswersError(result.error);
+                      setAnswers(result.answers ?? []);
+                    }}
+                  >
+                    {answersLoading
+                      ? "Loading…"
+                      : view.reviewSubmitted
+                        ? "View answers"
+                        : "View answers (not submitted yet)"}
+                  </Button>
+                ) : (
+                  <div className="space-y-3 rounded-control border border-black/10 p-3 dark:border-white/10">
+                    {!view.reviewSubmitted ? (
+                      <p className="text-xs text-amber-700 dark:text-amber-400">
+                        Not submitted yet -- showing whatever they&rsquo;ve saved so far.
+                      </p>
+                    ) : null}
+                    {answers.length === 0 ? (
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400">No answers yet.</p>
+                    ) : (
+                      answers.map((a) => (
+                        <div key={`${a.sectionHeading}-${a.questionIndex}`}>
+                          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{a.question}</p>
+                          <p className="mt-0.5 text-sm text-zinc-800 dark:text-zinc-200">
+                            {a.answer.trim() ? a.answer : <span className="italic text-zinc-400">No answer yet</span>}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+                {answersError ? <p className="mt-2 text-sm text-red-600 dark:text-red-400">{answersError}</p> : null}
+              </div>
             ) : null}
           </li>
         ))}
@@ -111,7 +163,8 @@ export function PostRacePanel({ athleteId }: { athleteId: string }) {
 
       {error ? <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
       <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-        The review goes into your message thread, so their answers come back as a reply rather than a form.
+        The review also posts to your message thread, but their structured answers above are the real record -- that&rsquo;s
+        what to go through together when you plan what&rsquo;s next.
       </p>
     </Card>
   );

@@ -6,26 +6,27 @@ import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { getAthleteGoalRace } from "@/lib/private-coaching/goal-race";
 import {
-  POST_SEASON_REVIEW_MARKER,
   RECOVERY_FRAMEWORK_KEY,
   postRaceFlow,
   postSeasonReviewMessage,
+  postSeasonReviewQuestions,
   redemptionRaceGuardrail,
   type PostRaceFlow,
   type RedemptionGuardrail,
 } from "@/lib/private-coaching/post-race";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 // Part H, coach-only. Every step's "done" state is DERIVED from real data
 // rather than stored as bookkeeping, so the flow cannot claim something
 // happened that did not, and a coach who does one of these steps by hand
 // outside the flow still sees it as done.
 //
-// The one place that is not clean is whether the review has been sent:
-// there is no record of "a questionnaire was sent", so it is detected by
-// looking for its own marker line in the message thread. That works and is
-// honest about what it is, with one real consequence -- renaming the
-// questionnaire's title would make previously-sent copies stop being
-// recognised, and the flow would offer it again.
+// Whether the review has been sent now comes from a real
+// post_season_review_requests row (scoped to this athlete + this race),
+// not from searching the thread for the questionnaire's own title line.
+// That earlier approach had a real consequence -- renaming the title would
+// make previously-sent copies stop being recognised -- which this removes
+// entirely: nothing here reads POST_SEASON_REVIEW_TITLE/MARKER at all.
 
 export type PostRaceView = {
   error?: string;
@@ -34,6 +35,9 @@ export type PostRaceView = {
   recoveryProgramId?: string | null;
   raceName?: string | null;
   raceDate?: string | null;
+  /** The most recent review request for this race, so the panel can offer "view answers". */
+  reviewRequestId?: string | null;
+  reviewSubmitted?: boolean;
 };
 
 async function requireCoachOf(athleteId: string) {
@@ -84,25 +88,32 @@ export async function loadPostRaceFlow(input: { athleteId: string }): Promise<Po
   // recovery program -- recovery is the step before planning, not the plan.
   const nextCyclePlanned = after.some((p) => p.source_program_id != null && p.source_program_id !== recoveryProgram?.id);
 
-  const { data: messages } = await supabase
-    .from("coach_athlete_messages")
-    .select("id")
+  // Scoped to this athlete + this race, and ordered so the most recent
+  // send wins if a coach ever sent it more than once -- a real request
+  // row, not a text search, so renaming the questionnaire's title cannot
+  // affect this.
+  const { data: reviewRequest } = await supabase
+    .from("post_season_review_requests")
+    .select("id, submitted_at")
     .eq("coach_athlete_id", relationshipId)
-    .ilike("body", `%${POST_SEASON_REVIEW_MARKER}%`)
+    .eq("goal_id", goalRace.id)
+    .order("sent_at", { ascending: false })
     .limit(1)
-    .returns<{ id: string }[]>();
+    .maybeSingle<{ id: string; submitted_at: string | null }>();
 
   return {
     flow: postRaceFlow({
       raceDate: goalRace.goalDate,
       today,
       recoveryAssigned,
-      reviewSent: (messages ?? []).length > 0,
+      reviewSent: reviewRequest != null,
       nextCyclePlanned,
     }),
     recoveryProgramId: recoveryProgram?.id ?? null,
     raceName: goalRace.raceName,
     raceDate: goalRace.goalDate,
+    reviewRequestId: reviewRequest?.id ?? null,
+    reviewSubmitted: reviewRequest?.submitted_at != null,
   };
 }
 
@@ -111,12 +122,54 @@ export async function sendPostSeasonReview(input: { athleteId: string }): Promis
   if ("error" in auth) return { error: auth.error };
   const { session, supabase, relationshipId } = auth;
 
-  const { error } = await supabase.from("coach_athlete_messages").insert({
-    coach_athlete_id: relationshipId,
-    sender_id: session.userId,
-    body: postSeasonReviewMessage(),
+  const goalRace = await getAthleteGoalRace(supabase, input.athleteId);
+  if (!goalRace) return { error: "No race on record to send this for." };
+
+  const { data: message, error: messageError } = await supabase
+    .from("coach_athlete_messages")
+    .insert({
+      coach_athlete_id: relationshipId,
+      sender_id: session.userId,
+      body: postSeasonReviewMessage(),
+    })
+    .select("id")
+    .single<{ id: string }>();
+  if (messageError) return { error: messageError.message };
+
+  // The structured record: a request row scoped to this race, plus one
+  // empty answer row per question, pre-created now so the athlete's form
+  // only ever updates an existing row rather than inserting one (see the
+  // migration's RLS -- the athlete has no insert policy on answers at
+  // all, by design).
+  const { data: request, error: requestError } = await supabase
+    .from("post_season_review_requests")
+    .insert({
+      coach_athlete_id: relationshipId,
+      coach_id: session.userId,
+      athlete_id: input.athleteId,
+      goal_id: goalRace.id,
+      message_id: message.id,
+    })
+    .select("id")
+    .single<{ id: string }>();
+  if (requestError) return { error: requestError.message };
+
+  const { error: answersError } = await supabase.from("post_season_review_answers").insert(
+    postSeasonReviewQuestions().map((q) => ({
+      request_id: request.id,
+      section_heading: q.sectionHeading,
+      question_index: q.questionIndex,
+      question: q.question,
+    })),
+  );
+  if (answersError) return { error: answersError.message };
+
+  await createNotification({
+    userId: input.athleteId,
+    type: "post_season_review_sent",
+    content: "Your coach sent you the post-season review for your race.",
+    relatedEntityId: request.id,
   });
-  if (error) return { error: error.message };
 
   revalidatePath(`/coaching/athletes/${input.athleteId}/schedule`);
   return { ok: true };
@@ -171,4 +224,57 @@ export async function checkRedemptionRaceGuardrail(input: {
       dnfFromMishap: input.dnfFromMishap === true,
     }),
   };
+}
+
+export type PostSeasonReviewAnswerView = { sectionHeading: string; questionIndex: number; question: string; answer: string };
+
+/**
+ * The coach-facing read of a sent review: per-question answers, not a
+ * thread dump. submittedAt is null while the athlete hasn't submitted yet
+ * -- the answer rows still exist (pre-created empty at send time), so this
+ * shows live progress rather than nothing.
+ */
+export async function loadPostSeasonReviewAnswers(
+  input: { athleteId: string; requestId: string },
+): Promise<{ error?: string; answers?: PostSeasonReviewAnswerView[]; submittedAt?: string | null }> {
+  const auth = await requireCoachOf(input.athleteId);
+  if ("error" in auth) return { error: auth.error };
+  const { supabase } = auth;
+
+  const { data: request } = await supabase
+    .from("post_season_review_requests")
+    .select("id, submitted_at")
+    .eq("id", input.requestId)
+    .eq("athlete_id", input.athleteId)
+    .maybeSingle<{ id: string; submitted_at: string | null }>();
+  if (!request) return { error: "Review request not found." };
+
+  const { data: rows, error } = await supabase
+    .from("post_season_review_answers")
+    .select("section_heading, question_index, question, answer")
+    .eq("request_id", input.requestId)
+    .returns<{ section_heading: string; question_index: number; question: string; answer: string }[]>();
+  if (error) return { error: error.message };
+
+  // Sorted by the questionnaire's own display order (section, then
+  // question index within it), not alphabetically by section_heading --
+  // "Reviewing the race" would otherwise sort ahead of "Reviewing your
+  // training" and show the race questions first.
+  const order = new Map(
+    postSeasonReviewQuestions().map((q, i) => [`${q.sectionHeading}:${q.questionIndex}`, i]),
+  );
+  const answers = (rows ?? [])
+    .map((r) => ({
+      sectionHeading: r.section_heading,
+      questionIndex: r.question_index,
+      question: r.question,
+      answer: r.answer,
+    }))
+    .sort(
+      (a, b) =>
+        (order.get(`${a.sectionHeading}:${a.questionIndex}`) ?? 0) -
+        (order.get(`${b.sectionHeading}:${b.questionIndex}`) ?? 0),
+    );
+
+  return { submittedAt: request.submitted_at, answers };
 }

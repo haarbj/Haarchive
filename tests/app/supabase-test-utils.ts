@@ -1,10 +1,11 @@
 import { vi } from "vitest";
 
 // A minimal, ordered fake for the Supabase query-builder chain used by
-// learning-actions.ts / knowledge-check-actions.ts (.from().select().eq()
-// .in().contains().order().limit().maybeSingle()/.returns(), plus
-// .insert()/.upsert()). Not a general-purpose Supabase mock -- just enough
-// chain surface for these two files' actual call shapes.
+// learning-actions.ts / knowledge-check-actions.ts / post-race-actions.ts
+// (.from().select().eq().in().gt().contains().order().limit()
+// .maybeSingle()/.returns(), plus .insert()/.upsert()/.single()). Not a
+// general-purpose Supabase mock -- just enough chain surface for these
+// files' actual call shapes.
 //
 // Deliberately a strict, ordered script rather than a table-keyed lookup:
 // each test lists the exact sequence of .from(table) calls production code
@@ -33,6 +34,7 @@ function createQueryBuilder(result: MockResult, calls: RecordedCall[]) {
     delete: (...args: unknown[]) => record("delete", args),
     eq: (...args: unknown[]) => record("eq", args),
     in: (...args: unknown[]) => record("in", args),
+    gt: (...args: unknown[]) => record("gt", args),
     contains: (...args: unknown[]) => record("contains", args),
     order: (...args: unknown[]) => record("order", args),
     limit: (...args: unknown[]) => record("limit", args),

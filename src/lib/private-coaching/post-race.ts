@@ -372,20 +372,23 @@ export function redemptionRaceGuardrail(input: {
 // is the source artifact, and the app should not be parsing a presentation
 // format to decide what to send.
 //
-// Sent through the coach-athlete messaging that already exists rather than
-// as a new structured-answers feature. That is a deliberate scope choice
-// with a real consequence, stated here so it is not mistaken for finished
-// work: the athlete's answers come back as prose in the thread, so nothing
-// aggregates them or carries them into the next cycle automatically. The
-// source itself tells the athlete to "keep your answers somewhere you'll
-// find them" and expects the two of them to go through it together, so
-// prose in the thread is a faithful first version. Capturing the answers as
-// structured data, so patterns across cycles could be read, is a real
-// follow-up and not something this pretends to do.
+// Sent through the coach-athlete messaging that already exists AND, as of
+// the structured-capture follow-up below, as a real per-question record
+// (see post-season-review-actions.ts and the post_season_review_requests/
+// post_season_review_answers tables). The thread message stays the
+// notification path -- an athlete who has the thread open sees the
+// questions without navigating anywhere else -- but it is no longer the
+// source of truth for the athlete's answers or for whether a review has
+// already been sent.
 
 export const POST_SEASON_REVIEW_TITLE = "Post-Season Review";
 
-/** A stable line used to recognise that this has already been sent. */
+/**
+ * No longer used to detect a resend (that's a real post_season_review_
+ * requests row now, see post-season-review-actions.ts) -- kept as the
+ * thread message's own title line, which a resend-detection no longer
+ * depends on, so renaming it is safe.
+ */
 export const POST_SEASON_REVIEW_MARKER = "Post-Season Review";
 
 export const POST_SEASON_REVIEW_INTRO =
@@ -433,4 +436,24 @@ export function postSeasonReviewMessage(): string {
       `${section.heading}\n${section.questions.map((question, index) => `${index + 1}. ${question}`).join("\n")}`,
   );
   return [POST_SEASON_REVIEW_TITLE, POST_SEASON_REVIEW_INTRO, ...sections, POST_SEASON_REVIEW_CLOSING].join("\n\n");
+}
+
+/** One question, flattened out of its section, with the position that keys its stored answer. */
+export type PostSeasonReviewQuestionRef = { sectionHeading: string; questionIndex: number; question: string };
+
+/**
+ * Every question in the questionnaire, flattened in display order. Used
+ * both to pre-create one empty answer row per question when the coach
+ * sends it, and to render the athlete's form -- a single source for "what
+ * are the questions" rather than the sections array and the DB rows
+ * drifting apart.
+ */
+export function postSeasonReviewQuestions(): PostSeasonReviewQuestionRef[] {
+  return POST_SEASON_REVIEW_SECTIONS.flatMap((section) =>
+    section.questions.map((question, questionIndex) => ({
+      sectionHeading: section.heading,
+      questionIndex,
+      question,
+    })),
+  );
 }

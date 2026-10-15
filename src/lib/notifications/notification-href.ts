@@ -56,6 +56,19 @@ export function notificationHref(type: NotificationType, relatedEntityId: string
     // latest check-in directly.
     return relatedEntityId ? `/coaching/athletes/${relatedEntityId}` : "/coaching";
   }
+  if (type === "post_season_review_sent") {
+    // relatedEntityId is the post_season_review_requests id (see
+    // sendPostSeasonReview) -- routes the athlete straight to their own
+    // structured form for it.
+    return relatedEntityId ? `/coaching/post-season-review/${relatedEntityId}` : "/coaching";
+  }
+  if (type === "post_season_review_submitted") {
+    // relatedEntityId is the submitting athlete's user id (see
+    // submitPostSeasonReview) -- same destination as checkin_submitted:
+    // the coach's per-athlete schedule page, where the post-race panel now
+    // shows the structured answers.
+    return relatedEntityId ? `/coaching/athletes/${relatedEntityId}/schedule` : "/coaching";
+  }
   if (type === "pain_reported" || type === "race_approaching") {
     // pain_reported is fired from two different places with two different
     // relatedEntityId shapes (checkin/actions.ts passes the athlete's user

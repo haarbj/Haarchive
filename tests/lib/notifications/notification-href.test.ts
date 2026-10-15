@@ -89,6 +89,22 @@ describe("notificationHref -- private coaching", () => {
     expect(notificationHref("checkin_submitted", null)).toBe("/coaching");
   });
 
+  it("post_season_review_sent deep-links the athlete to their own form (relatedEntityId = request id)", () => {
+    expect(notificationHref("post_season_review_sent", "request-1")).toBe("/coaching/post-season-review/request-1");
+  });
+
+  it("post_season_review_sent falls back to /coaching without an id", () => {
+    expect(notificationHref("post_season_review_sent", null)).toBe("/coaching");
+  });
+
+  it("post_season_review_submitted deep-links the coach to the athlete's schedule page (relatedEntityId = athlete user id)", () => {
+    expect(notificationHref("post_season_review_submitted", "athlete-1")).toBe("/coaching/athletes/athlete-1/schedule");
+  });
+
+  it("post_season_review_submitted falls back to /coaching without an id", () => {
+    expect(notificationHref("post_season_review_submitted", null)).toBe("/coaching");
+  });
+
   it.each(["pain_reported", "race_approaching"] as const)(
     "%s always links to /coaching -- relatedEntityId shape is ambiguous (pain_reported) or never fired yet (race_approaching)",
     (type) => {

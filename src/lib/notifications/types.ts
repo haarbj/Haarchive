@@ -25,4 +25,9 @@ export type NotificationType =
   | "checkin_submitted"
   | "pain_reported"
   | "race_approaching"
-  | "missed_workout";
+  | "missed_workout"
+  // Post-race structured review (Part H follow-up): sent to the athlete
+  // when the coach sends the post-season review, submitted to the coach
+  // when the athlete finishes it.
+  | "post_season_review_sent"
+  | "post_season_review_submitted";
