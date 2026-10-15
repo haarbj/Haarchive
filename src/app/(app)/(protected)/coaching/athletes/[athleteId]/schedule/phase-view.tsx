@@ -15,9 +15,7 @@ import { formatWeeksAwayLabel, weeksUntilGoalRace, type AthleteGoalRace } from "
 import { DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals";
 import { mostRecentMonday } from "@/lib/week";
 import { formatDate } from "@/lib/format";
-import type { AthleteMostRecentRace } from "@/lib/private-coaching/pace-reference";
 import { PhaseForm, type ExistingPhase, type PhaseGoalOption } from "./phase-form";
-import { ImportPlanForm } from "./import-plan-form";
 import { AssignProgramForm, type ProgramOption } from "./assign-program-form";
 import { applyRaceLeadIn, type ApplyRaceLeadInResult } from "./race-lead-in-actions";
 import { PlanHealthPanel } from "./plan-health-panel";
@@ -57,7 +55,6 @@ export function PhaseView({
   goalRace,
   goalOptions,
   copiedWeek,
-  mostRecentRace,
   programs,
   preselectProgramId,
 }: {
@@ -67,11 +64,6 @@ export function PhaseView({
   goalRace: AthleteGoalRace | null;
   goalOptions: PhaseGoalOption[];
   copiedWeek: string | null;
-  // Seeds the "Import a training plan" form's reference-race fields --
-  // see ImportPlanForm's own comment on why this comes from a prop rather
-  // than fetching itself (Phase View is the one place that already has a
-  // server-side fetch boundary; the form itself is a client component).
-  mostRecentRace: AthleteMostRecentRace | null;
   // This coach's own Program library, fed into "Assign a program" --
   // same server-fetch-boundary reasoning as mostRecentRace above.
   programs: ProgramOption[];
@@ -84,7 +76,7 @@ export function PhaseView({
   const router = useRouter();
   const [leadInPending, setLeadInPending] = useState(false);
   const [leadInResult, setLeadInResult] = useState<ApplyRaceLeadInResult | null>(null);
-  const [formTarget, setFormTarget] = useState<"new" | "import" | "assign-program" | ExistingPhase | null>(
+  const [formTarget, setFormTarget] = useState<"new" | "assign-program" | ExistingPhase | null>(
     preselectProgramId ? "assign-program" : null,
   );
 
@@ -256,14 +248,7 @@ export function PhaseView({
         )}
       </Card>
 
-      {formTarget === "import" ? (
-        <ImportPlanForm
-          athleteId={athleteId}
-          initialRace={mostRecentRace}
-          onDone={() => setFormTarget(null)}
-          onCancel={() => setFormTarget(null)}
-        />
-      ) : formTarget === "assign-program" ? (
+      {formTarget === "assign-program" ? (
         <AssignProgramForm
           athleteId={athleteId}
           programs={programs}
@@ -283,9 +268,6 @@ export function PhaseView({
         <div className="flex flex-wrap items-center gap-3">
           <Button type="button" variant="outline" size="sm" onClick={() => setFormTarget("new")}>
             + Add phase
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => setFormTarget("import")}>
-            Import a training plan
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={() => setFormTarget("assign-program")}>
             Assign a program

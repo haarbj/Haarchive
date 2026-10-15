@@ -798,7 +798,7 @@ async function PhaseViewSection({
   // weeks this query fetches training_week_plans for can never drift out
   // of sync with the weeks the client actually displays.
   const weekList = roadmapWeeks(phases);
-  const [{ data: weekPlanRows }, mostRecentRace, programs] = await Promise.all([
+  const [{ data: weekPlanRows }, programs] = await Promise.all([
     weekList.length
       ? supabase
           .from("training_week_plans")
@@ -807,11 +807,6 @@ async function PhaseViewSection({
           .in("week_start", weekList)
           .returns<WeekPlanRow[]>()
       : Promise.resolve({ data: [] as WeekPlanRow[] }),
-    // Seeds the Import a training plan form's reference-race fields --
-    // same self-contained getAthleteMostRecentRace call WeekViewSection
-    // already makes for its own, unrelated purpose (see that section's own
-    // comment on why each view re-resolves rather than sharing a fetch).
-    getAthleteMostRecentRace(supabase, athleteId),
     loadProgramOptions(supabase),
   ]);
 
@@ -834,7 +829,6 @@ async function PhaseViewSection({
         goalRace={goalRace}
         goalOptions={goalOptions}
         copiedWeek={copiedWeek}
-        mostRecentRace={mostRecentRace}
         programs={programs}
         preselectProgramId={preselectProgramId}
       />
