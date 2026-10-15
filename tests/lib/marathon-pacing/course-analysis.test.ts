@@ -258,4 +258,89 @@ describe("analyzeCourse", () => {
     const empty: ParsedRoute = { points: [], source: "gpx", startTimeIso: null, movingTimeS: null };
     expect(() => analyzeCourse(empty)).toThrow();
   });
+
+  describe("elevation spike rejection", () => {
+    it("rejects a single isolated GPS/barometric glitch instead of costing it as real terrain", () => {
+      // A flat 3-mile course except one bad reading (+60m for one single
+      // point, both its neighbors flat) -- a classic isolated instrument
+      // glitch, not a real feature. Without spike rejection, the moving
+      // average alone would smear that +60m across the smoothing window
+      // around it and Minetti-cost a transient climb+drop that never
+      // happened. stepM matches the 20m resample interval exactly so the
+      // glitch reliably lands on a grid point rather than falling
+      // between two resample targets and being skipped regardless of
+      // filtering (see the threshold test below for the full reasoning).
+      const route = buildRoute(
+        [
+          { distanceM: 0, elevationM: 0 },
+          { distanceM: 4800, elevationM: 0 }, // 3 miles, flat
+        ],
+        20,
+      );
+      const glitchIndex = Math.floor(route.points.length / 2);
+      route.points[glitchIndex] = { ...route.points[glitchIndex], elevationM: 60 };
+
+      const analysis = analyzeCourse(route);
+
+      // A real +60m single-step spike survives as two sharp legs (a climb
+      // up, a drop back down) if left unfiltered -- confirm neither
+      // appears, and the course still reads as flat.
+      expect(analysis.totalClimbM).toBeLessThan(5);
+      expect(analysis.totalDescentM).toBeLessThan(5);
+      for (const cost of analysis.perMileTerrainCostJPerKg) {
+        expect(cost).toBeLessThan(5);
+      }
+    });
+
+    it("leaves a real sustained climb untouched -- only an isolated single-point disagreement is rejected", () => {
+      // Confirms the filter isn't just flattening everything: a real climb
+      // spread across many consecutive points (each one close to its
+      // neighbors, moving the same direction) must survive exactly as it
+      // did before spike rejection existed. Climbs back down afterward
+      // (rather than staying flat) so the climb leg actually closes at the
+      // peak instead of extending into a flat tail and diluting its own
+      // avgGrade -- a property of the existing turning-point segmentation,
+      // unrelated to spike rejection, that a flat-tailed profile would
+      // otherwise obscure.
+      const route = buildRoute([
+        { distanceM: 0, elevationM: 0 },
+        { distanceM: 2000, elevationM: 150 }, // a real, sustained 7.5% climb
+        { distanceM: 4000, elevationM: 0 }, // and back down, so the climb leg closes at the peak
+      ]);
+      const analysis = analyzeCourse(route);
+      expect(analysis.totalClimbM).toBeGreaterThan(140);
+      expect(analysis.steepestClimb?.avgGrade).toBeGreaterThan(0.06);
+    });
+
+    it("exposes the threshold so a caller can tune it, matching the other already-tunable knobs", () => {
+      // stepM matches the 20m default resample interval exactly here (the
+      // default test helper's 5m stepM is realistic for a dense watch
+      // recording, but means a single raw glitch often falls strictly
+      // between two resample grid points and never reaches the grid at
+      // all regardless of filtering -- a real property of nearest-
+      // bracket resampling, not something this test is about). At 20m
+      // spacing the glitch IS a grid point, so whether it reaches the
+      // smoothed grid depends only on whether rejectElevationSpikes
+      // caught it -- which is exactly what this test needs to isolate.
+      const route = buildRoute(
+        [
+          { distanceM: 0, elevationM: 0 },
+          { distanceM: 4800, elevationM: 0 },
+        ],
+        20,
+      );
+      const glitchIndex = Math.floor(route.points.length / 2);
+      route.points[glitchIndex] = { ...route.points[glitchIndex], elevationM: 15 };
+
+      // A looser, caller-supplied threshold (30m) lets the 15m spike pass
+      // through resampleAndSmooth's moving average untouched, which
+      // measurably inflates the local terrain cost around it; the
+      // default 10m threshold catches and flattens it first.
+      const withDefaultThreshold = analyzeCourse(route);
+      const withLooserThreshold = analyzeCourse(route, { spikeThresholdM: 30 });
+      const totalCost = (a: ReturnType<typeof analyzeCourse>) => a.perMileTerrainCostJPerKg.reduce((sum, c) => sum + c, 0);
+      expect(totalCost(withDefaultThreshold)).toBeLessThan(1);
+      expect(totalCost(withLooserThreshold)).toBeGreaterThan(totalCost(withDefaultThreshold));
+    });
+  });
 });

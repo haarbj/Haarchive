@@ -109,6 +109,8 @@ export type CourseAnalysisOptions = {
   resampleIntervalM?: number;
   /** Moving-average smoothing window applied before climb/descent detection. */
   smoothingWindowM?: number;
+  /** Elevation deviation (m) from a robust local-line prediction beyond which a raw point is treated as an instrument glitch and replaced, before resampling/smoothing. */
+  spikeThresholdM?: number;
   /** Minimum net elevation swing (m) for a reversal to count as a new leg rather than GPS/barometric noise. */
   minSwingM?: number;
   /** Grade-histogram bucket width, as a decimal grade (0.02 = 2 percentage points). */
@@ -122,6 +124,14 @@ const DEFAULT_SMOOTHING_WINDOW_M = 100;
 const DEFAULT_MIN_SWING_M = 10;
 const DEFAULT_HISTOGRAM_BUCKET_WIDTH = 0.02;
 const DEFAULT_HISTOGRAM_RANGE = 0.2;
+// A single bad GPS/barometric elevation reading deviating from its
+// immediate neighbors by more than this (meters) is treated as an
+// instrument glitch, not a real feature -- comfortably above typical
+// consumer GPS/barometric elevation noise (a few meters) and well below
+// what a real one-point jump in a running course would ever be. See
+// rejectElevationSpikes' own comment for why this has to run before
+// resampleAndSmooth's moving average, not instead of it.
+const DEFAULT_SPIKE_THRESHOLD_M = 10;
 
 type RawSample = { distanceM: number; elevationM: number };
 type GridPoint = { distanceM: number; elevationM: number };
@@ -145,6 +155,58 @@ function buildRawSamples(route: ParsedRoute): RawSample[] {
   }
 
   return samples;
+}
+
+function median(values: number[]): number {
+  const sorted = values.slice().sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+}
+
+const SPIKE_FILTER_HALF_WINDOW = 2; // each side -- 4 neighbors total, excluding the point itself
+
+/**
+ * Catches an isolated bad elevation reading -- a GPS jump or a single
+ * barometric glitch -- before resampleAndSmooth's moving average ever
+ * sees it. A moving average can't distinguish a real feature from a bad
+ * point; it just blends the bad value into every output point within
+ * half the smoothing window on either side, corrupting the local grade
+ * (and therefore the Minetti-costed terrain energy, perMileTerrainCostJPerKg)
+ * across a stretch far wider than the one bad GPS fix that caused it.
+ *
+ * For each point, compares it against the MEDIAN (not the mean, and not
+ * a 2-point linear interpolation) of its ±SPIKE_FILTER_HALF_WINDOW
+ * neighbors, excluding itself -- a genuinely robust local estimate: a
+ * single bad neighbor can't drag a median of 4 the way it would drag a
+ * 2-point line through it, which is what a first attempt at this (using
+ * literal straight-line interpolation between the immediate left/right
+ * neighbors only) got wrong -- it correctly flattened the glitch itself,
+ * but ALSO flagged the glitch's own immediate neighbors, because their
+ * "prediction" was a line drawn straight through the still-uncorrected
+ * glitch value. The median-of-a-window approach doesn't have that
+ * failure mode: a lone bad point is outvoted by the 3 good points
+ * remaining in any window that contains it, for every point whose window
+ * contains it, not only the point itself.
+ *
+ * Real terrain survives this because a genuine climb or drop moves
+ * several consecutive points together, so each point's own value sits
+ * close to its neighbors' median rather than being the lone disagreement.
+ */
+function rejectElevationSpikes(samples: RawSample[], thresholdM: number): RawSample[] {
+  if (samples.length < 2 * SPIKE_FILTER_HALF_WINDOW + 1) return samples;
+
+  const cleaned = samples.slice();
+  for (let i = 0; i < samples.length; i++) {
+    const neighborElevations: number[] = [];
+    for (let j = Math.max(0, i - SPIKE_FILTER_HALF_WINDOW); j <= Math.min(samples.length - 1, i + SPIKE_FILTER_HALF_WINDOW); j++) {
+      if (j !== i) neighborElevations.push(samples[j].elevationM);
+    }
+    const expectedElevationM = median(neighborElevations);
+    if (Math.abs(samples[i].elevationM - expectedElevationM) > thresholdM) {
+      cleaned[i] = { distanceM: samples[i].distanceM, elevationM: expectedElevationM };
+    }
+  }
+  return cleaned;
 }
 
 function resampleAndSmooth(samples: RawSample[], resampleIntervalM: number, smoothingWindowM: number): GridPoint[] {
@@ -435,11 +497,13 @@ export function analyzeCourse(route: ParsedRoute, options: CourseAnalysisOptions
   const minSwingM = options.minSwingM ?? DEFAULT_MIN_SWING_M;
   const histogramBucketWidth = options.histogramBucketWidth ?? DEFAULT_HISTOGRAM_BUCKET_WIDTH;
   const histogramRange = options.histogramRange ?? DEFAULT_HISTOGRAM_RANGE;
+  const spikeThresholdM = options.spikeThresholdM ?? DEFAULT_SPIKE_THRESHOLD_M;
 
-  const samples = buildRawSamples(route);
-  if (samples.length < 2) {
+  const rawSamples = buildRawSamples(route);
+  if (rawSamples.length < 2) {
     throw new Error("analyzeCourse requires at least two route points with GPS and elevation data.");
   }
+  const samples = rejectElevationSpikes(rawSamples, spikeThresholdM);
 
   const grid = resampleAndSmooth(samples, resampleIntervalM, smoothingWindowM);
   const totalDistanceM = grid[grid.length - 1].distanceM;
