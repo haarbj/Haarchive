@@ -1,11 +1,11 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useId } from "react";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
+import { useAutoSaveForm } from "@/lib/use-auto-save-form";
 import { updateProfile } from "./actions";
-import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/ui/form-error";
+import { AutoSaveStatus } from "@/components/ui/auto-save-status";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -18,26 +18,29 @@ type SettingsFormProps = {
 
 export function SettingsForm({ initialDisplayName, initialUnits, initialEmailUnsubscribed, email }: SettingsFormProps) {
   const baseId = useId();
-  const [state, formAction, isPending] = useActionState(updateProfile, {});
+  const { state, formRef, isPending, scheduleSave, saveNow } = useAutoSaveForm(updateProfile, {});
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form
+      ref={formRef}
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveNow();
+      }}
+      className="space-y-5"
+    >
       <div>
         <p className={labelClass}>Email</p>
         <p className="text-sm text-zinc-600 dark:text-zinc-300">{email}</p>
       </div>
 
       <label className="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-        {/* Lets the action tell "still checked, nothing changed" apart from
-            "just checked it" -- without this, re-saving the form for an
-            unrelated field (display name, units) would stamp a fresh
-            email_unsubscribed_at every time, erasing the real original
-            unsubscribe date (or one an admin set from /admin/users). */}
         <input type="hidden" name="wasEmailUnsubscribed" value={initialEmailUnsubscribed ? "true" : "false"} />
         <input
           type="checkbox"
           name="emailUnsubscribed"
           defaultChecked={initialEmailUnsubscribed}
+          onChange={scheduleSave}
           className="mt-0.5 accent-zinc-900 dark:accent-white"
         />
         <span>
@@ -58,6 +61,7 @@ export function SettingsForm({ initialDisplayName, initialUnits, initialEmailUns
           name="displayName"
           type="text"
           defaultValue={initialDisplayName}
+          onBlur={scheduleSave}
           required
           className={fieldClass}
         />
@@ -71,6 +75,7 @@ export function SettingsForm({ initialDisplayName, initialUnits, initialEmailUns
           id={`${baseId}-units`}
           name="units"
           defaultValue={initialUnits}
+          onChange={scheduleSave}
           className={fieldClass}
         >
           <option value="mi">Miles</option>
@@ -78,18 +83,7 @@ export function SettingsForm({ initialDisplayName, initialUnits, initialEmailUns
         </select>
       </div>
 
-      {state.error && (
-        <FormError>{state.error}</FormError>
-      )}
-      {state.success && (
-        <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Saved.
-        </p>
-      )}
-
-      <Button type="submit" size="lg" disabled={isPending}>
-        {isPending ? "Saving…" : "Save changes"}
-      </Button>
+      <AutoSaveStatus isPending={isPending} error={state.error} success={state.success} />
     </form>
   );
 }

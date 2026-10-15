@@ -1,12 +1,12 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useId, useState } from "react";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
+import { useAutoSaveForm } from "@/lib/use-auto-save-form";
 import { saveLearningPreferences } from "@/app/learning-actions";
 import type { LearningInterestCategory, LearningOrientation } from "@/lib/validation/learning";
-import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/ui/form-error";
+import { AutoSaveStatus } from "@/components/ui/auto-save-status";
 
 const fieldClass = `w-full ${baseFieldClass}`;
 
@@ -40,15 +40,23 @@ export function LearningInterestsForm({
   initialInterestCategorySlugs,
 }: LearningInterestsFormProps) {
   const baseId = useId();
-  const [state, formAction, isPending] = useActionState(saveLearningPreferences, {});
+  const { state, formRef, isPending, scheduleSave, saveNow } = useAutoSaveForm(saveLearningPreferences, {});
   const [interests, setInterests] = useState<LearningInterestCategory[]>(initialInterestCategorySlugs);
 
   function toggleInterest(value: LearningInterestCategory) {
     setInterests((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
+    scheduleSave();
   }
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form
+      ref={formRef}
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveNow();
+      }}
+      className="space-y-5"
+    >
       <div>
         <label htmlFor={`${baseId}-orientation`} className={labelClass}>
           What brings you to the Haarchive?
@@ -57,6 +65,7 @@ export function LearningInterestsForm({
           id={`${baseId}-orientation`}
           name="orientation"
           defaultValue={initialOrientation ?? ""}
+          onChange={scheduleSave}
           className={fieldClass}
         >
           <option value="">Not set</option>
@@ -90,16 +99,7 @@ export function LearningInterestsForm({
         </div>
       </div>
 
-      {state.error && <FormError>{state.error}</FormError>}
-      {state.success && (
-        <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Saved.
-        </p>
-      )}
-
-      <Button type="submit" size="lg" disabled={isPending}>
-        {isPending ? "Saving…" : "Save changes"}
-      </Button>
+      <AutoSaveStatus isPending={isPending} error={state.error} success={state.success} />
     </form>
   );
 }

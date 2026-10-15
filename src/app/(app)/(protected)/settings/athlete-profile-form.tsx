@@ -1,14 +1,16 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useId } from "react";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
+import { useAutoSaveForm } from "@/lib/use-auto-save-form";
 import { updateAthleteProfile } from "./actions";
 import { ATHLETE_LEVELS, ATHLETE_LEVEL_LABELS, SEXES } from "@/lib/validation/athlete-profile";
-import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/ui/form-error";
+import { AutoSaveStatus } from "@/components/ui/auto-save-status";
 
 const fieldClass = `w-full ${baseFieldClass}`;
+
+const currentYear = new Date().getFullYear();
 
 const SEX_LABELS: Record<(typeof SEXES)[number], string> = {
   male: "Male",
@@ -40,10 +42,17 @@ export function AthleteProfileForm({
   initialPrimaryEvent,
 }: AthleteProfileFormProps) {
   const baseId = useId();
-  const [state, formAction, isPending] = useActionState(updateAthleteProfile, {});
+  const { state, formRef, isPending, scheduleSave, saveNow } = useAutoSaveForm(updateAthleteProfile, {});
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form
+      ref={formRef}
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveNow();
+      }}
+      className="space-y-5"
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor={`${baseId}-birth-year`} className={labelClass}>
@@ -54,8 +63,11 @@ export function AthleteProfileForm({
             name="birthYear"
             type="number"
             inputMode="numeric"
+            min={currentYear - 100}
+            max={currentYear - 5}
             defaultValue={initialBirthYear ?? undefined}
             placeholder="e.g. 1990"
+            onBlur={scheduleSave}
             required
             className={fieldClass}
           />
@@ -71,8 +83,11 @@ export function AthleteProfileForm({
             type="number"
             inputMode="decimal"
             step="0.1"
+            min={1}
+            max={600}
             defaultValue={initialWeightLb ?? undefined}
             placeholder="e.g. 155"
+            onBlur={scheduleSave}
             required
             className={fieldClass}
           />
@@ -88,8 +103,11 @@ export function AthleteProfileForm({
             type="number"
             inputMode="decimal"
             step="0.1"
+            min={0.1}
+            max={200}
             defaultValue={initialCurrentWeeklyMileage ?? undefined}
             placeholder="e.g. 25"
+            onBlur={scheduleSave}
             required
             className={fieldClass}
           />
@@ -99,7 +117,13 @@ export function AthleteProfileForm({
           <label htmlFor={`${baseId}-days`} className={labelClass}>
             Running days per week
           </label>
-          <select id={`${baseId}-days`} name="daysPerWeek" defaultValue={initialDaysPerWeek ?? 5} className={fieldClass}>
+          <select
+            id={`${baseId}-days`}
+            name="daysPerWeek"
+            defaultValue={initialDaysPerWeek ?? 5}
+            onChange={scheduleSave}
+            className={fieldClass}
+          >
             {[1, 2, 3, 4, 5, 6, 7].map((n) => (
               <option key={n} value={n}>
                 {n}
@@ -114,7 +138,7 @@ export function AthleteProfileForm({
           <label htmlFor={`${baseId}-sex`} className={labelClass}>
             Sex
           </label>
-          <select id={`${baseId}-sex`} name="sex" defaultValue={initialSex ?? ""} className={fieldClass}>
+          <select id={`${baseId}-sex`} name="sex" defaultValue={initialSex ?? ""} onChange={scheduleSave} className={fieldClass}>
             <option value="">Not set</option>
             {SEXES.map((s) => (
               <option key={s} value={s}>
@@ -134,8 +158,11 @@ export function AthleteProfileForm({
             type="number"
             inputMode="decimal"
             step="0.1"
+            min={0.1}
+            max={96}
             defaultValue={initialHeightIn ?? undefined}
             placeholder="e.g. 68"
+            onBlur={scheduleSave}
             className={fieldClass}
           />
         </div>
@@ -149,8 +176,11 @@ export function AthleteProfileForm({
             name="yearsRunning"
             type="number"
             inputMode="numeric"
+            min={0}
+            max={90}
             defaultValue={initialYearsRunning ?? undefined}
             placeholder="e.g. 3"
+            onBlur={scheduleSave}
             className={fieldClass}
           />
         </div>
@@ -159,7 +189,13 @@ export function AthleteProfileForm({
           <label htmlFor={`${baseId}-level`} className={labelClass}>
             Current level
           </label>
-          <select id={`${baseId}-level`} name="currentLevel" defaultValue={initialCurrentLevel ?? ""} className={fieldClass}>
+          <select
+            id={`${baseId}-level`}
+            name="currentLevel"
+            defaultValue={initialCurrentLevel ?? ""}
+            onChange={scheduleSave}
+            className={fieldClass}
+          >
             <option value="">Not set</option>
             {ATHLETE_LEVELS.map((level) => (
               <option key={level} value={level}>
@@ -179,6 +215,7 @@ export function AthleteProfileForm({
             type="text"
             defaultValue={initialPrimaryEvent ?? ""}
             placeholder="e.g. 5000m, Marathon"
+            onBlur={scheduleSave}
             className={fieldClass}
           />
         </div>
@@ -190,16 +227,7 @@ export function AthleteProfileForm({
         athletes on a team, your coach.
       </p>
 
-      {state.error && <FormError>{state.error}</FormError>}
-      {state.success && (
-        <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Saved.
-        </p>
-      )}
-
-      <Button type="submit" size="lg" disabled={isPending}>
-        {isPending ? "Saving…" : "Save changes"}
-      </Button>
+      <AutoSaveStatus isPending={isPending} error={state.error} success={state.success} />
     </form>
   );
 }

@@ -1,14 +1,14 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useId, useState } from "react";
 import Link from "next/link";
 
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
+import { useAutoSaveForm } from "@/lib/use-auto-save-form";
 import { RACE_DISTANCES } from "@/lib/race-distances";
 import { updateCommunityProfile } from "./actions";
 import { uploadAvatarImage } from "@/app/(app)/(protected)/settings/avatar-actions";
-import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/ui/form-error";
+import { AutoSaveStatus } from "@/components/ui/auto-save-status";
 import { ImageUrlField } from "@/components/ui/image-url-field";
 
 const fieldClass = `w-full ${baseFieldClass}`;
@@ -31,11 +31,18 @@ export function CommunityProfileForm({
   initialFavoriteDistances,
 }: CommunityProfileFormProps) {
   const baseId = useId();
-  const [state, formAction, isPending] = useActionState(updateCommunityProfile, {});
+  const { state, formRef, isPending, scheduleSave, saveNow } = useAutoSaveForm(updateCommunityProfile, {});
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form
+      ref={formRef}
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveNow();
+      }}
+      className="space-y-5"
+    >
       <div>
         <label htmlFor={`${baseId}-avatar`} className={labelClass}>
           Profile picture
@@ -43,7 +50,10 @@ export function CommunityProfileForm({
         <ImageUrlField
           inputId={`${baseId}-avatar`}
           value={avatarUrl}
-          onChange={setAvatarUrl}
+          onChange={(url) => {
+            setAvatarUrl(url);
+            scheduleSave();
+          }}
           uploadAction={uploadAvatarImage}
           placeholder="https://…"
         />
@@ -61,6 +71,7 @@ export function CommunityProfileForm({
           maxLength={1000}
           defaultValue={initialBio}
           placeholder="Your running background, how you got into it, what you're chasing next..."
+          onBlur={scheduleSave}
           className={fieldClass}
         />
       </div>
@@ -76,6 +87,7 @@ export function CommunityProfileForm({
           maxLength={100}
           defaultValue={initialLocation}
           placeholder="e.g. Portland, OR"
+          onBlur={scheduleSave}
           className={fieldClass}
         />
       </div>
@@ -90,6 +102,7 @@ export function CommunityProfileForm({
                 name="favoriteDistances"
                 value={d.key}
                 defaultChecked={initialFavoriteDistances.includes(d.key)}
+                onChange={scheduleSave}
                 className="h-4 w-4 rounded border-black/20 dark:border-white/20"
               />
               {d.label}
@@ -98,17 +111,8 @@ export function CommunityProfileForm({
         </div>
       </div>
 
-      {state.error && <FormError>{state.error}</FormError>}
-      {state.success && (
-        <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Saved.
-        </p>
-      )}
-
       <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" size="lg" disabled={isPending}>
-          {isPending ? "Saving…" : "Save changes"}
-        </Button>
+        <AutoSaveStatus isPending={isPending} error={state.error} success={state.success} />
         {hasProfile && (
           <Link
             href={`/community/${userId}`}
