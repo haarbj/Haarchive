@@ -60,6 +60,7 @@ export async function generatePlan(
   const { data: goal } = await supabase
     .from("goals")
     .select("id, race_name, distance_m, goal_time_s, goal_date")
+    .eq("user_id", userId)
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(1)

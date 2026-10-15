@@ -26,6 +26,7 @@ export default async function NewPlanPage() {
     supabase
       .from("goals")
       .select("id, race_name, distance_m, goal_time_s, goal_date")
+      .eq("user_id", session!.userId)
       .eq("status", "active")
       .order("created_at", { ascending: false })
       .limit(1)
@@ -34,6 +35,7 @@ export default async function NewPlanPage() {
     supabase
       .from("athlete_profiles")
       .select("current_weekly_mileage, running_days_per_week")
+      .eq("user_id", session!.userId)
       .maybeSingle(),
   ]);
 

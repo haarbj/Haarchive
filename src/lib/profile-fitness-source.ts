@@ -29,9 +29,19 @@ export async function loadProfileFitnessSnapshot(): Promise<ProfileFitnessSnapsh
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // Explicitly filtered to user.id -- both tables also grant a private
+  // coach SELECT on their athlete's row now (profiles_select_private_coach
+  // and friends), so an unfiltered query here would risk autofilling a
+  // calculator with the signed-in coach's ATHLETE's fitness data instead
+  // of their own.
   const [{ data: profile }, { data: races }] = await Promise.all([
-    supabase.from("athlete_profiles").select("birth_year, weight_kg").maybeSingle(),
-    supabase.from("race_results").select("distance_m, finish_time_s, race_name").order("race_date", { ascending: false }).limit(1),
+    supabase.from("athlete_profiles").select("birth_year, weight_kg").eq("user_id", user.id).maybeSingle(),
+    supabase
+      .from("race_results")
+      .select("distance_m, finish_time_s, race_name")
+      .eq("user_id", user.id)
+      .order("race_date", { ascending: false })
+      .limit(1),
   ]);
 
   const recent = races?.[0];

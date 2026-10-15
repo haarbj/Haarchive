@@ -33,6 +33,7 @@ import { cvThresholdModel } from "@/lib/cv-threshold-model-server";
 import { formatDate, formatDistance, formatMiles, formatRelativeTime } from "@/lib/format";
 import { formatClock } from "@/lib/running-format";
 import { buildPerformanceTrend } from "@/lib/performance-trend";
+import { RACE_DISTANCES } from "@/lib/race-distances";
 import { buildTrainingLoadSeries } from "@/lib/training-load";
 import { createClient } from "@/lib/db/server";
 import { mostRecentMonday } from "@/lib/week";
@@ -159,6 +160,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     supabase
       .from("goals")
       .select("id, race_name, distance_m, goal_time_s, goal_date")
+      .eq("user_id", session!.userId)
       .eq("status", "active")
       .order("created_at", { ascending: false })
       .limit(1)
@@ -166,6 +168,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     supabase
       .from("race_results")
       .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
+      .eq("user_id", session!.userId)
       .order("race_date", { ascending: false })
       .returns<RaceResult[]>(),
     supabase
@@ -189,7 +192,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .order("completed_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase.from("athlete_profiles").select("birth_year, weight_kg").maybeSingle().returns<AthleteProfile | null>(),
+    supabase
+      .from("athlete_profiles")
+      .select("birth_year, weight_kg")
+      .eq("user_id", session!.userId)
+      .maybeSingle()
+      .returns<AthleteProfile | null>(),
     supabase
       .from("workout_completions")
       .select("id, completed_at, actual_distance_m, actual_time_s")
@@ -204,9 +212,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .not("actual_distance_m", "is", null)
       .gte("completed_at", acwrWindowStart.toISOString())
       .returns<{ completed_at: string; actual_distance_m: number }[]>(),
+    // Pre-existing gap, not new: weekly_checkins_select_coach (team
+    // coaching) has granted a coach SELECT on their own team athletes'
+    // check-ins since before private coaching existed -- this query just
+    // never had an explicit filter to rely on, since "select own" was the
+    // only policy anyone tested against at the time.
     supabase
       .from("weekly_checkins")
       .select("fatigue, soreness, sleep_quality, stress, notes")
+      .eq("user_id", session!.userId)
       .eq("week_start", mostRecentMonday(new Date()))
       .maybeSingle<WeeklyCheckin>(),
     supabase
@@ -301,24 +315,36 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const mostRecentRace = raceResults?.[0] ?? null;
   const recentRaceResults = raceResults?.slice(0, 5) ?? null;
+  // Normalized onto the athlete's own goal distance when there is one --
+  // previously always normalized onto a flat 5K regardless of what the
+  // athlete was actually training for, so an athlete training for a
+  // marathon saw a "5K fitness" trend line that had nothing to do with
+  // their own goal. buildPerformanceTrend's own targetMeters default
+  // (5000) is the fallback for an athlete with no active goal yet, not a
+  // deliberate choice to always show 5K specifically.
+  const goalDistanceLabel = primaryGoal
+    ? RACE_DISTANCES.find((d) => Math.round(d.meters) === Math.round(primaryGoal.distance_m))?.label ?? "Goal"
+    : "5K";
   const raceTrend = raceResults
     ? buildPerformanceTrend(
         raceResults.map((r) => ({ id: r.id, raceName: r.race_name, raceDate: r.race_date, distanceM: r.distance_m, finishTimeS: r.finish_time_s })),
+        primaryGoal?.distance_m,
       )
     : [];
   // Training load needs a fitness profile (critical speed, vVO2max) to run
   // physiology-engine.ts's per-workout fatigue math -- reuses the same
-  // most-recent-race-plus-age approach Marathon Pacing Calculator's manual
-  // entry produces, just automatic here since the dashboard already has
-  // both pieces server-side. Durability has no real source anywhere in the
-  // app (see physiology-engine.ts), so it defaults to "average" like every
-  // other caller. Skipped entirely -- not shown with a placeholder -- when
-  // age or a race result isn't on file, rather than guessing either one.
-  const age = athleteProfile?.birth_year ? new Date().getFullYear() - athleteProfile.birth_year : null;
+  // most-recent-race approach Marathon Pacing Calculator's manual entry
+  // produces, just automatic here since the dashboard already has the race
+  // result server-side. Durability has no real source anywhere in the app
+  // (see physiology-engine.ts), so it defaults to "average" like every
+  // other caller. The cv-threshold model's v2 update (2026-09-05) dropped
+  // age as an input entirely (fixed at "college" level), so this no longer
+  // needs or gates on one -- skipped entirely, not shown with a
+  // placeholder, only when there's no race result on file.
   const trainingLoad =
-    mostRecentRace && age && completionsForLoad && completionsForLoad.length > 0
+    mostRecentRace && completionsForLoad && completionsForLoad.length > 0
       ? (() => {
-          const paces = selectTrainingPaces(predictSpeeds(cvThresholdModel, mostRecentRace.distance_m, mostRecentRace.finish_time_s, age), "median");
+          const paces = selectTrainingPaces(predictSpeeds(cvThresholdModel, mostRecentRace.distance_m, mostRecentRace.finish_time_s), "median");
           return buildTrainingLoadSeries(
             {
               criticalSpeedMS: paces.cvSpeedMS,
@@ -550,12 +576,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
           {raceTrend.length >= 2 && (
             <Card padding="sm" shadow={false} className="mt-3">
-              <p className="text-sm font-semibold text-zinc-900 dark:text-white">Equivalent 5K time over time</p>
+              <p className="text-sm font-semibold text-zinc-900 dark:text-white">Equivalent {goalDistanceLabel} time over time</p>
               <p className="text-xs text-zinc-600 dark:text-zinc-300">
-                Every race projected to a 5K distance (Riegel) so different distances share one trend line: lower is faster.
+                Every race projected to {primaryGoal ? "your goal distance" : "a 5K distance"} (Riegel) so different
+                distances share one trend line: lower is faster.
               </p>
               <div className="mt-3">
-                <PerformanceTrendChart points={raceTrend} targetLabel="5K" />
+                <PerformanceTrendChart points={raceTrend} targetLabel={goalDistanceLabel} />
               </div>
             </Card>
           )}

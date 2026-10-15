@@ -68,6 +68,7 @@ export async function assembleCoachingContext(
       supabase
         .from("goals")
         .select("race_name, distance_m, goal_time_s, goal_date")
+        .eq("user_id", userId)
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(1)
