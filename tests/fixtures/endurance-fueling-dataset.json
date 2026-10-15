@@ -1,0 +1,2344 @@
+[
+ {
+  "kind": "carbs",
+  "zone": "50-60%",
+  "gi": "Not",
+  "expectedCarbsPerHour": 35
+ },
+ {
+  "kind": "carbs",
+  "zone": "50-60%",
+  "gi": "Moderate",
+  "expectedCarbsPerHour": 40
+ },
+ {
+  "kind": "carbs",
+  "zone": "50-60%",
+  "gi": "Well",
+  "expectedCarbsPerHour": 45
+ },
+ {
+  "kind": "carbs",
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "expectedCarbsPerHour": 120
+ },
+ {
+  "kind": "carbs",
+  "zone": "60-70%",
+  "gi": "Not",
+  "expectedCarbsPerHour": 45
+ },
+ {
+  "kind": "carbs",
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "expectedCarbsPerHour": 55
+ },
+ {
+  "kind": "carbs",
+  "zone": "60-70%",
+  "gi": "Well",
+  "expectedCarbsPerHour": 65
+ },
+ {
+  "kind": "carbs",
+  "zone": "60-70%",
+  "gi": "HighCarbMachine",
+  "expectedCarbsPerHour": 120
+ },
+ {
+  "kind": "carbs",
+  "zone": "70-80%",
+  "gi": "Not",
+  "expectedCarbsPerHour": 65
+ },
+ {
+  "kind": "carbs",
+  "zone": "70-80%",
+  "gi": "Moderate",
+  "expectedCarbsPerHour": 75
+ },
+ {
+  "kind": "carbs",
+  "zone": "70-80%",
+  "gi": "Well",
+  "expectedCarbsPerHour": 85
+ },
+ {
+  "kind": "carbs",
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "expectedCarbsPerHour": 120
+ },
+ {
+  "kind": "carbs",
+  "zone": "80-90%",
+  "gi": "Not",
+  "expectedCarbsPerHour": 75
+ },
+ {
+  "kind": "carbs",
+  "zone": "80-90%",
+  "gi": "Moderate",
+  "expectedCarbsPerHour": 90
+ },
+ {
+  "kind": "carbs",
+  "zone": "80-90%",
+  "gi": "Well",
+  "expectedCarbsPerHour": 105
+ },
+ {
+  "kind": "carbs",
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "expectedCarbsPerHour": 120
+ },
+ {
+  "kind": "carbs",
+  "zone": "90-100%",
+  "gi": "Not",
+  "expectedCarbsPerHour": 85
+ },
+ {
+  "kind": "carbs",
+  "zone": "90-100%",
+  "gi": "Moderate",
+  "expectedCarbsPerHour": 100
+ },
+ {
+  "kind": "carbs",
+  "zone": "90-100%",
+  "gi": "Well",
+  "expectedCarbsPerHour": 115
+ },
+ {
+  "kind": "carbs",
+  "zone": "90-100%",
+  "gi": "HighCarbMachine",
+  "expectedCarbsPerHour": 120
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 100,
+  "temperatureC": 18,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 2.5,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 1140,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 93,
+  "temperatureC": 11,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 6,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 704,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 600
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 65,
+  "temperatureC": 35,
+  "zone": "80-90%",
+  "gi": "Moderate",
+  "durationHours": 2.75,
+  "expectedCarbsPerHour": 90,
+  "expectedFluidLossMlPerHour": 2200,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 90,
+  "temperatureC": 27,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 6,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 1606,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1100
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 124,
+  "temperatureC": 2,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 3.5,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 390,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 46,
+  "temperatureC": 7,
+  "zone": "80-90%",
+  "gi": "Well",
+  "durationHours": 0.75,
+  "expectedCarbsPerHour": 105,
+  "expectedFluidLossMlPerHour": null,
+  "expectedSodiumTargetMgPerHour": null,
+  "expectedSodiumLossMgPerHour": null
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 57,
+  "temperatureC": 34,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1920,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1350
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 85,
+  "temperatureC": 1,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 7.25,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 315,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 65,
+  "temperatureC": 26,
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "durationHours": 9,
+  "expectedCarbsPerHour": 55,
+  "expectedFluidLossMlPerHour": 1216,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1050
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 126,
+  "temperatureC": 20,
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "durationHours": 3.75,
+  "expectedCarbsPerHour": 55,
+  "expectedFluidLossMlPerHour": 997,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 850
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 47,
+  "temperatureC": 26,
+  "zone": "80-90%",
+  "gi": "Well",
+  "durationHours": 11.25,
+  "expectedCarbsPerHour": 105,
+  "expectedFluidLossMlPerHour": 1298,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1050
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 49,
+  "temperatureC": 38,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1900,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 51,
+  "temperatureC": 1,
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "durationHours": 7.5,
+  "expectedCarbsPerHour": 55,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 130,
+  "temperatureC": 3,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 3.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 451,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 350
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 111,
+  "temperatureC": 7,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 510,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 140,
+  "temperatureC": 23,
+  "zone": "90-100%",
+  "gi": "Moderate",
+  "durationHours": 7.25,
+  "expectedCarbsPerHour": 100,
+  "expectedFluidLossMlPerHour": 1440,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 74,
+  "temperatureC": 24,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 4,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 1092,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 85,
+  "temperatureC": 34,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 10.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 2222,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1350
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 83,
+  "temperatureC": 22,
+  "zone": "60-70%",
+  "gi": "Not",
+  "durationHours": 8.5,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 1093,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 71,
+  "temperatureC": 31,
+  "zone": "90-100%",
+  "gi": "Not",
+  "durationHours": 6,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 2016,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1250
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 122,
+  "temperatureC": 5,
+  "zone": "90-100%",
+  "gi": "Not",
+  "durationHours": 8.75,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 540,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 110,
+  "temperatureC": 9,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 8,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 570,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 74,
+  "temperatureC": 8,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 484,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 119,
+  "temperatureC": 16,
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "durationHours": 4.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 722,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 41,
+  "temperatureC": 29,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 11,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1562,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1150
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 61,
+  "temperatureC": 24,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 1,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 1150,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 111,
+  "temperatureC": 28,
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 55,
+  "expectedFluidLossMlPerHour": 1463,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1100
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 43,
+  "temperatureC": 9,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 11.75,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 444,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 56,
+  "temperatureC": 7,
+  "zone": "70-80%",
+  "gi": "Moderate",
+  "durationHours": 5,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 410,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 83,
+  "temperatureC": 17,
+  "zone": "80-90%",
+  "gi": "Moderate",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 90,
+  "expectedFluidLossMlPerHour": 990,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 130,
+  "temperatureC": 13,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 6.75,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 720,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 650
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 99,
+  "temperatureC": 9,
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 55,
+  "expectedFluidLossMlPerHour": 542,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 107,
+  "temperatureC": 9,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 4,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 484,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 52,
+  "temperatureC": 13,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 3,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 442,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 650
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 88,
+  "temperatureC": 15,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 9.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 880,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 700
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 84,
+  "temperatureC": 6,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 10.25,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 576,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 129,
+  "temperatureC": 18,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 9.75,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 808,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 61,
+  "temperatureC": 16,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 6.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 750,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 126,
+  "temperatureC": 34,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 1.25,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 2222,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1350
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 57,
+  "temperatureC": 20,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 12,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1045,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 850
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 122,
+  "temperatureC": 25,
+  "zone": "90-100%",
+  "gi": "HighCarbMachine",
+  "durationHours": 7.5,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1560,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 75,
+  "temperatureC": 18,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 4.5,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 1020,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 134,
+  "temperatureC": 25,
+  "zone": "60-70%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1235,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 77,
+  "temperatureC": 1,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 8.75,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 136,
+  "temperatureC": 35,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 2.25,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 2100,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 67,
+  "temperatureC": 6,
+  "zone": "50-60%",
+  "gi": "Moderate",
+  "durationHours": 5.5,
+  "expectedCarbsPerHour": 40,
+  "expectedFluidLossMlPerHour": 323,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 97,
+  "temperatureC": 29,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1782,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1150
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 107,
+  "temperatureC": 21,
+  "zone": "70-80%",
+  "gi": "Moderate",
+  "durationHours": 5.75,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 1100,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 83,
+  "temperatureC": 13,
+  "zone": "60-70%",
+  "gi": "Not",
+  "durationHours": 6.25,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 684,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 650
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 67,
+  "temperatureC": 21,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 5.5,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1000,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 53,
+  "temperatureC": 0,
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "durationHours": 1.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 250
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 127,
+  "temperatureC": 17,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 10,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 900,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 46,
+  "temperatureC": 15,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 7,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 570,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 700
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 49,
+  "temperatureC": 39,
+  "zone": "80-90%",
+  "gi": "Well",
+  "durationHours": 9.75,
+  "expectedCarbsPerHour": 105,
+  "expectedFluidLossMlPerHour": 2090,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 95,
+  "temperatureC": 32,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 1.5,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 1860,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 50,
+  "temperatureC": 2,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 8.25,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 96,
+  "temperatureC": 39,
+  "zone": "50-60%",
+  "gi": "Moderate",
+  "durationHours": 4.5,
+  "expectedCarbsPerHour": 40,
+  "expectedFluidLossMlPerHour": 1785,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 68,
+  "temperatureC": 33,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 11.25,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 1840,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 135,
+  "temperatureC": 11,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 11.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 640,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 600
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 108,
+  "temperatureC": 23,
+  "zone": "90-100%",
+  "gi": "Moderate",
+  "durationHours": 6.25,
+  "expectedCarbsPerHour": 100,
+  "expectedFluidLossMlPerHour": 1440,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 115,
+  "temperatureC": 22,
+  "zone": "80-90%",
+  "gi": "Well",
+  "durationHours": 6.75,
+  "expectedCarbsPerHour": 105,
+  "expectedFluidLossMlPerHour": 1265,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 137,
+  "temperatureC": 39,
+  "zone": "80-90%",
+  "gi": "Moderate",
+  "durationHours": 7.75,
+  "expectedCarbsPerHour": 90,
+  "expectedFluidLossMlPerHour": 2310,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 107,
+  "temperatureC": 35,
+  "zone": "60-70%",
+  "gi": "HighCarbMachine",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1995,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 128,
+  "temperatureC": 17,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 10,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 855,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 102,
+  "temperatureC": 35,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 3.75,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 2310,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 136,
+  "temperatureC": 19,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 9.25,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 950,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 114,
+  "temperatureC": 29,
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "durationHours": 11,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1377,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1150
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 94,
+  "temperatureC": 19,
+  "zone": "50-60%",
+  "gi": "Moderate",
+  "durationHours": 10.75,
+  "expectedCarbsPerHour": 40,
+  "expectedFluidLossMlPerHour": 850,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 108,
+  "temperatureC": 17,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 8.75,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 900,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 92,
+  "temperatureC": 2,
+  "zone": "50-60%",
+  "gi": "Not",
+  "durationHours": 2,
+  "expectedCarbsPerHour": 35,
+  "expectedFluidLossMlPerHour": 332,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 78,
+  "temperatureC": 33,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 1.5,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 2208,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 43,
+  "temperatureC": 11,
+  "zone": "80-90%",
+  "gi": "Moderate",
+  "durationHours": 10.25,
+  "expectedCarbsPerHour": 90,
+  "expectedFluidLossMlPerHour": 484,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 600
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 103,
+  "temperatureC": 36,
+  "zone": "90-100%",
+  "gi": "Moderate",
+  "durationHours": 1.75,
+  "expectedCarbsPerHour": 100,
+  "expectedFluidLossMlPerHour": 2500,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 103,
+  "temperatureC": 10,
+  "zone": "70-80%",
+  "gi": "Moderate",
+  "durationHours": 3.5,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 600,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 550
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 112,
+  "temperatureC": 21,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 1.75,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1100,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 118,
+  "temperatureC": 28,
+  "zone": "90-100%",
+  "gi": "Not",
+  "durationHours": 1.25,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1848,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1100
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 43,
+  "temperatureC": 14,
+  "zone": "60-70%",
+  "gi": "Not",
+  "durationHours": 12,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 532,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 650
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 98,
+  "temperatureC": 34,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 0.75,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": null,
+  "expectedSodiumTargetMgPerHour": null,
+  "expectedSodiumLossMgPerHour": null
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 113,
+  "temperatureC": 32,
+  "zone": "60-70%",
+  "gi": "Not",
+  "durationHours": 9.5,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 1767,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 91,
+  "temperatureC": 6,
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "durationHours": 5.5,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 408,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 127,
+  "temperatureC": 32,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2.5,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1860,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 55,
+  "temperatureC": 22,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 9.25,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 1155,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 64,
+  "temperatureC": 5,
+  "zone": "80-90%",
+  "gi": "Well",
+  "durationHours": 7,
+  "expectedCarbsPerHour": 105,
+  "expectedFluidLossMlPerHour": 385,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 61,
+  "temperatureC": 37,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 1,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 136,
+  "temperatureC": 23,
+  "zone": "60-70%",
+  "gi": "Not",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 1140,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 111,
+  "temperatureC": 30,
+  "zone": "60-70%",
+  "gi": "HighCarbMachine",
+  "durationHours": 5.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1615,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1200
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 58,
+  "temperatureC": 26,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 10.25,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 1280,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1050
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 49,
+  "temperatureC": 5,
+  "zone": "90-100%",
+  "gi": "Not",
+  "durationHours": 6,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 91,
+  "temperatureC": 25,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 2.25,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1300,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 138,
+  "temperatureC": 33,
+  "zone": "60-70%",
+  "gi": "Not",
+  "durationHours": 6.5,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 1843,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 116,
+  "temperatureC": 18,
+  "zone": "70-80%",
+  "gi": "Moderate",
+  "durationHours": 6.25,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 950,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 43,
+  "temperatureC": 34,
+  "zone": "60-70%",
+  "gi": "Moderate",
+  "durationHours": 3.5,
+  "expectedCarbsPerHour": 55,
+  "expectedFluidLossMlPerHour": 1729,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1350
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 90,
+  "temperatureC": 2,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 10.75,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 429,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 116,
+  "temperatureC": 26,
+  "zone": "90-100%",
+  "gi": "Not",
+  "durationHours": 7.25,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1656,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1050
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 95,
+  "temperatureC": 19,
+  "zone": "70-80%",
+  "gi": "Moderate",
+  "durationHours": 5.75,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 1000,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 98,
+  "temperatureC": 1,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 8.5,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 407,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 58,
+  "temperatureC": 15,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 3.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 770,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 700
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 102,
+  "temperatureC": 36,
+  "zone": "70-80%",
+  "gi": "Not",
+  "durationHours": 7,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 2100,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 89,
+  "temperatureC": 18,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 950,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 111,
+  "temperatureC": 24,
+  "zone": "90-100%",
+  "gi": "HighCarbMachine",
+  "durationHours": 6,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1500,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 41,
+  "temperatureC": 36,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 6,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 1615,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 108,
+  "temperatureC": 22,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 8.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 1265,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 138,
+  "temperatureC": 39,
+  "zone": "90-100%",
+  "gi": "HighCarbMachine",
+  "durationHours": 11.5,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 2500,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 121,
+  "temperatureC": 6,
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "durationHours": 1,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 408,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 89,
+  "temperatureC": 35,
+  "zone": "80-90%",
+  "gi": "HighCarbMachine",
+  "durationHours": 4.25,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 2310,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 124,
+  "temperatureC": 18,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 3.5,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 1140,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 56,
+  "temperatureC": 15,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 2,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 770,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 700
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 64,
+  "temperatureC": 25,
+  "zone": "60-70%",
+  "gi": "Well",
+  "durationHours": 11.75,
+  "expectedCarbsPerHour": 65,
+  "expectedFluidLossMlPerHour": 1140,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 81,
+  "temperatureC": 32,
+  "zone": "80-90%",
+  "gi": "Not",
+  "durationHours": 8.25,
+  "expectedCarbsPerHour": 75,
+  "expectedFluidLossMlPerHour": 2046,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 128,
+  "temperatureC": 10,
+  "zone": "70-80%",
+  "gi": "HighCarbMachine",
+  "durationHours": 5.75,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 600,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 550
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 78,
+  "temperatureC": 34,
+  "zone": "80-90%",
+  "gi": "Moderate",
+  "durationHours": 5.75,
+  "expectedCarbsPerHour": 90,
+  "expectedFluidLossMlPerHour": 2112,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1350
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 93,
+  "temperatureC": 40,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 1.25,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 1785,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 104,
+  "temperatureC": 32,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 10,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1860,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 79,
+  "temperatureC": 24,
+  "zone": "50-60%",
+  "gi": "HighCarbMachine",
+  "durationHours": 2.5,
+  "expectedCarbsPerHour": 120,
+  "expectedFluidLossMlPerHour": 977,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 108,
+  "temperatureC": 28,
+  "zone": "70-80%",
+  "gi": "Well",
+  "durationHours": 7.75,
+  "expectedCarbsPerHour": 85,
+  "expectedFluidLossMlPerHour": 1540,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1100
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 130,
+  "temperatureC": 31,
+  "zone": "50-60%",
+  "gi": "Not",
+  "durationHours": 1.5,
+  "expectedCarbsPerHour": 35,
+  "expectedFluidLossMlPerHour": 1513,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1250
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 131,
+  "temperatureC": 0,
+  "zone": "50-60%",
+  "gi": "Well",
+  "durationHours": 1.25,
+  "expectedCarbsPerHour": 45,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 250
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 115,
+  "temperatureC": 25,
+  "zone": "50-60%",
+  "gi": "Moderate",
+  "durationHours": 10,
+  "expectedCarbsPerHour": 40,
+  "expectedFluidLossMlPerHour": 1105,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 75,
+  "temperatureC": 8,
+  "zone": "80-90%",
+  "gi": "Well",
+  "durationHours": 1,
+  "expectedCarbsPerHour": 105,
+  "expectedFluidLossMlPerHour": 484,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 103,
+  "temperatureC": 24,
+  "zone": "90-100%",
+  "gi": "Well",
+  "durationHours": 5.25,
+  "expectedCarbsPerHour": 115,
+  "expectedFluidLossMlPerHour": 1500,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 45,
+  "temperatureC": 25,
+  "zone": "90-100%",
+  "expectedFluidLossMlPerHour": 1320,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 45,
+  "temperatureC": 5,
+  "zone": "50-60%",
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 100,
+  "temperatureC": 30,
+  "zone": "60-70%",
+  "expectedFluidLossMlPerHour": 1615,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1200
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 100,
+  "temperatureC": 10,
+  "zone": "80-90%",
+  "expectedFluidLossMlPerHour": 660,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 550
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 60,
+  "temperatureC": 20,
+  "zone": "90-100%",
+  "expectedFluidLossMlPerHour": 1140,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 850
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 130,
+  "temperatureC": 0,
+  "zone": "50-60%",
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 250
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 50,
+  "temperatureC": 35,
+  "zone": "70-80%",
+  "expectedFluidLossMlPerHour": 1900,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 90,
+  "temperatureC": 8,
+  "zone": "90-100%",
+  "expectedFluidLossMlPerHour": 648,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 65,
+  "temperatureC": 22,
+  "zone": "60-70%",
+  "expectedFluidLossMlPerHour": 997,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900
+ },
+ {
+  "kind": "combo",
+  "bodyWeightKg": 110,
+  "temperatureC": 18,
+  "zone": "50-60%",
+  "expectedFluidLossMlPerHour": 808,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 0,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 250,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 1,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 2,
+  "expectedFluidLossMlPerHour": 300,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 300,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 3,
+  "expectedFluidLossMlPerHour": 310,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 350,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 4,
+  "expectedFluidLossMlPerHour": 330,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 350,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 5,
+  "expectedFluidLossMlPerHour": 350,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 400,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 6,
+  "expectedFluidLossMlPerHour": 380,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 7,
+  "expectedFluidLossMlPerHour": 410,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 450,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 8,
+  "expectedFluidLossMlPerHour": 440,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 9,
+  "expectedFluidLossMlPerHour": 470,
+  "expectedSodiumTargetMgPerHour": 300,
+  "expectedSodiumLossMgPerHour": 500,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 10,
+  "expectedFluidLossMlPerHour": 500,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 550,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 11,
+  "expectedFluidLossMlPerHour": 540,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 600,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 12,
+  "expectedFluidLossMlPerHour": 580,
+  "expectedSodiumTargetMgPerHour": 350,
+  "expectedSodiumLossMgPerHour": 600,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 13,
+  "expectedFluidLossMlPerHour": 620,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 650,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 14,
+  "expectedFluidLossMlPerHour": 660,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 650,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 15,
+  "expectedFluidLossMlPerHour": 700,
+  "expectedSodiumTargetMgPerHour": 400,
+  "expectedSodiumLossMgPerHour": 700,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 16,
+  "expectedFluidLossMlPerHour": 750,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 17,
+  "expectedFluidLossMlPerHour": 800,
+  "expectedSodiumTargetMgPerHour": 450,
+  "expectedSodiumLossMgPerHour": 750,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 18,
+  "expectedFluidLossMlPerHour": 850,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800,
+  "expectedFluidTargetMlPerHour": 350
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 19,
+  "expectedFluidLossMlPerHour": 900,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 800,
+  "expectedFluidTargetMlPerHour": 400
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 20,
+  "expectedFluidLossMlPerHour": 950,
+  "expectedSodiumTargetMgPerHour": 500,
+  "expectedSodiumLossMgPerHour": 850,
+  "expectedFluidTargetMlPerHour": 450
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 21,
+  "expectedFluidLossMlPerHour": 1000,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900,
+  "expectedFluidTargetMlPerHour": 600
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 22,
+  "expectedFluidLossMlPerHour": 1050,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 900,
+  "expectedFluidTargetMlPerHour": 650
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 23,
+  "expectedFluidLossMlPerHour": 1100,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950,
+  "expectedFluidTargetMlPerHour": 700
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 24,
+  "expectedFluidLossMlPerHour": 1150,
+  "expectedSodiumTargetMgPerHour": 550,
+  "expectedSodiumLossMgPerHour": 950,
+  "expectedFluidTargetMlPerHour": 750
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 25,
+  "expectedFluidLossMlPerHour": 1200,
+  "expectedSodiumTargetMgPerHour": 600,
+  "expectedSodiumLossMgPerHour": 1000,
+  "expectedFluidTargetMlPerHour": 800
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 26,
+  "expectedFluidLossMlPerHour": 1280,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1050,
+  "expectedFluidTargetMlPerHour": 850
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 27,
+  "expectedFluidLossMlPerHour": 1360,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1100,
+  "expectedFluidTargetMlPerHour": 950
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 28,
+  "expectedFluidLossMlPerHour": 1440,
+  "expectedSodiumTargetMgPerHour": 650,
+  "expectedSodiumLossMgPerHour": 1100,
+  "expectedFluidTargetMlPerHour": 1000
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 29,
+  "expectedFluidLossMlPerHour": 1520,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1150,
+  "expectedFluidTargetMlPerHour": 1100
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 30,
+  "expectedFluidLossMlPerHour": 1600,
+  "expectedSodiumTargetMgPerHour": 700,
+  "expectedSodiumLossMgPerHour": 1200,
+  "expectedFluidTargetMlPerHour": 1200
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 31,
+  "expectedFluidLossMlPerHour": 1680,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1250,
+  "expectedFluidTargetMlPerHour": 1250
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 32,
+  "expectedFluidLossMlPerHour": 1760,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300,
+  "expectedFluidTargetMlPerHour": 1350
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 33,
+  "expectedFluidLossMlPerHour": 1840,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1300,
+  "expectedFluidTargetMlPerHour": 1400
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 34,
+  "expectedFluidLossMlPerHour": 1920,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1350,
+  "expectedFluidTargetMlPerHour": 1500
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 35,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400,
+  "expectedFluidTargetMlPerHour": 1600
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 36,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400,
+  "expectedFluidTargetMlPerHour": 1600
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 37,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400,
+  "expectedFluidTargetMlPerHour": 1600
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 38,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400,
+  "expectedFluidTargetMlPerHour": 1600
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 39,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400,
+  "expectedFluidTargetMlPerHour": 1600
+ },
+ {
+  "kind": "temp",
+  "temperatureC": 40,
+  "expectedFluidLossMlPerHour": 2000,
+  "expectedSodiumTargetMgPerHour": 750,
+  "expectedSodiumLossMgPerHour": 1400,
+  "expectedFluidTargetMlPerHour": 1600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 40,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 42,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 44,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 46,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 48,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 50,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 52,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 54,
+  "expectedFluidLossMlPerHour": 600
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 56,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 58,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 60,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 62,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 64,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 66,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 68,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 70,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 72,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 74,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 76,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 78,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 80,
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 82,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 84,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 86,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 88,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 90,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 92,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 94,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 96,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 98,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 100,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 102,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 104,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 106,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 108,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 110,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 112,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 114,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 116,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 118,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 120,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 122,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 124,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 126,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 128,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 130,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 132,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 134,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 136,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 138,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "weight",
+  "bodyWeightKg": 140,
+  "expectedFluidLossMlPerHour": 800
+ },
+ {
+  "kind": "zone",
+  "zone": "50-60%",
+  "expectedFluidLossMlPerHour": 595
+ },
+ {
+  "kind": "zone",
+  "zone": "60-70%",
+  "expectedFluidLossMlPerHour": 665
+ },
+ {
+  "kind": "zone",
+  "zone": "70-80%",
+  "expectedFluidLossMlPerHour": 700
+ },
+ {
+  "kind": "zone",
+  "zone": "80-90%",
+  "expectedFluidLossMlPerHour": 770
+ },
+ {
+  "kind": "zone",
+  "zone": "90-100%",
+  "expectedFluidLossMlPerHour": 840
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 45,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 55,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 350
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 65,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 72,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 80,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 90,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 100,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 110,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_weight_check",
+  "bodyWeightKg": 130,
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_zone_check",
+  "zone": "50-60%",
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_zone_check",
+  "zone": "60-70%",
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_zone_check",
+  "zone": "70-80%",
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_zone_check",
+  "zone": "80-90%",
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 300
+ },
+ {
+  "kind": "fluid_target_zone_check",
+  "zone": "90-100%",
+  "temperatureC": 15,
+  "expectedFluidTargetMlPerHour": 350
+ }
+]
