@@ -51,6 +51,7 @@ function calmWeather(overrides: Partial<WeatherConditions> = {}): WeatherConditi
     windFromBearingDeg: 0,
     windGustsMS: 0,
     elevationM: null,
+    source: "manual",
     ...overrides,
   };
 }

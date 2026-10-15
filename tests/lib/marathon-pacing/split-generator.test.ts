@@ -16,6 +16,7 @@ function hotWeather(): WeatherConditions {
     windFromBearingDeg: 0,
     windGustsMS: 0,
     elevationM: null,
+    source: "manual",
   };
 }
 

@@ -18,6 +18,27 @@ function mockResponse(ok: boolean, body: unknown) {
   );
 }
 
+// A handful of tests below need a date that's reliably WITHIN the real
+// forecast horizon (so they exercise the direct forecast-error path, not
+// the climatology fallback added for dates beyond it) -- a hardcoded
+// future date like "2099-01-01" would silently drift from "intended: near
+// future" to "actually: beyond the horizon" the moment real time catches
+// up with -- no, overshoots -- it, which is exactly the scenario this
+// module's own climatology branch exists for. +1 day from the real "now"
+// is never beyond the horizon, so it stays a direct-forecast-path test
+// no matter when this suite runs.
+function tomorrowDateString(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function daysFromNowDateString(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -49,6 +70,7 @@ describe("fetchCurrentConditions", () => {
       windFromBearingDeg: 270,
       windGustsMS: 8,
       elevationM: 178,
+      source: "forecast",
     });
   });
 
@@ -107,7 +129,7 @@ describe("fetchConditionsAtTime", () => {
 
   it("throws a descriptive error when the API returns an error response", async () => {
     mockResponse(false, { error: true, reason: "Parameter 'start_date' is out of allowed range" });
-    await expect(fetchConditionsAtTime(0, 0, "2099-01-01T00:00")).rejects.toThrow(/out of allowed range/);
+    await expect(fetchConditionsAtTime(0, 0, `${tomorrowDateString()}T00:00`)).rejects.toThrow(/out of allowed range/);
   });
 
   it("throws when there is no hourly data at all", async () => {
@@ -175,7 +197,91 @@ describe("fetchConditionsWindow", () => {
 
   it("throws a descriptive error when the API returns an error response", async () => {
     mockResponse(false, { error: true, reason: "Parameter 'start_date' is out of allowed range" });
-    await expect(fetchConditionsWindow(0, 0, "2099-01-01T00:00", 3600)).rejects.toThrow(/out of allowed range/);
+    await expect(fetchConditionsWindow(0, 0, `${tomorrowDateString()}T00:00`, 3600)).rejects.toThrow(/out of allowed range/);
+  });
+});
+
+// Racing against a date beyond Open-Meteo's real forecast horizon
+// (verified live against the API: a request more than 15 days out
+// returns HTTP 400, "start_date is out of allowed range") previously had
+// no graceful answer -- the most common real case (planning a marathon
+// months out) would surface that raw API error directly. These tests
+// cover the climatology fallback added for exactly that gap.
+function climatologyHourlyFixture(tempC: number, windDirectionDeg: number) {
+  return {
+    hourly: {
+      time: ["2025-01-01T00:00", "2025-01-01T01:00"],
+      temperature_2m: [tempC, tempC],
+      relative_humidity_2m: [50, 50],
+      dew_point_2m: [0, 0],
+      cloud_cover: [0, 0],
+      surface_pressure: [1013, 1013],
+      wind_speed_10m: [2, 2],
+      wind_direction_10m: [windDirectionDeg, windDirectionDeg],
+      wind_gusts_10m: [4, 4],
+    },
+    elevation: 100,
+  };
+}
+
+function mockSequentialResponses(responses: { ok: boolean; body: unknown }[]) {
+  const fn = vi.fn();
+  for (const { ok, body } of responses) {
+    fn.mockResolvedValueOnce({ ok, json: () => Promise.resolve(body) });
+  }
+  vi.stubGlobal("fetch", fn);
+  return fn;
+}
+
+describe("fetchConditionsAtTime -- climatology fallback beyond the forecast horizon", () => {
+  it("averages the most recent 3 years' same-calendar-date archive data when the date is beyond the forecast window", async () => {
+    const mock = mockSequentialResponses([
+      { ok: true, body: climatologyHourlyFixture(10, 350) },
+      { ok: true, body: climatologyHourlyFixture(20, 0) },
+      { ok: true, body: climatologyHourlyFixture(30, 10) },
+    ]);
+
+    const farFutureDate = daysFromNowDateString(45);
+    const result = await fetchConditionsAtTime(36.16, -86.78, `${farFutureDate}T00:00`);
+
+    expect(result.tempC).toBe(20); // (10 + 20 + 30) / 3
+    expect(result.source).toBe("climatology");
+    expect(result.elevationM).toBe(100);
+    // Every call should hit the archive endpoint (a real historical lookup
+    // for an earlier year), never the forecast endpoint, for a date this
+    // far out.
+    for (const call of mock.mock.calls) {
+      expect(String(call[0])).toContain("archive-api.open-meteo.com");
+    }
+  });
+
+  it("degrades to fewer years rather than failing outright when some years are unreachable", async () => {
+    mockSequentialResponses([
+      { ok: true, body: climatologyHourlyFixture(10, 0) },
+      { ok: false, body: { error: true, reason: "temporary failure" } },
+      { ok: true, body: climatologyHourlyFixture(30, 0) },
+    ]);
+
+    const farFutureDate = daysFromNowDateString(45);
+    const result = await fetchConditionsAtTime(36.16, -86.78, `${farFutureDate}T00:00`);
+
+    expect(result.tempC).toBe(20); // (10 + 30) / 2 -- the failed middle year is simply skipped
+    expect(result.source).toBe("climatology");
+  });
+
+  it("throws a descriptive error when every candidate year fails", async () => {
+    mockResponse(false, { error: true, reason: "temporary failure" });
+    const farFutureDate = daysFromNowDateString(45);
+    await expect(fetchConditionsAtTime(36.16, -86.78, `${farFutureDate}T00:00`)).rejects.toThrow(/no historical weather data/i);
+  });
+
+  it("marks a past date's result as 'archive' and a near-future date's result as 'forecast'", async () => {
+    mockResponse(true, hourlyFixture());
+    const pastResult = await fetchConditionsAtTime(36.16, -86.78, "2020-01-01T07:00");
+    expect(pastResult.source).toBe("archive");
+
+    const nearFutureResult = await fetchConditionsAtTime(36.16, -86.78, `${tomorrowDateString()}T07:00`);
+    expect(nearFutureResult.source).toBe("forecast");
   });
 });
 
@@ -191,6 +297,7 @@ describe("summarizeWeatherWindow", () => {
       windFromBearingDeg: 350,
       windGustsMS: 6,
       elevationM: 250,
+      source: "forecast",
     },
     {
       tempC: 22,
@@ -202,6 +309,7 @@ describe("summarizeWeatherWindow", () => {
       windFromBearingDeg: 10,
       windGustsMS: 8,
       elevationM: 250,
+      source: "forecast",
     },
   ];
 
