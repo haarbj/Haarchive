@@ -45,6 +45,7 @@ import { altitudeEngine, type AltitudeEngineInput } from "@/lib/environmental/al
 import { preciseAltitudeEngine, type PreciseAltitudeEngineInput } from "@/lib/environmental/precise-altitude-engine";
 import { elevationEngine, type ElevationEngineInput } from "@/lib/environmental/elevation-engine";
 import type { WeatherConditions } from "@/lib/environmental/fetch-weather-conditions";
+import { computeRecordedRunEffort, aggregateRecordedEffortByMile } from "@/lib/environmental/recorded-run-effort";
 import { heatEngine, type HeatEngineInput } from "@/lib/environmental/heat-engine";
 import { humidityEngine, type HumidityEngineInput } from "@/lib/environmental/humidity-engine";
 import { inferWorkoutType, type WorkoutTypeGuess } from "@/lib/environmental/infer-workout-type";
@@ -1058,6 +1059,40 @@ export function EnvironmentalCalculator() {
   const effectiveElevationGainM = courseType === "route" && routeSummary ? routeSummary.elevationGainM : elevationGainM;
   const effectiveElevationLossM = courseType === "route" && routeSummary ? routeSummary.elevationLossM : elevationLossM;
 
+  // Recorded-run effort: only for a real watch file (GPX/TCX/FIT with real
+  // per-point timestamps, not a hand-drawn route or one with no timing at
+  // all) being analyzed -- undoes grade/wind/heat per ~100m stretch to show
+  // what this run's effort actually was, rolled up to one row per mile
+  // (see recorded-run-effort.ts's own module comment). weatherWindowPoints'
+  // hourly readings don't carry their own elapsed-seconds-into-the-run
+  // offset back out of useEnvironmentalWeather, so they're spaced evenly
+  // across the window here -- a reasonable stand-in given hourly is
+  // already Open-Meteo's finest resolution (the same approximation this
+  // calculator already makes elsewhere, e.g. summarizeWeatherWindow's own
+  // unweighted mean).
+  const recordedEffortByMile = useMemo(() => {
+    if (goalMode !== "analyze" || courseType !== "route" || !route) return null;
+    if (!route.points.some((p) => p.elapsedSeconds !== null)) return null;
+    const points = envWeatherA.weatherWindowPoints;
+    if (!points || points.length === 0) return null;
+
+    const weatherReadings =
+      points.length === 1
+        ? [{ elapsedSeconds: 0, conditions: points[0] }]
+        : points.map((conditions, i) => ({ elapsedSeconds: i * 3600, conditions }));
+
+    try {
+      const stretches = computeRecordedRunEffort(route, weatherReadings, { weightKg, windProfile });
+      return aggregateRecordedEffortByMile(stretches);
+    } catch {
+      // A route with too little real timing data to resolve (e.g. only
+      // one or two timestamped points) -- fail quietly into "nothing to
+      // show" rather than surfacing a raw error for what is, from the
+      // athlete's side, simply "this file didn't have enough detail."
+      return null;
+    }
+  }, [goalMode, courseType, route, envWeatherA.weatherWindowPoints, weightKg, windProfile]);
+
   const conditionsB =
     goalMode === "convert"
       ? resolveManualConditions(tempInputB, tempUnitB, rhInputB, windSpeedInputB, windSpeedUnitB, relativeWindAngleB, altitudeInputB, elevationUnit)
@@ -1628,8 +1663,10 @@ export function EnvironmentalCalculator() {
                         />
                       )}
                       <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
-                        Past dates use historical weather records; future dates (up to ~16 days out) use the
-                        forecast -- useful for checking a past race or planning around an upcoming one.
+                        Past dates use historical weather records; future dates within the real forecast window
+                        (about 15 days out) use the forecast; further out than that, a seasonal estimate from recent
+                        years stands in -- useful whether you&rsquo;re checking a past race or planning months ahead
+                        for an upcoming one.
                       </p>
                     </div>
 
@@ -1646,11 +1683,20 @@ export function EnvironmentalCalculator() {
                     <p className={statLabelClass}>
                       {envWeatherA.weatherLocation ? `Conditions: ${envWeatherA.weatherLocation}` : "Conditions"}
                     </p>
-                    {envWeatherA.weatherWindowPoints && envWeatherA.weatherWindowPoints.length > 1 && (
+                    {envWeatherA.fetchedConditions.source === "climatology" ? (
                       <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                        {envWeatherA.weatherWindowPoints.length} real hourly readings across your run&rsquo;s own start-to-finish
-                        window, not one snapshot treated as constant throughout.
+                        That date is too far out for a real forecast (Open-Meteo&rsquo;s model only reaches about 15 days
+                        ahead) -- this is a seasonal estimate instead, averaged from the last few years&rsquo; actual
+                        weather on this same calendar date. Real conditions on the day could differ.
                       </p>
+                    ) : (
+                      envWeatherA.weatherWindowPoints &&
+                      envWeatherA.weatherWindowPoints.length > 1 && (
+                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                          {envWeatherA.weatherWindowPoints.length} real hourly readings across your run&rsquo;s own
+                          start-to-finish window, not one snapshot treated as constant throughout.
+                        </p>
+                      )
                     )}
                     <div className="mt-2 space-y-2 text-sm">
                       <ConditionValueRow
@@ -1749,6 +1795,44 @@ export function EnvironmentalCalculator() {
                           {envWeatherA.fetchedConditions.cloudCoverPct.toFixed(0)}%
                         </span>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {recordedEffortByMile && recordedEffortByMile.length > 0 && (
+                  <div className={statCardClass}>
+                    <p className={statLabelClass}>Your effort, mile by mile</p>
+                    <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      Undoes this run&rsquo;s own grade, wind, and heat/humidity to show what each mile&rsquo;s effort
+                      was really worth on a flat, calm, cool day -- not just the clock time your watch recorded.
+                      {recordedEffortByMile.some((m) => m.hasStop) && " A mile marked with a stop excludes that stretch from its effort pace, though its time still counts toward your total."}
+                    </p>
+                    <div className="mt-2 overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-black/10 text-left text-xs text-zinc-500 dark:border-white/10 dark:text-zinc-400">
+                            <th className="py-1 pr-3 font-medium">Mile</th>
+                            <th className="py-1 pr-3 font-medium">Actual</th>
+                            <th className="py-1 font-medium">Effort</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {recordedEffortByMile.map((mile) => (
+                            <tr key={mile.mileIndex} className="border-b border-black/5 last:border-0 dark:border-white/5">
+                              <td className="py-1.5 pr-3 text-zinc-600 dark:text-zinc-300">
+                                {mile.mileIndex + 1}
+                                {mile.hasStop && <span className="ml-1 text-zinc-400 dark:text-zinc-500">(stop)</span>}
+                              </td>
+                              <td className="py-1.5 pr-3 font-semibold text-zinc-900 dark:text-white">
+                                {formatClock(mile.actualPaceSPerMi)}/mi
+                              </td>
+                              <td className="py-1.5 text-zinc-700 dark:text-zinc-200">
+                                {mile.effortPaceSPerMi !== null ? `${formatClock(mile.effortPaceSPerMi)}/mi` : "--"}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 )}
