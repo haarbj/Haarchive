@@ -9,6 +9,8 @@ import { CommunityProfileForm } from "@/app/(app)/(protected)/settings/community
 import { RaceResultsSection, type RaceResultRow } from "@/app/(app)/(protected)/settings/race-results-section";
 import { FitnessEstimatesSection, type FitnessEstimateRow } from "@/app/(app)/(protected)/settings/fitness-estimates-section";
 import { InjuriesSection, type InjuryRow } from "@/app/(app)/(protected)/settings/injuries-section";
+import { TrainingBackgroundSection } from "@/app/(app)/(protected)/settings/training-background-section";
+import type { TrainingBackgroundSource } from "@/lib/private-coaching/training-background";
 import { SettingsForm } from "@/app/(app)/(protected)/settings/settings-form";
 import { CoachSettingsForm } from "@/app/(app)/(protected)/settings/coach-settings-form";
 import { LearningInterestsForm } from "@/app/(app)/(protected)/settings/learning-interests-form";
@@ -42,6 +44,16 @@ type AthleteProfile = {
   years_running: number | null;
   current_level: (typeof ATHLETE_LEVELS)[number] | null;
   primary_event: string | null;
+};
+
+type TrainingBackgroundProfile = {
+  training_background_source: TrainingBackgroundSource | null;
+  training_background_coach_name: string | null;
+  training_background_program_name: string | null;
+  training_background_recent_mileage: number | null;
+  training_background_peak_mileage: number | null;
+  training_background_summary: string | null;
+  training_background_injury_history: string | null;
 };
 
 function cmToIn(cm: number): number {
@@ -92,10 +104,20 @@ export default async function SettingsPage() {
       supabase
         .from("athlete_profiles")
         .select(
-          "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event",
+          "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event, training_background_source, training_background_coach_name, training_background_program_name, training_background_recent_mileage, training_background_peak_mileage, training_background_summary, training_background_injury_history",
         )
         .eq("user_id", session!.userId)
-        .maybeSingle<AthleteProfile>(),
+        .maybeSingle<AthleteProfile & TrainingBackgroundProfile>(),
+      // Unlike profiles/athlete_profiles above (whose own RLS "select own"
+      // policies scope an unfiltered query to the caller for free),
+      // community_profiles' only select policy is fully public
+      // (`using (true)`, see 20260721010000_community_profiles.sql) --
+      // required so /community/[id] can show anyone's public profile, but
+      // it means nothing here narrows this read to "mine" without an
+      // explicit filter. Without it, this could read a different (or, past
+      // one existing row, an ambiguous) profile than the signed-in user's
+      // own, which both mis-set the "View how this looks to others" link's
+      // hasProfile flag and could prefill the form with someone else's bio.
       supabase
         .from("community_profiles")
         .select("bio, location, favorite_distances")
@@ -202,6 +224,29 @@ export default async function SettingsPage() {
               initialYearsRunning={athleteProfile?.years_running ?? null}
               initialCurrentLevel={athleteProfile?.current_level ?? null}
               initialPrimaryEvent={athleteProfile?.primary_event ?? null}
+            />
+          </div>
+        </>
+      ) : null}
+
+      {session!.isCoachedAthlete ? (
+        <>
+          <h2 className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+            Training background
+          </h2>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+            How you trained before joining -- whoever was coaching you, or if no one was. Your coach uses this to
+            pick a starting plan and set your progression, instead of assuming your history started here.
+          </p>
+          <div className="mt-8">
+            <TrainingBackgroundSection
+              initialSource={athleteProfile?.training_background_source ?? null}
+              initialCoachName={athleteProfile?.training_background_coach_name ?? null}
+              initialProgramName={athleteProfile?.training_background_program_name ?? null}
+              initialRecentTypicalMileage={athleteProfile?.training_background_recent_mileage ?? null}
+              initialPeakMileage={athleteProfile?.training_background_peak_mileage ?? null}
+              initialSummary={athleteProfile?.training_background_summary ?? null}
+              initialInjuryHistory={athleteProfile?.training_background_injury_history ?? null}
             />
           </div>
         </>

@@ -8,6 +8,7 @@ import {
   impliedReferenceSecondsPerMile,
   isSingleSegmentSession,
   proposeEstimateReview,
+  raceEvidenceNote,
   weighSession,
   weightedMedian,
   type PastReview,
@@ -372,5 +373,43 @@ describe("detectDeterioration", () => {
   it("never diagnoses, and routes persistent trouble to a professional", () => {
     const flag = detectDeterioration([review(11000, 1), review(11200, 15), review(11500, 29)]);
     expect(flag.actions.join(" ")).toMatch(/medical professional/);
+  });
+});
+
+describe("raceEvidenceNote (Part F: a race time is a race time whoever coached it)", () => {
+  it("returns null when there's no recent race on file", () => {
+    expect(raceEvidenceNote(null)).toBeNull();
+  });
+
+  it("flags a real race result as the strongest evidence, with no mention of training source", () => {
+    const note = raceEvidenceNote({ raceName: "City 5K", raceDate: "2027-02-01", timeS: 957 });
+    expect(note).toMatch(/City 5K/);
+    expect(note).toMatch(/strongest evidence/);
+    expect(note).toMatch(/regardless of who coached the training/);
+    // The note itself carries no concept of training source -- it never
+    // mentions self-trained, previous coach, or any other source label.
+    expect(note).not.toMatch(/self-trained|previous coach|new to structured/i);
+  });
+
+  it("is surfaced ahead of the workout-derived notes when proposeEstimateReview is given a recent race", () => {
+    const review = proposeEstimateReview({
+      sessions: [],
+      phaseKey: "General",
+      currentTimeS: 1000,
+      referenceDistanceM: MILE_METERS * 3.1,
+      recentRace: { raceName: "Self-Trained 5K", raceDate: "2027-01-15", timeS: 950 },
+    });
+    expect(review.notes[0]).toMatch(/Self-Trained 5K/);
+    expect(review.notes[0]).toMatch(/strongest evidence/);
+  });
+
+  it("omits the race note entirely when no recent race is passed", () => {
+    const review = proposeEstimateReview({
+      sessions: [],
+      phaseKey: "General",
+      currentTimeS: 1000,
+      referenceDistanceM: MILE_METERS * 3.1,
+    });
+    expect(review.notes.join(" ")).not.toMatch(/strongest evidence/);
   });
 });

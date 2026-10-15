@@ -39,6 +39,8 @@ import { computeReferencePaceSeconds } from "@/lib/pace-percent-math";
 import { phaseFamily, type PhaseFamily } from "@/lib/private-coaching/adjustment-playbook";
 import { extractPacePercents, type PacePercentBasis, type PacePercentTarget } from "@/lib/private-coaching/plan-health";
 import { MILE_METERS } from "@/lib/race-distances";
+import { formatClock } from "@/lib/running-format";
+import { formatDate } from "@/lib/format";
 
 export type ReviewSession = {
   id: string;
@@ -355,6 +357,21 @@ export const MIN_TOTAL_WEIGHT = 1;
  */
 export const REVIEW_WINDOW_DAYS = 28;
 
+export type RecentRaceEvidence = { raceName: string; raceDate: string; timeS: number };
+
+/**
+ * A race time is a race time whoever coached the training that produced it.
+ * This function carries no notion of training source and never will, by
+ * construction -- it only ever sees a race result, never who coached the
+ * buildup behind it. Prepended ahead of the workout/time-trial-derived read
+ * below so a coach sees the strongest evidence first, for a self-trained
+ * athlete's race exactly as much as for one of Brody's own.
+ */
+export function raceEvidenceNote(race: RecentRaceEvidence | null): string | null {
+  if (!race) return null;
+  return `A real race result is on file for this distance: ${race.raceName}, ${formatClock(race.timeS)} on ${formatDate(race.raceDate)}. A race time is the strongest evidence available for an estimate, regardless of who coached the training behind it -- weigh it over the workout-derived read below unless there's a specific reason not to.`;
+}
+
 export function proposeEstimateReview(input: {
   sessions: ReviewSession[];
   /** Which phase family the review is about, which decides the evidence band. */
@@ -363,10 +380,13 @@ export function proposeEstimateReview(input: {
   currentTimeS: number | null;
   /** Reference distance in metres, for turning a pace back into a total time. */
   referenceDistanceM: number;
+  /** The athlete's most recent race result at this basis's distance, when one is on file. Flagged ahead of the workout-derived evidence, never discounted for training source -- see raceEvidenceNote. */
+  recentRace?: RecentRaceEvidence | null;
 }): EstimateReviewProposal {
   const family = phaseFamily(input.phaseKey);
   const basis: PacePercentBasis = family === "general" ? "5k" : "marathon";
-  const notes: string[] = [];
+  const raceNote = raceEvidenceNote(input.recentRace ?? null);
+  const notes: string[] = raceNote ? [raceNote] : [];
 
   const weighed = input.sessions
     .map((session) => weighSession(session, input.phaseKey))
@@ -382,6 +402,7 @@ export function proposeEstimateReview(input: {
       currentTimeS: input.currentTimeS,
       contributions: weighed,
       notes: [
+        ...notes,
         "Not enough usable sessions since the last review to say anything about the estimate. Sessions count when they were completed, prescribed against the pace band this phase is indexed on, and logged with an effort.",
       ],
     };

@@ -74,16 +74,34 @@ export type MileageMatchResult = {
  * adaptation of running miles, so a plan's starting mileage has to be
  * matched against running volume specifically, not total training volume.
  */
-export function mileageMatchCheck(input: { athleteCurrentWeeklyRunningMileage: number | null; planStartingMileage: number | null }): MileageMatchResult {
+export function mileageMatchCheck(input: {
+  athleteCurrentWeeklyRunningMileage: number | null;
+  planStartingMileage: number | null;
+  /**
+   * Recorded training-background peak, when available (see
+   * training-background.ts's AnchorPeak). Appended as extra context rather
+   * than changing the stretch calculation itself, which stays about
+   * CURRENT running mileage vs. the plan's own start -- but a coach reading
+   * "don't start barely hanging on" should also see whether this athlete
+   * has already handled more than that recently, from training that never
+   * happened on this platform.
+   */
+  anchorPeak?: { peakMileage: number | null; reliable: boolean; note: string } | null;
+}): MileageMatchResult {
+  const anchorSuffix = input.anchorPeak?.peakMileage != null ? ` ${input.anchorPeak.note}` : "";
+
   if (input.athleteCurrentWeeklyRunningMileage == null || input.planStartingMileage == null) {
-    return { isStretch: false, detail: "Not enough data to compare current mileage against the plan's starting point." };
+    return {
+      isStretch: false,
+      detail: `Not enough data to compare current mileage against the plan's starting point.${anchorSuffix}`,
+    };
   }
 
   const gap = input.planStartingMileage - input.athleteCurrentWeeklyRunningMileage;
   if (gap <= 0) {
     return {
       isStretch: false,
-      detail: `Currently running ${input.athleteCurrentWeeklyRunningMileage} mi/week, at or above the plan's ${input.planStartingMileage} mi/week starting point.`,
+      detail: `Currently running ${input.athleteCurrentWeeklyRunningMileage} mi/week, at or above the plan's ${input.planStartingMileage} mi/week starting point.${anchorSuffix}`,
     };
   }
 
@@ -95,8 +113,8 @@ export function mileageMatchCheck(input: { athleteCurrentWeeklyRunningMileage: n
   return {
     isStretch,
     detail: isStretch
-      ? `Currently running ${input.athleteCurrentWeeklyRunningMileage} mi/week against a plan that starts at ${input.planStartingMileage}. Don't start barely hanging on -- consider a lower-volume plan rather than this one.`
-      : `Currently running ${input.athleteCurrentWeeklyRunningMileage} mi/week against a plan that starts at ${input.planStartingMileage}. Close enough to build into over the first couple of weeks.`,
+      ? `Currently running ${input.athleteCurrentWeeklyRunningMileage} mi/week against a plan that starts at ${input.planStartingMileage}. Don't start barely hanging on -- consider a lower-volume plan rather than this one.${anchorSuffix}`
+      : `Currently running ${input.athleteCurrentWeeklyRunningMileage} mi/week against a plan that starts at ${input.planStartingMileage}. Close enough to build into over the first couple of weeks.${anchorSuffix}`,
   };
 }
 

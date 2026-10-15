@@ -12,6 +12,7 @@ import {
   type DeteriorationFlag,
   type EstimateReviewProposal,
   type PastReview,
+  type RecentRaceEvidence,
   type ReviewSession,
 } from "@/lib/private-coaching/estimate-review";
 import { metersFor } from "@/lib/race-distances";
@@ -144,18 +145,38 @@ export async function runEstimateReview(input: { athleteId: string; windowDays?:
 
   const referenceKey: "5k" | "marathon" = phaseFamily(currentPhaseKey) === "general" ? "5k" : "marathon";
 
-  const { data: estimateRow } = await supabase
-    .from("athlete_fitness_estimates")
-    .select("estimated_time_s")
-    .eq("athlete_id", input.athleteId)
-    .eq("reference_key", referenceKey)
-    .maybeSingle<{ estimated_time_s: number }>();
+  const [{ data: estimateRow }, { data: raceRow }] = await Promise.all([
+    supabase
+      .from("athlete_fitness_estimates")
+      .select("estimated_time_s")
+      .eq("athlete_id", input.athleteId)
+      .eq("reference_key", referenceKey)
+      .maybeSingle<{ estimated_time_s: number }>(),
+    // The athlete's most recent race AT THIS DISTANCE -- not just their
+    // most recent race overall (getAthleteMostRecentRace, used elsewhere
+    // for pace references, deliberately ignores distance). Real evidence
+    // regardless of who coached the training that produced it; see
+    // raceEvidenceNote's own comment.
+    supabase
+      .from("race_results")
+      .select("race_name, race_date, finish_time_s")
+      .eq("user_id", input.athleteId)
+      .eq("distance_m", Math.round(metersFor(referenceKey)))
+      .order("race_date", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ race_name: string; race_date: string; finish_time_s: number }>(),
+  ]);
+
+  const recentRace: RecentRaceEvidence | null = raceRow
+    ? { raceName: raceRow.race_name, raceDate: raceRow.race_date, timeS: raceRow.finish_time_s }
+    : null;
 
   const proposal = proposeEstimateReview({
     sessions,
     phaseKey: currentPhaseKey,
     currentTimeS: estimateRow?.estimated_time_s ?? null,
     referenceDistanceM: metersFor(referenceKey),
+    recentRace,
   });
 
   const { data: historyRows } = await supabase

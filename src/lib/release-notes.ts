@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-15",
+    headline: "Training-background intake for new athletes",
+    detail:
+      "A coached athlete can now record what their training actually looked like before joining -- a previous coach, a self-trained buildup, or no structured training at all, with peak/recent mileage and injury history where it applies. The coach sees this in the athlete's schedule view and it feeds plan-selection guidance, so a self-trained athlete's real history counts the same as a prior coach's, and a true beginner gets routed to the 5K Crash Course instead of an assumed buildup.",
+  },
+  {
+    date: "2026-10-15",
     headline: "Structured post-season review for athletes",
     detail:
       "When a coach sends a post-season review, the athlete now gets a real guided form instead of a free-text prompt: a set of structured questions about what worked, what didn't, and how the cycle actually felt, captured while it's fresh. The coach sees the structured answers directly in that athlete's schedule view once submitted, and both the send and the submission trigger a notification routed straight to the right place.",

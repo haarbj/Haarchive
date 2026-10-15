@@ -10,6 +10,20 @@
 // which is exactly the per-cycle limit the methodology sets. The ladder and
 // the rule agree because the ladder was built from the same methodology,
 // and a test asserts it stays that way.
+//
+// WHEN THERE IS NO COMPLETED BUILDUP ON THIS PLATFORM. The original version
+// of this module only ever had on-platform cycles to work from, so "no
+// completed buildup" fell back to matching the ladder against current
+// weekly mileage -- fine for a genuinely brand-new runner, wrong for an
+// athlete whose entire marathon buildup happened before they ever saw this
+// platform (see training-background.ts's own header for the real case that
+// exposed this). `priorHistory`, an optional AnchorPeak from that module,
+// lets this function anchor on a recorded peak from self-training, a
+// previous coach, or another plan/app instead of an assumed prior Brody
+// cycle, and says so explicitly when that peak is itself only a fallback
+// assumption rather than confirmed history.
+
+import type { AnchorPeak } from "@/lib/private-coaching/training-background";
 
 export type FrameworkRung = {
   frameworkKey: string;
@@ -167,6 +181,13 @@ export function suggestNextBuildup(input: {
   unresolvedInjury: boolean;
   /** How many of the recent cycles were marathon buildups. */
   consecutiveMarathonCycles: number;
+  /**
+   * Recorded training-background peak, when there's no completed buildup on
+   * this platform to work from instead (see this module's own header).
+   * Optional and only ever consulted in that one branch, so omitting it
+   * reproduces the exact prior behaviour.
+   */
+  priorHistory?: AnchorPeak | null;
 }): NextBuildupSuggestion {
   const lastWithRung = [...input.cycles].reverse().find((cycle) => findRung(cycle.volumeVariantKey) != null);
   const currentRung = findRung(lastWithRung?.volumeVariantKey);
@@ -204,6 +225,53 @@ export function suggestNextBuildup(input: {
   }
 
   if (!currentRung) {
+    const priorPeak = input.priorHistory?.peakMileage ?? null;
+
+    if (priorPeak != null) {
+      const reliableWord = input.priorHistory!.reliable ? "recorded" : "assumed";
+      // The highest rung their recorded peak already covers -- the level
+      // their body has already shown it can handle, even though it was
+      // never a cycle on this platform.
+      const matched = [...FRAMEWORK_LADDER].reverse().find((rung) => rung.peakMileage <= priorPeak) ?? null;
+
+      if (matched) {
+        const next = FRAMEWORK_LADDER[matched.position + 1] ?? null;
+        return {
+          rung: next ?? matched,
+          suggestNonMarathonBlock: false,
+          title: next
+            ? `Step up to ${next.frameworkName} at ${next.peakMileage} miles a week`
+            : `Already near the top of the ladder at their ${reliableWord} peak`,
+          detail: [
+            input.priorHistory!.note,
+            next
+              ? `Their ${reliableWord} peak of ${priorPeak} mi/week matches ${matched.frameworkName} at ${matched.peakMileage}, so the next cycle steps ${next.peakMileage - matched.peakMileage} miles a week from there -- inside the ${PEAK_STEP.min} to ${PEAK_STEP.max} a cycle tissue can actually keep up with, not from an assumed cycle with this platform.`
+              : "No higher rung remains above the level their recorded peak already matches.",
+          ].join(" "),
+          actions: [
+            next
+              ? `Assign ${next.frameworkName} at the ${next.peakMileage} mile variant.`
+              : "Repeat at this peak and change the work inside it rather than the total.",
+            `Do not exceed ${PEAK_STEP.max} more miles a week at peak than their ${reliableWord} ${matched.peakMileage} mi/week peak.`,
+            input.priorHistory!.reliable
+              ? "Record this cycle once assigned so the next suggestion has real on-platform history to work from."
+              : "This peak is an assumption, not confirmed history -- check it with the athlete before assigning.",
+          ],
+        };
+      }
+
+      return {
+        rung: FRAMEWORK_LADDER[0],
+        suggestNonMarathonBlock: false,
+        title: "No completed buildup on record yet",
+        detail: `${input.priorHistory!.note} Their ${reliableWord} peak of ${priorPeak} mi/week is below this ladder's own bottom rung, so start from ${FRAMEWORK_LADDER[0].frameworkName} at ${FRAMEWORK_LADDER[0].peakMileage} and let the next cycle be the first real data point.`,
+        actions: [
+          `Start with ${FRAMEWORK_LADDER[0].frameworkName} at the ${FRAMEWORK_LADDER[0].peakMileage} mile variant.`,
+          "Record the cycle so the next suggestion has something to work from.",
+        ],
+      };
+    }
+
     return {
       rung: FRAMEWORK_LADDER[0],
       suggestNonMarathonBlock: false,

@@ -25,6 +25,7 @@ import { PostRacePanel } from "./post-race-panel";
 import { AdvancedTechniquesPanel } from "./advanced-techniques-panel";
 import { FuelingOversightPanel } from "./fueling-oversight-panel";
 import { OnboardingPanel } from "./onboarding-panel";
+import { TrainingBackgroundPanel } from "./training-background-panel";
 import { formatTargetVolume } from "./week-plan-editor";
 import { clearAllTraining } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -169,6 +170,11 @@ export function PhaseView({
           </div>
         ),
       )}
+
+      {/* Run Club intake, coach-only, always visible when recorded. Even
+          more upstream than OnboardingPanel below: whether this athlete's
+          history is a prior cycle with this platform at all. */}
+      <TrainingBackgroundPanel athleteId={athleteId} />
 
       {/* Part K, coach-only. The most upstream concern of all of these:
           whether a marathon plan should even be assigned yet. Renders

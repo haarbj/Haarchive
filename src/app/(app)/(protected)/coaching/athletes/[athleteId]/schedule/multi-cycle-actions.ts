@@ -9,6 +9,7 @@ import {
   type NextBuildupSuggestion,
   type TrainingCycle,
 } from "@/lib/private-coaching/multi-cycle";
+import { getTrainingBackground, resolveAnchorPeakMileage } from "@/lib/private-coaching/training-background";
 
 // Part G, coach-only. The athlete's buildup history and what should come
 // next. Read-only: it derives the history from the phases already on their
@@ -54,18 +55,31 @@ export async function loadMultiCycleHistory(input: {
     .maybeSingle();
   if (!relationship) return { error: "You don't coach this athlete." };
 
-  const { data: phaseRows } = await supabase
-    .from("training_phases")
-    .select("phase_type, start_date, end_date, source_program_id, source_program_volume_variant_id")
-    .eq("athlete_id", input.athleteId)
-    .order("start_date", { ascending: true })
-    .returns<PhaseRow[]>();
+  const [{ data: phaseRows }, { data: profile }, background] = await Promise.all([
+    supabase
+      .from("training_phases")
+      .select("phase_type, start_date, end_date, source_program_id, source_program_volume_variant_id")
+      .eq("athlete_id", input.athleteId)
+      .order("start_date", { ascending: true })
+      .returns<PhaseRow[]>(),
+    supabase
+      .from("athlete_profiles")
+      .select("current_weekly_mileage")
+      .eq("user_id", input.athleteId)
+      .maybeSingle<{ current_weekly_mileage: number | null }>(),
+    getTrainingBackground(supabase, input.athleteId),
+  ]);
+  const priorHistory = resolveAnchorPeakMileage({
+    background,
+    currentWeeklyMileage: profile?.current_weekly_mileage ?? null,
+  });
+
   const phases = phaseRows ?? [];
   if (phases.length === 0) {
     return {
       cycles: [],
       consecutiveMarathonCycles: 0,
-      suggestion: suggestNextBuildup({ cycles: [], unresolvedInjury: false, consecutiveMarathonCycles: 0 }),
+      suggestion: suggestNextBuildup({ cycles: [], unresolvedInjury: false, consecutiveMarathonCycles: 0, priorHistory }),
     };
   }
 
@@ -131,6 +145,7 @@ export async function loadMultiCycleHistory(input: {
       cycles: grouped,
       unresolvedInjury: input.unresolvedInjury === true,
       consecutiveMarathonCycles,
+      priorHistory,
     }),
   };
 }

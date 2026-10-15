@@ -10,6 +10,7 @@ import {
   type MileageMatchResult,
   type PrerequisiteCheck,
 } from "@/lib/private-coaching/onboarding";
+import { getTrainingBackground, resolveAnchorPeakMileage } from "@/lib/private-coaching/training-background";
 
 // Part K item 31, coach-only. Reads the athlete's own profile and fitness
 // estimate -- both already coach-readable -- rather than asking the coach
@@ -45,18 +46,20 @@ export async function loadOnboardingChecklist(input: { athleteId: string }): Pro
   if ("error" in auth) return { error: auth.error };
   const { session, supabase } = auth;
 
-  const { data: profile } = await supabase
-    .from("athlete_profiles")
-    .select("current_weekly_mileage")
-    .eq("user_id", input.athleteId)
-    .maybeSingle<{ current_weekly_mileage: number | null }>();
-
-  const { data: estimate } = await supabase
-    .from("athlete_fitness_estimates")
-    .select("reference_key")
-    .eq("athlete_id", input.athleteId)
-    .eq("reference_key", "5k")
-    .maybeSingle<{ reference_key: string }>();
+  const [{ data: profile }, { data: estimate }, background] = await Promise.all([
+    supabase
+      .from("athlete_profiles")
+      .select("current_weekly_mileage")
+      .eq("user_id", input.athleteId)
+      .maybeSingle<{ current_weekly_mileage: number | null }>(),
+    supabase
+      .from("athlete_fitness_estimates")
+      .select("reference_key")
+      .eq("athlete_id", input.athleteId)
+      .eq("reference_key", "5k")
+      .maybeSingle<{ reference_key: string }>(),
+    getTrainingBackground(supabase, input.athleteId),
+  ]);
 
   const currentWeeklyMileage = profile?.current_weekly_mileage ?? null;
   const prerequisites = checkOnboardingPrerequisites({ currentWeeklyMileage, has5kEstimate: estimate != null });
@@ -69,10 +72,15 @@ export async function loadOnboardingChecklist(input: { athleteId: string }): Pro
     .returns<{ id: string; framework_key: string }[]>();
   const crashCourseProgramIds = Object.fromEntries((crashProgramRows ?? []).map((r) => [r.framework_key, r.id]));
 
+  // New to structured training: assume nothing about a buildup that never
+  // happened, even if some current mileage is on file -- always Level I,
+  // never a mileage-matched guess.
+  const crashCourseMileage = background?.source === "new_to_structured" ? null : currentWeeklyMileage;
+
   return {
     prerequisites,
     currentWeeklyMileage,
-    crashCourseOffer: prerequisites.estimateReady ? undefined : offerCrashCourse(currentWeeklyMileage),
+    crashCourseOffer: prerequisites.estimateReady ? undefined : offerCrashCourse(crashCourseMileage),
     crashCourseProgramIds,
   };
 }
@@ -88,7 +96,7 @@ export async function checkMileageMatch(input: {
   if ("error" in auth) return { error: auth.error };
   const { supabase } = auth;
 
-  const [{ data: profile }, { data: program }, { data: variant }] = await Promise.all([
+  const [{ data: profile }, { data: program }, { data: variant }, background] = await Promise.all([
     supabase
       .from("athlete_profiles")
       .select("current_weekly_mileage")
@@ -106,15 +114,22 @@ export async function checkMileageMatch(input: {
           .eq("id", input.volumeVariantId)
           .maybeSingle<{ initial_mileage: number | null }>()
       : Promise.resolve({ data: null as { initial_mileage: number | null } | null }),
+    getTrainingBackground(supabase, input.athleteId),
   ]);
+
+  const currentWeeklyMileage = profile?.current_weekly_mileage ?? null;
 
   return {
     result: mileageMatchCheck({
-      athleteCurrentWeeklyRunningMileage: profile?.current_weekly_mileage ?? null,
+      athleteCurrentWeeklyRunningMileage: currentWeeklyMileage,
       // The variant's own starting mileage, when one was chosen, since
       // Canyon-40 and Canyon-50 start at genuinely different points and
       // the program-wide range would blur that.
       planStartingMileage: variant?.initial_mileage ?? program?.initial_mileage_min ?? null,
+      // Real recorded history (self-trained, a previous coach, another
+      // app), not an assumed prior cycle with this platform -- see
+      // training-background.ts.
+      anchorPeak: resolveAnchorPeakMileage({ background, currentWeeklyMileage }),
     }),
   };
 }

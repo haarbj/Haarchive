@@ -68,6 +68,24 @@ describe("mileageMatchCheck (Part D item 8, built to unblock Part K)", () => {
     expect(mileageMatchCheck({ athleteCurrentWeeklyRunningMileage: null, planStartingMileage: 55 }).isStretch).toBe(false);
     expect(mileageMatchCheck({ athleteCurrentWeeklyRunningMileage: 40, planStartingMileage: null }).isStretch).toBe(false);
   });
+
+  it("appends the recorded training-background anchor as extra context without changing the stretch verdict", () => {
+    const withAnchor = mileageMatchCheck({
+      athleteCurrentWeeklyRunningMileage: 40,
+      planStartingMileage: 60,
+      anchorPeak: { peakMileage: 70, reliable: true, note: "Anchored on a recorded peak of 70 mi/week from their self-trained buildup." },
+    });
+    expect(withAnchor.isStretch).toBe(true);
+    expect(withAnchor.detail).toMatch(/Don't start barely hanging on/);
+    expect(withAnchor.detail).toMatch(/recorded peak of 70 mi\/week/);
+  });
+
+  it("says nothing extra when no anchor peak is given, preserving the original wording exactly", () => {
+    const result = mileageMatchCheck({ athleteCurrentWeeklyRunningMileage: 50, planStartingMileage: 55 });
+    expect(result.detail).toBe(
+      "Currently running 50 mi/week against a plan that starts at 55. Close enough to build into over the first couple of weeks.",
+    );
+  });
 });
 
 describe("crashCourseLevelFor and offerCrashCourse", () => {

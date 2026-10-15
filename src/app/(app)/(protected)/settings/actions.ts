@@ -6,6 +6,7 @@ import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
 import { becomeSelfCoach } from "@/app/(app)/(protected)/coaching/self-coach-actions";
 import { athleteProfileSchema } from "@/lib/validation/athlete-profile";
+import { trainingBackgroundSchema } from "@/lib/validation/training-background";
 import { communityProfileSchema } from "@/lib/validation/community-profile";
 import { injurySchema, raceResultSchema } from "@/lib/validation/onboarding";
 import { raceDistanceMap } from "@/lib/race-distances";
@@ -235,6 +236,58 @@ export async function updateAthleteProfile(
   revalidatePath("/settings");
   revalidatePath("/dashboard");
   revalidatePath("/plan/new");
+  return { success: true };
+}
+
+export type UpdateTrainingBackgroundState = {
+  error?: string;
+  success?: boolean;
+};
+
+// Run Club intake: how this athlete trained before this platform, whoever
+// trained them. Coach-readable (same RLS as the rest of athlete_profiles),
+// athlete-writable -- see training-background.ts for why this exists and
+// what each source means.
+export async function updateTrainingBackground(
+  _prevState: UpdateTrainingBackgroundState,
+  formData: FormData,
+): Promise<UpdateTrainingBackgroundState> {
+  const parsed = trainingBackgroundSchema.safeParse({
+    source: formData.get("source"),
+    coachName: formData.get("coachName") || undefined,
+    programName: formData.get("programName") || undefined,
+    recentTypicalMileage: formData.get("recentTypicalMileage") || undefined,
+    peakMileage: formData.get("peakMileage") || undefined,
+    summary: formData.get("summary") || undefined,
+    injuryHistory: formData.get("injuryHistory") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Please check the values above." };
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) {
+    return { error: "Your session expired. Sign in again." };
+  }
+
+  const { error } = await supabase.from("athlete_profiles").upsert({
+    user_id: userId,
+    training_background_source: parsed.data.source,
+    training_background_coach_name: parsed.data.coachName || null,
+    training_background_program_name: parsed.data.programName || null,
+    training_background_recent_mileage: parsed.data.recentTypicalMileage ?? null,
+    training_background_peak_mileage: parsed.data.peakMileage ?? null,
+    training_background_summary: parsed.data.summary || null,
+    training_background_injury_history: parsed.data.injuryHistory || null,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/settings");
   return { success: true };
 }
 

@@ -236,4 +236,48 @@ describe("suggestNextBuildup", () => {
     });
     expect(suggestion.rung?.variantKey).toBe("mesa-65");
   });
+
+  describe("priorHistory (training-background intake, never an assumed prior Brody cycle)", () => {
+    it("anchors on a reliable recorded peak instead of current weekly mileage", () => {
+      const suggestion = suggestNextBuildup({
+        cycles: [],
+        unresolvedInjury: false,
+        consecutiveMarathonCycles: 0,
+        priorHistory: { peakMileage: 55, reliable: true, note: "Anchored on a recorded peak of 55 mi/week from their self-trained buildup, not an assumed prior cycle with this platform." },
+      });
+      // 55 matches mesa-55 exactly; next rung is mesa-65.
+      expect(suggestion.rung?.variantKey).toBe("mesa-65");
+      expect(suggestion.detail).toMatch(/recorded peak of 55 mi\/week/);
+      expect(suggestion.detail).toMatch(/not from an assumed cycle with this platform/);
+      expect(suggestion.actions.join(" ")).toMatch(/Record this cycle once assigned/);
+    });
+
+    it("flags an unreliable (assumed) peak and asks the coach to confirm it", () => {
+      const suggestion = suggestNextBuildup({
+        cycles: [],
+        unresolvedInjury: false,
+        consecutiveMarathonCycles: 0,
+        priorHistory: { peakMileage: 40, reliable: false, note: "Defaulting to their current 40 mi/week as a conservative stand-in -- confirm this reflects a real recent peak." },
+      });
+      expect(suggestion.detail).toMatch(/assumed peak of 40 mi\/week/);
+      expect(suggestion.actions.join(" ")).toMatch(/assumption, not confirmed history -- check it with the athlete/);
+    });
+
+    it("starts from the ladder's bottom rung when the recorded peak is below it, explaining why", () => {
+      const suggestion = suggestNextBuildup({
+        cycles: [],
+        unresolvedInjury: false,
+        consecutiveMarathonCycles: 0,
+        priorHistory: { peakMileage: 20, reliable: true, note: "Anchored on a recorded peak of 20 mi/week from their self-trained buildup." },
+      });
+      expect(suggestion.rung?.variantKey).toBe("canyon-40");
+      expect(suggestion.detail).toMatch(/below this ladder's own bottom rung/);
+    });
+
+    it("preserves the original current-mileage fallback when priorHistory is omitted", () => {
+      const suggestion = suggestNextBuildup({ cycles: [], unresolvedInjury: false, consecutiveMarathonCycles: 0 });
+      expect(suggestion.title).toMatch(/No completed buildup on record/);
+      expect(suggestion.actions.join(" ")).toMatch(/matches their current weekly mileage/);
+    });
+  });
 });
