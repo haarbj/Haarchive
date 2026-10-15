@@ -38,6 +38,7 @@ import { MarathonPacingCalculator } from "@/components/marathon-pacing-calculato
 import { AltitudeCalculator } from "@/components/altitude-calculator";
 import { AltitudeAdjustedPaceCalculator } from "@/components/altitude-adjusted-pace-calculator";
 import { EnduranceFuelingCalculator } from "@/components/endurance-fueling-calculator";
+import { FuelingCalculator } from "@/components/fueling-calculator";
 import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
@@ -67,6 +68,7 @@ const sectionTools: Record<string, ComponentType> = {
   "altitude-calculator": AltitudeCalculator,
   "altitude-adjusted-pace-calculator": AltitudeAdjustedPaceCalculator,
   "endurance-fueling-calculator": EnduranceFuelingCalculator,
+  "fueling-calculator": FuelingCalculator,
   "training-plans": TrainingPlansHome,
   contact: ContactPage,
   "training-philosophy": TrainingPhilosophyPage,

@@ -4173,6 +4173,14 @@ export const sections: Section[] = [
     topics: ["Carb rate by effort and GI training", "Fluid loss by weight, heat, and intensity", "Sodium loss and target rates"],
     category: "tools",
   },
+  {
+    slug: "fueling-calculator",
+    title: "Fueling Calculator",
+    mission:
+      "Turn your body weight and goal time into concrete race-week fueling numbers: an hourly carb rate and gut-training progression, a gel schedule, carb-loading and pre-race breakfast targets, and a caffeine dose.",
+    topics: ["Carb rate target and gut-training progression", "Carb-loading and breakfast gram targets", "Caffeine dosing and timing"],
+    category: "tools",
+  },
 ];
 
 export const sectionMap = new Map(
