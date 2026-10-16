@@ -12,7 +12,7 @@ import {
   type OverlappingPhase,
 } from "./assign-program-actions";
 import type { GeneratePhaseSelection, ResolvedProgramGeneration } from "@/lib/private-coaching/program-generation";
-import { type PhaseLayoutProposal, weeksAvailableBetween } from "@/lib/private-coaching/race-anchored-planning";
+import { PHASE_PROFILES, type PhaseLayoutProposal, weeksAvailableBetween } from "@/lib/private-coaching/race-anchored-planning";
 import {
   DEFAULT_STRENGTH_SELECTIONS,
   plyometricsEligibility,
@@ -57,10 +57,15 @@ export type ProgramOption = {
   name: string;
   scalesDistanceWithMileage: boolean;
   scalesDurationWithMileage: boolean;
+  /** The seeded framework this program is ("canyon"/"mesa"/"ridge"/"peak"/"summit"), or null for every other program (recovery, race lead-in, crash course, hand-authored). Only the five frameworks are weekday-bound (Monday-first authored weeks, Sunday long runs) -- see the start-date input's own Monday-snap below. */
+  frameworkKey: string | null;
   variants: ProgramOptionVariant[];
   /** Empty for every hand-authored program, which derives week totals from its own authored day distances instead. */
   volumeVariants: ProgramOptionVolumeVariant[];
 };
+
+/** Derived from PHASE_PROFILES, not a separately hand-maintained list -- the five seeded frameworks whose authored weeks are Monday-first and need the start-date input snapped to a Monday. Every other program (recovery, race lead-in, crash course, hand-authored) is day-sequenced, not weekday-bound, and accepts any start date as-is. */
+const WEEKDAY_BOUND_FRAMEWORK_KEYS = new Set(PHASE_PROFILES.map((p) => p.key));
 
 // "5K"/"Marathon", not "5K Pace"/"Marathon Pace" -- PACE_REFERENCE_LABELS'
 // own wording reads naturally as a pace ("50-60% 5K Pace"), but awkwardly
@@ -789,7 +794,17 @@ export function AssignProgramForm({
               <input
                 type="date"
                 value={startDateInput}
-                onChange={(e) => setStartDateInput(e.target.value ? mostRecentMonday(new Date(`${e.target.value}T00:00:00Z`)) : "")}
+                onChange={(e) => {
+                  if (!e.target.value) return setStartDateInput("");
+                  // Only the five seeded frameworks are weekday-bound
+                  // (Monday-first authored weeks, Sunday long runs) -- every
+                  // other program (recovery, race lead-in, crash course,
+                  // hand-authored) is day-sequenced and the athlete should
+                  // start exactly when they pick, e.g. post-marathon
+                  // recovery starting the day running actually resumes.
+                  const isWeekdayBound = program?.frameworkKey != null && WEEKDAY_BOUND_FRAMEWORK_KEYS.has(program.frameworkKey);
+                  setStartDateInput(isWeekdayBound ? mostRecentMonday(new Date(`${e.target.value}T00:00:00Z`)) : e.target.value);
+                }}
                 className={fieldClass}
               />
             </label>
