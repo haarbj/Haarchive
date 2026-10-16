@@ -836,7 +836,13 @@ async function PhaseViewSection({
   );
 }
 
-type ProgramRow = { id: string; name: string; scales_distance_with_mileage: boolean; scales_duration_with_mileage: boolean };
+type ProgramRow = {
+  id: string;
+  name: string;
+  scales_distance_with_mileage: boolean;
+  scales_duration_with_mileage: boolean;
+  framework_key: string | null;
+};
 type VariantRow = { id: string; program_id: string; name: string };
 type VariantPhaseRow = { variant_id: string; phase_definition_id: string; position: number };
 type PhaseDefRow = {
@@ -867,7 +873,7 @@ type VolumeVariantRow = {
 async function loadProgramOptions(supabase: Awaited<ReturnType<typeof createClient>>): Promise<ProgramOption[]> {
   const { data: programRows } = await supabase
     .from("training_programs")
-    .select("id, name, scales_distance_with_mileage, scales_duration_with_mileage")
+    .select("id, name, scales_distance_with_mileage, scales_duration_with_mileage, framework_key")
     .order("name")
     .returns<ProgramRow[]>();
   const programIds = (programRows ?? []).map((p) => p.id);
@@ -914,6 +920,7 @@ async function loadProgramOptions(supabase: Awaited<ReturnType<typeof createClie
     name: program.name,
     scalesDistanceWithMileage: program.scales_distance_with_mileage,
     scalesDurationWithMileage: program.scales_duration_with_mileage,
+    frameworkKey: program.framework_key,
     variants: (variantsByProgram.get(program.id) ?? []).map((variant) => ({
       id: variant.id,
       name: variant.name,
