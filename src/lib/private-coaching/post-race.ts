@@ -94,6 +94,12 @@ const RETURN_TO_RUNNING: string[][] = [
 // those days rather than left as a footnote the athlete has to carry.
 const WARM_UP_NOTE = "1-2 mi progressive warm-up and 1-2 mi easy cool-down.";
 
+// Week 1 Saturday and Week 4 Saturday (and their following Sundays) were
+// originally transcribed with each other's sessions swapped -- Week 1 Sat
+// should be the hill-repeat session and Week 4 Sat should be the 9-10 mi
+// hilly moderate/easy run, not the other way around. Verified against the
+// source table directly; the two Sunday "Off or X mi" values differ (3-5
+// vs 4-5) and were swapped along with their Saturdays.
 const RETURN_TO_TRAINING: string[][] = [
   [
     "5 mi Kenyan-style progression + 1 mi easy",
@@ -101,8 +107,8 @@ const RETURN_TO_TRAINING: string[][] = [
     "3 mi easy progressing to moderate, then 8-10 x 20 sec strides",
     "4-5 mi very easy",
     "6-8 mi easy to moderate",
-    "5-8 mi very easy",
-    "Off or 4-5 mi very easy",
+    `6-10 x 1 min fast uphill (~112-115% of marathon pace effort), easy jog down (can do on flat ground). ${WARM_UP_NOTE}`,
+    "Off or 3-5 mi very easy",
   ],
   [
     "6-7 mi easy",
@@ -128,8 +134,8 @@ const RETURN_TO_TRAINING: string[][] = [
     "5-8 mi very easy",
     `4 km at 110% of marathon pace, 4-5 min walk/jog, then 6-8 x 1 min fast (~115% effort), 2 min jog. ${WARM_UP_NOTE}`,
     "5-8 mi very easy",
-    `6-10 x 1 min fast uphill (~112-115% of marathon pace effort), easy jog down (can do on flat ground). ${WARM_UP_NOTE}`,
-    "Off or 3-5 mi very easy",
+    "9-10 mi moderate or easy progressing to moderate through hills",
+    "Off or 4-5 mi very easy",
   ],
 ];
 
@@ -154,10 +160,10 @@ const RETURN_TO_RUNNING_DISTANCES: RecoveryDistance[][] = [
 // PACE_DEPENDENT -- permanently null, never a worksheet question (see
 // RecoveryDistance's own comment on why).
 const RETURN_TO_TRAINING_DISTANCES: RecoveryDistance[][] = [
-  [V(6), V(4, 5), V(3), V(4, 5), V(6, 8), V(5, 8), OFF_OR],
+  [V(6), V(4, 5), V(3), V(4, 5), V(6, 8), PACE_DEPENDENT, OFF_OR],
   [V(6, 7), V(7), V(5, 7), PACE_DEPENDENT, V(5, 7), V(8, 10), OFF_OR],
   [V(7), V(5, 8), PACE_DEPENDENT, V(5, 8), V(6, 9), V(5, 8), V(11, 12)],
-  [OFF_OR, PACE_DEPENDENT, V(5, 8), PACE_DEPENDENT, V(5, 8), PACE_DEPENDENT, OFF_OR],
+  [OFF_OR, PACE_DEPENDENT, V(5, 8), PACE_DEPENDENT, V(5, 8), V(9, 10), OFF_OR],
 ];
 
 function distanceFields(d: RecoveryDistance): { distanceMiMin: number | null; distanceMiMax: number | null } {
