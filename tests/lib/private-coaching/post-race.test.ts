@@ -8,6 +8,7 @@ import {
   RETURN_TO_RUNNING_PHASE,
   RETURN_TO_TRAINING_PHASE,
   buildRecoveryProgramSeed,
+  recoveryWorksheetEntries,
   POST_SEASON_REVIEW_MARKER,
   POST_SEASON_REVIEW_SECTIONS,
   postRaceFlow,
@@ -99,6 +100,62 @@ describe("buildRecoveryProgramSeed", () => {
   it("tells the coach the rest days are not in the authored weeks", () => {
     expect(plan.program.description).toMatch(/not part of the authored weeks/);
     expect(plan.program.description).toMatch(/start this program on the day the athlete starts running again/);
+  });
+
+  it("carries no pace on any recovery day -- deliberate, per the program's own 'nothing here to measure' philosophy", () => {
+    expect(plan.days.every((d) => d.steps == null)).toBe(true);
+  });
+
+  it("gives every day either a real distance, a deliberate null (Off/Off or X/pace-dependent), or a worksheet entry -- never a silent gap", () => {
+    const worksheetSlots = new Set(recoveryWorksheetEntries().map((e) => `${e.program}:${e.week}:${e.day}`));
+    for (const day of plan.days) {
+      const hasDistance = day.distanceMiMin != null;
+      const isOff = /^off\.?$/i.test(day.notes.trim()) || /^off\s+or\b/i.test(day.notes.trim());
+      // A null distance that isn't Off/Off-or is pace-dependent (a segment
+      // stated only in minutes at a percent of marathon pace) -- the
+      // prescription itself says so.
+      const isPaceDependent = /%\s*of\s*marathon\s*pace/i.test(day.notes);
+      const label = day.phaseKey === RETURN_TO_RUNNING_PHASE ? "post-marathon-recovery (Return to running)" : "post-marathon-recovery (Return to training)";
+      const onWorksheet = worksheetSlots.has(`${label}:${day.weekNumber}:${day.dayOfWeek}`);
+      expect(hasDistance || isOff || isPaceDependent || onWorksheet).toBe(true);
+    }
+  });
+
+  it("sums the first return-to-training day's progression and cool-down, matching the task's own worked example", () => {
+    const day = plan.days.find((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE && d.weekNumber === 1 && d.dayOfWeek === 1)!;
+    expect(day.notes).toBe("5 mi Kenyan-style progression + 1 mi easy");
+    expect(day.distanceMiMin).toBe(6);
+    expect(day.distanceMiMax).toBeNull();
+  });
+
+  it("leaves 'Off' and 'Off or X' days at a null distance, not a worksheet entry", () => {
+    const offDay = plan.days.find((d) => d.phaseKey === RETURN_TO_RUNNING_PHASE && d.weekNumber === 1 && d.dayOfWeek === 2)!;
+    expect(offDay.notes).toBe("Off");
+    expect(offDay.distanceMiMin).toBeNull();
+
+    const offOrDay = plan.days.find((d) => d.phaseKey === RETURN_TO_RUNNING_PHASE && d.weekNumber === 2 && d.dayOfWeek === 3)!;
+    expect(offOrDay.notes).toBe("Off or 3-5 mi very easy");
+    expect(offOrDay.distanceMiMin).toBeNull();
+  });
+});
+
+describe("recoveryWorksheetEntries", () => {
+  it("is empty -- every ambiguous recovery day turned out to be pace-dependent, not a worksheet question", () => {
+    // Confirmed: a session whose fast segment is stated only in minutes at
+    // a percent of marathon pace has no single correct distance (it varies
+    // by the athlete's own fitness estimate), so it's left permanently
+    // null instead of being asked about -- see RecoveryDistance's own
+    // comment on the paceDependent kind.
+    expect(recoveryWorksheetEntries()).toHaveLength(0);
+  });
+
+  it("the five pace-dependent recovery days have a null distance but a real prescription", () => {
+    const plan = buildRecoveryProgramSeed();
+    const paceDependentDays = plan.days.filter((d) => d.distanceMiMin == null && !/^off\b/i.test(d.notes.trim()));
+    expect(paceDependentDays).toHaveLength(5);
+    for (const day of paceDependentDays) {
+      expect(day.notes).toMatch(/%\s*of\s*marathon\s*pace/i);
+    }
   });
 });
 
