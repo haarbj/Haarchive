@@ -22,13 +22,57 @@
 // coach starts the program when the athlete starts running again.
 
 import { parseDifficulty, type FrameworkSeedPlan, type SeedDay } from "@/lib/private-coaching/framework-seed";
+import type { WorksheetEntry } from "@/lib/private-coaching/framework-structure";
 
 export const RECOVERY_FRAMEWORK_KEY = "post-marathon-recovery";
 export const RETURN_TO_RUNNING_PHASE = "Return to running";
 export const RETURN_TO_TRAINING_PHASE = "Return to training";
 
 /** One authored day of the recovery program. 1 = Monday. */
-export type RecoveryDay = { phaseKey: string; weekNumber: number; dayOfWeek: number; prescription: string };
+export type RecoveryDay = {
+  phaseKey: string;
+  weekNumber: number;
+  dayOfWeek: number;
+  prescription: string;
+  /** Optional per the task that added this: filled by hand against the prose above, never derived by a parser. Absent (undefined) is never produced here -- every day gets one of the four RecoveryDistance kinds below. */
+  distanceMiMin?: number | null;
+  distanceMiMax?: number | null;
+};
+
+/**
+ * One hand-read distance verdict per recovery day, by hand against
+ * RETURN_TO_RUNNING/RETURN_TO_TRAINING's own prose -- never a parser (the
+ * task that added this is explicit on that point, unlike the framework
+ * layer in framework-structure.ts). Five kinds, because "both fields
+ * null" means four genuinely different things and collapsing them would
+ * erase that difference:
+ *   - value: a real, statable mi range (or single figure, max null).
+ *   - off: the source literally says "Off" -- no distance, not ambiguous.
+ *   - offOr: "Off or X mi" -- asserting X would overcount an athlete who
+ *     took the rest day; this is the athlete's choice, not ambiguous.
+ *   - paceDependent: a segment stated only in minutes at a percent of
+ *     marathon pace (e.g. "4 min fast (~116% of marathon pace effort)")
+ *     -- its mileage contribution varies by the athlete's own fitness
+ *     estimate, so there is no single number Brody could write down that
+ *     would be right for every athlete. Same case framework-structure.ts
+ *     documents for the frameworks' own time-based main sets, and the
+ *     same case workout-distance.ts's getWorkoutPlannedDistanceM already
+ *     documents for any duration-only step -- null, permanently, by
+ *     design, never a worksheet question (confirmed: Brody doesn't want
+ *     to be asked for a number here, since no single one is correct).
+ *   - worksheet: a genuinely unstatable total for a reason OTHER than
+ *     pace-dependence -- goes on the labeling worksheet for Brody to
+ *     read by hand, with the question this file supplies. (As of this
+ *     writing every ambiguous recovery day turned out to be pace-
+ *     dependent, so this kind is currently unused here, but it stays
+ *     distinct from paceDependent in case a future day needs it.)
+ */
+export type RecoveryDistance =
+  | { kind: "value"; min: number; max: number | null }
+  | { kind: "off" }
+  | { kind: "offOr" }
+  | { kind: "paceDependent" }
+  | { kind: "worksheet"; question: string };
 
 const RETURN_TO_RUNNING: string[][] = [
   // Week 1, Monday through Sunday.
@@ -89,6 +133,37 @@ const RETURN_TO_TRAINING: string[][] = [
   ],
 ];
 
+const V = (min: number, max: number | null = null): RecoveryDistance => ({ kind: "value", min, max });
+const OFF: RecoveryDistance = { kind: "off" };
+const OFF_OR: RecoveryDistance = { kind: "offOr" };
+const PACE_DEPENDENT: RecoveryDistance = { kind: "paceDependent" };
+
+// Hand-read against RETURN_TO_RUNNING's own prose above, Monday through
+// Sunday per week, in the same order. "X-Y mi [[effort]]" reads directly as
+// V(X,Y); "Off"/"Off or X" are their own kinds, never a value (see
+// RecoveryDistance's own comment on why asserting X there would overcount).
+const RETURN_TO_RUNNING_DISTANCES: RecoveryDistance[][] = [
+  [V(3, 4), OFF, V(4, 5), OFF, V(5), V(5, 6), OFF],
+  [V(5, 6), V(4, 5), OFF_OR, V(5, 7), V(4, 5), V(6, 8), OFF],
+];
+
+// Hand-read against RETURN_TO_TRAINING's own prose above. "X mi [type] + Y
+// mi easy" sums to one total (V(X+Y)); strides ("+ 8-10 x 20 sec strides")
+// add nothing, matching the task's own worked example. A day whose fast
+// segment is stated only in minutes at a percent of marathon pace is
+// PACE_DEPENDENT -- permanently null, never a worksheet question (see
+// RecoveryDistance's own comment on why).
+const RETURN_TO_TRAINING_DISTANCES: RecoveryDistance[][] = [
+  [V(6), V(4, 5), V(3), V(4, 5), V(6, 8), V(5, 8), OFF_OR],
+  [V(6, 7), V(7), V(5, 7), PACE_DEPENDENT, V(5, 7), V(8, 10), OFF_OR],
+  [V(7), V(5, 8), PACE_DEPENDENT, V(5, 8), V(6, 9), V(5, 8), V(11, 12)],
+  [OFF_OR, PACE_DEPENDENT, V(5, 8), PACE_DEPENDENT, V(5, 8), PACE_DEPENDENT, OFF_OR],
+];
+
+function distanceFields(d: RecoveryDistance): { distanceMiMin: number | null; distanceMiMax: number | null } {
+  return d.kind === "value" ? { distanceMiMin: d.min, distanceMiMax: d.max } : { distanceMiMin: null, distanceMiMax: null };
+}
+
 export const RECOVERY_DAYS: RecoveryDay[] = [
   ...RETURN_TO_RUNNING.flatMap((week, weekIndex) =>
     week.map((prescription, dayIndex) => ({
@@ -96,6 +171,7 @@ export const RECOVERY_DAYS: RecoveryDay[] = [
       weekNumber: weekIndex + 1,
       dayOfWeek: dayIndex + 1,
       prescription,
+      ...distanceFields(RETURN_TO_RUNNING_DISTANCES[weekIndex][dayIndex]),
     })),
   ),
   ...RETURN_TO_TRAINING.flatMap((week, weekIndex) =>
@@ -104,9 +180,28 @@ export const RECOVERY_DAYS: RecoveryDay[] = [
       weekNumber: weekIndex + 1,
       dayOfWeek: dayIndex + 1,
       prescription,
+      ...distanceFields(RETURN_TO_TRAINING_DISTANCES[weekIndex][dayIndex]),
     })),
   ),
 ];
+
+/** The recovery program's own labeling-worksheet entries -- every day hand-marked WS above, surfaced for the shared worksheet file. */
+export function recoveryWorksheetEntries(): WorksheetEntry[] {
+  const entries: WorksheetEntry[] = [];
+  const collect = (prescriptions: string[][], distances: RecoveryDistance[][], phaseLabel: string) => {
+    prescriptions.forEach((week, weekIndex) => {
+      week.forEach((prescription, dayIndex) => {
+        const d = distances[weekIndex][dayIndex];
+        if (d.kind === "worksheet") {
+          entries.push({ program: `post-marathon-recovery (${phaseLabel})`, week: weekIndex + 1, day: dayIndex + 1, prescription, question: d.question });
+        }
+      });
+    });
+  };
+  collect(RETURN_TO_RUNNING, RETURN_TO_RUNNING_DISTANCES, RETURN_TO_RUNNING_PHASE);
+  collect(RETURN_TO_TRAINING, RETURN_TO_TRAINING_DISTANCES, RETURN_TO_TRAINING_PHASE);
+  return entries;
+}
 
 /**
  * Athlete-facing explanations for the two recovery phases (item 21), in
@@ -160,6 +255,11 @@ export function buildRecoveryProgramSeed(): FrameworkSeedPlan {
     plannedRpe: null,
     plannedRpeMax: null,
     isEventDay: false,
+    distanceMiMin: day.distanceMiMin ?? null,
+    distanceMiMax: day.distanceMiMax ?? null,
+    // Pace stays null for every recovery day, deliberately -- see this
+    // program's own description above ("nothing here to measure").
+    steps: null,
   }));
 
   return {

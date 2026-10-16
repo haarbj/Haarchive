@@ -30,7 +30,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { buildRecoveryProgramSeed } from "@/lib/private-coaching/post-race";
+import { buildRecoveryProgramSeed, recoveryWorksheetEntries } from "@/lib/private-coaching/post-race";
 import { buildRaceLeadInSeed } from "@/lib/private-coaching/race-lead-in";
 import {
   buildCrashCourseSeeds,
@@ -39,6 +39,9 @@ import {
   type RawCrashCourse,
   type RawFramework,
 } from "@/lib/private-coaching/framework-seed";
+import { attachFrameworkStructure, type WorksheetEntry } from "@/lib/private-coaching/framework-structure";
+import { MILE_METERS } from "@/lib/race-distances";
+import { writeLabelingWorksheet } from "./labeling-worksheet";
 
 const FRAMEWORK_KEYS = ["canyon", "mesa", "ridge", "peak", "summit"] as const;
 const SEED_DIR = path.join(process.cwd(), "scripts/data/framework-seeds");
@@ -82,6 +85,19 @@ async function insertChunked(admin: Admin, table: string, rows: Record<string, u
     if (error) throw new Error(`${table} insert failed (${label}, rows ${i}-${i + INSERT_CHUNK}): ${error.message}`);
   }
 }
+
+/** Same chunking as insertChunked, but returns inserted ids in input order -- needed for program_days, whose ids program_day_steps below must reference. */
+async function insertChunkedReturningIds(admin: Admin, table: string, rows: Record<string, unknown>[], label: string): Promise<string[]> {
+  const ids: string[] = [];
+  for (let i = 0; i < rows.length; i += INSERT_CHUNK) {
+    const { data, error } = await admin.from(table).insert(rows.slice(i, i + INSERT_CHUNK)).select("id");
+    if (error) throw new Error(`${table} insert failed (${label}, rows ${i}-${i + INSERT_CHUNK}): ${error.message}`);
+    ids.push(...data.map((r) => r.id as string));
+  }
+  return ids;
+}
+
+const miToM = (mi: number | null | undefined): number | null => (mi == null ? null : Math.round(mi * MILE_METERS));
 
 async function seedPlan(admin: Admin, coachId: string, plan: FrameworkSeedPlan, replace: boolean): Promise<boolean> {
   const { program } = plan;
@@ -228,7 +244,7 @@ async function seedPlan(admin: Admin, coachId: string, plan: FrameworkSeedPlan, 
     program.frameworkKey,
   );
 
-  await insertChunked(
+  const dayIds = await insertChunkedReturningIds(
     admin,
     "program_days",
     plan.days.map((day) => ({
@@ -246,18 +262,51 @@ async function seedPlan(admin: Admin, coachId: string, plan: FrameworkSeedPlan, 
       planned_rpe: day.plannedRpe,
       planned_rpe_max: day.plannedRpeMax,
       is_event_day: day.isEventDay,
+      // Populated only by the separate interpretation layer
+      // (framework-structure.ts) attached onto `day` before this function
+      // sees it -- absent entirely for a plan this script hasn't merged
+      // structure onto. See framework-seed.ts's header.
+      planned_distance_m: miToM(day.distanceMiMin),
+      planned_distance_max_m: miToM(day.distanceMiMax),
     })),
     program.frameworkKey,
   );
 
+  const stepRows: Record<string, unknown>[] = [];
+  plan.days.forEach((day, i) => {
+    for (const step of day.steps ?? []) {
+      stepRows.push({
+        program_day_id: dayIds[i],
+        step_order: step.stepOrder,
+        step_type: step.stepType,
+        duration_s: step.durationS,
+        duration_max_s: step.durationMaxS,
+        distance_m: step.distanceM,
+        distance_max_m: step.distanceMaxM,
+        target_type: step.targetPacePercentBasis != null ? "pace" : "open",
+        target_pace_percent_basis: step.targetPacePercentBasis,
+        target_pace_percent_min: step.targetPacePercentMin,
+        target_pace_percent_max: step.targetPacePercentMax,
+        repetitions: step.repetitions,
+        repetitions_max: step.repetitionsMax,
+        rest_s: step.restS,
+        rest_max_s: step.restMaxS,
+        instructions: step.instructions,
+      });
+    }
+  });
+  if (stepRows.length) await insertChunked(admin, "program_day_steps", stepRows, program.frameworkKey);
+
   const doubles = plan.days.filter((d) => d.sessionSlot != null).length;
+  const withDistance = plan.days.filter((d) => d.distanceMiMin != null).length;
   console.log(
     `  ${program.name}: ${programId}\n` +
       `      phases=${plan.phases.map((p) => `${p.phaseKey}(${p.durationWeeksMin}w)`).join(" ")}\n` +
       `      volume variants=${plan.volumeVariants.map((v) => v.variantKey).join(", ")}\n` +
       `      sessions=${plan.days.length} (${doubles} in an AM/PM slot), optional=${plan.days.filter((d) => d.isOptional).length}, ` +
       `alternatives=${plan.days.filter((d) => d.alternativeText).length}\n` +
-      `      week goal-mileage rows=${plan.phaseWeekVolumes.length}, phase weeks=${plan.phaseWeeks.length}`,
+      `      week goal-mileage rows=${plan.phaseWeekVolumes.length}, phase weeks=${plan.phaseWeeks.length}\n` +
+      `      structured distance=${withDistance}/${plan.days.length}, structured steps=${stepRows.length} rows`,
   );
   return true;
 }
@@ -282,9 +331,18 @@ async function main() {
   // Every plan is built (and therefore fully validated) before anything is
   // written, so a bad seed file fails before it can leave a half-loaded
   // framework behind.
-  const plans: FrameworkSeedPlan[] = frameworks.map((key) =>
-    buildFrameworkSeed(JSON.parse(readFileSync(path.join(SEED_DIR, `${key}.json`), "utf8")) as RawFramework),
-  );
+  //
+  // Each framework's structured distance/steps (attachFrameworkStructure)
+  // are merged on immediately after buildFrameworkSeed, by the same array
+  // index both walk -- see framework-structure.ts's own header on why
+  // that merge, not buildFrameworkSeed itself, owns this interpretation.
+  const worksheetEntries: WorksheetEntry[] = [];
+  const plans: FrameworkSeedPlan[] = frameworks.map((key) => {
+    const raw = JSON.parse(readFileSync(path.join(SEED_DIR, `${key}.json`), "utf8")) as RawFramework;
+    const { plan, worksheet } = attachFrameworkStructure(buildFrameworkSeed(raw), raw);
+    worksheetEntries.push(...worksheet);
+    return plan;
+  });
   if (flag("crash-course")) {
     plans.push(
       ...buildCrashCourseSeeds(JSON.parse(readFileSync(path.join(SEED_DIR, "crash-course.json"), "utf8")) as RawCrashCourse),
@@ -293,17 +351,27 @@ async function main() {
   // The two-week race lead-in (Part A item 2). Seeded as an ordinary
   // editable Program so the coach can change the standard once instead of
   // re-editing fourteen days per athlete; its default content lives in
-  // src/lib/private-coaching/race-lead-in.ts.
+  // src/lib/private-coaching/race-lead-in.ts. Out of scope for structured
+  // distance/steps -- see the task that added that layer.
   if (flag("race-lead-in")) plans.push(buildRaceLeadInSeed());
   // The post-marathon recovery program (Part H item 19), seeded the same
   // way and for the same reason: the coach edits one template rather than
-  // six weeks of days per athlete.
-  if (flag("recovery-program")) plans.push(buildRecoveryProgramSeed());
+  // six weeks of days per athlete. Its own distance fields are already
+  // hand-filled by post-race.ts (never a parser -- see that file's header).
+  if (flag("recovery-program")) {
+    plans.push(buildRecoveryProgramSeed());
+    worksheetEntries.push(...recoveryWorksheetEntries());
+  }
   console.log(`Validated ${plans.length} program(s) from ${SEED_DIR}`);
 
   let seeded = 0;
   for (const plan of plans) {
     if (await seedPlan(admin, coachId, plan, replace)) seeded += 1;
+  }
+
+  if (worksheetEntries.length) {
+    const outPath = writeLabelingWorksheet(worksheetEntries);
+    console.log(`\n${worksheetEntries.length} day(s) need Brody's own hand labeling -- written to ${outPath}`);
   }
 
   console.log(`\nDone. ${seeded} of ${plans.length} program(s) written. Review at /coaching/programs`);

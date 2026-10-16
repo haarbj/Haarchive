@@ -18,31 +18,30 @@
 // is therefore transcription, never interpretation:
 //
 //   * Each session's prescription text is stored VERBATIM in
-//     program_days.notes. It is never parsed into program_day_steps.
-//     "10 x 3 min at 90-92% 5k pace with 45 sec jog" carries a rep count,
-//     a pace range, a rest length and an implied warm-up/cool-down
-//     structure, and splitting that into structured steps means choosing,
-//     per workout, which of several ranges the author meant to be the
-//     "real" target -- the exact approximation CLAUDE.md 5/15 and both
-//     library data files' own header comments forbid. Steps remain a thing
-//     a coach can add by hand later, on top of real authored prose.
+//     program_days.notes, unconditionally, regardless of anything below.
 //
 //   * Pace percent (program_days.pace_percent_basis/_min/_max) is
 //     deliberately NOT populated for any seeded day, so no seeded workout
 //     resolves into a literal pace against the athlete's fitness estimate
-//     -- it renders as the authored prose instead. This is a consequence of
-//     the sources, not an omission: scripts/data/canyon-program.ts sets a
-//     day-level percent only where "the day's whole prescription is a
-//     single, unambiguous clause", and in these web-PDF transcriptions
-//     that case never occurs -- every pace-targeted session states its
-//     warm-up and cool-down in the same string ("2 mi progressive warm-up
-//     + 4 strides / 7-8 mi at 85% 5k pace / 2 mi easy cool-down"). A
-//     day-level percent means "this whole workout is at this pace," which
-//     is false for all 11-12 of those miles. The honest home for these
-//     targets is step-level (program_day_steps.target_pace_percent_*),
-//     which means authoring the warm-up/main-set/cool-down split -- and
-//     for an interval session, every rep and float -- per day. That is a
-//     real, bounded follow-up, not something to approximate here.
+//     -- it renders as the authored prose instead.
+//
+// STRUCTURED DISTANCE/STEPS -- A DELIBERATE, AUTHORIZED EXCEPTION. The two
+// paragraphs above described an absolute rule until Brody, as the coach,
+// explicitly authorized a bounded exception to it: SeedDay.distanceMiMin/
+// _Max and .steps (below) ARE populated for some sessions, by a genuinely
+// separate interpretation layer, framework-structure.ts, which this file
+// does not call and whose rules it does not share. That module parses a
+// session's distance/step structure ONLY where the arithmetic is truly
+// unambiguous (every quantity is a stated "mi"/"km" figure, or a stated
+// rep count/duration/rest/percent for the structured fields that don't
+// need a distance at all) and refuses -- pushing the day to a labeling
+// worksheet for Brody's own hand judgment -- the moment resolving it would
+// require assuming a pace the source never states. See that file's own
+// header for the exact rules and what it deliberately does not attempt
+// (nested multi-set structures, hybrid distance/time chains, conditional
+// prescriptions). The seed script calls both this file and that one and
+// merges their output onto the same SeedDay rows by array index -- see
+// scripts/seed-framework-programs.ts.
 //
 //   * Difficulty is preserved verbatim (program_days.difficulty_label) and
 //     ALSO widened into the integer planned_rpe/_max pair every existing
@@ -171,6 +170,12 @@ export type SeedDay = {
   plannedRpeMax: number | null;
   /** Marks the one day that IS the goal event, so assignment can anchor a plan to a real race date. At most one per program (enforced by a partial unique index). */
   isEventDay: boolean;
+  /** Populated only by framework-structure.ts's merge step, never by buildFrameworkSeed itself -- see this file's header. Absent (undefined) on every day straight out of buildFrameworkSeed. */
+  distanceMiMin?: number | null;
+  distanceMiMax?: number | null;
+  steps?: import("./framework-structure").SeedDayStep[] | null;
+  /** Set only for a day that branches on a condition no template can resolve on its own (e.g. mesa W17D7) -- see framework-structure.ts's ConditionalVariant. */
+  conditionalVariants?: import("./framework-structure").ConditionalVariant[];
 };
 
 export type FrameworkSeedPlan = {
