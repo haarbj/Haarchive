@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { rescheduleWorkout, publishWorkouts, type ExtraPresetOption } from "./actions";
+import { rescheduleWorkout, publishWorkouts, deleteWorkouts, type ExtraPresetOption } from "./actions";
 import type { CalendarWorkout } from "./calendar-types";
 import { WorkoutCard } from "./workout-card";
 import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
@@ -125,12 +125,27 @@ export function WeekCalendar({
   // or was deleted isn't counted.
   const draftWorkoutIds = allWorkouts.filter((w) => w.publishedAt == null).map((w) => w.id);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function publishIds(ids: string[]) {
     setPublishError(null);
     const result = await publishWorkouts(ids, athleteId);
     if (result.error) {
       setPublishError(result.error);
+      return;
+    }
+    router.refresh();
+  }
+
+  // Deletes every workout in scope, draft or already-published -- unlike
+  // publishIds above, there's no draft-only filter, since "delete this
+  // day/week" means clear it entirely, the same as a single workout's own
+  // Delete regardless of its status.
+  async function deleteIds(ids: string[]) {
+    setDeleteError(null);
+    const result = await deleteWorkouts(ids, athleteId);
+    if (result.error) {
+      setDeleteError(result.error);
       return;
     }
     router.refresh();
@@ -177,7 +192,9 @@ export function WeekCalendar({
           {days.map((date) => {
             const isToday = date === today;
             const isDragOver = dragOverDate === date;
-            const dayDraftIds = (workoutsByDate[date] ?? []).filter((w) => w.publishedAt == null).map((w) => w.id);
+            const dayWorkouts = workoutsByDate[date] ?? [];
+            const dayDraftIds = dayWorkouts.filter((w) => w.publishedAt == null).map((w) => w.id);
+            const dayAllIds = dayWorkouts.map((w) => w.id);
             return (
               <div
                 key={date}
@@ -205,7 +222,7 @@ export function WeekCalendar({
                 <p className="text-[11px] text-zinc-400 dark:text-zinc-500">{formatDate(date)}</p>
 
                 <div className="mt-2 space-y-2">
-                  {(workoutsByDate[date] ?? []).map((workout) => (
+                  {dayWorkouts.map((workout) => (
                     <WorkoutCard
                       key={workout.id}
                       workout={workout}
@@ -234,6 +251,18 @@ export function WeekCalendar({
                       label={`Publish ${dayDraftIds.length} draft${dayDraftIds.length === 1 ? "" : "s"}`}
                       pendingLabel="Publishing…"
                       className="w-full rounded-control border border-dashed border-black/15 py-1.5 text-xs font-semibold text-zinc-500 hover:border-black/30 hover:text-zinc-700 disabled:opacity-50 dark:border-white/15 dark:text-zinc-400 dark:hover:border-white/30 dark:hover:text-zinc-200"
+                    />
+                  </div>
+                ) : null}
+
+                {dayAllIds.length > 0 ? (
+                  <div className="mt-1.5">
+                    <InlineConfirmButton
+                      action={() => deleteIds(dayAllIds)}
+                      confirmMessage={`Delete ${dayAllIds.length} workout${dayAllIds.length === 1 ? "" : "s"} on ${formatDate(date)}? This includes any already published or completed, and can't be undone.`}
+                      label={`Delete ${dayAllIds.length} workout${dayAllIds.length === 1 ? "" : "s"}`}
+                      pendingLabel="Deleting…"
+                      className="w-full rounded-control border border-dashed border-black/15 py-1.5 text-xs font-semibold text-zinc-500 hover:border-red-400 hover:text-red-600 disabled:opacity-50 dark:border-white/15 dark:text-zinc-400 dark:hover:border-red-500 dark:hover:text-red-400"
                     />
                   </div>
                 ) : null}
@@ -269,10 +298,22 @@ export function WeekCalendar({
                 className="rounded-pill border border-black/10 px-3 py-1 text-xs font-semibold text-zinc-600 hover:bg-black/5 disabled:opacity-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/10"
               />
             ) : null}
+            {allWorkouts.length > 0 ? (
+              <InlineConfirmButton
+                action={() => deleteIds(allWorkouts.map((w) => w.id))}
+                confirmMessage={`Delete all ${allWorkouts.length} workout${allWorkouts.length === 1 ? "" : "s"} this week? This includes any already published or completed, and can't be undone.`}
+                label={`Delete week · ${allWorkouts.length} workout${allWorkouts.length === 1 ? "" : "s"}`}
+                pendingLabel="Deleting…"
+                className="rounded-pill border border-black/10 px-3 py-1 text-xs font-semibold text-zinc-600 hover:border-red-400 hover:text-red-600 disabled:opacity-50 dark:border-white/10 dark:text-zinc-300 dark:hover:border-red-500 dark:hover:text-red-400"
+              />
+            ) : null}
           </div>
         </div>
         {publishError ? (
           <p className="mt-1 text-xs text-red-600 dark:text-red-400">{publishError}</p>
+        ) : null}
+        {deleteError ? (
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{deleteError}</p>
         ) : null}
         <div className="mt-2 flex flex-wrap gap-x-8 gap-y-1 text-sm">
           <p>

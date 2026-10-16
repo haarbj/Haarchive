@@ -1570,3 +1570,87 @@ export async function publishWorkouts(workoutIds: string[], athleteId: string): 
   revalidatePath(`/coaching/athletes/${athleteId}/schedule`);
   return { publishedCount: updated?.length ?? 0 };
 }
+
+export type DeleteWorkoutsResult = { error?: string; deletedCount?: number };
+
+// The batch equivalent of deleteScheduledWorkout above, for the same
+// day/week/phase scopes publishWorkouts already covers -- the ease-of-
+// access the batch publish buttons added deserves the same one-click,
+// confirm-gated treatment for delete. Unlike publishWorkouts, there's no
+// published_at filter: deleting a day/week/phase is meant to clear
+// everything in that scope, draft or already-published, the same way a
+// single workout's own Delete already works regardless of its status.
+// Reads the rows first for the same reason the single-delete version
+// does -- day_label/title/published_at won't exist to look up once the
+// rows are gone, and that's also how it knows which deleted rows need
+// telling the athlete about.
+export async function deleteWorkouts(workoutIds: string[], athleteId: string): Promise<DeleteWorkoutsResult> {
+  const session = await getAppSession();
+  if (!session?.isPrivateCoach) return { error: "Not authorized." };
+  if (workoutIds.length === 0) return { deletedCount: 0 };
+
+  const supabase = await createClient();
+  const { data: relationship } = await supabase
+    .from("coach_athletes")
+    .select("id")
+    .eq("coach_id", session.userId)
+    .eq("athlete_id", athleteId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!relationship) return { error: "You don't coach this athlete." };
+
+  const { data: existingRows } = await supabase
+    .from("scheduled_workouts")
+    .select("id, published_at, day_label, title")
+    .in("id", workoutIds)
+    .eq("athlete_id", athleteId)
+    .eq("coach_id", session.userId)
+    .returns<{ id: string; published_at: string | null; day_label: string | null; title: string | null }[]>();
+
+  const { data: deleted, error } = await supabase
+    .from("scheduled_workouts")
+    .delete()
+    .in("id", workoutIds)
+    .eq("athlete_id", athleteId)
+    .eq("coach_id", session.userId)
+    .select("id");
+  if (error) return { error: error.message };
+
+  if (existingRows && existingRows.length > 0) {
+    const admin = createServiceRoleClient();
+    await admin.from("audit_log").insert(
+      existingRows.map((row) => ({
+        actor_id: session.userId,
+        action: "workout_deleted",
+        entity_type: "scheduled_workouts",
+        entity_id: row.id,
+        metadata: { athlete_id: athleteId },
+      })),
+    );
+  }
+
+  // One notification per batch, not one per workout -- the single-delete
+  // version's own per-workout phrasing doesn't read well N times in a
+  // row for a week/phase-sized delete.
+  const publishedDeleted = (existingRows ?? []).filter((r) => r.published_at);
+  if (publishedDeleted.length === 1) {
+    const label = getWorkoutDisplayLabel(publishedDeleted[0].day_label, publishedDeleted[0].title);
+    await createNotification({
+      userId: athleteId,
+      type: "workout_updated",
+      content: `${label} was removed from your schedule`,
+      relatedEntityId: null,
+    });
+  } else if (publishedDeleted.length > 1) {
+    await createNotification({
+      userId: athleteId,
+      type: "workout_updated",
+      content: `${publishedDeleted.length} workouts were removed from your schedule`,
+      relatedEntityId: null,
+    });
+  }
+
+  revalidatePath(`/coaching/athletes/${athleteId}/schedule`);
+  return { deletedCount: deleted?.length ?? 0 };
+}

@@ -27,7 +27,7 @@ import { FuelingOversightPanel } from "./fueling-oversight-panel";
 import { OnboardingPanel } from "./onboarding-panel";
 import { TrainingBackgroundPanel } from "./training-background-panel";
 import { formatTargetVolume } from "./week-plan-editor";
-import { clearAllTraining, publishWorkouts } from "./actions";
+import { clearAllTraining, clearPhaseTraining, publishWorkouts, deleteWorkouts } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,7 @@ export function PhaseView({
   phases,
   weekInfoByWeek,
   draftIdsByPhase,
+  allIdsByPhase,
   goalRace,
   goalOptions,
   copiedWeek,
@@ -68,6 +69,10 @@ export function PhaseView({
   // phase's own "Publish phase" button. A phase absent from this map (or
   // with an empty array) has no drafts, so no button renders for it.
   draftIdsByPhase: Record<string, string[]>;
+  // Every scheduled_workouts id regardless of status, same bucketing --
+  // powers "Delete phase", which (like a single workout's own Delete)
+  // clears drafts and already-published/completed workouts alike.
+  allIdsByPhase: Record<string, string[]>;
   goalRace: AthleteGoalRace | null;
   goalOptions: PhaseGoalOption[];
   copiedWeek: string | null;
@@ -87,12 +92,24 @@ export function PhaseView({
     preselectProgramId ? "assign-program" : null,
   );
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [clearPhaseError, setClearPhaseError] = useState<string | null>(null);
 
   async function publishIds(ids: string[]) {
     setPublishError(null);
     const result = await publishWorkouts(ids, athleteId);
     if (result.error) {
       setPublishError(result.error);
+      return;
+    }
+    router.refresh();
+  }
+
+  async function deleteIds(ids: string[]) {
+    setDeleteError(null);
+    const result = await deleteWorkouts(ids, athleteId);
+    if (result.error) {
+      setDeleteError(result.error);
       return;
     }
     router.refresh();
@@ -123,6 +140,8 @@ export function PhaseView({
   return (
     <div className="space-y-6">
       {publishError ? <p className="text-sm text-red-600 dark:text-red-400">{publishError}</p> : null}
+      {deleteError ? <p className="text-sm text-red-600 dark:text-red-400">{deleteError}</p> : null}
+      {clearPhaseError ? <p className="text-sm text-red-600 dark:text-red-400">{clearPhaseError}</p> : null}
 
       {sections.length === 0 ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-300">
@@ -161,6 +180,37 @@ export function PhaseView({
                     className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black disabled:opacity-50 dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
                   />
                 ) : null}
+                {(allIdsByPhase[section.phase.id]?.length ?? 0) > 0 ? (
+                  <InlineConfirmButton
+                    action={() => deleteIds(allIdsByPhase[section.phase.id])}
+                    confirmMessage={`Delete all ${allIdsByPhase[section.phase.id].length} workout${allIdsByPhase[section.phase.id].length === 1 ? "" : "s"} in ${section.phase.phaseType}${section.phase.name ? ` — ${section.phase.name}` : ""}? This includes any already published or completed, and can't be undone. The phase itself stays -- its weekly targets will still show until you delete the phase too.`}
+                    label={`Delete workouts · ${allIdsByPhase[section.phase.id].length}`}
+                    pendingLabel="Deleting…"
+                    className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-red-600 disabled:opacity-50 dark:text-zinc-400 dark:hover:decoration-red-400"
+                  />
+                ) : null}
+                {/* Distinct from "Delete workouts" above -- this also
+                    removes the phase row and its week plans (weekly
+                    target totals), which deleting only the workouts
+                    deliberately leaves behind. Same clearPhaseTraining
+                    action the Edit form's "Clear this phase's training"
+                    already calls; exposed here too so it doesn't require
+                    opening Edit first to reach it. */}
+                <InlineConfirmButton
+                  action={() =>
+                    clearPhaseTraining(section.phase.id, athleteId).then((result) => {
+                      if (result.error) {
+                        setClearPhaseError(result.error);
+                        return;
+                      }
+                      router.refresh();
+                    })
+                  }
+                  confirmMessage={`Delete the ${section.phase.phaseType}${section.phase.name ? ` — ${section.phase.name}` : ""} phase itself, plus every workout and week plan in it (${formatDate(section.phase.startDate)} – ${formatDate(section.phase.endDate)})? This can't be undone.`}
+                  label="Delete phase"
+                  pendingLabel="Deleting…"
+                  className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-red-600 disabled:opacity-50 dark:text-zinc-400 dark:hover:decoration-red-400"
+                />
               </div>
               {/* The same "Why this phase?" the athlete sees, so a coach is
                   never guessing what was actually communicated. Its Edit
@@ -176,6 +226,23 @@ export function PhaseView({
                     : null
                 }
               />
+              {/* Rendered right here, not in the shared bottom slot below
+                  (that one's only for "new"/"assign-program", which have no
+                  one phase to sit next to) -- editing a phase at the top of
+                  a long roadmap used to put the actual form off-screen below
+                  every week row and every coach-only panel, which read as
+                  the Edit button doing nothing at all. */}
+              {formTarget !== "new" && formTarget !== "assign-program" && formTarget?.id === section.phase.id ? (
+                <div className="mt-3">
+                  <PhaseForm
+                    athleteId={athleteId}
+                    goalOptions={goalOptions}
+                    existing={formTarget}
+                    onDone={() => setFormTarget(null)}
+                    onCancel={() => setFormTarget(null)}
+                  />
+                </div>
+              ) : null}
             </div>
             <div className="mt-2 space-y-1.5">
               {weeksInPhase(section.phase).map((week, weekIndex, allWeeks) => (
@@ -292,14 +359,20 @@ export function PhaseView({
           onDone={() => setFormTarget(null)}
           onCancel={() => setFormTarget(null)}
         />
-      ) : formTarget ? (
+      ) : formTarget === "new" ? (
         <PhaseForm
           athleteId={athleteId}
           goalOptions={goalOptions}
-          existing={formTarget === "new" ? undefined : formTarget}
+          existing={undefined}
           onDone={() => setFormTarget(null)}
           onCancel={() => setFormTarget(null)}
         />
+      ) : formTarget ? (
+        // Editing an existing phase renders inline at that phase above,
+        // not here -- see the comment next to that render. The toolbar
+        // below still hides while it's open, same as for "new"/
+        // "assign-program", so there's only ever one open action at a time.
+        null
       ) : (
         <div className="flex flex-wrap items-center gap-3">
           <Button type="button" variant="outline" size="sm" onClick={() => setFormTarget("new")}>

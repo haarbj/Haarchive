@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef } from "react";
+import { startTransition, useActionState, useRef } from "react";
 
 export type AutoSaveState = { error?: string; success?: boolean };
 
@@ -48,7 +48,18 @@ export function useAutoSaveForm<State extends AutoSaveState>(
     // inputs already declare -- not a second, separately-maintained rule
     // set.
     if (!formRef.current.checkValidity()) return;
-    dispatch(new FormData(formRef.current));
+    // scheduleSave's own debounce runs this via setTimeout, and saveNow
+    // itself is sometimes called directly from a plain onChange -- neither
+    // is React's own event-handling transition context, so dispatch (the
+    // action useActionState returns) has to be wrapped in startTransition
+    // explicitly here. Without it the save itself still goes through, but
+    // isPending stops tracking it correctly (React's own console warning:
+    // "An async function with useActionState was called outside of a
+    // transition").
+    const formData = new FormData(formRef.current);
+    startTransition(() => {
+      dispatch(formData);
+    });
   }
 
   function scheduleSave() {

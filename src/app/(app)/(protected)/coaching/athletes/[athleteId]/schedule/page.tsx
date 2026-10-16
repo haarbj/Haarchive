@@ -815,16 +815,19 @@ async function PhaseViewSection({
           .returns<WeekPlanRow[]>()
       : Promise.resolve({ data: [] as WeekPlanRow[] }),
     loadProgramOptions(supabase),
+    // Not filtered to drafts -- this single query backs both
+    // draftIdsByPhase (Publish phase, drafts only) and allIdsByPhase
+    // (Delete phase, every workout regardless of status) below, since
+    // both buckets cover the exact same date range.
     phaseDraftRange
       ? supabase
           .from("scheduled_workouts")
-          .select("id, scheduled_date")
+          .select("id, scheduled_date, published_at")
           .eq("athlete_id", athleteId)
-          .is("published_at", null)
           .gte("scheduled_date", phaseDraftRange.start)
           .lte("scheduled_date", phaseDraftRange.end)
-          .returns<{ id: string; scheduled_date: string }[]>()
-      : Promise.resolve({ data: [] as { id: string; scheduled_date: string }[] }),
+          .returns<{ id: string; scheduled_date: string; published_at: string | null }[]>()
+      : Promise.resolve({ data: [] as { id: string; scheduled_date: string; published_at: string | null }[] }),
   ]);
 
   const weekInfoByWeek: Record<string, PhaseViewWeekInfo> = {};
@@ -837,15 +840,19 @@ async function PhaseViewSection({
     };
   }
 
-  // Every still-draft workout id, bucketed by whichever phase's date range
-  // actually contains it -- a phase's own "Publish phase" button only ever
-  // sees ids inside its own [startDate, endDate], never a neighboring
-  // phase's or an Unphased gap's.
+  // Every workout id, bucketed by whichever phase's date range actually
+  // contains it -- a phase's own "Publish phase"/"Delete phase" buttons
+  // only ever see ids inside their own [startDate, endDate], never a
+  // neighboring phase's or an Unphased gap's. draftIdsByPhase (still-
+  // draft only) powers Publish; allIdsByPhase (every status) powers
+  // Delete, same split as publishWorkouts/deleteWorkouts themselves.
   const draftIdsByPhase: Record<string, string[]> = {};
+  const allIdsByPhase: Record<string, string[]> = {};
   for (const row of phaseWorkoutRows ?? []) {
     const phase = phases.find((p) => row.scheduled_date >= p.startDate && row.scheduled_date <= p.endDate);
     if (!phase) continue;
-    (draftIdsByPhase[phase.id] ??= []).push(row.id);
+    (allIdsByPhase[phase.id] ??= []).push(row.id);
+    if (row.published_at == null) (draftIdsByPhase[phase.id] ??= []).push(row.id);
   }
 
   return (
@@ -855,6 +862,7 @@ async function PhaseViewSection({
         phases={phases}
         weekInfoByWeek={weekInfoByWeek}
         draftIdsByPhase={draftIdsByPhase}
+        allIdsByPhase={allIdsByPhase}
         goalRace={goalRace}
         goalOptions={goalOptions}
         copiedWeek={copiedWeek}

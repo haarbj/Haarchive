@@ -22,9 +22,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 // "Coaching" tab could plausibly read it as "people I coach" -- same
 // reasoning as buildAccountWorkspaces' own label branch, mirrored here for
 // the page's own <title>/<h1> rather than just the nav entry pointing at it.
-export async function generateMetadata(): Promise<Metadata> {
+// For a dual-role account the ?view=athlete toggle (below) changes which
+// one actually applies, so this reads the same searchParams the page
+// itself does rather than just session.isPrivateCoach.
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ view?: string }> }): Promise<Metadata> {
   const session = await getAppSession();
-  const title = session?.isPrivateCoach ? "Coaching" : "My Coaching";
+  const { view } = await searchParams;
+  const showingCoachView = session?.isPrivateCoach && !(session.isCoachedAthlete && view === "athlete");
+  const title = showingCoachView ? "Coaching" : "My Coaching";
   return { title, robots: { index: false, follow: false } };
 }
 
@@ -41,18 +46,25 @@ type UpcomingWorkout = {
 // Role-aware landing -- a coach and a coached athlete see genuinely
 // different content. isPrivateCoach and isCoachedAthlete are independent
 // (see AppSession's own comment -- someone can coach others AND be coached
-// themselves, e.g. a coach who also has their own coach), so this renders
-// BOTH sections when both apply, rather than one early-returning over the
-// other the way an earlier version of this page did (a coach who also ran
-// as someone else's athlete could never reach their own schedule/messages/
-// check-in at all). The real Coach Home (attention triage) and athlete
-// calendar are Phase 7/Phase 3 respectively -- this is intentionally a
-// thin routing/orientation page for now, not a dashboard.
-export default async function CoachingHomePage() {
+// themselves, e.g. a coach who also has their own coach). A dual-role
+// account used to see BOTH sections stacked on one page -- that avoided
+// an earlier bug (a coach who also ran as someone else's athlete could
+// never reach their own schedule/messages/check-in), but conflated "both
+// exist" with "show both at once." The toggle below keeps both reachable
+// while showing exactly one at a time, defaulting to the coach view:
+// ?view=athlete switches it, as a real URL rather than client state, so
+// it's linkable and needs no client component. The real Coach Home
+// (attention triage) and athlete calendar are Phase 7/Phase 3
+// respectively -- this is intentionally a thin routing/orientation page
+// for now, not a dashboard.
+export default async function CoachingHomePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const session = await getAppSession();
   if (!session) return null;
 
   const isDualRole = session.isPrivateCoach && session.isCoachedAthlete;
+  const { view } = await searchParams;
+  const showingAthleteView = isDualRole && view === "athlete";
+  const showingCoachView = session.isPrivateCoach && !showingAthleteView;
 
   if (!session.isPrivateCoach && !session.isCoachedAthlete) {
     return (
@@ -69,26 +81,26 @@ export default async function CoachingHomePage() {
 
   return (
     <Container variant="content">
-      <Heading>{session.isPrivateCoach ? "Coaching" : "My Coaching"}</Heading>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Heading>{showingCoachView ? "Coaching" : "My Coaching"}</Heading>
+        {isDualRole ? (
+          <Link
+            href={showingAthleteView ? "/coaching" : "/coaching?view=athlete"}
+            className="text-sm font-semibold text-zinc-600 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-300 dark:decoration-white/20 dark:hover:decoration-white"
+          >
+            {showingAthleteView ? "View as Coach" : "View as Athlete"}
+          </Link>
+        ) : null}
+      </div>
 
-      {session.isPrivateCoach ? (
-        <div>
-          {isDualRole ? (
-            <p className="mb-6 text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
-              Your Coaching
-            </p>
-          ) : null}
+      {showingCoachView ? (
+        <div className="mt-6">
           <CoachSection userId={session.userId} isCoachedAthlete={session.isCoachedAthlete} />
         </div>
       ) : null}
 
-      {session.isCoachedAthlete ? (
-        <div className={isDualRole ? "mt-14 border-t border-black/10 pt-10 dark:border-white/10" : ""}>
-          {isDualRole ? (
-            <p className="mb-6 text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
-              Your Own Training
-            </p>
-          ) : null}
+      {session.isCoachedAthlete && !showingCoachView ? (
+        <div className="mt-6">
           <AthleteHomeSection userId={session.userId} />
         </div>
       ) : null}

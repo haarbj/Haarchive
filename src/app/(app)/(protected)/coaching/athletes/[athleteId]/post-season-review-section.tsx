@@ -78,9 +78,82 @@ export function PostSeasonReviewSection({ athleteId, recentRaces }: { athleteId:
     setAnswers(result.answers ?? []);
   }
 
+  // Shown independent of the send form, keyed by request id -- this is
+  // the thing a "Brody Haar submitted their post-season review" coach
+  // notification should actually land on, regardless of whether the
+  // review was sent manually (no goal race, nothing on the schedule
+  // page's own PostRacePanel to find it in) or through the goal-race
+  // flow. The coach never has to re-type a race name/date they already
+  // sent to find it again.
+  const [listAnswersFor, setListAnswersFor] = useState<string | null>(null);
+  const [listAnswers, setListAnswers] = useState<PostSeasonReviewAnswerView[] | null>(null);
+  const [listAnswersLoading, setListAnswersLoading] = useState(false);
+  const [listAnswersError, setListAnswersError] = useState<string | null>(null);
+
+  async function toggleListAnswers(request: SentReviewRequest) {
+    if (listAnswersFor === request.id) {
+      setListAnswersFor(null);
+      setListAnswers(null);
+      return;
+    }
+    setListAnswersFor(request.id);
+    setListAnswers(null);
+    setListAnswersError(null);
+    setListAnswersLoading(true);
+    const result = await loadPostSeasonReviewAnswers({ athleteId, requestId: request.id });
+    setListAnswersLoading(false);
+    if (result.error) return setListAnswersError(result.error);
+    setListAnswers(result.answers ?? []);
+  }
+
   return (
     <div className="mt-8">
       <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Post-season review</p>
+
+      {requests && requests.length > 0 ? (
+        <div className="mt-3 space-y-2">
+          {requests.map((request) => (
+            <Card key={request.id} padding="md">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-zinc-900 dark:text-white">{request.raceName ?? "Race"}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {request.raceDate ? formatDate(request.raceDate) : null}
+                    {request.submittedAt ? " · Submitted" : " · Not submitted yet"}
+                  </p>
+                </div>
+                <Button type="button" variant="outline" size="sm" disabled={listAnswersLoading && listAnswersFor === request.id} onClick={() => toggleListAnswers(request)}>
+                  {listAnswersLoading && listAnswersFor === request.id ? "Loading…" : listAnswersFor === request.id ? "Hide" : "View answers"}
+                </Button>
+              </div>
+              {listAnswersFor === request.id ? (
+                <div className="mt-3 space-y-3 rounded-control border border-black/10 p-3 dark:border-white/10">
+                  {listAnswersError ? (
+                    <FormError>{listAnswersError}</FormError>
+                  ) : !request.submittedAt ? (
+                    <p className="text-xs text-amber-700 dark:text-amber-400">
+                      Not submitted yet -- showing whatever they&rsquo;ve saved so far.
+                    </p>
+                  ) : null}
+                  {listAnswers && listAnswers.length === 0 ? (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No answers yet.</p>
+                  ) : (
+                    (listAnswers ?? []).map((a) => (
+                      <div key={`${a.sectionHeading}-${a.questionIndex}`}>
+                        <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{a.question}</p>
+                        <p className="mt-0.5 text-sm text-zinc-800 dark:text-zinc-200">
+                          {a.answer.trim() ? a.answer : <span className="italic text-zinc-400">No answer yet</span>}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : null}
+            </Card>
+          ))}
+        </div>
+      ) : null}
+
       <Card padding="md" className="mt-3">
         {!open ? (
           <div className="flex items-center justify-between gap-3">

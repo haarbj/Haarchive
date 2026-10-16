@@ -122,6 +122,23 @@ export async function submitPostSeasonReview(requestId: string): Promise<{ error
   const { session, supabase, request } = auth;
   if (request.submitted_at) return { ok: true };
 
+  // The form can save unfinished (savePostSeasonReviewAnswers has no such
+  // check -- that's the whole point of autosave), but submitting is the
+  // athlete's own signal that the review is actually done, so every
+  // question needs a real answer first. Checked here too, not just in the
+  // client component, since this is a real server action reachable
+  // without the UI.
+  const { data: answers, error: answersError } = await supabase
+    .from("post_season_review_answers")
+    .select("answer")
+    .eq("request_id", requestId)
+    .returns<{ answer: string }[]>();
+  if (answersError) return { error: answersError.message };
+  const unanswered = (answers ?? []).filter((a) => a.answer.trim() === "").length;
+  if (unanswered > 0) {
+    return { error: `Answer every question before submitting -- ${unanswered} question${unanswered === 1 ? "" : "s"} still blank.` };
+  }
+
   const { error } = await supabase
     .from("post_season_review_requests")
     .update({ submitted_at: new Date().toISOString() })

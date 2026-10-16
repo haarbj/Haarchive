@@ -97,8 +97,8 @@ describe("notificationHref -- private coaching", () => {
     expect(notificationHref("post_season_review_sent", null)).toBe("/coaching");
   });
 
-  it("post_season_review_submitted deep-links the coach to the athlete's schedule page (relatedEntityId = athlete user id)", () => {
-    expect(notificationHref("post_season_review_submitted", "athlete-1")).toBe("/coaching/athletes/athlete-1/schedule");
+  it("post_season_review_submitted deep-links the coach to the athlete detail page, not .../schedule -- PostSeasonReviewSection there lists every sent review regardless of goal-race status, which PostRacePanel on the schedule page cannot for a manually-sent one", () => {
+    expect(notificationHref("post_season_review_submitted", "athlete-1")).toBe("/coaching/athletes/athlete-1");
   });
 
   it("post_season_review_submitted falls back to /coaching without an id", () => {

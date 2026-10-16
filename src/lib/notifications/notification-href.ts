@@ -64,10 +64,15 @@ export function notificationHref(type: NotificationType, relatedEntityId: string
   }
   if (type === "post_season_review_submitted") {
     // relatedEntityId is the submitting athlete's user id (see
-    // submitPostSeasonReview) -- same destination as checkin_submitted:
-    // the coach's per-athlete schedule page, where the post-race panel now
-    // shows the structured answers.
-    return relatedEntityId ? `/coaching/athletes/${relatedEntityId}/schedule` : "/coaching";
+    // submitPostSeasonReview). Routes to the athlete detail page, not
+    // .../schedule -- that's where PostSeasonReviewSection lives, and
+    // unlike the schedule page's own PostRacePanel (which only renders
+    // once a goal race has passed), it lists every review ever sent for
+    // this athlete regardless of whether one was sent manually (no goal
+    // race at all) or through the goal-race flow. A review sent manually
+    // had genuinely nowhere to be found from this link before -- see the
+    // bug report this fixed.
+    return relatedEntityId ? `/coaching/athletes/${relatedEntityId}` : "/coaching";
   }
   if (type === "program_assigned") {
     // Recipient is the athlete themselves (see assignProgramToAthlete),
