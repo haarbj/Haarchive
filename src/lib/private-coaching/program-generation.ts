@@ -33,6 +33,7 @@ import { MILE_METERS } from "@/lib/race-distances";
 import type { PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import type { WorkoutStepType, WorkoutTargetType } from "@/lib/private-coaching/steps";
 import type { WorkoutExtraInput } from "@/lib/private-coaching/extras";
+import { classifyWorkoutTitle } from "@/lib/private-coaching/workout-title";
 
 export type ProgramPhaseDefinition = {
   id: string;
@@ -284,6 +285,51 @@ function isFinitePositive(value: number | null | undefined): value is number {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
 }
 
+/**
+ * A day's own pace_percent_basis/min/max is deliberately never set by
+ * framework-seed.ts/framework-structure.ts at the DAY level (only at
+ * STEP level, program_day_steps.target_pace_percent_*) -- see that
+ * module's own header. But the headline pace a coach sees on a workout
+ * card resolves live purely off these three day-level columns
+ * (calendar-data.ts's own resolvePacePercent call is gated on exactly
+ * that), so without this every percent-based framework day would show no
+ * pace at all despite its steps carrying real ones.
+ *
+ * Derives one from the day's own steps: the step with the FASTEST stated
+ * percent among its non-warm-up/cool-down ("work") steps -- the float
+ * leg of a cruise-interval pair, or an easier rung of a ladder, is real
+ * structured content but not what "the pace for this session" should
+ * mean on the card. Still never a literal resolved pace -- same percent-
+ * basis/min/max shape, resolved live exactly like every other pace
+ * percent on this platform (this file's own header above on why that's
+ * deliberate and was already tried the other way once).
+ */
+function deriveTopLevelPacePercent(
+  steps: { stepType: WorkoutStepType; targetPacePercentBasis: PaceReferenceKey | null; targetPacePercentMin: number | null; targetPacePercentMax: number | null }[],
+): { basis: PaceReferenceKey; min: number; max: number | null } | null {
+  const workSteps = steps.filter(
+    (s): s is typeof s & { targetPacePercentBasis: PaceReferenceKey; targetPacePercentMin: number } =>
+      s.stepType !== "warmup" && s.stepType !== "cooldown" && s.targetPacePercentBasis != null && s.targetPacePercentMin != null,
+  );
+  if (workSteps.length === 0) return null;
+  const primary = workSteps.reduce((best, s) => (s.targetPacePercentMin > best.targetPacePercentMin ? s : best));
+  return { basis: primary.targetPacePercentBasis, min: primary.targetPacePercentMin, max: primary.targetPacePercentMax ?? null };
+}
+
+/**
+ * Distance / a LITERAL pace only -- deliberately never from a percent-
+ * based pace, which (per this file's own header) is never resolved here
+ * at all. A duration baked from a percent resolved once at assignment
+ * time would go stale the exact way a baked literal pace already did and
+ * was reverted for -- so for the overwhelming majority of framework days
+ * (pace is always a percent, never a literal, until read time), this
+ * stays null, which is the honest answer, not a gap to fill in later.
+ */
+function deriveDurationS(distanceM: number | null, paceSPerMi: number | null): number | null {
+  if (distanceM == null || paceSPerMi == null) return null;
+  return Math.round((distanceM / MILE_METERS) * paceSPerMi);
+}
+
 export function resolveProgramGeneration(input: GenerateProgramInput): GenerateProgramResult {
   const { variantPhases, phaseSelections, days, weekLabels, weekVolumes, anchor } = input;
 
@@ -448,25 +494,50 @@ export function resolveProgramGeneration(input: GenerateProgramInput): GenerateP
       instructions: step.instructions,
     }));
 
+    const plannedDistanceM = day.plannedDistanceM != null ? Math.round(scaleDistance(day.plannedDistanceM, distanceScale)) : null;
+    const plannedDistanceMaxM = day.plannedDistanceMaxM != null ? Math.round(scaleDistance(day.plannedDistanceMaxM, distanceScale)) : null;
+
+    // Both `??` fallbacks: a day that already has a real, hand-authored
+    // value (canyon-program.ts's own dayLabel vocabulary, or a day-level
+    // percent framework-seed.ts's own "single unambiguous clause" rule
+    // did set) keeps it untouched -- these only fill in what's currently
+    // always null for the web-PDF-transcribed frameworks.
+    const pacePercent = day.pacePercentBasis == null ? deriveTopLevelPacePercent(steps) : null;
+    const dayLabel =
+      day.dayLabel ??
+      classifyWorkoutTitle({
+        notes: day.notes,
+        distanceMiMin: plannedDistanceM != null ? plannedDistanceM / MILE_METERS : null,
+        steps: steps.map((s) => ({
+          stepType: s.stepType,
+          targetPacePercentBasis: s.targetPacePercentBasis,
+          targetPacePercentMin: s.targetPacePercentMin,
+          targetPacePercentMax: s.targetPacePercentMax,
+          repetitions: s.repetitions,
+          restS: s.restS,
+          restMaxS: s.restMaxS,
+        })),
+      });
+
     return {
       sourceProgramDayId: day.id,
       scheduledDate: scheduledDateFor(day),
-      dayLabel: day.dayLabel,
+      dayLabel,
       sessionSlot: day.sessionSlot,
       // Copied verbatim, never scaled: neither is a quantity, and both are
       // authored framework intent rather than anything per-athlete.
       isOptional: day.isOptional,
       alternativeText: day.alternativeText,
-      plannedDistanceM: day.plannedDistanceM != null ? Math.round(scaleDistance(day.plannedDistanceM, distanceScale)) : null,
-      plannedDistanceMaxM: day.plannedDistanceMaxM != null ? Math.round(scaleDistance(day.plannedDistanceMaxM, distanceScale)) : null,
-      plannedDurationS: day.plannedDurationS != null ? Math.round(scaleDistance(day.plannedDurationS, durationScale)) : null,
-      plannedDurationMaxS: day.plannedDurationMaxS != null ? Math.round(scaleDistance(day.plannedDurationMaxS, durationScale)) : null,
+      plannedDistanceM,
+      plannedDistanceMaxM,
+      plannedDurationS: day.plannedDurationS != null ? Math.round(scaleDistance(day.plannedDurationS, durationScale)) : deriveDurationS(plannedDistanceM, day.plannedPaceSPerMi),
+      plannedDurationMaxS: day.plannedDurationMaxS != null ? Math.round(scaleDistance(day.plannedDurationMaxS, durationScale)) : deriveDurationS(plannedDistanceMaxM, day.plannedPaceMaxSPerMi ?? day.plannedPaceSPerMi),
       plannedPaceSPerMi: day.plannedPaceSPerMi,
       plannedPaceMaxSPerMi: day.plannedPaceMaxSPerMi,
       paceReference: day.paceReference,
-      pacePercentBasis: day.pacePercentBasis,
-      pacePercentMin: day.pacePercentMin,
-      pacePercentMax: day.pacePercentMax,
+      pacePercentBasis: day.pacePercentBasis ?? pacePercent?.basis ?? null,
+      pacePercentMin: day.pacePercentMin ?? pacePercent?.min ?? null,
+      pacePercentMax: day.pacePercentMax ?? pacePercent?.max ?? null,
       plannedHrBpm: day.plannedHrBpm,
       plannedHrMaxBpm: day.plannedHrMaxBpm,
       plannedRpe: day.plannedRpe,

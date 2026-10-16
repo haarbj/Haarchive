@@ -5,6 +5,7 @@ import {
   resolveProgramGeneration,
   type GenerateProgramInput,
   type ProgramDayContent,
+  type ProgramDayStepContent,
   type ProgramPhaseDefinition,
 } from "@/lib/private-coaching/program-generation";
 
@@ -531,5 +532,184 @@ describe("resolveProgramGeneration -- optional sessions and alternatives", () =>
     const result = expectResult(resolveProgramGeneration(baseInput()));
     expect(result.days.every((d) => d.isOptional === false)).toBe(true);
     expect(result.days.every((d) => d.alternativeText === null)).toBe(true);
+  });
+});
+
+function step(overrides: Partial<ProgramDayStepContent> & { stepOrder: number; stepType: ProgramDayStepContent["stepType"] }): ProgramDayStepContent {
+  return {
+    durationS: null,
+    durationMaxS: null,
+    distanceM: null,
+    distanceMaxM: null,
+    targetType: "open",
+    targetMin: null,
+    targetMax: null,
+    targetUnit: null,
+    targetPaceReference: null,
+    targetPacePercentBasis: null,
+    targetPacePercentMin: null,
+    targetPacePercentMax: null,
+    repetitions: null,
+    repetitionsMax: null,
+    restS: null,
+    restMaxS: null,
+    instructions: null,
+    ...overrides,
+  };
+}
+
+// Part 21 follow-up: this platform's own classifyWorkoutTitle and the
+// day-level pace-percent derivation it ships alongside -- see
+// program-generation.ts's own comments on both (and why duration
+// deliberately stays null for a percent-based pace, never a literal
+// baked from a one-time resolution).
+describe("resolveProgramGeneration -- assignment-time title, pace-percent, and duration", () => {
+  it("classifies a day's title from its notes/distance/steps when the template's own dayLabel is null", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [
+            day({
+              id: "d1",
+              phaseDefinitionId: "p1",
+              weekNumber: 1,
+              dayOfWeek: 1,
+              notes: "4–5 mi easy",
+              plannedDistanceM: Math.round(4.5 * MILE_METERS),
+            }),
+          ],
+        }),
+      ),
+    );
+    expect(result.days[0].dayLabel).toBe("Easy");
+  });
+
+  it("never overwrites a template's own hand-authored dayLabel (canyon-program.ts's own vocabulary)", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [day({ id: "d1", phaseDefinitionId: "p1", weekNumber: 1, dayOfWeek: 1, dayLabel: "Kenyan Progression", notes: "Off" })],
+        }),
+      ),
+    );
+    expect(result.days[0].dayLabel).toBe("Kenyan Progression");
+  });
+
+  it("derives a day-level pace_percent_basis/min/max from the fastest non-warmup/cooldown step when the day's own is null", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [
+            day({
+              id: "d1",
+              phaseDefinitionId: "p1",
+              weekNumber: 1,
+              dayOfWeek: 1,
+              notes: "interval day",
+              steps: [
+                step({ stepOrder: 1, stepType: "warmup", distanceM: 1609 }),
+                step({ stepOrder: 2, stepType: "interval", targetType: "pace", targetPacePercentBasis: "5k", targetPacePercentMin: 90, targetPacePercentMax: 92, repetitions: 4, restS: null }),
+                step({ stepOrder: 3, stepType: "interval", targetType: "pace", targetPacePercentBasis: "5k", targetPacePercentMin: 75, repetitions: 4, restS: null }),
+                step({ stepOrder: 4, stepType: "cooldown", distanceM: 1609 }),
+              ],
+            }),
+          ],
+        }),
+      ),
+    );
+    // The 90-92% leg (the work leg) wins over the 75% float leg.
+    expect(result.days[0].pacePercentBasis).toBe("5k");
+    expect(result.days[0].pacePercentMin).toBe(90);
+    expect(result.days[0].pacePercentMax).toBe(92);
+    expect(result.days[0].dayLabel).toBe("Cruise Intervals");
+  });
+
+  it("never overwrites a day-level pace_percent the template already set", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [
+            day({
+              id: "d1",
+              phaseDefinitionId: "p1",
+              weekNumber: 1,
+              dayOfWeek: 1,
+              notes: "steady",
+              pacePercentBasis: "5k",
+              pacePercentMin: 85,
+              pacePercentMax: 85,
+              steps: [step({ stepOrder: 1, stepType: "main", targetType: "pace", targetPacePercentBasis: "marathon", targetPacePercentMin: 99 })],
+            }),
+          ],
+        }),
+      ),
+    );
+    expect(result.days[0].pacePercentBasis).toBe("5k");
+    expect(result.days[0].pacePercentMin).toBe(85);
+  });
+
+  it("leaves duration null for a percent-based pace -- never bakes a resolved pace at assignment time", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [
+            day({
+              id: "d1",
+              phaseDefinitionId: "p1",
+              weekNumber: 1,
+              dayOfWeek: 1,
+              notes: "4 mi at 85% 5k",
+              plannedDistanceM: Math.round(4 * MILE_METERS),
+              steps: [step({ stepOrder: 1, stepType: "main", targetType: "pace", targetPacePercentBasis: "5k", targetPacePercentMin: 85 })],
+            }),
+          ],
+        }),
+      ),
+    );
+    expect(result.days[0].plannedDurationS).toBeNull();
+  });
+
+  it("derives duration from distance + a real LITERAL pace (never a percent)", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [
+            day({
+              id: "d1",
+              phaseDefinitionId: "p1",
+              weekNumber: 1,
+              dayOfWeek: 1,
+              notes: "easy",
+              plannedDistanceM: Math.round(5 * MILE_METERS),
+              plannedPaceSPerMi: 480, // 8:00/mi
+            }),
+          ],
+        }),
+      ),
+    );
+    expect(result.days[0].plannedDurationS).toBe(2400); // 40:00
+  });
+
+  it("recovery-program-shaped day (null distance, null steps, pace-dependent prose) gets a real title, never 'Workout', and leaves distance/pace/duration null", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          days: [
+            day({
+              id: "d1",
+              phaseDefinitionId: "p1",
+              weekNumber: 1,
+              dayOfWeek: 1,
+              notes: "5-8 x 3 min at 105% of marathon pace, 45 sec jog. 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+            }),
+          ],
+        }),
+      ),
+    );
+    expect(result.days[0].dayLabel).not.toBe("Workout");
+    expect(result.days[0].dayLabel).not.toBeNull();
+    expect(result.days[0].plannedDistanceM).toBeNull();
+    expect(result.days[0].pacePercentBasis).toBeNull();
+    expect(result.days[0].plannedDurationS).toBeNull();
   });
 });
