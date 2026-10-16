@@ -40,6 +40,34 @@ export type PostRaceView = {
   reviewSubmitted?: boolean;
 };
 
+/**
+ * The one dedup check both send paths and the panel's own "already sent"
+ * detection share -- scoped to (coach_athlete_id, race_name, race_date)
+ * rather than goal_id, because a manually-sent review has no goal_id at
+ * all and a goal-race-sent one should still be recognized by a later
+ * manual attempt for the same race (and vice versa). Exact, case-
+ * sensitive match: both paths write a real, already-clean string (the
+ * goal's own race_name, or the coach's typed input), so there is no
+ * normalization to get wrong by skipping.
+ */
+async function findExistingReviewRequest(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  relationshipId: string,
+  raceName: string,
+  raceDate: string,
+): Promise<{ id: string; submittedAt: string | null } | null> {
+  const { data } = await supabase
+    .from("post_season_review_requests")
+    .select("id, submitted_at")
+    .eq("coach_athlete_id", relationshipId)
+    .eq("race_name", raceName)
+    .eq("race_date", raceDate)
+    .order("sent_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string; submitted_at: string | null }>();
+  return data ? { id: data.id, submittedAt: data.submitted_at } : null;
+}
+
 async function requireCoachOf(athleteId: string) {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." as const };
@@ -88,18 +116,11 @@ export async function loadPostRaceFlow(input: { athleteId: string }): Promise<Po
   // recovery program -- recovery is the step before planning, not the plan.
   const nextCyclePlanned = after.some((p) => p.source_program_id != null && p.source_program_id !== recoveryProgram?.id);
 
-  // Scoped to this athlete + this race, and ordered so the most recent
-  // send wins if a coach ever sent it more than once -- a real request
-  // row, not a text search, so renaming the questionnaire's title cannot
-  // affect this.
-  const { data: reviewRequest } = await supabase
-    .from("post_season_review_requests")
-    .select("id, submitted_at")
-    .eq("coach_athlete_id", relationshipId)
-    .eq("goal_id", goalRace.id)
-    .order("sent_at", { ascending: false })
-    .limit(1)
-    .maybeSingle<{ id: string; submitted_at: string | null }>();
+  // Scoped to this athlete + this race by name/date, not goal_id -- a
+  // review for this exact race sent manually (no goal_id at all) must
+  // still be recognized here, so the panel never offers to send a
+  // duplicate. See findExistingReviewRequest's own comment.
+  const reviewRequest = await findExistingReviewRequest(supabase, relationshipId, goalRace.raceName, goalRace.goalDate);
 
   return {
     flow: postRaceFlow({
@@ -113,24 +134,64 @@ export async function loadPostRaceFlow(input: { athleteId: string }): Promise<Po
     raceName: goalRace.raceName,
     raceDate: goalRace.goalDate,
     reviewRequestId: reviewRequest?.id ?? null,
-    reviewSubmitted: reviewRequest?.submitted_at != null,
+    reviewSubmitted: reviewRequest?.submittedAt != null,
   };
 }
 
-export async function sendPostSeasonReview(input: { athleteId: string }): Promise<{ error?: string; ok?: true }> {
+/**
+ * Sends the structured post-season review. Two ways to reach it:
+ *   - no raceName/raceDate: the original post-race-flow path, anchored
+ *     to the athlete's goal race (unchanged behavior, used by
+ *     PostRacePanel -- same action, no new params from that call site).
+ *   - raceName + raceDate given: the manual path (Part H follow-up), for
+ *     an athlete with no goal race in the system at all -- a newly
+ *     onboarded athlete who raced recently without this coach. Nothing
+ *     here requires a goal row to exist; goal_id on the written request
+ *     is simply null in this case.
+ * Either way the request row ends up with real race_name/race_date, so
+ * both paths dedup against each other through the same
+ * findExistingReviewRequest check -- a review already sent for this race
+ * manually is recognized by a later goal-race-anchored attempt, and vice
+ * versa.
+ */
+export async function sendPostSeasonReview(input: {
+  athleteId: string;
+  raceName?: string;
+  raceDate?: string;
+}): Promise<{ error?: string; ok?: true; requestId?: string }> {
   const auth = await requireCoachOf(input.athleteId);
   if ("error" in auth) return { error: auth.error };
   const { session, supabase, relationshipId } = auth;
 
-  const goalRace = await getAthleteGoalRace(supabase, input.athleteId);
-  if (!goalRace) return { error: "No race on record to send this for." };
+  let raceName: string;
+  let raceDate: string;
+  let goalId: string | null;
+
+  if (input.raceName != null || input.raceDate != null) {
+    raceName = input.raceName?.trim() ?? "";
+    if (!raceName) return { error: "Race name is required." };
+    raceDate = input.raceDate ?? "";
+    if (!raceDate) return { error: "Race date is required." };
+    const today = new Date().toISOString().slice(0, 10);
+    if (raceDate > today) return { error: "Race date can't be in the future." };
+    goalId = null;
+  } else {
+    const goalRace = await getAthleteGoalRace(supabase, input.athleteId);
+    if (!goalRace) return { error: "No race on record to send this for." };
+    raceName = goalRace.raceName;
+    raceDate = goalRace.goalDate;
+    goalId = goalRace.id;
+  }
+
+  const existing = await findExistingReviewRequest(supabase, relationshipId, raceName, raceDate);
+  if (existing) return { error: `A post-season review was already sent for ${raceName}.`, requestId: existing.id };
 
   const { data: message, error: messageError } = await supabase
     .from("coach_athlete_messages")
     .insert({
       coach_athlete_id: relationshipId,
       sender_id: session.userId,
-      body: postSeasonReviewMessage(),
+      body: postSeasonReviewMessage(raceName),
     })
     .select("id")
     .single<{ id: string }>();
@@ -147,7 +208,9 @@ export async function sendPostSeasonReview(input: { athleteId: string }): Promis
       coach_athlete_id: relationshipId,
       coach_id: session.userId,
       athlete_id: input.athleteId,
-      goal_id: goalRace.id,
+      goal_id: goalId,
+      race_name: raceName,
+      race_date: raceDate,
       message_id: message.id,
     })
     .select("id")
@@ -167,12 +230,13 @@ export async function sendPostSeasonReview(input: { athleteId: string }): Promis
   await createNotification({
     userId: input.athleteId,
     type: "post_season_review_sent",
-    content: "Your coach sent you the post-season review for your race.",
+    content: `Your coach sent you the post-season review for ${raceName}.`,
     relatedEntityId: request.id,
   });
 
   revalidatePath(`/coaching/athletes/${input.athleteId}/schedule`);
-  return { ok: true };
+  revalidatePath(`/coaching/athletes/${input.athleteId}`);
+  return { ok: true, requestId: request.id };
 }
 
 /**
@@ -277,4 +341,31 @@ export async function loadPostSeasonReviewAnswers(
     );
 
   return { submittedAt: request.submitted_at, answers };
+}
+
+export type SentReviewRequest = { id: string; raceName: string | null; raceDate: string | null; submittedAt: string | null };
+
+/**
+ * Every review request ever sent for this athlete, for the manual-send
+ * section on the athlete detail page: as the coach types/picks a race
+ * name + date, the UI matches it against this list (same race_name +
+ * race_date comparison findExistingReviewRequest uses server-side) to
+ * decide whether to show "Send review" or "View answers" -- client-side,
+ * so it updates live as they type, with sendPostSeasonReview's own
+ * server-side check as the real guard against a double-send.
+ */
+export async function loadSentReviewRequests(input: { athleteId: string }): Promise<{ error?: string; requests?: SentReviewRequest[] }> {
+  const auth = await requireCoachOf(input.athleteId);
+  if ("error" in auth) return { error: auth.error };
+  const { supabase, relationshipId } = auth;
+
+  const { data, error } = await supabase
+    .from("post_season_review_requests")
+    .select("id, race_name, race_date, submitted_at")
+    .eq("coach_athlete_id", relationshipId)
+    .order("sent_at", { ascending: false })
+    .returns<{ id: string; race_name: string | null; race_date: string | null; submitted_at: string | null }[]>();
+  if (error) return { error: error.message };
+
+  return { requests: (data ?? []).map((r) => ({ id: r.id, raceName: r.race_name, raceDate: r.race_date, submittedAt: r.submitted_at })) };
 }

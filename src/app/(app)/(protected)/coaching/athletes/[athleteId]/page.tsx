@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { mentionsPossibleIllness } from "@/lib/private-coaching/setbacks";
 import { IllnessPanel } from "./illness-panel";
+import { PostSeasonReviewSection } from "./post-season-review-section";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -312,6 +313,11 @@ export default async function CoachingAthleteDetailPage({
           </div>
         )}
       </div>
+
+      <PostSeasonReviewSection
+        athleteId={athleteId}
+        recentRaces={(raceResults ?? []).map((r) => ({ raceName: r.race_name, raceDate: r.race_date }))}
+      />
     </Container>
   );
 }
