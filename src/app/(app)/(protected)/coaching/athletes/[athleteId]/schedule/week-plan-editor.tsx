@@ -16,6 +16,11 @@ export type WeekPlanValues = {
   targetVolumeMin: number | null;
   targetVolumeMax: number | null;
   targetVolumeUnit: "miles" | "minutes" | null;
+  // Longer week-level coaching commentary -- the athlete-facing counterpart
+  // of a Program's own program_phase_weeks.notes (see the training_week_
+  // plans_notes migration). Distinct from label (a short roadmap tag) the
+  // same way it's distinct there.
+  notes: string | null;
 };
 
 // "35–40 miles" / "35 miles" -- the one place this wording lives, shared
@@ -56,6 +61,7 @@ export function WeekPlanForm({
   const [targetMin, setTargetMin] = useState(initial.targetVolumeMin != null ? String(initial.targetVolumeMin) : "");
   const [targetMax, setTargetMax] = useState(initial.targetVolumeMax != null ? String(initial.targetVolumeMax) : "");
   const [unit, setUnit] = useState<"miles" | "minutes">(initial.targetVolumeUnit ?? "miles");
+  const [notes, setNotes] = useState(initial.notes ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -76,6 +82,7 @@ export function WeekPlanForm({
       targetVolumeMin: min,
       targetVolumeMax: max,
       targetVolumeUnit: min !== null ? unit : null,
+      notes: notes.trim() || null,
     });
     setIsPending(false);
     if (result.error) return setError(result.error);
@@ -110,6 +117,16 @@ export function WeekPlanForm({
           </select>
         </label>
       </div>
+      <label className="block">
+        <span className={labelClass}>Week notes</span>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="What this week is for, and why -- shown to the athlete."
+          rows={3}
+          className={fieldClass}
+        />
+      </label>
       {error && <FormError>{error}</FormError>}
       <div className="flex items-center gap-3">
         <Button type="button" size="sm" disabled={isPending} onClick={handleSave}>
@@ -130,24 +147,27 @@ export function WeekPlanEditor({ athleteId, weekStart, initial }: { athleteId: s
   const router = useRouter();
   const [editing, setEditing] = useState(false);
 
-  const hasContent = !!initial.label || initial.targetVolumeMin != null;
+  const hasContent = !!initial.label || initial.targetVolumeMin != null || !!initial.notes;
 
   if (!editing) {
     return (
-      <div className="mt-2 flex flex-wrap items-baseline gap-3">
-        {initial.label ? (
-          <p className="text-sm font-semibold tracking-wide text-zinc-700 uppercase dark:text-zinc-200">{initial.label}</p>
-        ) : null}
-        {initial.targetVolumeMin != null ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Target: {formatTargetVolume(initial)}</p>
-        ) : null}
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
-        >
-          {hasContent ? "Edit week plan" : "+ Add week title / target"}
-        </button>
+      <div className="mt-2">
+        <div className="flex flex-wrap items-baseline gap-3">
+          {initial.label ? (
+            <p className="text-sm font-semibold tracking-wide text-zinc-700 uppercase dark:text-zinc-200">{initial.label}</p>
+          ) : null}
+          {initial.targetVolumeMin != null ? (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">Target: {formatTargetVolume(initial)}</p>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+          >
+            {hasContent ? "Edit week plan" : "+ Add week title / target"}
+          </button>
+        </div>
+        {initial.notes ? <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-zinc-300">{initial.notes}</p> : null}
       </div>
     );
   }

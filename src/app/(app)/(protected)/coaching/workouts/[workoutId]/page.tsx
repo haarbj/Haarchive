@@ -17,6 +17,7 @@ import { getWorkoutDisplayLabel, effectiveWorkoutVolume, computeWorkoutStatus } 
 import { formatDistanceRange, formatDurationRange } from "@/lib/private-coaching/workout-distance";
 import { isBareXt } from "@/lib/private-coaching/day-type-visuals";
 import { getWorkoutGlossaryEntry } from "@/lib/private-coaching/workout-glossary";
+import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
 import { effortLevelLabel } from "@/lib/private-coaching/effort-levels";
 import {
   getAthleteMostRecentRace,
@@ -264,16 +265,18 @@ export default async function WorkoutDetailPage({
             .then((r) => r.data)
         : Promise.resolve(null),
       // The phase this workout's date falls in -- the containment rule
-      // training-phases.ts already uses. Needed only for the coach-facing
-      // missed-workout guidance, which is phase-specific.
+      // training-phases.ts already uses. Used for the coach-facing
+      // missed-workout guidance (phase-specific) and, below, for showing
+      // "Why this phase?" alongside "Why this workout" when the workout
+      // falls inside a named phase.
       supabase
         .from("training_phases")
-        .select("phase_type")
+        .select("phase_type, explainer")
         .eq("athlete_id", workout.athlete_id)
         .lte("start_date", workout.scheduled_date)
         .gte("end_date", workout.scheduled_date)
         .limit(1)
-        .returns<{ phase_type: string }[]>(),
+        .returns<{ phase_type: string; explainer: string | null }[]>(),
     ]);
   const workoutWeekTarget: WeekTarget | null = weekTargetRow
     ? { targetVolumeMin: weekTargetRow.target_volume_min, targetVolumeMax: weekTargetRow.target_volume_max, targetVolumeUnit: weekTargetRow.target_volume_unit }
@@ -573,6 +576,13 @@ export default async function WorkoutDetailPage({
               <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
                 An advanced session your coach assigns deliberately, not one to add on your own.
               </p>
+            ) : null}
+            {/* The phase this workout falls in, if any -- resolvePhaseExplainer
+                inside PhaseExplainer renders nothing for an unnamed/unrecognized
+                phase, so a workout outside any named phase shows no extra
+                section here, same "nothing invented" rule as glossaryEntry. */}
+            {phaseForWorkout ? (
+              <PhaseExplainer phaseType={phaseForWorkout.phase_type} explainer={phaseForWorkout.explainer} />
             ) : null}
             <Link
               href="/coaching/learn/workout-types"

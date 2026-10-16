@@ -6,6 +6,7 @@ import { createClient } from "@/lib/db/server";
 import { getUserEmailById } from "@/lib/admin/users";
 import { formatDate, formatRelativeTime } from "@/lib/format";
 import { addDays } from "@/lib/coaching-engine";
+import { mostRecentMonday } from "@/lib/week";
 import type { WorkoutType } from "@/lib/coaching-engine";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { loadCoachHomeData } from "./coach-home-data";
@@ -287,15 +288,29 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
   // after it, up to two weeks out.
   const today = new Date().toISOString().slice(0, 10);
   const twoWeeksOut = addDays(today, 14);
-  const { data: upcoming } = await supabase
-    .from("scheduled_workouts")
-    .select("id, scheduled_date, title, day_label, workout_type")
-    .eq("athlete_id", userId)
-    .not("published_at", "is", null)
-    .gte("scheduled_date", today)
-    .lte("scheduled_date", twoWeeksOut)
-    .order("scheduled_date", { ascending: true })
-    .returns<UpcomingWorkout[]>();
+  const thisWeekStart = mostRecentMonday(new Date(`${today}T00:00:00Z`));
+  const [{ data: upcoming }, { data: thisWeekPlan }] = await Promise.all([
+    supabase
+      .from("scheduled_workouts")
+      .select("id, scheduled_date, title, day_label, workout_type")
+      .eq("athlete_id", userId)
+      .not("published_at", "is", null)
+      .gte("scheduled_date", today)
+      .lte("scheduled_date", twoWeeksOut)
+      .order("scheduled_date", { ascending: true })
+      .returns<UpcomingWorkout[]>(),
+    // Coach-authored week-level guidance (training_week_plans.notes) --
+    // shown for the CURRENT week only, since that's the week this home
+    // page's own "Today"/"Upcoming" workouts belong to. Renders nothing
+    // when the coach hasn't written one for this week, same "never
+    // invent content" rule as the rest of this page.
+    supabase
+      .from("training_week_plans")
+      .select("notes")
+      .eq("athlete_id", userId)
+      .eq("week_start", thisWeekStart)
+      .maybeSingle<{ notes: string | null }>(),
+  ]);
 
   const [todayWorkout, ...laterWorkouts] = upcoming ?? [];
 
@@ -308,6 +323,15 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
             ? `You're being coached by ${coachName}.`
             : "You're being privately coached."}
       </p>
+
+      {thisWeekPlan?.notes ? (
+        <div className="mt-6">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">This week</p>
+          <Card padding="md" className="mt-3">
+            <p className="text-sm leading-7 text-zinc-600 dark:text-zinc-300">{thisWeekPlan.notes}</p>
+          </Card>
+        </div>
+      ) : null}
 
       {todayWorkout ? (
         <div className="mt-8">

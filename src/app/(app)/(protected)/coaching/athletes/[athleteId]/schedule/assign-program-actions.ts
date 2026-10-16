@@ -333,12 +333,12 @@ async function loadResolvedGeneration(input: AssignProgramInput): Promise<LoadRe
 
   const { data: weekLabelRows } = await supabase
     .from("program_phase_weeks")
-    .select("phase_definition_id, week_number, label")
+    .select("phase_definition_id, week_number, label, notes")
     .in("phase_definition_id", phaseDefinitionIds)
-    .returns<{ phase_definition_id: string; week_number: number; label: string | null }[]>();
+    .returns<{ phase_definition_id: string; week_number: number; label: string | null; notes: string | null }[]>();
   const weekLabels: ProgramPhaseWeekLabel[] = (weekLabelRows ?? [])
-    .filter((w): w is { phase_definition_id: string; week_number: number; label: string } => w.label != null)
-    .map((w) => ({ phaseDefinitionId: w.phase_definition_id, weekNumber: w.week_number, label: w.label }));
+    .filter((w) => w.label != null || w.notes != null)
+    .map((w) => ({ phaseDefinitionId: w.phase_definition_id, weekNumber: w.week_number, label: w.label, notes: w.notes }));
 
   const volumeResult = await loadWeekVolumes(supabase, input, phaseDefinitionIds);
   if ("error" in volumeResult) return { error: volumeResult.error };
@@ -706,7 +706,7 @@ export async function assignProgramToAthlete(
         items: e.items,
       })),
     })),
-    p_weeks: generation.weeks.map((w) => ({ weekStart: w.weekStart, targetVolumeMin: w.targetVolumeMin, targetVolumeMax: w.targetVolumeMax, label: w.label })),
+    p_weeks: generation.weeks.map((w) => ({ weekStart: w.weekStart, targetVolumeMin: w.targetVolumeMin, targetVolumeMax: w.targetVolumeMax, label: w.label, notes: w.notes })),
   });
   if (error) return { error: error.message };
 
@@ -842,12 +842,12 @@ async function loadPhaseResyncGeneration(
 
   const { data: weekLabelRows } = await supabase
     .from("program_phase_weeks")
-    .select("phase_definition_id, week_number, label")
+    .select("phase_definition_id, week_number, label, notes")
     .eq("phase_definition_id", phaseDefinition.id)
-    .returns<{ phase_definition_id: string; week_number: number; label: string | null }[]>();
+    .returns<{ phase_definition_id: string; week_number: number; label: string | null; notes: string | null }[]>();
   const weekLabels: ProgramPhaseWeekLabel[] = (weekLabelRows ?? [])
-    .filter((w): w is { phase_definition_id: string; week_number: number; label: string } => w.label != null)
-    .map((w) => ({ phaseDefinitionId: w.phase_definition_id, weekNumber: w.week_number, label: w.label }));
+    .filter((w) => w.label != null || w.notes != null)
+    .map((w) => ({ phaseDefinitionId: w.phase_definition_id, weekNumber: w.week_number, label: w.label, notes: w.notes }));
 
   // A resync keeps the peak-volume level this phase was generated with --
   // it re-pulls the Program's current CONTENT, it doesn't re-decide which
@@ -1041,7 +1041,7 @@ export async function resyncPhaseFromProgram(phaseId: string, athleteId: string)
         items: e.items,
       })),
     })),
-    p_weeks: generation.weeks.map((w) => ({ weekStart: w.weekStart, targetVolumeMin: w.targetVolumeMin, targetVolumeMax: w.targetVolumeMax, label: w.label })),
+    p_weeks: generation.weeks.map((w) => ({ weekStart: w.weekStart, targetVolumeMin: w.targetVolumeMin, targetVolumeMax: w.targetVolumeMax, label: w.label, notes: w.notes })),
   });
   if (error) return { error: error.message };
 
