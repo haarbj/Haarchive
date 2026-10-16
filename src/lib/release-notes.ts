@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-15",
+    headline: "Batch-publish drafts: a whole week, day, or phase at once",
+    detail:
+      "Publishing a week of assigned drafts used to mean opening each workout's edit modal one at a time to check \"Published.\" The schedule now offers a one-click \"Publish\" button with an inline confirm at the week, day, and phase level, each scoped to only that range's still-draft workouts -- already-published, completed, or missed workouts are left untouched.",
+  },
+  {
+    date: "2026-10-15",
     headline: "Notification fixes: no more duplicate check-in alerts, program assignments now notify",
     detail:
       "A coach was getting a fresh \"X submitted a check-in\" (and, if pain was flagged, a second \"X reported pain\") every time an athlete edited an already-submitted weekly check-in, not just the first submission -- caught live on staging and fixed to only notify on what's actually new. Assigning a program to an athlete now also sends them a real notification that their schedule changed, which it previously didn't.",

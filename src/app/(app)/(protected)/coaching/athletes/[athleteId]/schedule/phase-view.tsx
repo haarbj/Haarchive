@@ -27,11 +27,12 @@ import { FuelingOversightPanel } from "./fueling-oversight-panel";
 import { OnboardingPanel } from "./onboarding-panel";
 import { TrainingBackgroundPanel } from "./training-background-panel";
 import { formatTargetVolume } from "./week-plan-editor";
-import { clearAllTraining } from "./actions";
+import { clearAllTraining, publishWorkouts } from "./actions";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { InlineConfirmButton } from "@/components/ui/inline-confirm-button";
 
 export type PhaseViewWeekInfo = {
   label: string | null;
@@ -53,6 +54,7 @@ export function PhaseView({
   athleteId,
   phases,
   weekInfoByWeek,
+  draftIdsByPhase,
   goalRace,
   goalOptions,
   copiedWeek,
@@ -62,6 +64,10 @@ export function PhaseView({
   athleteId: string;
   phases: TrainingPhase[];
   weekInfoByWeek: Record<string, PhaseViewWeekInfo>;
+  // Still-draft scheduled_workouts ids, bucketed by phase id -- powers each
+  // phase's own "Publish phase" button. A phase absent from this map (or
+  // with an empty array) has no drafts, so no button renders for it.
+  draftIdsByPhase: Record<string, string[]>;
   goalRace: AthleteGoalRace | null;
   goalOptions: PhaseGoalOption[];
   copiedWeek: string | null;
@@ -80,6 +86,17 @@ export function PhaseView({
   const [formTarget, setFormTarget] = useState<"new" | "assign-program" | ExistingPhase | null>(
     preselectProgramId ? "assign-program" : null,
   );
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  async function publishIds(ids: string[]) {
+    setPublishError(null);
+    const result = await publishWorkouts(ids, athleteId);
+    if (result.error) {
+      setPublishError(result.error);
+      return;
+    }
+    router.refresh();
+  }
 
   const sections = buildRoadmapSections(phases);
 
@@ -105,6 +122,8 @@ export function PhaseView({
 
   return (
     <div className="space-y-6">
+      {publishError ? <p className="text-sm text-red-600 dark:text-red-400">{publishError}</p> : null}
+
       {sections.length === 0 ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-300">
           No phases set up yet -- add one to start building this athlete&rsquo;s training roadmap.
@@ -125,13 +144,24 @@ export function PhaseView({
                   week{phaseWeekCount(section.phase) === 1 ? "" : "s"}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setFormTarget(toExistingPhase(section.phase))}
-                className="mt-1 text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
-              >
-                Edit
-              </button>
+              <div className="mt-1 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormTarget(toExistingPhase(section.phase))}
+                  className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+                >
+                  Edit
+                </button>
+                {(draftIdsByPhase[section.phase.id]?.length ?? 0) > 0 ? (
+                  <InlineConfirmButton
+                    action={() => publishIds(draftIdsByPhase[section.phase.id])}
+                    confirmMessage={`Publish ${draftIdsByPhase[section.phase.id].length} draft${draftIdsByPhase[section.phase.id].length === 1 ? "" : "s"} in ${section.phase.phaseType}${section.phase.name ? ` — ${section.phase.name}` : ""}? They'll become visible to the athlete.`}
+                    label={`Publish phase · ${draftIdsByPhase[section.phase.id].length} draft${draftIdsByPhase[section.phase.id].length === 1 ? "" : "s"}`}
+                    pendingLabel="Publishing…"
+                    className="text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black disabled:opacity-50 dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
+                  />
+                ) : null}
+              </div>
               {/* The same "Why this phase?" the athlete sees, so a coach is
                   never guessing what was actually communicated. Its Edit
                   link goes to the source Program phase, which is where a

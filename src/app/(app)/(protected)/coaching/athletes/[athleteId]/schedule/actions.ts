@@ -1525,3 +1525,48 @@ export async function deleteScheduledWorkout(workoutId: string, athleteId: strin
   revalidatePath(`/coaching/athletes/${athleteId}/schedule`);
   return {};
 }
+
+export type PublishWorkoutsResult = { error?: string; publishedCount?: number };
+
+// The batch equivalent of WorkoutForm's single "Published" checkbox + save
+// round-trip -- one atomic UPDATE flips every still-draft row in the given
+// set to published, in whatever scope the caller already computed (a
+// week's worth, a single day, a whole phase). published_at IS NULL in the
+// WHERE clause means an already-published, completed, or missed row is
+// left exactly as it is -- its original published_at survives untouched --
+// so calling this on a mixed-status set is always safe to do repeatedly
+// (idempotent: a second call with the same ids publishes nothing new).
+// Silent like every other unpublished->published transition on this page
+// (see saveScheduledWorkout's own publish branch for the one case that DOES
+// notify, which only fires through the single-workout editor) -- no
+// notification fan-out here, batch-publishing stays exactly as quiet as
+// publishing one at a time already is today.
+export async function publishWorkouts(workoutIds: string[], athleteId: string): Promise<PublishWorkoutsResult> {
+  const session = await getAppSession();
+  if (!session?.isPrivateCoach) return { error: "Not authorized." };
+  if (workoutIds.length === 0) return { publishedCount: 0 };
+
+  const supabase = await createClient();
+  const { data: relationship } = await supabase
+    .from("coach_athletes")
+    .select("id")
+    .eq("coach_id", session.userId)
+    .eq("athlete_id", athleteId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!relationship) return { error: "You don't coach this athlete." };
+
+  const { data: updated, error } = await supabase
+    .from("scheduled_workouts")
+    .update({ published_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .in("id", workoutIds)
+    .eq("athlete_id", athleteId)
+    .eq("coach_id", session.userId)
+    .is("published_at", null)
+    .select("id");
+  if (error) return { error: error.message };
+
+  revalidatePath(`/coaching/athletes/${athleteId}/schedule`);
+  return { publishedCount: updated?.length ?? 0 };
+}
