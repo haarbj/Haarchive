@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { rescheduleWorkout, type ExtraPresetOption } from "./actions";
+import { rescheduleWorkout, publishWorkouts, type ExtraPresetOption } from "./actions";
 import type { CalendarWorkout } from "./calendar-types";
 import { WorkoutCard } from "./workout-card";
 import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
@@ -12,6 +13,7 @@ import { computeWeeklyLoad, formatWeeklyLoadText, type WeeklyLoadEntry } from "@
 import { formatTargetVolume, type WeekPlanValues } from "./week-plan-editor";
 import { formatWeekday, formatDate } from "@/lib/format";
 import { FormError } from "@/components/ui/form-error";
+import { InlineConfirmButton } from "@/components/ui/inline-confirm-button";
 
 // The calendar's grid + weekly footer. Week navigation itself (prev/next/
 // today, the athlete switcher, phase/goal-race context, surrounding-week
@@ -50,6 +52,7 @@ export function WeekCalendar({
   // never requires scrolling back up and holding two numbers in your head.
   weekPlan: WeekPlanValues;
 }) {
+  const router = useRouter();
   const [workoutsByDate, setWorkoutsByDate] = useState(initialWorkoutsByDate);
 
   // workoutsByDate is seeded once on mount and otherwise only touched by
@@ -115,6 +118,24 @@ export function WeekCalendar({
   const publishedWorkouts = allWorkouts.filter((w) => w.publishedAt);
   const completedCount = allWorkouts.filter((w) => w.status === "completed").length;
 
+  // Draft counts for the batch-publish affordances below -- week-wide for
+  // the Weekly Load footer button, per-day for each column's own button.
+  // Both read the exact same optimistic workoutsByDate state the grid
+  // itself renders from, so a card that already moved off this week (drag)
+  // or was deleted isn't counted.
+  const draftWorkoutIds = allWorkouts.filter((w) => w.publishedAt == null).map((w) => w.id);
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  async function publishIds(ids: string[]) {
+    setPublishError(null);
+    const result = await publishWorkouts(ids, athleteId);
+    if (result.error) {
+      setPublishError(result.error);
+      return;
+    }
+    router.refresh();
+  }
+
   // Everything except cross-training counts toward mileage -- a
   // duration-only non-XT day is estimated via the athlete's own easy pace;
   // XT always stays separate, shown additively. See weekly-load.ts. Each
@@ -156,6 +177,7 @@ export function WeekCalendar({
           {days.map((date) => {
             const isToday = date === today;
             const isDragOver = dragOverDate === date;
+            const dayDraftIds = (workoutsByDate[date] ?? []).filter((w) => w.publishedAt == null).map((w) => w.id);
             return (
               <div
                 key={date}
@@ -203,6 +225,18 @@ export function WeekCalendar({
                 >
                   + Add
                 </button>
+
+                {dayDraftIds.length > 0 ? (
+                  <div className="mt-1.5">
+                    <InlineConfirmButton
+                      action={() => publishIds(dayDraftIds)}
+                      confirmMessage={`Publish ${dayDraftIds.length} draft${dayDraftIds.length === 1 ? "" : "s"}? They'll become visible to the athlete.`}
+                      label={`Publish ${dayDraftIds.length} draft${dayDraftIds.length === 1 ? "" : "s"}`}
+                      pendingLabel="Publishing…"
+                      className="w-full rounded-control border border-dashed border-black/15 py-1.5 text-xs font-semibold text-zinc-500 hover:border-black/30 hover:text-zinc-700 disabled:opacity-50 dark:border-white/15 dark:text-zinc-400 dark:hover:border-white/30 dark:hover:text-zinc-200"
+                    />
+                  </div>
+                ) : null}
               </div>
             );
           })}
@@ -220,12 +254,26 @@ export function WeekCalendar({
       <div className="mt-6 rounded-control border border-black/10 p-4 dark:border-white/10">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Weekly Load</p>
-          {targetText ? (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Target: <span className="font-semibold text-zinc-700 dark:text-zinc-200">{targetText}</span>
-            </p>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-3">
+            {targetText ? (
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Target: <span className="font-semibold text-zinc-700 dark:text-zinc-200">{targetText}</span>
+              </p>
+            ) : null}
+            {draftWorkoutIds.length > 0 ? (
+              <InlineConfirmButton
+                action={() => publishIds(draftWorkoutIds)}
+                confirmMessage={`Publish ${draftWorkoutIds.length} draft${draftWorkoutIds.length === 1 ? "" : "s"}? They'll become visible to the athlete.`}
+                label={`Publish week · ${draftWorkoutIds.length} draft${draftWorkoutIds.length === 1 ? "" : "s"}`}
+                pendingLabel="Publishing…"
+                className="rounded-pill border border-black/10 px-3 py-1 text-xs font-semibold text-zinc-600 hover:bg-black/5 disabled:opacity-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/10"
+              />
+            ) : null}
+          </div>
         </div>
+        {publishError ? (
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{publishError}</p>
+        ) : null}
         <div className="mt-2 flex flex-wrap gap-x-8 gap-y-1 text-sm">
           <p>
             <span className="text-zinc-500 dark:text-zinc-400">Scheduled: </span>

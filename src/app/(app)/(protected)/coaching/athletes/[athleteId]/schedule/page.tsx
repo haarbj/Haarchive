@@ -798,7 +798,14 @@ async function PhaseViewSection({
   // weeks this query fetches training_week_plans for can never drift out
   // of sync with the weeks the client actually displays.
   const weekList = roadmapWeeks(phases);
-  const [{ data: weekPlanRows }, programs] = await Promise.all([
+  // Bounded to [earliest phase start, latest phase end] -- the same
+  // "exactly what's shown, never the athlete's whole history" rule
+  // weekList itself already follows -- rather than one query per phase,
+  // since phases on this page never overlap (savePhase enforces it).
+  const phaseDraftRange = phases.length
+    ? { start: phases.reduce((min, p) => (p.startDate < min ? p.startDate : min), phases[0].startDate), end: phases.reduce((max, p) => (p.endDate > max ? p.endDate : max), phases[0].endDate) }
+    : null;
+  const [{ data: weekPlanRows }, programs, { data: phaseWorkoutRows }] = await Promise.all([
     weekList.length
       ? supabase
           .from("training_week_plans")
@@ -808,6 +815,16 @@ async function PhaseViewSection({
           .returns<WeekPlanRow[]>()
       : Promise.resolve({ data: [] as WeekPlanRow[] }),
     loadProgramOptions(supabase),
+    phaseDraftRange
+      ? supabase
+          .from("scheduled_workouts")
+          .select("id, scheduled_date")
+          .eq("athlete_id", athleteId)
+          .is("published_at", null)
+          .gte("scheduled_date", phaseDraftRange.start)
+          .lte("scheduled_date", phaseDraftRange.end)
+          .returns<{ id: string; scheduled_date: string }[]>()
+      : Promise.resolve({ data: [] as { id: string; scheduled_date: string }[] }),
   ]);
 
   const weekInfoByWeek: Record<string, PhaseViewWeekInfo> = {};
@@ -820,12 +837,24 @@ async function PhaseViewSection({
     };
   }
 
+  // Every still-draft workout id, bucketed by whichever phase's date range
+  // actually contains it -- a phase's own "Publish phase" button only ever
+  // sees ids inside its own [startDate, endDate], never a neighboring
+  // phase's or an Unphased gap's.
+  const draftIdsByPhase: Record<string, string[]> = {};
+  for (const row of phaseWorkoutRows ?? []) {
+    const phase = phases.find((p) => row.scheduled_date >= p.startDate && row.scheduled_date <= p.endDate);
+    if (!phase) continue;
+    (draftIdsByPhase[phase.id] ??= []).push(row.id);
+  }
+
   return (
     <div className="mt-6">
       <PhaseView
         athleteId={athleteId}
         phases={phases}
         weekInfoByWeek={weekInfoByWeek}
+        draftIdsByPhase={draftIdsByPhase}
         goalRace={goalRace}
         goalOptions={goalOptions}
         copiedWeek={copiedWeek}
