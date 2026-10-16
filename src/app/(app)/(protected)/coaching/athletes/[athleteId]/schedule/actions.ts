@@ -769,10 +769,16 @@ export async function copyWeek(athleteId: string, sourceWeekStart: string, targe
   // never-clobber rule as the per-day skip above.
   const { data: sourceWeekPlan } = await supabase
     .from("training_week_plans")
-    .select("label, target_volume_min, target_volume_max, target_volume_unit")
+    .select("label, target_volume_min, target_volume_max, target_volume_unit, notes")
     .eq("athlete_id", athleteId)
     .eq("week_start", sourceWeekStart)
-    .maybeSingle<{ label: string | null; target_volume_min: number | null; target_volume_max: number | null; target_volume_unit: "miles" | "minutes" | null }>();
+    .maybeSingle<{
+      label: string | null;
+      target_volume_min: number | null;
+      target_volume_max: number | null;
+      target_volume_unit: "miles" | "minutes" | null;
+      notes: string | null;
+    }>();
   if (sourceWeekPlan) {
     const { data: existingTargetPlan } = await supabase
       .from("training_week_plans")
@@ -790,6 +796,7 @@ export async function copyWeek(athleteId: string, sourceWeekStart: string, targe
           target_volume_min: sourceWeekPlan.target_volume_min,
           target_volume_max: sourceWeekPlan.target_volume_max,
           target_volume_unit: sourceWeekPlan.target_volume_unit,
+          notes: sourceWeekPlan.notes,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "athlete_id,week_start" },
@@ -808,6 +815,7 @@ export type WeekPlanInput = {
   targetVolumeMin: number | null;
   targetVolumeMax: number | null;
   targetVolumeUnit: "miles" | "minutes" | null;
+  notes: string | null;
 };
 
 // A week's title/target-volume range is its own small entity
@@ -839,6 +847,7 @@ export async function saveWeekPlan(input: WeekPlanInput): Promise<{ error?: stri
       target_volume_min: input.targetVolumeMin,
       target_volume_max: input.targetVolumeMax,
       target_volume_unit: input.targetVolumeUnit,
+      notes: input.notes,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "athlete_id,week_start" },

@@ -57,6 +57,7 @@ type WeekPlanRow = {
   target_volume_min: number | null;
   target_volume_max: number | null;
   target_volume_unit: "miles" | "minutes" | null;
+  notes: string | null;
 };
 type TemplateRow = {
   id: string;
@@ -425,7 +426,7 @@ async function WeekViewSection({
     fetchWeekSummary(supabase, athleteId, session.userId, nextWeek, addDays(nextWeek, 6)),
     supabase
       .from("training_week_plans")
-      .select("label, target_volume_min, target_volume_max, target_volume_unit")
+      .select("label, target_volume_min, target_volume_max, target_volume_unit, notes")
       .eq("athlete_id", athleteId)
       .eq("week_start", week)
       .maybeSingle<WeekPlanRow>()
@@ -461,6 +462,7 @@ async function WeekViewSection({
     targetVolumeMin: weekPlanRow?.target_volume_min ?? null,
     targetVolumeMax: weekPlanRow?.target_volume_max ?? null,
     targetVolumeUnit: weekPlanRow?.target_volume_unit ?? null,
+    notes: weekPlanRow?.notes ?? null,
   };
 
   const phase = getPhaseForWeek(phases, week);
@@ -665,7 +667,7 @@ async function MonthViewSection({
     fetchCalendarWorkouts(supabase, athleteId, session.userId, gridDates, today),
     supabase
       .from("training_week_plans")
-      .select("week_start, label, target_volume_min, target_volume_max, target_volume_unit")
+      .select("week_start, label, target_volume_min, target_volume_max, target_volume_unit, notes")
       .eq("athlete_id", athleteId)
       .in("week_start", weekStarts)
       .returns<WeekPlanRow[]>()
@@ -701,6 +703,7 @@ async function MonthViewSection({
       weekStart,
       title: plan?.label ?? (phase ? phase.phaseType : null),
       rawLabel: plan?.label ?? null,
+      rawNotes: plan?.notes ?? null,
       targetVolumeMin: plan?.target_volume_min ?? null,
       targetVolumeMax: plan?.target_volume_max ?? null,
       targetVolumeUnit: plan?.target_volume_unit ?? null,
@@ -809,7 +812,7 @@ async function PhaseViewSection({
     weekList.length
       ? supabase
           .from("training_week_plans")
-          .select("week_start, label, target_volume_min, target_volume_max, target_volume_unit")
+          .select("week_start, label, target_volume_min, target_volume_max, target_volume_unit, notes")
           .eq("athlete_id", athleteId)
           .in("week_start", weekList)
           .returns<WeekPlanRow[]>()

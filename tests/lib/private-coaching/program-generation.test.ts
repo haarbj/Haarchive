@@ -501,6 +501,51 @@ describe("resolveProgramGeneration -- week target volume", () => {
   });
 });
 
+describe("resolveProgramGeneration -- week notes", () => {
+  it("carries a week's authored notes through to the resolved week", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          weekLabels: [{ phaseDefinitionId: "p1", weekNumber: 1, label: null, notes: "Down week -- back off and absorb the block before it." }],
+        }),
+      ),
+    );
+    expect(result.weeks[0].notes).toBe("Down week -- back off and absorb the block before it.");
+    expect(result.weeks[1].notes).toBeNull();
+  });
+
+  it("leaves notes null for a week with no authored row, rather than inventing anything", () => {
+    const result = expectResult(resolveProgramGeneration(baseInput()));
+    expect(result.weeks.every((w) => w.notes === null)).toBe(true);
+  });
+
+  it("carries label and notes independently -- a week can have one without the other", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          weekLabels: [
+            { phaseDefinitionId: "p1", weekNumber: 1, label: "Peak Week", notes: null },
+            { phaseDefinitionId: "p1", weekNumber: 2, label: null, notes: "A real narrative note with no short label." },
+          ],
+        }),
+      ),
+    );
+    expect(result.weeks[0]).toMatchObject({ label: "Peak Week", notes: null });
+    expect(result.weeks[1]).toMatchObject({ label: null, notes: "A real narrative note with no short label." });
+  });
+
+  it("ignores authored notes belonging to a different phase", () => {
+    const result = expectResult(
+      resolveProgramGeneration(
+        baseInput({
+          weekLabels: [{ phaseDefinitionId: "other-phase", weekNumber: 1, label: null, notes: "Not this program's note." }],
+        }),
+      ),
+    );
+    expect(result.weeks[0].notes).toBeNull();
+  });
+});
+
 describe("resolveProgramGeneration -- optional sessions and alternatives", () => {
   it("carries a framework's optional flag and stated alternative onto the generated day, unscaled", () => {
     const result = expectResult(

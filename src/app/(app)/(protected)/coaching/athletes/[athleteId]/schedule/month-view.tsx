@@ -62,6 +62,8 @@ export type MonthWeekSummary = {
   title: string | null;
   /** The raw training_week_plans.label, with no phase-type fallback -- what the quick-edit modal's Week title field actually seeds from, so it never shows a phase name as if it had been typed in as the week's own title. */
   rawLabel: string | null;
+  /** training_week_plans.notes, for seeding the quick-edit modal's Week notes field -- Month View's own compact row never displays this directly, same "no room for a paragraph here" reasoning as the roadmap's WeekRow. */
+  rawNotes: string | null;
   targetVolumeMin: number | null;
   targetVolumeMax: number | null;
   targetVolumeUnit: "miles" | "minutes" | null;
@@ -321,5 +323,6 @@ function weekPlanValuesFor(summary: MonthWeekSummary | undefined): WeekPlanValue
     targetVolumeMin: summary?.targetVolumeMin ?? null,
     targetVolumeMax: summary?.targetVolumeMax ?? null,
     targetVolumeUnit: summary?.targetVolumeUnit ?? null,
+    notes: summary?.rawNotes ?? null,
   };
 }

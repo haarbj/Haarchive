@@ -48,7 +48,9 @@ export type ProgramPhaseDefinition = {
 export type ProgramPhaseWeekLabel = {
   phaseDefinitionId: string;
   weekNumber: number;
-  label: string;
+  label: string | null;
+  /** The longer coach-authored week narrative (program_phase_weeks.notes), carried onto the athlete's training_week_plans row the same way label is. */
+  notes?: string | null;
 };
 
 /**
@@ -229,6 +231,7 @@ export type ResolvedProgramWeek = {
   /** Set only when the authored goal mileage is a real range ("85-90"). A derived total has no upper bound. */
   targetVolumeMax: number | null;
   label: string | null;
+  notes: string | null;
 };
 
 export type ProgramGenerationWarnings = {
@@ -583,9 +586,11 @@ function buildWeeks(
   phases: ResolvedProgramPhase[],
 ): ResolvedProgramWeek[] {
   const labelByKey = new Map(weekLabels.map((w) => [`${w.phaseDefinitionId}|${w.weekNumber}`, w.label]));
+  const notesByKey = new Map(weekLabels.map((w) => [`${w.phaseDefinitionId}|${w.weekNumber}`, w.notes ?? null]));
   const volumeByKey = new Map(weekVolumes.map((v) => [`${v.phaseDefinitionId}|${v.weekNumber}`, v]));
   const totalsByWeekStart = new Map<string, number>();
   const labelByWeekStart = new Map<string, string | null>();
+  const notesByWeekStart = new Map<string, string | null>();
   const authoredByWeekStart = new Map<string, ProgramPhaseWeekVolume | undefined>();
 
   for (const phase of phases) {
@@ -597,6 +602,7 @@ function buildWeeks(
       const key = `${phase.phaseDefinitionId}|${weekNumber}`;
       totalsByWeekStart.set(weekStart, (totalsByWeekStart.get(weekStart) ?? 0) + (day.plannedDistanceM ?? 0));
       if (!labelByWeekStart.has(weekStart)) labelByWeekStart.set(weekStart, labelByKey.get(key) ?? null);
+      if (!notesByWeekStart.has(weekStart)) notesByWeekStart.set(weekStart, notesByKey.get(key) ?? null);
       if (!authoredByWeekStart.has(weekStart)) authoredByWeekStart.set(weekStart, volumeByKey.get(key));
     }
   }
@@ -610,6 +616,7 @@ function buildWeeks(
         targetVolumeMin: authored ? authored.goalMileageMin : Math.round((totalMeters / MILE_METERS) * 10) / 10,
         targetVolumeMax: authored ? authored.goalMileageMax : null,
         label: labelByWeekStart.get(weekStart) ?? null,
+        notes: notesByWeekStart.get(weekStart) ?? null,
       };
     });
 }
