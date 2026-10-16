@@ -139,6 +139,47 @@ describe("classifyWorkoutTitle -- representative sessions per framework", () => 
       classifyWorkoutTitle({ notes: "8-12 x 1 min fast uphill (~115% of marathon pace effort), easy jog down (can do on flat ground)", distanceMiMin: null, steps: null }),
     ).toBe("Hill Repeats");
   });
+
+  it("recovery program: timed repeats at a percent of marathon pace -> Intervals, not Easy -- even with a trailing warm-up/cool-down note containing the word 'easy'", () => {
+    // T21.2 Week 4 Tuesday. Before this fix, the trailing "...1-2 mi easy
+    // cool-down" text outranked everything else and this read as "Easy",
+    // despite being the hardest session of the week.
+    expect(
+      classifyWorkoutTitle({
+        notes: "5-8 x 3 min at 105% of marathon pace, 45 sec jog. 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+        distanceMiMin: null,
+        steps: null,
+      }),
+    ).toBe("Intervals");
+  });
+
+  it("recovery program: a continuous segment followed by timed fast reps -> Intervals, not Easy", () => {
+    // T21.2 Week 4 Thursday -- same "easy cool-down" trap as above, plus a
+    // leading continuous segment before the reps.
+    expect(
+      classifyWorkoutTitle({
+        notes: "4 km at 110% of marathon pace, 4-5 min walk/jog, then 6-8 x 1 min fast (~115% effort), 2 min jog. 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+        distanceMiMin: null,
+        steps: null,
+      }),
+    ).toBe("Intervals");
+  });
+
+  it("does not let the timed-repeats-at-pace check swallow a strides day (strides stay Easy + Strides, not Intervals)", () => {
+    expect(
+      classifyWorkoutTitle({ notes: "3 mi easy progressing to moderate, then 8-10 x 20 sec strides", distanceMiMin: 3, steps: null }),
+    ).toBe("Easy + Strides");
+  });
+
+  it("does not let the timed-repeats-at-pace check override an uphill repeats day (Hill Repeats still wins)", () => {
+    expect(
+      classifyWorkoutTitle({
+        notes: "6-10 x 1 min fast uphill (~112-115% of marathon pace effort), easy jog down (can do on flat ground). 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+        distanceMiMin: null,
+        steps: null,
+      }),
+    ).toBe("Hill Repeats");
+  });
 });
 
 describe("classifyWorkoutTitle -- edge cases the task calls out explicitly", () => {

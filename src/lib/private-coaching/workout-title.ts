@@ -75,6 +75,23 @@ function isUphillRepeats(notes: string): boolean {
   return /uphill/i.test(notes);
 }
 
+/**
+ * "N x M min/sec at P% of marathon pace" or "N x M min/sec fast" --
+ * timed repeats at a stated percent of pace, with a jog/walk recovery
+ * named alongside them (e.g. recovery program T21.2's "5-8 x 3 min at
+ * 105% of marathon pace, 45 sec jog"). Checked ahead of the effort-tier
+ * read below specifically because these recovery-program sessions always
+ * carry a trailing warm-up/cool-down note containing the word "easy"
+ * (WARM_UP_NOTE in post-race.ts), which would otherwise outrank every
+ * other signal and misclassify a hard repeats session as "Easy". Distinct
+ * from hasStrides (always a literal "strides" day) and from
+ * isUphillRepeats (checked first, so an uphill repeats day still reads as
+ * "Hill Repeats").
+ */
+function hasTimedRepeatsAtPace(notes: string): boolean {
+  return /\d+(?:-\d+)?\s*[×x]\s*\d+\s*(?:min|sec)\s+(?:at\s+\d+(?:-\d+)?%|fast)/i.test(notes) && !hasStrides(notes);
+}
+
 /** "very easy" takes priority over a bare "easy" substring match (every "very easy" string also contains "easy"). */
 type EffortTier = "veryEasy" | "easy" | "moderate" | "strong" | "unknown";
 
@@ -102,6 +119,7 @@ function classifyPlainDay(notes: string, distanceMiMin: number | null): string {
 
   if (isProgression(trimmed)) return longRun ? "Easy LR" : "Kenyan Progression Run";
   if (isUphillRepeats(trimmed)) return "Hill Repeats";
+  if (hasTimedRepeatsAtPace(trimmed)) return "Intervals";
 
   const tier = effortTierFromNotes(trimmed);
 

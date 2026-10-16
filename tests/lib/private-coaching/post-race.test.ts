@@ -137,6 +137,39 @@ describe("buildRecoveryProgramSeed", () => {
     expect(offOrDay.notes).toBe("Off or 3-5 mi very easy");
     expect(offOrDay.distanceMiMin).toBeNull();
   });
+
+  // Table 21.2's Saturday and Sunday for Weeks 1 and 4 were originally
+  // transcribed swapped with each other (Week 1's hill-repeat session
+  // landed on Week 4, and Week 4's "9-10 mi ... through hills" landed on
+  // Week 1), which is exactly what made some recovery days show the wrong
+  // workout in their details. Pinned directly against the source table so
+  // this can't silently regress.
+  it("gives Week 1 Saturday the hill-repeat session (not Week 4's)", () => {
+    const day = plan.days.find((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE && d.weekNumber === 1 && d.dayOfWeek === 6)!;
+    expect(day.notes).toBe(
+      "6-10 x 1 min fast uphill (~112-115% of marathon pace effort), easy jog down (can do on flat ground). 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+    );
+    expect(day.distanceMiMin).toBeNull();
+  });
+
+  it("gives Week 1 Sunday 'Off or 3-5 mi very easy' (not Week 4's 'Off or 4-5')", () => {
+    const day = plan.days.find((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE && d.weekNumber === 1 && d.dayOfWeek === 7)!;
+    expect(day.notes).toBe("Off or 3-5 mi very easy");
+    expect(day.distanceMiMin).toBeNull();
+  });
+
+  it("gives Week 4 Saturday the 9-10 mi hilly moderate/easy run (not Week 1's hill-repeat session), with a real distance", () => {
+    const day = plan.days.find((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE && d.weekNumber === 4 && d.dayOfWeek === 6)!;
+    expect(day.notes).toBe("9-10 mi moderate or easy progressing to moderate through hills");
+    expect(day.distanceMiMin).toBe(9);
+    expect(day.distanceMiMax).toBe(10);
+  });
+
+  it("gives Week 4 Sunday 'Off or 4-5 mi very easy' (not Week 1's 'Off or 3-5')", () => {
+    const day = plan.days.find((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE && d.weekNumber === 4 && d.dayOfWeek === 7)!;
+    expect(day.notes).toBe("Off or 4-5 mi very easy");
+    expect(day.distanceMiMin).toBeNull();
+  });
 });
 
 describe("recoveryWorksheetEntries", () => {
