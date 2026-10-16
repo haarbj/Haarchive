@@ -255,6 +255,19 @@ describe("post-season review", () => {
     expect(postSeasonReviewMessage()).toMatch(/Would you change anything/);
     expect(postSeasonReviewMessage()).not.toMatch(/cahange/);
   });
+
+  it("names the race in the title line when given one, for the manual-send message copy", () => {
+    const body = postSeasonReviewMessage("Chicago Marathon");
+    expect(body.split("\n\n")[0]).toBe("Post-Season Review: Chicago Marathon");
+    // Still contains the plain marker as a substring, so a resend check
+    // against POST_SEASON_REVIEW_MARKER still matches a named message too.
+    expect(body).toContain(POST_SEASON_REVIEW_MARKER);
+  });
+
+  it("keeps the plain title with no race name -- every existing call site is unaffected", () => {
+    expect(postSeasonReviewMessage()).toMatch(/^Post-Season Review\n/);
+    expect(postSeasonReviewMessage(null)).toMatch(/^Post-Season Review\n/);
+  });
 });
 
 describe("postSeasonReviewQuestions", () => {

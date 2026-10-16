@@ -19,9 +19,16 @@ async function requireOwnRequest(requestId: string) {
   const supabase = await createClient();
   const { data: request } = await supabase
     .from("post_season_review_requests")
-    .select("id, athlete_id, coach_id, goal_id, submitted_at")
+    .select("id, athlete_id, coach_id, goal_id, race_name, submitted_at")
     .eq("id", requestId)
-    .maybeSingle<{ id: string; athlete_id: string; coach_id: string; goal_id: string | null; submitted_at: string | null }>();
+    .maybeSingle<{
+      id: string;
+      athlete_id: string;
+      coach_id: string;
+      goal_id: string | null;
+      race_name: string | null;
+      submitted_at: string | null;
+    }>();
   if (!request || request.athlete_id !== session.userId) return { error: "Not found." as const };
   return { session, supabase, request };
 }
@@ -65,17 +72,12 @@ export async function loadPostSeasonReviewForm(input: { requestId: string }): Pr
         (order.get(`${b.sectionHeading}:${b.questionIndex}`) ?? 0),
     );
 
-  let raceName: string | null = null;
-  if (request.goal_id) {
-    const { data: goal } = await supabase
-      .from("goals")
-      .select("race_name")
-      .eq("id", request.goal_id)
-      .maybeSingle<{ race_name: string }>();
-    raceName = goal?.race_name ?? null;
-  }
-
-  return { requestId: request.id, raceName, submittedAt: request.submitted_at, answers };
+  // race_name lives directly on the request row now (populated at send
+  // time regardless of path -- see the migration that added it), so this
+  // no longer needs a goal_id to show a race name at all: a manually-sent
+  // review (goal_id null) names its race exactly the same way a goal-
+  // race-anchored one does.
+  return { requestId: request.id, raceName: request.race_name, submittedAt: request.submitted_at, answers };
 }
 
 export type SaveAnswersState = { error?: string; success?: boolean };

@@ -429,13 +429,21 @@ export const POST_SEASON_REVIEW_SECTIONS: { heading: string; questions: string[]
 export const POST_SEASON_REVIEW_CLOSING =
   "Keep your answers somewhere you'll find them. When we sit down to plan your next cycle we'll go through them together: what you respond to, where you struggle, and what went right on race day are the raw material for making the next buildup yours rather than a plan off the shelf.";
 
-/** The questionnaire as a single message body, ready to post into the thread. */
-export function postSeasonReviewMessage(): string {
+/**
+ * The questionnaire as a single message body, ready to post into the
+ * thread. `raceName`, when known, names the race in the title line
+ * ("Post-Season Review: Chicago Marathon") -- optional and defaulting to
+ * the plain title so every existing call site (and POST_SEASON_REVIEW_
+ * MARKER's own resend-detection use of the plain title) keeps working
+ * unchanged.
+ */
+export function postSeasonReviewMessage(raceName?: string | null): string {
+  const title = raceName ? `${POST_SEASON_REVIEW_TITLE}: ${raceName}` : POST_SEASON_REVIEW_TITLE;
   const sections = POST_SEASON_REVIEW_SECTIONS.map(
     (section) =>
       `${section.heading}\n${section.questions.map((question, index) => `${index + 1}. ${question}`).join("\n")}`,
   );
-  return [POST_SEASON_REVIEW_TITLE, POST_SEASON_REVIEW_INTRO, ...sections, POST_SEASON_REVIEW_CLOSING].join("\n\n");
+  return [title, POST_SEASON_REVIEW_INTRO, ...sections, POST_SEASON_REVIEW_CLOSING].join("\n\n");
 }
 
 /** One question, flattened out of its section, with the position that keys its stored answer. */
