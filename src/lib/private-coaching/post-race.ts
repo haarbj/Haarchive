@@ -22,7 +22,8 @@
 // coach starts the program when the athlete starts running again.
 
 import { parseDifficulty, type FrameworkSeedPlan, type SeedDay } from "@/lib/private-coaching/framework-seed";
-import type { WorksheetEntry } from "@/lib/private-coaching/framework-structure";
+import type { SeedDayStep, WorksheetEntry } from "@/lib/private-coaching/framework-structure";
+import { MILE_METERS } from "@/lib/race-distances";
 
 export const RECOVERY_FRAMEWORK_KEY = "post-marathon-recovery";
 export const RETURN_TO_RUNNING_PHASE = "Return to running";
@@ -37,6 +38,12 @@ export type RecoveryDay = {
   /** Optional per the task that added this: filled by hand against the prose above, never derived by a parser. Absent (undefined) is never produced here -- every day gets one of the four RecoveryDistance kinds below. */
   distanceMiMin?: number | null;
   distanceMiMax?: number | null;
+  /**
+   * Hand-authored WARMUP/MAIN/INTERVAL/COOLDOWN structure for the days
+   * that have one -- see RETURN_TO_TRAINING_STEPS's own header below for
+   * which days qualify and why the rest stay null.
+   */
+  steps?: SeedDayStep[] | null;
 };
 
 /**
@@ -170,6 +177,199 @@ function distanceFields(d: RecoveryDistance): { distanceMiMin: number | null; di
   return d.kind === "value" ? { distanceMiMin: d.min, distanceMiMax: d.max } : { distanceMiMin: null, distanceMiMax: null };
 }
 
+// ---------------------------------------------------------------------------
+// Return to training (Table 21.2) -- hand-authored structured steps
+// ---------------------------------------------------------------------------
+//
+// Every quality session in RETURN_TO_TRAINING above (the warm-up/main-set/
+// cool-down days, the Kenyan-style progressions, the hill-repeat and
+// percent-of-marathon-pace reps) was reaching athletes as prose only --
+// program_day_steps had nothing for the calendar/detail views to render as
+// WARMUP/INTERVAL/COOLDOWN, even though the prose states real, literal
+// structure (a rep count, a duration, a percent, a rest interval).
+//
+// Hand-authored directly against RETURN_TO_TRAINING's own prose, by the
+// exact same discipline RETURN_TO_TRAINING_DISTANCES above already uses --
+// never the general framework parser (framework-structure.ts), which this
+// file's header explicitly keeps out of the post-race flow. Scope is
+// Table 21.2 (Return to training) only; Table 21.1 (Return to running, two
+// weeks above) has no percent-bearing or multi-clause sessions and stays
+// entirely prose, same as before.
+//
+// Only a day with genuine internal structure -- a stated warm-up/cool-down
+// clause, a progression-plus-easy-segment split, or a reps clause -- gets
+// an entry. A single plain clause ("4-5 mi very easy") has nothing to
+// structure and is null, same as this file's "every null is deliberate"
+// convention elsewhere.
+//
+// PERCENT TARGETS ARE POPULATED HERE, UNLIKE THE DAY-LEVEL PACE FIELDS.
+// buildRecoveryProgramSeed below still leaves every day's fixed pace
+// (planned_pace_s_per_mi/_max) null -- baking in one literal split would
+// contradict the program's own "effort over pace" instruction, since no
+// single number is right for every athlete. A step's target_pace_percent_
+// basis/_min/_max is a different mechanism: the same live, per-athlete
+// resolution the frameworks' own quality sessions already use (resolved
+// against the athlete's most recent marathon result at assignment time,
+// never a number typed here) -- an effort guide anchored to the marathon
+// just run, exactly as the source describes it, not a split to hit.
+function step(stepOrder: number, stepType: SeedDayStep["stepType"], overrides: Partial<SeedDayStep> = {}): SeedDayStep {
+  return {
+    stepOrder,
+    stepType,
+    durationS: null,
+    durationMaxS: null,
+    distanceM: null,
+    distanceMaxM: null,
+    targetPacePercentBasis: null,
+    targetPacePercentMin: null,
+    targetPacePercentMax: null,
+    repetitions: null,
+    repetitionsMax: null,
+    restS: null,
+    restMaxS: null,
+    instructions: null,
+    ...overrides,
+  };
+}
+
+function miFields(min: number, max: number = min): { distanceM: number; distanceMaxM: number | null } {
+  return { distanceM: min * MILE_METERS, distanceMaxM: max !== min ? max * MILE_METERS : null };
+}
+
+/** "1-2 mi progressive warm-up" -- the four starred sessions' fixed warm-up idiom. */
+function warmupMi(order: number, min: number, max: number = min): SeedDayStep {
+  return step(order, "warmup", miFields(min, max));
+}
+
+/** "1-2 mi easy cool-down" -- the four starred sessions' fixed cool-down idiom, and the plain "+ N mi easy" tail on the Kenyan-progression days. */
+function cooldownMi(order: number, min: number, max: number = min): SeedDayStep {
+  return step(order, "cooldown", miFields(min, max));
+}
+
+/** A continuous main-set segment with a stated mi distance and no percent target, e.g. the Kenyan-style progression itself. */
+function mainMi(order: number, min: number, max: number, instructions: string | null): SeedDayStep {
+  return step(order, "main", { ...miFields(min, max), instructions });
+}
+
+/** A continuous main-set segment with a stated mi distance AND a percent-of-marathon-pace target, e.g. the Week 3 Friday "strong" run. */
+function mainMiPercent(order: number, min: number, max: number, pctMin: number, pctMax: number, instructions: string | null): SeedDayStep {
+  return step(order, "main", { ...miFields(min, max), targetPacePercentBasis: "marathon", targetPacePercentMin: pctMin, targetPacePercentMax: pctMax, instructions });
+}
+
+/** A continuous main-set segment stated only as a duration at a percent of marathon pace, e.g. the Week 2 Thursday "4 min fast". */
+function mainDuration(order: number, durationS: number, pctMin: number, pctMax: number, instructions: string | null, restS: number | null = null, restMaxS: number | null = null): SeedDayStep {
+  return step(order, "main", { durationS, targetPacePercentBasis: "marathon", targetPacePercentMin: pctMin, targetPacePercentMax: pctMax, instructions, restS, restMaxS });
+}
+
+/** A continuous main-set segment stated as a km distance at a percent of marathon pace, e.g. the Week 4 Thursday "4 km at 110%". */
+function mainKmPercent(order: number, km: number, pctMin: number, pctMax: number, restS: number | null, restMaxS: number | null): SeedDayStep {
+  return step(order, "main", { distanceM: km * 1000, targetPacePercentBasis: "marathon", targetPacePercentMin: pctMin, targetPacePercentMax: pctMax, restS, restMaxS });
+}
+
+/** Strides: never add distance (same policy framework-structure.ts documents), always an interval step keyed on duration + rep count. */
+function strides(order: number, repsMin: number, repsMax: number, seconds: number, restS: number | null = null, restMaxS: number | null = null): SeedDayStep {
+  return step(order, "interval", {
+    durationS: seconds,
+    repetitions: repsMin,
+    repetitionsMax: repsMax !== repsMin ? repsMax : null,
+    restS,
+    restMaxS,
+    instructions: `${seconds} sec strides`,
+  });
+}
+
+/** A reps-x-duration-at-percent interval clause, e.g. "6-10 x 1 min fast uphill (~112-115% of marathon pace effort)" or "5-8 x 3 min at 105% of marathon pace". */
+function intervalTimeReps(
+  order: number,
+  repsMin: number,
+  repsMax: number,
+  durationS: number,
+  pctMin: number,
+  pctMax: number,
+  restS: number | null,
+  restMaxS: number | null,
+  instructions: string | null = null,
+): SeedDayStep {
+  return step(order, "interval", {
+    durationS,
+    repetitions: repsMin,
+    repetitionsMax: repsMax !== repsMin ? repsMax : null,
+    targetPacePercentBasis: "marathon",
+    targetPacePercentMin: pctMin,
+    targetPacePercentMax: pctMax,
+    restS,
+    restMaxS,
+    instructions,
+  });
+}
+
+// One entry per RETURN_TO_TRAINING day, in the same Monday-first order,
+// null for every day with nothing to structure.
+const RETURN_TO_TRAINING_STEPS: (SeedDayStep[] | null)[][] = [
+  // Week 1.
+  [
+    [mainMi(1, 5, 5, "Kenyan-style progression"), cooldownMi(2, 1, 1)], // Mon: 5 mi Kenyan-style progression + 1 mi easy
+    null, // Tue: 4-5 mi very easy
+    [mainMi(1, 3, 3, "Easy progressing to moderate"), strides(2, 8, 10, 20)], // Wed: 3 mi easy progressing to moderate, then 8-10 x 20 sec strides
+    null, // Thu: 4-5 mi very easy
+    null, // Fri: 6-8 mi easy to moderate
+    [
+      warmupMi(1, 1, 2),
+      intervalTimeReps(2, 6, 10, 60, 112, 115, null, null, "Fast uphill, easy jog down (can do on flat ground)"),
+      cooldownMi(3, 1, 2),
+    ], // Sat: 6-10 x 1 min fast uphill (~112-115% of marathon pace effort), easy jog down, warm-up/cool-down
+    null, // Sun: Off or 3-5 mi very easy
+  ],
+  // Week 2.
+  [
+    null, // Mon: 6-7 mi easy
+    [mainMi(1, 6, 6, "Kenyan-style progression"), cooldownMi(2, 1, 1)], // Tue: 6 mi Kenyan-style progression + 1 mi easy
+    null, // Wed: 5-7 mi easy
+    [
+      mainMi(1, 3, 3, "Easy progressing to moderate"),
+      strides(2, 8, 10, 20, 180, 240),
+      mainDuration(3, 240, 116, 116, "Fast"),
+      cooldownMi(4, 1, 1),
+    ], // Thu: 3 mi easy to moderate, then 8-10 x 20 sec strides (3-4 min rest), then 4 min fast (~116% effort), 1 mi cool-down
+    null, // Fri: 5-7 mi very easy
+    null, // Sat: 8-10 mi easy through rolling hills
+    null, // Sun: Off or 4-5 mi very easy to easy
+  ],
+  // Week 3.
+  [
+    [mainMi(1, 6, 6, "Kenyan-style progression with fast finish"), cooldownMi(2, 1, 1)], // Mon: 6 mi Kenyan-style progression with fast finish + 1 mi easy
+    null, // Tue: 5-8 mi easy
+    [intervalTimeReps(1, 8, 12, 60, 115, 115, null, null, "Fast uphill, easy jog down (can do on flat ground)")], // Wed: 8-12 x 1 min fast uphill (~115% of marathon pace effort), easy jog down -- no warm-up/cool-down note on this one
+    null, // Thu: 5-8 mi easy
+    [warmupMi(1, 1, 2), mainMiPercent(2, 4, 5, 98, 100, "Strong"), cooldownMi(3, 1, 2)], // Fri: 4-5 mi strong at 98-100% of marathon pace, warm-up/cool-down
+    null, // Sat: 5-8 mi very easy
+    null, // Sun: 11-12 mi easy through rolling hills
+  ],
+  // Week 4.
+  [
+    null, // Mon: Off or 4-5 mi very easy
+    [warmupMi(1, 1, 2), intervalTimeReps(2, 5, 8, 180, 105, 105, 45, null), cooldownMi(3, 1, 2)], // Tue: 5-8 x 3 min at 105% of marathon pace, 45 sec jog, warm-up/cool-down
+    null, // Wed: 5-8 mi very easy
+    [
+      warmupMi(1, 1, 2),
+      mainKmPercent(2, 4, 110, 110, 240, 300),
+      intervalTimeReps(3, 6, 8, 60, 115, 115, 120, null, "Fast"),
+      cooldownMi(4, 1, 2),
+    ], // Thu: 4 km at 110% of marathon pace, 4-5 min walk/jog, then 6-8 x 1 min fast (~115% effort), 2 min jog, warm-up/cool-down
+    null, // Fri: 5-8 mi very easy
+    null, // Sat: 9-10 mi moderate or easy progressing to moderate through hills
+    null, // Sun: Off or 3-5 mi very easy
+  ],
+];
+
+// Return to running (Table 21.1) has no percent-bearing or multi-clause
+// sessions -- every day is a single plain clause, so every entry is null.
+// Kept as its own named constant (rather than inlining `null` fourteen
+// times at the call site) so a future day added to that table doesn't
+// silently inherit "no steps" without a reviewer noticing the array needs
+// a real entry.
+const RETURN_TO_RUNNING_STEPS: (SeedDayStep[] | null)[][] = RETURN_TO_RUNNING.map((week) => week.map(() => null));
+
 export const RECOVERY_DAYS: RecoveryDay[] = [
   ...RETURN_TO_RUNNING.flatMap((week, weekIndex) =>
     week.map((prescription, dayIndex) => ({
@@ -178,6 +378,7 @@ export const RECOVERY_DAYS: RecoveryDay[] = [
       dayOfWeek: dayIndex + 1,
       prescription,
       ...distanceFields(RETURN_TO_RUNNING_DISTANCES[weekIndex][dayIndex]),
+      steps: RETURN_TO_RUNNING_STEPS[weekIndex][dayIndex],
     })),
   ),
   ...RETURN_TO_TRAINING.flatMap((week, weekIndex) =>
@@ -187,6 +388,7 @@ export const RECOVERY_DAYS: RecoveryDay[] = [
       dayOfWeek: dayIndex + 1,
       prescription,
       ...distanceFields(RETURN_TO_TRAINING_DISTANCES[weekIndex][dayIndex]),
+      steps: RETURN_TO_TRAINING_STEPS[weekIndex][dayIndex],
     })),
   ),
 ];
@@ -263,9 +465,13 @@ export function buildRecoveryProgramSeed(): FrameworkSeedPlan {
     isEventDay: false,
     distanceMiMin: day.distanceMiMin ?? null,
     distanceMiMax: day.distanceMiMax ?? null,
-    // Pace stays null for every recovery day, deliberately -- see this
-    // program's own description above ("nothing here to measure").
-    steps: null,
+    // Day-level FIXED pace (planned_pace_s_per_mi/_max) stays null for
+    // every recovery day, deliberately -- see this program's own
+    // description above ("nothing here to measure"). Step-level percent
+    // targets are a different thing and ARE populated for Return to
+    // training's quality days -- see RETURN_TO_TRAINING_STEPS's own
+    // header on why that's not a contradiction.
+    steps: day.steps ?? null,
   }));
 
   return {
