@@ -46,7 +46,7 @@ const HOW_TRAINING_WORKS: ContentBlock[] = [
       { text: "Aerobic ceiling (VO2max). The most oxygen you can use per minute, set largely by how much blood your heart moves and how much blood you have. This is the roof over everything else.", items: ["Trained by hard aerobic intervals, the kind run at close to 5K pace."] },
       { text: "Maximal steady state. The fraction of that ceiling you can hold without fatigue spiraling. Driven by capillary density, mitochondria, muscle fiber composition and how well you shuttle lactate between fibers.", items: ["Trained by sustained work just below and sometimes just above that boundary."] },
       { text: "Running economy. How efficiently you turn metabolic power into forward motion, which is part fuel choice, part force production and part skill.", items: ["Trained by relaxed running at speed, by strides and hills, and improved outright by having carbohydrate available to burn."] },
-      { text: "Resilience. How little the other three deteriorate over 26.2 miles. This shows up as the gap between the pace you could hold for an hour and the pace you can hold for a marathon.", items: ["Trained by long marathon-specific running, and almost nothing else."] },
+      { text: "Structural integrity. How well your tendons, bones and muscle tolerate the pounding of training itself — the capacity that lets you absorb thousands of foot strikes a week without breaking down.", items: ["Trained by volume itself: the accumulated, gradually increasing load of easy running that teaches your body to carry more."] },
     ],
   },
   {
@@ -57,7 +57,7 @@ const HOW_TRAINING_WORKS: ContentBlock[] = [
   },
   {
     type: "paragraph",
-    text: "That is also the logic of the phases. The general phase raises the ceiling and sharpens efficiency. The supportive phase expands the sustainable range and polishes economy near marathon pace. The specific phase builds resilience, which is to say it shrinks the gap between your sustainable pace and your marathon pace. Elite marathoners race at something like 94 to 96 percent of their maximal steady state. Recreational runners are often closer to 75 to 85 percent, and that gap is usually the single largest available improvement.",
+    text: "That is also the logic of the phases. The general phase works on all four of those together — no single type of workout carries it, which is why it's built as an ensemble of many different sessions rather than one dominant one. The supportive phase is where a fifth thing starts getting built on top of those four: resilience, the gap between your sustainable pace and your marathon pace, meaning how little the other four deteriorate over 26.2 miles. The specific phase pushes resilience hardest of all, since by then nearly everything you do is marathon-specific. Elite marathoners race at something like 94 to 96 percent of their maximal steady state. Recreational runners are often closer to 75 to 85 percent, and that gap is usually the single largest available improvement.",
   },
 
   { type: "heading", text: "Intensity has three domains, not five zones" },
