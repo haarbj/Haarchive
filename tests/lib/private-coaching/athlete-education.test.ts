@@ -38,6 +38,60 @@ describe("ATHLETE_GUIDES", () => {
   });
 });
 
+// Audit against the verified "Marathon Excellence for Everyone" source
+// quotes (Ch. 4/5/6) -- same ground truth the phase-explainer audit used.
+// Pins the corrected claims so a future edit can't silently reintroduce
+// the error found here: the "four moving parts" list had substituted
+// "Resilience" for the source's actual fourth general-phase capability,
+// "robust structural integrity," and the paragraph right after it claimed
+// the specific phase builds resilience exclusively, when the source
+// attributes resilience-building to the supportive phase's own sessions
+// ("These sessions boost resilience") and only says specific phase
+// weights it more heavily, not that it's exclusive to that phase.
+describe("how-training-works guide matches the source (Ch. 4/5/6)", () => {
+  function guideText(): string {
+    const guide = getAthleteGuide("how-training-works");
+    return (guide?.content ?? [])
+      .map((block) => {
+        if ("text" in block && typeof block.text === "string") return block.text;
+        if ("items" in block && block.items) {
+          return block.items
+            .map((item) => (typeof item === "string" ? item : `${item.text} ${item.items.join(" ")}`))
+            .join(" ");
+        }
+        return "";
+      })
+      .join(" ");
+  }
+
+  it("names the source's actual four general-phase capabilities -- structural integrity, not resilience, as the fourth", () => {
+    const text = guideText();
+    expect(text).toMatch(/Structural integrity/);
+    expect(text).not.toMatch(/four moving parts[\s\S]*Resilience\./);
+  });
+
+  it("does not claim the general phase builds resilience -- resilience is introduced as a separate, later-arriving capability", () => {
+    const text = guideText();
+    expect(text).not.toMatch(/general phase (raises the ceiling and sharpens efficiency|builds resilience)/i);
+  });
+
+  it("attributes the start of resilience-building to the supportive phase, matching 'these sessions boost resilience'", () => {
+    const text = guideText();
+    expect(text).toMatch(/supportive phase is where a fifth thing starts getting built.*resilience/i);
+  });
+
+  it("does not claim resilience-building is exclusive to the specific phase -- the source only weights it more heavily there", () => {
+    const text = guideText();
+    expect(text).toMatch(/specific phase pushes resilience hardest/i);
+    expect(text).not.toMatch(/specific phase builds resilience,/i);
+  });
+
+  it("frames the general phase as an ensemble with no single workout type carrying it", () => {
+    const text = guideText();
+    expect(text).toMatch(/ensemble/i);
+  });
+});
+
 describe("EFFORT_LEVELS", () => {
   it("has unique values and a description for each", () => {
     expect(new Set(EFFORT_LEVEL_VALUES).size).toBe(EFFORT_LEVELS.length);
