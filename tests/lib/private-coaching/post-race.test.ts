@@ -17,6 +17,7 @@ import {
   redemptionRaceGuardrail,
 } from "@/lib/private-coaching/post-race";
 import { explainerParagraphs } from "@/lib/private-coaching/phase-explainers";
+import { MILE_METERS } from "@/lib/race-distances";
 
 describe("RECOVERY_DAYS", () => {
   it("covers six full weeks: two of return-to-running, four of return-to-training", () => {
@@ -102,8 +103,14 @@ describe("buildRecoveryProgramSeed", () => {
     expect(plan.program.description).toMatch(/start this program on the day the athlete starts running again/);
   });
 
-  it("carries no pace on any recovery day -- deliberate, per the program's own 'nothing here to measure' philosophy", () => {
-    expect(plan.days.every((d) => d.steps == null)).toBe(true);
+  it("carries no steps for Return to running -- Table 21.1 has no percent-bearing or multi-clause sessions to structure", () => {
+    // The day-level planned_pace_s_per_mi/_max (a SeedDay field this
+    // builder never sets at all) is the thing "nothing here to measure"
+    // actually governs. `steps` is a different mechanism -- Return to
+    // training's ten quality days DO get steps now, checked in their own
+    // describe block below -- see RETURN_TO_TRAINING_STEPS's own header.
+    const running = plan.days.filter((d) => d.phaseKey === RETURN_TO_RUNNING_PHASE);
+    expect(running.every((d) => d.steps == null)).toBe(true);
   });
 
   it("gives every day either a real distance, a deliberate null (Off/Off or X/pace-dependent), or a worksheet entry -- never a silent gap", () => {
@@ -169,6 +176,113 @@ describe("buildRecoveryProgramSeed", () => {
     const day = plan.days.find((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE && d.weekNumber === 4 && d.dayOfWeek === 7)!;
     expect(day.notes).toBe("Off or 4-5 mi very easy");
     expect(day.distanceMiMin).toBeNull();
+  });
+});
+
+describe("Return to training (Table 21.2) structured steps", () => {
+  const plan = buildRecoveryProgramSeed();
+  const training = plan.days.filter((d) => d.phaseKey === RETURN_TO_TRAINING_PHASE);
+  const dayAt = (week: number, dayOfWeek: number) => training.find((d) => d.weekNumber === week && d.dayOfWeek === dayOfWeek)!;
+  const mi = (n: number) => n * MILE_METERS;
+
+  it("structures exactly the ten quality sessions, leaving the eighteen plain-prose days alone", () => {
+    const withSteps = training.filter((d) => d.steps != null);
+    expect(withSteps).toHaveLength(10);
+    expect(training.filter((d) => d.steps == null)).toHaveLength(18);
+  });
+
+  it("every day with a stated percent of marathon pace has a step carrying that same percent", () => {
+    const paced = training.filter((d) => /%\s*of\s*marathon\s*pace|% effort/i.test(d.notes));
+    expect(paced.length).toBeGreaterThan(0);
+    for (const day of paced) {
+      expect(day.steps).not.toBeNull();
+      expect(day.steps!.some((s) => s.targetPacePercentBasis === "marathon")).toBe(true);
+    }
+  });
+
+  it("gives the Week 1 Monday Kenyan progression a main segment plus its cool-down, no pace target", () => {
+    const day = dayAt(1, 1);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepOrder: 1, stepType: "main", distanceM: mi(5), distanceMaxM: null, targetPacePercentBasis: null, instructions: "Kenyan-style progression" }),
+      expect.objectContaining({ stepOrder: 2, stepType: "cooldown", distanceM: mi(1), distanceMaxM: null }),
+    ]);
+  });
+
+  it("gives the Week 1 Wednesday strides their rep count and duration, with no distance added", () => {
+    const day = dayAt(1, 3);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepOrder: 1, stepType: "main", distanceM: mi(3), instructions: "Easy progressing to moderate" }),
+      expect.objectContaining({ stepOrder: 2, stepType: "interval", repetitions: 8, repetitionsMax: 10, durationS: 20, distanceM: null, instructions: "20 sec strides" }),
+    ]);
+  });
+
+  it("gives the Week 1 Saturday hill-repeat session its warm-up, 112-115% uphill reps, and cool-down", () => {
+    const day = dayAt(1, 6);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepOrder: 1, stepType: "warmup", distanceM: mi(1), distanceMaxM: mi(2) }),
+      expect.objectContaining({
+        stepOrder: 2,
+        stepType: "interval",
+        repetitions: 6,
+        repetitionsMax: 10,
+        durationS: 60,
+        targetPacePercentBasis: "marathon",
+        targetPacePercentMin: 112,
+        targetPacePercentMax: 115,
+      }),
+      expect.objectContaining({ stepOrder: 3, stepType: "cooldown", distanceM: mi(1), distanceMaxM: mi(2) }),
+    ]);
+  });
+
+  it("gives the Week 2 Thursday session its strides' own rest and the 116% fast segment as a separate step", () => {
+    const day = dayAt(2, 4);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepType: "main", distanceM: mi(3) }),
+      expect.objectContaining({ stepType: "interval", repetitions: 8, repetitionsMax: 10, durationS: 20, restS: 180, restMaxS: 240 }),
+      expect.objectContaining({ stepType: "main", durationS: 240, targetPacePercentBasis: "marathon", targetPacePercentMin: 116, targetPacePercentMax: 116, instructions: "Fast" }),
+      expect.objectContaining({ stepType: "cooldown", distanceM: mi(1) }),
+    ]);
+  });
+
+  it("gives the Week 3 Wednesday 115% hill reps no warm-up/cool-down (the source carries no asterisk on this one)", () => {
+    const day = dayAt(3, 3);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepType: "interval", repetitions: 8, repetitionsMax: 12, durationS: 60, targetPacePercentBasis: "marathon", targetPacePercentMin: 115, targetPacePercentMax: 115 }),
+    ]);
+  });
+
+  it("gives the Week 3 Friday 98-100% strong run its warm-up and cool-down with the distance range itself carrying the percent", () => {
+    const day = dayAt(3, 5);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepType: "warmup", distanceM: mi(1), distanceMaxM: mi(2) }),
+      expect.objectContaining({ stepType: "main", distanceM: mi(4), distanceMaxM: mi(5), targetPacePercentBasis: "marathon", targetPacePercentMin: 98, targetPacePercentMax: 100, instructions: "Strong" }),
+      expect.objectContaining({ stepType: "cooldown", distanceM: mi(1), distanceMaxM: mi(2) }),
+    ]);
+  });
+
+  it("gives the Week 4 Tuesday 105% intervals their 45 sec jog as rest, not folded into the rep", () => {
+    const day = dayAt(4, 2);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepType: "warmup" }),
+      expect.objectContaining({ stepType: "interval", repetitions: 5, repetitionsMax: 8, durationS: 180, targetPacePercentBasis: "marathon", targetPacePercentMin: 105, targetPacePercentMax: 105, restS: 45, restMaxS: null }),
+      expect.objectContaining({ stepType: "cooldown" }),
+    ]);
+  });
+
+  it("gives the Week 4 Thursday session both its 110% km effort and its separate 115% reps, each with the rest the source states", () => {
+    const day = dayAt(4, 4);
+    expect(day.steps).toEqual([
+      expect.objectContaining({ stepType: "warmup" }),
+      expect.objectContaining({ stepType: "main", distanceM: 4000, targetPacePercentBasis: "marathon", targetPacePercentMin: 110, targetPacePercentMax: 110, restS: 240, restMaxS: 300 }),
+      expect.objectContaining({ stepType: "interval", repetitions: 6, repetitionsMax: 8, durationS: 60, targetPacePercentBasis: "marathon", targetPacePercentMin: 115, targetPacePercentMax: 115, restS: 120, instructions: "Fast" }),
+      expect.objectContaining({ stepType: "cooldown" }),
+    ]);
+  });
+
+  it("never adds distance for a strides step, matching the frameworks' own strides-never-add-distance policy", () => {
+    const strideSteps = training.flatMap((d) => d.steps ?? []).filter((s) => s.instructions?.includes("sec strides"));
+    expect(strideSteps.length).toBeGreaterThan(0);
+    for (const s of strideSteps) expect(s.distanceM).toBeNull();
   });
 });
 
