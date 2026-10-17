@@ -3969,7 +3969,7 @@ export const sections: Section[] = [
       "Three calculators can give you different training paces from the same race result. Learn what each model does, why they disagree, and which one fits the question you're asking.",
     topics: ["Riegel vs. statistical vs. fatigue-curve models", "When each approach fits", "What the other calculators actually do instead"],
     category: "tools",
-    lastUpdated: "2026-08-06",
+    lastUpdated: "2026-10-17",
     content: [
       { type: "heading", text: "You Ran a Race. Now Three Calculators Disagree." },
       {
@@ -4157,6 +4157,7 @@ export const sections: Section[] = [
       "Turn a goal marathon pace into a race-day plan: a mile-by-mile pace table, a gel-by-gel fueling schedule, and segment-by-segment strategy -- built from a course map you can read, not a GPS file.",
     topics: ["Progressive or even start", "Grade, heat, and altitude flags", "Fueling and caffeine protocol"],
     category: "tools",
+    lastUpdated: "2026-10-17",
   },
   {
     slug: "altitude-calculator",
@@ -4170,6 +4171,7 @@ export const sections: Section[] = [
       "Workout split conversion",
     ],
     category: "tools",
+    lastUpdated: "2026-10-17",
   },
   {
     slug: "altitude-adjusted-pace-calculator",
@@ -4178,6 +4180,7 @@ export const sections: Section[] = [
       "Convert a specific race or training performance between altitudes, accounting for home-altitude acclimation -- independently reverse-engineered from a real, undisclosed third-party model.",
     topics: ["Performance conversion between altitudes", "Home-altitude acclimation discount", "Any distance, 400m to marathon"],
     category: "tools",
+    lastUpdated: "2026-10-17",
   },
   {
     slug: "endurance-fueling-calculator",
@@ -4186,6 +4189,7 @@ export const sections: Section[] = [
       "Science-informed carb, fluid, and sodium targets for endurance efforts, based on your effort intensity, gut training, body weight, and conditions.",
     topics: ["Carb rate by effort and GI training", "Fluid loss by weight, heat, and intensity", "Sodium loss and target rates"],
     category: "tools",
+    lastUpdated: "2026-10-17",
   },
   {
     slug: "fueling-calculator",
@@ -4194,6 +4198,7 @@ export const sections: Section[] = [
       "Turn your body weight and goal time into concrete race-week fueling numbers: an hourly carb rate and gut-training progression, a gel schedule, carb-loading and pre-race breakfast targets, and a caffeine dose.",
     topics: ["Carb rate target and gut-training progression", "Carb-loading and breakfast gram targets", "Caffeine dosing and timing"],
     category: "tools",
+    lastUpdated: "2026-10-17",
   },
 ];
 
