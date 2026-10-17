@@ -92,6 +92,54 @@ function hasTimedRepeatsAtPace(notes: string): boolean {
   return /\d+(?:-\d+)?\s*[×x]\s*\d+\s*(?:min|sec)\s+(?:at\s+\d+(?:-\d+)?%|fast)/i.test(notes) && !hasStrides(notes);
 }
 
+/**
+ * The GENERAL version of hasTimedRepeatsAtPace's own fix, above --
+ * generalized from "recovery days' time-based reps phrasing specifically"
+ * to "any stated percent of pace or effort, anywhere in the prose,
+ * however it's structured." hasTimedRepeatsAtPace only recognizes ONE
+ * shape ("N x M min/sec at P%"), which is the recovery program's own
+ * idiom (post-race.ts) -- it does not recognize the frameworks' own much
+ * more varied quality-session phrasing: distance-based reps ("N x Dkm at
+ * P% MP"), nested multi-part sets ("3 sets of: 2 km at 108% MP, 2 min
+ * walk/jog, 1 km at 110-112% MP, ..."), or a bare continuous segment
+ * ("4-5 mi strong at 98-100% of marathon pace"). Those are exactly the
+ * shapes framework-structure.ts's own header documents as "deliberately
+ * NOT attempted" by the automatic parser (deeply nested multi-set
+ * structures, hybrid distance/time chains) -- every one of those falls
+ * through to a labeling-worksheet entry AND, until a hand override in
+ * framework-structure-overrides.ts supplies real steps for it, to this
+ * exact prose-only fallback. A session like that should never read as
+ * "Easy" just because its own trailing cool-down clause contains the word
+ * -- that's the live bug this function exists to close.
+ *
+ * Reads every "P[-P]% of marathon pace" / "P[-P]% MP" / "P[-P]% 5k"
+ * occurrence in the prose and returns the HIGHEST stated percent, or null
+ * if none appear at all. The caller compares this against
+ * QUALITY_THRESHOLD_PERCENT -- the same threshold classifyFromSteps
+ * already uses to split a structured long run into "Quality LR" vs
+ * "Moderate LR" -- so a prose-only day is held to the identical bar a
+ * structured one already is, not a separately-invented one. A float-
+ * recovery leg stated at a genuinely low percent (e.g. Cruise Intervals'
+ * own "75% 5k" float pace) never crosses this threshold on its own, so it
+ * can't falsely trigger quality classification by itself -- only the
+ * session's own actual work pace does.
+ */
+const QUALITY_PACE_PATTERN = /(\d{2,3})(?:\s*[-–]\s*\d{2,3})?\s*%\s*(?:of\s*)?(?:marathon(?:\s*pace)?|mp|5k(?:\s*pace)?)/gi;
+
+function peakStatedQualityPercent(notes: string): number | null {
+  let peak: number | null = null;
+  for (const match of notes.matchAll(QUALITY_PACE_PATTERN)) {
+    const value = Number(match[1]);
+    if (peak == null || value > peak) peak = value;
+  }
+  return peak;
+}
+
+/** "N x ..." or "N sets of" -- a stated repeat count, distinguishing a reps-based quality session (-> Intervals) from a single continuous quality segment (-> Steady State/Quality LR). Prose-only heuristic, same spirit as the rest of this fallback: approximate, never fabricated. */
+function hasRepsLanguage(notes: string): boolean {
+  return /\d+(?:-\d+)?\s*[×x]\s*\d/.test(notes) || /\bsets?\s+of\b/i.test(notes);
+}
+
 /** "very easy" takes priority over a bare "easy" substring match (every "very easy" string also contains "easy"). */
 type EffortTier = "veryEasy" | "easy" | "moderate" | "strong" | "unknown";
 
@@ -129,6 +177,21 @@ function classifyPlainDay(notes: string, distanceMiMin: number | null): string {
   // still fundamentally an LR.
   if (!longRun && hasStrides(trimmed)) return "Easy + Strides";
   if (!longRun && hasEmbeddedPickups(trimmed)) return "Fartlek";
+
+  // The general fix: a stated quality percent ANYWHERE in the prose wins
+  // over the naive effort-word scan below, the same way hasTimedRepeatsAtPace
+  // already does for its own narrower shape. Checked last among the named-
+  // pattern branches (after progression/uphill/timed-reps/strides/pickups,
+  // which already produce a correct, more specific label when they match)
+  // so this only ever catches what nothing more specific already named --
+  // typically a nested multi-set or distance-based-reps session that
+  // framework-structure.ts's own parser documents it deliberately does not
+  // attempt, and that has no hand override (yet) supplying real steps.
+  const peakPercent = peakStatedQualityPercent(trimmed);
+  if (peakPercent != null && peakPercent >= QUALITY_THRESHOLD_PERCENT) {
+    if (longRun) return "Quality LR";
+    return hasRepsLanguage(trimmed) ? "Intervals" : "Steady State";
+  }
 
   if (longRun) {
     switch (tier) {

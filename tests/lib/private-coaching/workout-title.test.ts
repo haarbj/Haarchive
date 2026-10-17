@@ -182,6 +182,103 @@ describe("classifyWorkoutTitle -- representative sessions per framework", () => 
   });
 });
 
+describe("classifyWorkoutTitle -- the GENERAL prose-fallback fix for framework sessions (complements Prompt 29's recovery-only hasTimedRepeatsAtPace)", () => {
+  // The exact staging example: peak.json's own W?D2 PM session (a nested
+  // "3 sets of: A, rest, B, rest" structure framework-structure.ts's own
+  // parser deliberately does not attempt -- see that file's header). On
+  // staging this session has a real hand override in framework-structure-
+  // overrides.ts supplying real steps, so it already classifies correctly
+  // as "Intervals" THROUGH the steps path today. This test pins the
+  // prose-only fallback directly (steps: null) -- the state this exact
+  // session would be in without that override, or on a stale/partially-
+  // reseeded staging database -- which is the actual bug this fix closes.
+  it("the staging example: nested 3-sets at 108%/110-112% MP, with a trailing 'easy cool-down' -> Intervals, not Easy", () => {
+    const title = classifyWorkoutTitle({
+      notes: "2 mi progressive warm-up + 4 strides / 3 sets of: 2 km at 108% MP, 2 min walk/jog, 1 km at 110–112% MP, 4–5 min walk/jog / 2 mi easy cool-down",
+      distanceMiMin: 9.4,
+      steps: null,
+    });
+    expect(title).toBe("Intervals");
+  });
+
+  it("a distance-based reps-at-percent session (not the time-based shape hasTimedRepeatsAtPace alone recognizes) -> Intervals, not Easy", () => {
+    const title = classifyWorkoutTitle({
+      notes: "1.5 mi progressive warm-up + 4 strides\n12 x 500m at 108-110% MP with 30-45 sec walk\n1.5 mi easy cool-down",
+      distanceMiMin: 6.5,
+      steps: null,
+    });
+    expect(title).toBe("Intervals");
+  });
+
+  it("a continuous (no reps language) quality segment, not a long run -> Steady State, not Easy", () => {
+    const title = classifyWorkoutTitle({
+      notes: "1.5 mi progressive warm-up + 4 strides\n4 mi at 90% MP\n1 mi easy cool-down",
+      distanceMiMin: 6.5,
+      steps: null,
+    });
+    expect(title).toBe("Steady State");
+  });
+
+  it("a continuous quality segment ON a long run -> Quality LR, not Easy LR/Moderate LR", () => {
+    const title = classifyWorkoutTitle({
+      notes: "1 mi progressive warm-up + 4 strides\n15-16 mi at 90-92% MP\nNo cool-down",
+      distanceMiMin: 17,
+      steps: null,
+    });
+    expect(title).toBe("Quality LR");
+  });
+
+  it("a float-recovery leg stated at a genuinely low percent never triggers quality on its own (only the real work pace does)", () => {
+    // Mirrors Cruise Intervals' own float-leg convention (e.g. canyon's
+    // "1200m at 90-92% 5k, 400m at 75% 5k") -- 75% alone must never read
+    // as quality; only the session's real work percent (90-92%) can.
+    const title = classifyWorkoutTitle({
+      notes: "1.5 mi progressive warm-up + 4 strides\n4-5 sets of (1200m at 90-92% 5k, 400m at 75% 5k)\n1 mi easy cool-down",
+      distanceMiMin: 6.1,
+      steps: null,
+    });
+    expect(title).not.toBe("Easy");
+    expect(title).not.toBe("Very Easy");
+    // Reps language is present ("sets of"), so this reads as Intervals,
+    // same as the structured-steps path's own equivalent case.
+    expect(title).toBe("Intervals");
+  });
+
+  it("a sub-threshold percent (e.g. canyon's own ~65-75% 5k moderate-effort convention) never gets promoted to Quality LR", () => {
+    const title = classifyWorkoutTitle({
+      notes: "1 mi progressive warm-up\n12 mi at 70-75% 5k\nNo cool-down",
+      distanceMiMin: 12,
+      steps: null,
+    });
+    expect(title).not.toBe("Quality LR");
+  });
+
+  it("still lets Prompt 29's own narrower hasTimedRepeatsAtPace check fire first for its own shape -- the two checks complement, not conflict", () => {
+    // Recovery program T21.2's own idiom (time-based reps) -- unchanged by
+    // this fix, still handled by hasTimedRepeatsAtPace before the new
+    // general percent check is ever reached.
+    const title = classifyWorkoutTitle({
+      notes: "5-8 x 3 min at 105% of marathon pace, 45 sec jog. 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+      distanceMiMin: null,
+      steps: null,
+    });
+    expect(title).toBe("Intervals");
+  });
+
+  it("does not let the new percent check override progression/uphill/strides/pickups, which already produce a correct, more specific label", () => {
+    expect(classifyWorkoutTitle({ notes: "5 mi Kenyan-style progression run + 0.5 mi easy cool-down", distanceMiMin: 5.5, steps: null })).toBe(
+      "Kenyan Progression Run",
+    );
+    expect(
+      classifyWorkoutTitle({
+        notes: "6-10 x 1 min fast uphill (~112-115% of marathon pace effort), easy jog down (can do on flat ground). 1-2 mi progressive warm-up and 1-2 mi easy cool-down.",
+        distanceMiMin: null,
+        steps: null,
+      }),
+    ).toBe("Hill Repeats");
+  });
+});
+
 describe("classifyWorkoutTitle -- edge cases the task calls out explicitly", () => {
   it("a null-distance, steps-less day (every pace-dependent time-based main set) still falls back to a real prose-derived label", () => {
     // "5-8 x 3 min at 105% of marathon pace, 45 sec jog" (recovery W4D2) --
@@ -280,5 +377,45 @@ describe("coverage sanity: title distribution over the real corpus stays within 
 
   it("recoveryWorksheetEntries is still empty -- this module reads the same Prompt 21 output, not a second source of truth", () => {
     expect(recoveryWorksheetEntries()).toHaveLength(0);
+  });
+
+  // Item 3's own stated invariant, pinned permanently: a day whose real
+  // structured work steps (warm-up/cool-down excluded) include a paced
+  // interval at or above QUALITY_THRESHOLD_PERCENT must never read as
+  // Easy/Very Easy/Moderate -- regardless of what its own prose cool-down
+  // clause says. Checked over the real corpus (every structured day that
+  // currently resolves, via the parser or a hand override) so a future
+  // override/parser change can't silently regress this the way the
+  // staging bug this task fixes did.
+  it("every real day with a paced work step at >=85% MP/5k gets a quality title, never Easy/Very Easy/Moderate", () => {
+    const NOT_QUALITY = new Set(["Easy", "Very Easy", "Moderate", "Off", "Off or Easy"]);
+    let checked = 0;
+
+    for (const key of FRAMEWORK_KEYS) {
+      const raw = loadRaw(key);
+      const { structured } = structureFramework(raw);
+      let i = 0;
+      for (const week of raw.weeks) {
+        for (const day of week.days) {
+          for (const session of day.sessions) {
+            const s = structured[i++];
+            const workSteps = (s.steps ?? []).filter((st) => st.stepType !== "warmup" && st.stepType !== "cooldown");
+            const maxPercent = workSteps.reduce<number | null>((max, st) => {
+              if (st.targetPacePercentBasis == null || st.targetPacePercentMin == null) return max;
+              return max == null ? st.targetPacePercentMin : Math.max(max, st.targetPacePercentMin);
+            }, null);
+            if (maxPercent == null || maxPercent < 85) continue;
+
+            checked++;
+            const title = classifyWorkoutTitle({ notes: session.workout, distanceMiMin: s.distanceMiMin, steps: s.steps as TitleStep[] | null });
+            expect(NOT_QUALITY.has(title), `${key}: ${JSON.stringify(session.workout)} (max step % = ${maxPercent}) -> wrongly "${title}"`).toBe(false);
+          }
+        }
+      }
+    }
+
+    // Sanity on the test itself: real quality sessions at this threshold
+    // genuinely exist in the corpus, so this isn't vacuously passing.
+    expect(checked).toBeGreaterThan(50);
   });
 });
