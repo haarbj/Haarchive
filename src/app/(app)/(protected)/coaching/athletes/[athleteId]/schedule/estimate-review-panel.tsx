@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { runEstimateReview, saveEstimateReview, type EstimateReviewView } from "./estimate-review-actions";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatDateSafe } from "@/lib/format";
 import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { Card } from "@/components/ui/card";
@@ -190,7 +190,8 @@ export function EstimateReviewPanel({ athleteId }: { athleteId: string }) {
           <ul className="mt-2 space-y-1 border-l border-black/10 pl-4 dark:border-white/10">
             {view.history.map((entry) => (
               <li key={entry.reviewedAt} className="text-sm text-zinc-600 dark:text-zinc-300">
-                {formatDate(entry.reviewedAt)} · {VERDICT_LABEL[entry.verdict] ?? entry.verdict}
+                {/* reviewed_at is a timestamptz, not a plain date -- formatDateSafe handles that (formatDate alone would render "Invalid Date"). */}
+                {formatDateSafe(entry.reviewedAt) ?? "unknown date"} · {VERDICT_LABEL[entry.verdict] ?? entry.verdict}
                 {entry.confirmedTimeS != null ? ` · settled on ${formatClock(entry.confirmedTimeS)}` : " · left as it was"}
               </li>
             ))}
