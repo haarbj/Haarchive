@@ -12,7 +12,6 @@ import { formatMiles } from "@/lib/format";
 // workout-status.ts) -- this module never touches volume-percent itself.
 export type WeeklyLoadEntry = {
   dayLabel: string | null;
-  publishedAt: string | null;
   distanceM: number | null;
   durationS: number | null;
   actualDistanceM: number | null;
@@ -28,11 +27,20 @@ export type WeeklyLoadResult = {
   estimatedCount: number;
 };
 
-// Scheduled totals only ever count a PUBLISHED workout (matches the
-// footer's own pre-existing behavior) -- completed totals count any
-// workout with a real completion regardless of publish state (a coach who
-// logged a completion on a draft row still sees it reflected here, same
-// as the footer already did before this reconciliation existed).
+// Scheduled totals count EVERY entry regardless of publish status -- this
+// footer is a coach-only view of the coach's own planning work (its one
+// caller, week-calendar.tsx, lives under /coaching/athletes/[athleteId]/
+// schedule; nothing athlete-facing reads this module), so a draft isn't
+// hidden information the coach needs protecting from -- it's exactly the
+// content they're actively building and need an honest running total for.
+// A previous revision gated this on `publishedAt` (carried over from an
+// earlier footer that predates this module), which meant a week that was
+// entirely drafts -- the normal state while a coach is still laying out
+// the week -- always read "Scheduled: 0.0 mi" even though every card
+// showed a real distance. Fixed: scheduled and completed are now
+// symmetric in this one respect (completed totals already never checked
+// publish state, for the same reason -- a coach who logged a completion
+// on a draft row still sees it reflected here).
 export function computeWeeklyLoad(entries: WeeklyLoadEntry[], easyPaceSPerMi: number | null): WeeklyLoadResult {
   let scheduledMileageM = 0;
   let scheduledXtDurationS = 0;
@@ -44,18 +52,16 @@ export function computeWeeklyLoad(entries: WeeklyLoadEntry[], easyPaceSPerMi: nu
     const { base } = splitDayLabel(entry.dayLabel ?? "");
     const isXt = isXtLabel(base);
 
-    if (entry.publishedAt) {
-      if (isXt) {
-        scheduledXtDurationS += entry.durationS ?? 0;
-      } else if (entry.distanceM != null) {
-        scheduledMileageM += entry.distanceM;
-      } else if (entry.durationS != null && easyPaceSPerMi != null) {
-        scheduledMileageM += distanceMFromDurationPace(entry.durationS, easyPaceSPerMi);
-        estimatedCount += 1;
-      }
-      // else: duration-only with no race on file -- contributes 0, never a
-      // fabricated distance.
+    if (isXt) {
+      scheduledXtDurationS += entry.durationS ?? 0;
+    } else if (entry.distanceM != null) {
+      scheduledMileageM += entry.distanceM;
+    } else if (entry.durationS != null && easyPaceSPerMi != null) {
+      scheduledMileageM += distanceMFromDurationPace(entry.durationS, easyPaceSPerMi);
+      estimatedCount += 1;
     }
+    // else: duration-only with no race on file -- contributes 0, never a
+    // fabricated distance.
 
     if (isXt) {
       completedXtDurationS += entry.actualDurationS ?? 0;

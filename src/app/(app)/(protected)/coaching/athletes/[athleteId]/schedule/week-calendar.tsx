@@ -115,7 +115,6 @@ export function WeekCalendar({
   }
 
   const allWorkouts = days.flatMap((d) => workoutsByDate[d] ?? []);
-  const publishedWorkouts = allWorkouts.filter((w) => w.publishedAt);
   const completedCount = allWorkouts.filter((w) => w.status === "completed").length;
 
   // Draft counts for the batch-publish affordances below -- week-wide for
@@ -161,7 +160,6 @@ export function WeekCalendar({
     const effective = effectiveWorkoutVolume(w);
     return {
       dayLabel: w.dayLabel,
-      publishedAt: w.publishedAt,
       distanceM: effective.distanceM,
       durationS: effective.durationS,
       actualDistanceM: w.completion?.actualDistanceM ?? null,
@@ -330,7 +328,7 @@ export function WeekCalendar({
           </p>
         </div>
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          {completedCount} / {publishedWorkouts.length} workouts completed
+          {completedCount} / {allWorkouts.length} workouts completed
           {weeklyLoad.estimatedCount > 0
             ? ` · ${weeklyLoad.estimatedCount} duration-only ${weeklyLoad.estimatedCount === 1 ? "day" : "days"} estimated from easy pace`
             : ""}

@@ -30,6 +30,22 @@ export function formatDate(dateStr: string): string {
   });
 }
 
+// Same output as formatDate, but defensive on both ends: accepts a plain
+// date ("2026-10-15") OR a full timestamptz ("2026-10-15T14:23:01+00:00")
+// by always taking just the first 10 characters -- formatDate itself
+// assumes a plain date and silently produces "Invalid Date" if handed a
+// full timestamp (the "T00:00:00" it appends collides with the timestamp's
+// own time/offset). Also returns null instead of rendering "Invalid Date"
+// for a null/empty/genuinely malformed input, so a caller can omit the
+// whole sentence fragment that would otherwise read it (see
+// resolvePacePercent's own "updated ..." clause for the motivating case).
+export function formatDateSafe(dateStr: string | null | undefined): string | null {
+  if (!dateStr) return null;
+  const date = new Date(`${dateStr.slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
+
 // Tags are stored lowercase (see parseTags in validation/articles.ts and
 // questions' own parseTags) for consistent matching/filtering -- this is
 // purely a display transform, so "heart rate" reads as "Heart Rate"

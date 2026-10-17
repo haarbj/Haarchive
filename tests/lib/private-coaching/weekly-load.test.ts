@@ -8,7 +8,6 @@ const EASY_PACE_S_PER_MI = 480; // 8:00/mi
 function entry(overrides: Partial<WeeklyLoadEntry> = {}): WeeklyLoadEntry {
   return {
     dayLabel: null,
-    publishedAt: "2026-08-01T00:00:00Z",
     distanceM: null,
     durationS: null,
     actualDistanceM: null,
@@ -64,17 +63,26 @@ describe("computeWeeklyLoad", () => {
     expect(result.estimatedCount).toBe(1);
   });
 
-  it("ignores unpublished (draft) workouts on the scheduled side", () => {
-    const result = computeWeeklyLoad([entry({ dayLabel: "Easy", distanceM: 6 * MILE_METERS, publishedAt: null })], null);
-    expect(result.scheduledMileageM).toBe(0);
-  });
-
-  it("computes completed totals independently of published state", () => {
+  // This module's one caller (week-calendar.tsx, the coach-facing
+  // /coaching/athletes/[athleteId]/schedule view) is never athlete-facing,
+  // so publish status protects nothing here -- it's the coach's own
+  // planning work. A previous revision gated the scheduled total on
+  // `publishedAt` (carried over from an earlier footer this module
+  // replaced), which meant a week that's entirely drafts -- the normal
+  // state while a coach is still laying out the week -- always showed
+  // "Scheduled: 0.0 mi" even though every day card showed a real,
+  // nonzero distance. Fixed: scheduled totals now include drafts, the
+  // same way completed totals already did.
+  it("includes draft (unpublished) workouts in the scheduled total -- a coach needs an honest running total while still planning the week", () => {
     const result = computeWeeklyLoad(
-      [entry({ dayLabel: "Easy", publishedAt: null, actualDistanceM: 4 * MILE_METERS })],
+      [entry({ dayLabel: "Very Easy", distanceM: 4 * MILE_METERS }), entry({ dayLabel: "Intervals", distanceM: 8 * MILE_METERS }), entry({ dayLabel: "LR", distanceM: 16 * MILE_METERS })],
       null,
     );
-    expect(result.scheduledMileageM).toBe(0);
+    expect(result.scheduledMileageM).toBe(Math.round(28 * MILE_METERS));
+  });
+
+  it("computes completed totals independently of published state (unchanged -- always was this way)", () => {
+    const result = computeWeeklyLoad([entry({ dayLabel: "Easy", actualDistanceM: 4 * MILE_METERS })], null);
     expect(result.completedMileageM).toBe(Math.round(4 * MILE_METERS));
   });
 
