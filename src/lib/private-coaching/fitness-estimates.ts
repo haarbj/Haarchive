@@ -13,7 +13,7 @@ import { computeProgramPaceTarget, type ProgramAthleteReferenceInputs } from "@/
 import { PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { MILE_METERS, metersFor } from "@/lib/race-distances";
 import { formatClock } from "@/lib/running-format";
-import { formatDate } from "@/lib/format";
+import { formatDateSafe } from "@/lib/format";
 
 export type AthleteFitnessEstimate = { referenceKey: PaceReferenceKey; estimatedTimeS: number; updatedAt: string };
 
@@ -79,6 +79,11 @@ export function resolvePacePercent(
   const resolved = computeProgramPaceTarget(basis, percentMin, percentMax, toReferenceSecondsByKey(estimates));
   if (!resolved) return null;
   const percentText = percentMin === percentMax ? `${percentMin}%` : `${percentMin}-${percentMax}%`;
-  const sourceLabel = `${percentText} ${PACE_REFERENCE_LABELS[basis]} (est. ${formatClock(estimate.estimatedTimeS)}, updated ${formatDate(estimate.updatedAt)})`;
+  // updated_at is a timestamptz, not a plain date -- formatDateSafe handles
+  // that (and a null/malformed value) without ever rendering "Invalid
+  // Date"; when it can't produce a real date, the whole ", updated ..."
+  // clause is omitted rather than shown broken.
+  const updatedText = formatDateSafe(estimate.updatedAt);
+  const sourceLabel = `${percentText} ${PACE_REFERENCE_LABELS[basis]} (est. ${formatClock(estimate.estimatedTimeS)}${updatedText ? `, updated ${updatedText}` : ""})`;
   return { minSPerMi: Math.round(resolved.min), maxSPerMi: Math.round(resolved.max), sourceLabel };
 }

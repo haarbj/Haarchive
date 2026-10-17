@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMiles, formatRelativeTime, formatWeekday } from "@/lib/format";
+import { formatDateSafe, formatMiles, formatRelativeTime, formatWeekday } from "@/lib/format";
 
 function isoMinutesAgo(minutes: number): string {
   return new Date(Date.now() - minutes * 60 * 1000).toISOString();
@@ -50,5 +50,32 @@ describe("formatMiles", () => {
   it("converts an arbitrary (non-round) GPS distance to one decimal of miles", () => {
     expect(formatMiles(9977)).toBe("6.2 mi");
     expect(formatMiles(11426.3)).toBe("7.1 mi");
+  });
+});
+
+describe("formatDateSafe", () => {
+  // Locale-tolerant on purpose, same reasoning as formatWeekday's own
+  // tests above (toLocaleDateString's exact string is environment-
+  // dependent) -- these confirm a real date came out (the year, the day
+  // number), not the exact rendered text.
+  it("formats a plain date the same way formatDate does", () => {
+    const result = formatDateSafe("2026-08-24");
+    expect(result).toContain("2026");
+    expect(result).toContain("24");
+  });
+
+  it("formats a full timestamptz by reading just its date portion -- the bug formatDate itself has when handed one directly", () => {
+    expect(formatDateSafe("2026-08-24T14:23:01.123456+00:00")).toBe(formatDateSafe("2026-08-24"));
+    expect(formatDateSafe("2026-08-24T00:00:00Z")).toBe(formatDateSafe("2026-08-24"));
+  });
+
+  it("returns null (not 'Invalid Date') for null, undefined, or empty input", () => {
+    expect(formatDateSafe(null)).toBeNull();
+    expect(formatDateSafe(undefined)).toBeNull();
+    expect(formatDateSafe("")).toBeNull();
+  });
+
+  it("returns null (not 'Invalid Date') for a genuinely malformed date string", () => {
+    expect(formatDateSafe("not-a-date")).toBeNull();
   });
 });

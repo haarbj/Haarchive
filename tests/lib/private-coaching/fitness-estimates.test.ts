@@ -43,4 +43,39 @@ describe("resolvePacePercent", () => {
     const estimates = { "5k": estimate("5k", 1000) };
     expect(resolvePacePercent("marathon", 90, 92, estimates)).toBeNull();
   });
+
+  // updated_at is a real timestamptz column (athlete_fitness_estimates,
+  // not null default now()) -- every real row looks like this, not like
+  // this file's own plain-date `estimate()` helper default. The bug:
+  // formatDate assumes a plain "yyyy-mm-dd" date and appends its own
+  // "T00:00:00", which collides with a real timestamp's own time/offset
+  // and produces "Invalid Date". Pinned here with a realistic value so a
+  // future change can't silently reintroduce it.
+  it("a real timestamptz updated_at (not a plain date) renders a real date, never 'Invalid Date'", () => {
+    const estimates = { "5k": estimate("5k", 1012, "2026-08-15T14:23:01.123456+00:00") };
+    const result = resolvePacePercent("5k", 90, 92, estimates);
+    expect(result!.sourceLabel).not.toContain("Invalid Date");
+    // Locale-tolerant on purpose (toLocaleDateString's exact string is
+    // environment-dependent) -- confirms a real date rendered (the year
+    // and day number), matching the same timestamp's own date portion.
+    expect(result!.sourceLabel).toContain("updated");
+    expect(result!.sourceLabel).toContain("2026");
+    expect(result!.sourceLabel).toContain("15");
+  });
+
+  it("a null/empty updated_at omits the whole 'updated ...' clause instead of rendering 'Invalid Date'", () => {
+    const estimates = { "5k": estimate("5k", 1012, "") };
+    const result = resolvePacePercent("5k", 90, 92, estimates);
+    expect(result!.sourceLabel).not.toContain("Invalid Date");
+    expect(result!.sourceLabel).not.toContain("updated");
+    // The estimate itself is still shown -- only the broken date clause is dropped.
+    expect(result!.sourceLabel).toContain("16:52");
+  });
+
+  it("a malformed updated_at also omits the clause rather than rendering 'Invalid Date'", () => {
+    const estimates = { "5k": estimate("5k", 1012, "not-a-real-date") };
+    const result = resolvePacePercent("5k", 90, 92, estimates);
+    expect(result!.sourceLabel).not.toContain("Invalid Date");
+    expect(result!.sourceLabel).not.toContain("updated");
+  });
 });
