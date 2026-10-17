@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useId, useState } from "react";
 
 import { formatClock } from "@/lib/running-format";
-import { formatDate } from "@/lib/format";
+import { formatDateSafe } from "@/lib/format";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { updateFitnessEstimate, deleteFitnessEstimate } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -66,12 +66,20 @@ function EstimateRow({ referenceKey, existing }: { referenceKey: "5k" | "maratho
     return <EstimateForm referenceKey={referenceKey} existing={existing} onSaved={() => setEditing(false)} />;
   }
 
+  // updated_at is a timestamptz, not a plain date -- formatDateSafe handles
+  // that (and a null/malformed value) without ever rendering "Invalid
+  // Date"; when it can't produce a real date, the whole "· updated ..."
+  // clause is omitted rather than shown broken. Same pattern as
+  // resolvePacePercent's own "updated ..." clause in fitness-estimates.ts.
+  const updatedText = formatDateSafe(existing!.updatedAt);
+
   return (
     <Card padding="sm" shadow={false} className="flex items-center justify-between gap-3 text-sm">
       <div>
         <span className="font-medium text-zinc-900 dark:text-white">{DISTANCE_LABELS[referenceKey]}: </span>
         <span className="text-zinc-600 dark:text-zinc-300">
-          {formatClock(existing!.estimatedTimeS)} · updated {formatDate(existing!.updatedAt)}
+          {formatClock(existing!.estimatedTimeS)}
+          {updatedText ? ` · updated ${updatedText}` : ""}
         </span>
       </div>
       <div className="flex shrink-0 items-center gap-3">

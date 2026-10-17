@@ -6,7 +6,7 @@ import { createServiceRoleClient } from "@/lib/db/service-role";
 import { isAdminEmail } from "@/lib/auth/session";
 import { ARTICLE_STATUS_LABELS, type ArticleStatus } from "@/lib/articles/constants";
 import { ATHLETE_LEVEL_LABELS, type ATHLETE_LEVELS, type SEXES } from "@/lib/validation/athlete-profile";
-import { formatDate, formatDistance, formatRelativeTime } from "@/lib/format";
+import { formatDate, formatDateSafe, formatDistance, formatRelativeTime } from "@/lib/format";
 import { formatClock } from "@/lib/running-format";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
@@ -144,7 +144,8 @@ export default async function UserDetailPage({ params }: PageProps) {
           <Heading>{profile?.display_name ?? "Runner"}</Heading>
           <p className="mt-1 text-zinc-600 dark:text-zinc-300">{email}</p>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Joined {profile?.created_at ? formatDate(profile.created_at) : "unknown"}
+            {/* profile.created_at is a timestamptz, not a plain date -- formatDateSafe handles that (formatDate alone would render "Invalid Date", same bug Prompt 28 fixed elsewhere). */}
+            Joined {formatDateSafe(profile?.created_at) ?? "unknown"}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

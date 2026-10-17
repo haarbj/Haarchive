@@ -78,4 +78,24 @@ describe("formatDateSafe", () => {
   it("returns null (not 'Invalid Date') for a genuinely malformed date string", () => {
     expect(formatDateSafe("not-a-date")).toBeNull();
   });
+
+  // Regression: three call sites were found still calling formatDate()
+  // directly on a timestamptz column (rendering "Invalid Date"), the exact
+  // bug Prompt 28 fixed in fitness-estimates.ts -- this one was missed in
+  // its own sibling component (fitness-estimates-section.tsx), plus two
+  // more found during the follow-up sweep (profiles.created_at in the
+  // admin user detail page, estimate_reviews.reviewed_at in the estimate
+  // review panel). All three are now routed through formatDateSafe, the
+  // same shared helper already covered above -- pinned here with
+  // realistic values shaped like what those columns actually produce.
+  it("handles realistic timestamptz values from the columns these fixes cover (profiles.created_at, estimate_reviews.reviewed_at, athlete_fitness_estimates.updated_at)", () => {
+    const createdAt = "2026-07-09T16:47:32.884219+00:00"; // profiles.created_at shape
+    const reviewedAt = "2026-10-13T09:12:00+00:00"; // estimate_reviews.reviewed_at shape
+    const updatedAt = "2026-10-17T08:53:03.732574Z"; // athlete_fitness_estimates.updated_at shape
+    for (const value of [createdAt, reviewedAt, updatedAt]) {
+      const result = formatDateSafe(value);
+      expect(result).not.toBeNull();
+      expect(result).not.toContain("Invalid");
+    }
+  });
 });
