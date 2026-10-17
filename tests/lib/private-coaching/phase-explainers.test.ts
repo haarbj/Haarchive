@@ -123,6 +123,95 @@ describe("PLANS_ADAPT_NOTE", () => {
   });
 });
 
+// Prompt 10's own audit against the verified "Marathon Excellence for
+// Everyone" source quotes (Ch. 4/5/6). Pins the corrected key claims so a
+// future edit can't silently drift back toward the discrepancies found:
+// general training wrongly claiming it "leans hardest" on only two of its
+// four capabilities (contradicting the source's explicit "no one type of
+// workout takes on outsized importance... ensemble of all workouts
+// together"), a missing pace range, resilience wrongly attributed to the
+// specific phase only, and "No racing" overstating the source's actual
+// hedge ("best to avoid").
+describe("GENERAL explainer matches the source (Ch. 4)", () => {
+  const general = DEFAULT_PHASE_EXPLAINERS.general;
+
+  it("does not claim the phase leans hardest on only some of its capabilities -- the source says no workout takes on outsized importance", () => {
+    expect(general).not.toMatch(/leans hardest/i);
+    expect(general.toLowerCase()).toContain("ensemble");
+  });
+
+  it("states the pace basis as a percentage of 5K pace, not marathon pace", () => {
+    expect(general).toMatch(/percentage of your current 5K pace, not marathon pace/i);
+  });
+
+  it("states the source's own defining pace range (45-100%) and emphasis band (75-92%)", () => {
+    expect(general).toMatch(/45 to 100 percent/i);
+    expect(general).toMatch(/75 to 92 percent/i);
+  });
+
+  it("explains why the phase is called 'general' -- capabilities useful for any race distance, not marathon-specific yet", () => {
+    expect(general).toMatch(/nothing here is marathon-specific yet/i);
+    expect(general).toMatch(/5K or a marathon/i);
+  });
+
+  it("distinguishes structural toughness from resilience, and does not claim this phase builds resilience", () => {
+    expect(general).toMatch(/different thing from resilience/i);
+  });
+
+  it("attributes the start of resilience-building to the supportive phase, not exclusively to specific", () => {
+    expect(general).toMatch(/that is where resilience starts getting built/i);
+  });
+});
+
+describe("SUPPORTIVE explainer matches the source (Ch. 5)", () => {
+  const supportive = DEFAULT_PHASE_EXPLAINERS.supportive;
+
+  it("states the two source pace targets exactly: 90-95% MP and 105-110% MP", () => {
+    expect(supportive).toMatch(/90 to 95 percent of marathon pace/i);
+    expect(supportive).toMatch(/105 to 110 percent of marathon pace/i);
+  });
+
+  it("captures the effort/pace inversion from the source verbatim in spirit: run the right pace, check the effort", () => {
+    expect(supportive).toMatch(/ran the right effort and checked the pace/i);
+    expect(supportive).toMatch(/run the right pace and check the effort/i);
+  });
+
+  it("attributes resilience-building to this phase's sessions", () => {
+    expect(supportive).toMatch(/begin building resilience/i);
+  });
+
+  it("frames progress as running the same pace for longer, not increasing pace", () => {
+    expect(supportive).toMatch(/same pace for longer/i);
+  });
+});
+
+describe("SPECIFIC explainer matches the source (Ch. 6)", () => {
+  const specific = DEFAULT_PHASE_EXPLAINERS.specific;
+
+  it("states the source's key-workout pace range exactly: 95-105% MP", () => {
+    expect(specific).toMatch(/95 to 105 percent of marathon pace/i);
+  });
+
+  it("hedges on racing the same way the source does ('best to avoid'), not an absolute prohibition", () => {
+    expect(specific).toMatch(/best avoided/i);
+    expect(specific).not.toMatch(/^No racing/im);
+  });
+
+  it("frames progress as resilience, not speed", () => {
+    expect(specific).toMatch(/resilience rather than speed/i);
+  });
+
+  it("states the source's taper guidance: short, modest, no dramatic changes, no race-day magic", () => {
+    expect(specific).toMatch(/short and modest/i);
+    expect(specific).toMatch(/no race-day magic/i);
+    expect(specific).toMatch(/nothing dramatically/i);
+  });
+
+  it("frames mileage as subordinate to arriving fresh for key workouts, matching the source", () => {
+    expect(specific).toMatch(/weekly mileage matters less now/i);
+  });
+});
+
 describe("recovery phases explain themselves too", () => {
   it("resolves an explainer for the post-race recovery phases", () => {
     // Part H item 21: an athlete assigned the recovery block gets the same
