@@ -145,12 +145,21 @@ export function scheduleStrengthTraining(
   let plyometricsPlaced = false;
   let hillSprintsPlaced = false;
 
-  for (const group of weekGroups.values()) {
+  // Chronological order of the weeks that actually carry an easy-run day
+  // -- week 1 is the first such week, not necessarily the program's own
+  // week 1 -- so the foundation routines' rep progression (Week 1/2/3+)
+  // advances across calendar weeks even if a phase boundary or a week
+  // with no easy-run day sits in between.
+  const orderedWeekStarts = [...weekGroups.keys()].sort();
+
+  orderedWeekStarts.forEach((weekStart, index) => {
+    const group = weekGroups.get(weekStart)!;
+    const weekIndex = index + 1;
     const sorted = [...group].sort((a, b) => (a.scheduledDate < b.scheduledDate ? -1 : a.scheduledDate > b.scheduledDate ? 1 : 0));
 
     if (selections.foundation) {
       for (const day of sorted) {
-        for (const routine of FOUNDATION_ROUTINES) addExtra(day, routineToExtra(routine));
+        for (const routine of FOUNDATION_ROUTINES) addExtra(day, routineToExtra(routine, weekIndex));
         foundationPlaced = true;
       }
     }
@@ -176,7 +185,7 @@ export function scheduleStrengthTraining(
         plyometricsPlaced = true;
       }
     }
-  }
+  });
 
   const nextDays = days.map((day) => {
     const toAdd = extrasToAddById.get(day.sourceProgramDayId);

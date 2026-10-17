@@ -1,129 +1,138 @@
 // Strength training content -- Item 30's four options (see
 // advanced-techniques.ts, which carries the eligibility/advisory copy for
 // this same framework), written out here as real, assignable exercise
-// content: named movements with sets, reps, and a form cue, not just a
-// description of what the option is.
+// content: named movements with reps and a real weekly progression, not
+// just a description of what the option is.
 //
-// The two FOUNDATION routines (modified pedestal, hip stability) are the
-// complete, no-equipment, minimal-time base every athlete gets by
-// default. The three performance-option sessions (heavy lifting,
-// plyometrics, hill sprints) are shorter, named-movement lists in the
-// same shape, meant to be read by the athlete as real instructions, not
-// just a label on the calendar.
+// The two FOUNDATION routines (modified pedestal, hip stability) are a
+// verbatim transcription of Table 49.1, "The modified pedestal and hip
+// strength routines" (Marathon Excellence for Everyone, Ch. 49) -- every
+// exercise name, the frequency/execution/equipment guidance, and the
+// week-by-week rep progression are the source table's own content, not
+// original copy (unlike the three performance-option sessions below,
+// which remain original). Transcribed, not parsed out of an image at
+// runtime, for the same reason the recovery program and the frameworks
+// keep their own transcriptions in typed data rather than re-deriving
+// them: a wrong transcription would put the wrong routine in front of an
+// athlete, silently.
 //
-// All copy below is original -- no text lifted from any coaching book or
-// published routine. See strength-scheduling.ts for how these get placed
-// onto a generated program's real calendar days.
+// See strength-scheduling.ts for how these get placed onto a generated
+// program's real calendar days, and for how the week-by-week progression
+// below gets resolved against a specific calendar week.
 
 import type { WorkoutExtraInput } from "@/lib/private-coaching/extras";
 import type { PhaseFamily } from "@/lib/private-coaching/adjustment-playbook";
 
 export type StrengthExercise = {
   name: string;
-  setsReps: string;
-  cue: string;
+  /** Only when an exercise needs something beyond the routine's own uniform rep count -- e.g. Glute bridge's hold-based "rep," Monster walk's equipment. */
+  note?: string;
+};
+
+/**
+ * One tier of a routine's week-by-week rep progression. `fromWeek` is the
+ * first week this tier applies to; it keeps applying through every later
+ * week until a tier with a higher `fromWeek` takes over -- so the table's
+ * own "Weeks 3+" / "Weeks 4+" language is the LAST entry in this array,
+ * not a special case.
+ */
+export type StrengthProgressionTier = {
+  fromWeek: number;
+  reps: string;
 };
 
 export type StrengthRoutine = {
   key: "pedestal" | "hip-stability";
   name: string;
-  /** Why this fits the brief: no equipment, minimal time, never impairs the next day's run. */
-  summary: string;
+  /** Verbatim from the table, e.g. "5-6 times per week, immediately following a run." */
+  frequency: string;
+  /** Verbatim from the table, e.g. "All exercises performed quickly at high intensity, while maintaining control and stability." */
+  execution: string;
+  /** Null when the table specifies none (pedestal). Verbatim otherwise. */
+  equipment: string | null;
   exercises: StrengthExercise[];
+  /** Ordered by `fromWeek`, ascending -- resolveWeeklyReps assumes this. */
+  progression: StrengthProgressionTier[];
 };
 
 export const PEDESTAL_ROUTINE: StrengthRoutine = {
   key: "pedestal",
   name: "Modified pedestal routine",
-  summary:
-    "A short core and trunk-stability circuit, no equipment, about eight minutes. Isometric holds and slow, controlled reps only -- nothing here should leave the legs fatigued for tomorrow's run.",
+  frequency: "5-6 times per week, immediately following a run.",
+  execution: "All exercises performed quickly at high intensity, while maintaining control and stability.",
+  equipment: null,
   exercises: [
-    {
-      name: "Dead bug",
-      setsReps: "2 sets x 8 reps per side",
-      cue: "Press your lower back flat into the floor before you move either limb; the hold flattens out the moment your back arches, so that's the real signal to stop the set.",
-    },
-    {
-      name: "Forearm plank",
-      setsReps: "2 sets x 20-30 sec",
-      cue: "Squeeze the glutes and pull the ribs down so the hips can't sag. End the set the moment they do rather than fighting to hold the position with the low back instead of the core.",
-    },
-    {
-      name: "Side plank",
-      setsReps: "2 sets x 15-20 sec per side",
-      cue: "Stack the hips directly over each other. A slight forward lean of the top hip is the most common break in form here -- check for it, don't just hold the shape.",
-    },
-    {
-      name: "Glute bridge hold",
-      setsReps: "2 sets x 20 sec",
-      cue: "Drive through the heels, not the toes, and pause at the top where hips, knees, and shoulders are level.",
-    },
-    {
-      name: "Bird dog",
-      setsReps: "2 sets x 6 reps per side",
-      cue: "Move the opposite arm and leg together, slowly, keeping the hips square to the floor the whole time -- a rotating hip means the reach has gone further than the core can control.",
-    },
-    {
-      name: "Superman hold",
-      setsReps: "2 sets x 15 sec",
-      cue: "Lift chest and legs only a few inches off the floor. Height isn't the point; an even, controlled lift through the whole spine is.",
-    },
+    { name: "Front plank with leg lift" },
+    { name: "Flutter kick on back" },
+    { name: "Pushup stance with leg lift" },
+    { name: "Back pushup stance with slightly bent knees, leg lift" },
+    { name: "Side plank, single leg lift" },
+    { name: "Straight-arm side plank with leg lift" },
+    { name: "Compact front plank hip extension" },
+    { name: "Compact back plank hip flexion" },
+    { name: "Legs-up crunch" },
+    { name: "Bicycle crunch" },
+  ],
+  progression: [
+    { fromWeek: 1, reps: "7 reps" },
+    { fromWeek: 2, reps: "8 reps" },
+    { fromWeek: 3, reps: "10 reps" },
   ],
 };
 
 export const HIP_STABILITY_ROUTINE: StrengthRoutine = {
   key: "hip-stability",
   name: "Hip stability routine",
-  summary:
-    "A short hip abductor and external-rotator circuit, no equipment, about eight minutes. Targets the muscles that keep the knee tracking straight over a full run, the usual gap a pure core routine leaves open.",
+  frequency: "6-7 days per week, following a run and following the pedestal routine.",
+  execution: "All exercises performed slowly and with a moderate range of motion.",
+  equipment: "Elastic resistance band required -- no other specialized equipment.",
   exercises: [
-    {
-      name: "Clamshells",
-      setsReps: "2 sets x 12 per side",
-      cue: "Keep the feet together and rotate from the hip, not the low back. A hip that rocks backward during the lift means the range has gone too far.",
-    },
-    {
-      name: "Side-lying leg raise",
-      setsReps: "2 sets x 10 per side",
-      cue: "Lead with the heel, not the toe, to keep the hip from rotating open as the leg lifts.",
-    },
-    {
-      name: "Standing hip abduction",
-      setsReps: "2 sets x 10 per side",
-      cue: "Stand tall against a wall or doorframe for balance and lift straight out to the side. Leaning the torso away to gain extra height is the leak to watch for.",
-    },
-    {
-      name: "Single-leg glute bridge",
-      setsReps: "2 sets x 8 per side",
-      cue: "Keep the raised knee stacked over the opposite knee and drive the working heel straight down. A hip that drops on the lifted side means that side's set is done.",
-    },
-    {
-      name: "Lateral lunge walk",
-      setsReps: "2 sets x 10 steps per side",
-      cue: "Push the hips back and down into each step rather than just stepping sideways -- it should feel like the outer hip of the trailing leg is doing the work, not the front knee.",
-    },
-    {
-      name: "Single-leg balance reach",
-      setsReps: "2 sets x 6 reaches per side",
-      cue: "Reach the free leg and both hands toward one spot on the floor, barely touching down. A wobbling stance leg is the point of the drill, not a sign it's going wrong.",
-    },
+    { name: "Side leg lift" },
+    { name: "Clamshell leg lift" },
+    { name: "Glute bridge", note: "1 rep = 1.5 second hold" },
+    { name: "Monster walk", note: "resistance band around knees" },
+  ],
+  progression: [
+    { fromWeek: 1, reps: "30 reps" },
+    { fromWeek: 2, reps: "40 reps" },
+    { fromWeek: 3, reps: "2 x 30 reps" },
+    { fromWeek: 4, reps: "2 x 40 reps" },
   ],
 };
 
 export const FOUNDATION_ROUTINES: StrengthRoutine[] = [PEDESTAL_ROUTINE, HIP_STABILITY_ROUTINE];
 
-function exerciseLine(exercise: StrengthExercise): string {
-  return `${exercise.name} — ${exercise.setsReps} — ${exercise.cue}`;
+/**
+ * The rep count that applies at a given 1-indexed week of this routine's
+ * own placement (week 1 = the first calendar week it's scheduled on, not
+ * necessarily the program's own week 1 -- see strength-scheduling.ts).
+ * Picks the last tier whose `fromWeek` is `<= week`; a week before the
+ * first tier (shouldn't happen, since every routine's first tier starts
+ * at week 1) falls back to that first tier rather than producing no reps
+ * at all.
+ */
+export function resolveWeeklyReps(progression: StrengthProgressionTier[], week: number): string {
+  let current = progression[0];
+  for (const tier of progression) {
+    if (tier.fromWeek <= week) current = tier;
+  }
+  return current.reps;
 }
 
-export function routineToExtra(routine: StrengthRoutine): WorkoutExtraInput {
+function exerciseLine(exercise: StrengthExercise, reps: string): string {
+  return exercise.note ? `${exercise.name} — ${reps} (${exercise.note})` : `${exercise.name} — ${reps}`;
+}
+
+export function routineToExtra(routine: StrengthRoutine, week: number): WorkoutExtraInput {
+  const reps = resolveWeeklyReps(routine.progression, week);
+  const overview = [`${routine.name}.`, routine.frequency, routine.execution, routine.equipment].filter(Boolean).join(" ");
   return {
     kind: "Strength",
-    overview: `${routine.name}. ${routine.summary}`,
+    overview,
     count: null,
     distanceM: null,
     durationS: null,
-    items: routine.exercises.map(exerciseLine),
+    items: routine.exercises.map((exercise) => exerciseLine(exercise, reps)),
   };
 }
 

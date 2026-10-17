@@ -203,6 +203,37 @@ describe("scheduleStrengthTraining", () => {
     expect(threshold.extras).toEqual([]);
   });
 
+  it("advances the foundation routines' rep progression week over week, starting from the first scheduled week", () => {
+    const week1 = weekOf("2026-01-05", ["Easy"]);
+    const week2 = weekOf("2026-01-12", ["Easy"]);
+    const week3 = weekOf("2026-01-19", ["Easy"]);
+    const days = [...week1, ...week2, ...week3];
+    const { days: result } = scheduleStrengthTraining(days, [TEN_WEEK_PHASE], DEFAULT_STRENGTH_SELECTIONS, gatingClear);
+
+    const pedestalLine = (d: ResolvedProgramDay) => d.extras.find((e) => e.overview?.includes("Modified pedestal"))!.items[0];
+    const hipLine = (d: ResolvedProgramDay) => d.extras.find((e) => e.overview?.includes("Hip stability"))!.items[0];
+
+    expect(pedestalLine(result[0])).toContain("7 reps");
+    expect(pedestalLine(result[1])).toContain("8 reps");
+    expect(pedestalLine(result[2])).toContain("10 reps");
+
+    expect(hipLine(result[0])).toContain("30 reps");
+    expect(hipLine(result[1])).toContain("40 reps");
+    expect(hipLine(result[2])).toContain("2 x 30 reps");
+  });
+
+  it("surfaces the frequency/execution/equipment guidance on the scheduled day, not just the exercise list", () => {
+    const days = weekOf("2026-01-05", ["Easy"]);
+    const { days: result } = scheduleStrengthTraining(days, [TEN_WEEK_PHASE], DEFAULT_STRENGTH_SELECTIONS, gatingClear);
+
+    const pedestal = result[0].extras.find((e) => e.overview?.includes("Modified pedestal"))!;
+    expect(pedestal.overview).toMatch(/quickly at high intensity/);
+
+    const hip = result[0].extras.find((e) => e.overview?.includes("Hip stability"))!;
+    expect(hip.overview).toMatch(/slowly/);
+    expect(hip.overview).toMatch(/elastic resistance band/i);
+  });
+
   it("preserves any extras a day already carried and orders new ones after them", () => {
     const days = weekOf("2026-01-05", ["Easy"]);
     days[0] = { ...days[0], extras: [{ kind: "Drills", overview: "A-skips", count: null, distanceM: null, durationS: null, items: [], extraOrder: 0 }] };
