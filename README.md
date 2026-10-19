@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 15, 2026](https://brodyhaar.com/release-notes)):** Batch-publish drafts: a whole week, day, or phase at once
+**Latest update ([Oct 19, 2026](https://brodyhaar.com/release-notes)):** Marathon Pacing Calculator and Race Pace Planner merged into one tool
 
 Recent highlights:
+- Batch-publish drafts: a whole week, day, or phase at once (Oct 15, 2026)
 - Notification fixes: no more duplicate check-in alerts, program assignments now notify (Oct 15, 2026)
 - Strength training scheduled into assigned programs (Oct 15, 2026)
-- Training-background intake for new athletes (Oct 15, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

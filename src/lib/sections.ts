@@ -3979,7 +3979,7 @@ export const sections: Section[] = [
       "Three calculators can give you different training paces from the same race result. Learn what each model does, why they disagree, and which one fits the question you're asking.",
     topics: ["Riegel vs. statistical vs. fatigue-curve models", "When each approach fits", "What the other calculators actually do instead"],
     category: "tools",
-    lastUpdated: "2026-10-17",
+    lastUpdated: "2026-10-19",
     content: [
       { type: "heading", text: "You Ran a Race. Now Three Calculators Disagree." },
       {
