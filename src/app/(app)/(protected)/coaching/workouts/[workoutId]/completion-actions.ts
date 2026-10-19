@@ -192,6 +192,7 @@ type PendingMatchRow = {
   activity_distance_m: number | null;
   activity_duration_s: number | null;
   activity_avg_hr: number | null;
+  combined_activities: { id: number }[] | null;
 };
 
 // The athlete's explicit consent step for a Strava-suggested match (see
@@ -212,12 +213,21 @@ export async function approveStravaMatch(scheduledWorkoutId: string, pendingMatc
   const supabase = await createClient();
   const { data: pending } = await supabase
     .from("strava_pending_matches")
-    .select("id, strava_activity_id, activity_distance_m, activity_duration_s, activity_avg_hr")
+    .select("id, strava_activity_id, activity_distance_m, activity_duration_s, activity_avg_hr, combined_activities")
     .eq("id", pendingMatchId)
     .eq("scheduled_workout_id", scheduledWorkoutId)
     .eq("athlete_id", session.userId)
     .maybeSingle<PendingMatchRow>();
   if (!pending) return { error: "No Strava match to approve." };
+
+  // strava_activity_id alone (unchanged) stays the row's single "primary"
+  // source -- AerobicDecouplingCheck and anything else reading that column
+  // keeps working, now reflecting just the combined session's earliest
+  // segment. strava_activity_ids is the full, auditable source list, set
+  // only when this candidate was actually a combination (see
+  // map-activity.ts's combineActivities) -- null for an ordinary
+  // single-activity match, same as a manually-logged completion.
+  const sourceActivityIds = pending.combined_activities?.map((a) => a.id) ?? null;
 
   const { data: workout } = await supabase
     .from("scheduled_workouts")
@@ -234,6 +244,7 @@ export async function approveStravaMatch(scheduledWorkoutId: string, pendingMatc
       actual_duration_s: pending.activity_duration_s,
       avg_hr: pending.activity_avg_hr,
       strava_activity_id: pending.strava_activity_id,
+      strava_activity_ids: sourceActivityIds,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "scheduled_workout_id" },
@@ -269,7 +280,7 @@ export async function approveStravaMatch(scheduledWorkoutId: string, pendingMatc
     action: "workout_completed",
     entity_type: "scheduled_workouts",
     entity_id: workout.id,
-    metadata: { source: "strava", strava_activity_id: pending.strava_activity_id },
+    metadata: { source: "strava", strava_activity_id: pending.strava_activity_id, strava_activity_ids: sourceActivityIds },
   });
 
   revalidatePath(`/coaching/workouts/${scheduledWorkoutId}`);

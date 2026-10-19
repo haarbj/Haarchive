@@ -124,6 +124,7 @@ type PendingMatchRow = {
   activity_distance_m: number | null;
   activity_duration_s: number | null;
   activity_avg_hr: number | null;
+  combined_activities: { id: number; name: string; distanceM: number; durationS: number; startedAt: string }[] | null;
 };
 type CommentRow = { id: string; author_id: string; body: string; created_at: string };
 type Profile = { id: string; display_name: string; coach_display_name: string | null };
@@ -235,7 +236,7 @@ export default async function WorkoutDetailPage({
         ? Promise.resolve({ data: [] as PendingMatchRow[] })
         : supabase
             .from("strava_pending_matches")
-            .select("id, activity_name, activity_distance_m, activity_duration_s, activity_avg_hr")
+            .select("id, activity_name, activity_distance_m, activity_duration_s, activity_avg_hr, combined_activities")
             .eq("scheduled_workout_id", workoutId)
             .is("dismissed_at", null)
             .order("activity_started_at", { ascending: true })
@@ -683,6 +684,7 @@ export default async function WorkoutDetailPage({
                     distanceM: m.activity_distance_m,
                     durationS: m.activity_duration_s,
                     avgHr: m.activity_avg_hr,
+                    combinedActivities: m.combined_activities,
                   }),
                 )}
               />
