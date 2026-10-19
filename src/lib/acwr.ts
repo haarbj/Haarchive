@@ -64,8 +64,12 @@ export function computeAcwr(workouts: AcwrWorkout[], now: Date = new Date()): Ac
 // Gabbett's commonly-cited bands. Real, published, and widely used in
 // practice -- also genuinely contested in more recent literature on
 // exactly where the boundaries should sit, so treat 1.5 and 0.8 as
-// approximate, not precise cutoffs.
-function zoneForRatio(ratio: number): AcwrZone {
+// approximate, not precise cutoffs. Exported so the public Training Load
+// Planner (training-load-planner-math.ts) classifies a planned week's
+// ratio with the exact same bands this file already uses for a real
+// training history, rather than a second, independently-chosen set of
+// cutoffs.
+export function zoneForRatio(ratio: number): AcwrZone {
   if (ratio > 1.5) return "high-risk";
   if (ratio > 1.3) return "caution";
   if (ratio < 0.8) return "undertrained";

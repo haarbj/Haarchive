@@ -4135,6 +4135,15 @@ export const sections: Section[] = [
     category: "tools",
   },
   {
+    slug: "training-load-planner",
+    title: "Training Load Planner",
+    mission:
+      "Enter your recent weekly mileage and a goal, and get a safe week-by-week ramp plan with a down week built in and an ACWR injury-risk flag for every week -- plus a plain answer when the goal can't be reached safely in the time you've given it.",
+    topics: ["10%-per-week ramp with a built-in down week", "Acute:chronic workload ratio (ACWR) risk flags", "Honest about which of this is settled science and which isn't"],
+    category: "tools",
+    lastUpdated: "2026-10-19",
+  },
+  {
     slug: "tinman-calculator",
     title: "Tinman Running Calculator",
     mission:

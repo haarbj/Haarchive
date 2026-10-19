@@ -42,6 +42,7 @@ import { TrainingPlansHome } from "@/components/training-plans/training-plans-ho
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { PaceModelComparison } from "@/components/pace-model-comparison";
+import { TrainingLoadPlanner } from "@/components/training-load-planner";
 import { WorkoutBuilder } from "@/components/workout-builder";
 import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
 import { ArticleHero } from "@/components/article-hero";
@@ -70,6 +71,7 @@ const sectionTools: Record<string, ComponentType> = {
   "altitude-calculator": AltitudeCalculator,
   "fueling-calculator": FuelingCalculator,
   "workout-builder": WorkoutBuilder,
+  "training-load-planner": TrainingLoadPlanner,
   "training-plans": TrainingPlansHome,
   contact: ContactPage,
   "training-philosophy": TrainingPhilosophyPage,
