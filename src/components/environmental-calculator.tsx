@@ -37,6 +37,7 @@ import {
   combineAdjustments,
   convertBetweenConditions,
   equivalentIdealTime,
+  netEngineResults,
   predictedActualTime,
   type CombinedAdjustment,
   type TimeEstimate,
@@ -1200,6 +1201,12 @@ export function EnvironmentalCalculator() {
   const breakdownTotalB = showsPaceDisplay
     ? perUnitAdjustmentSeconds(combinedB.totalAdjustmentSeconds, distanceMeters, paceUnitMeters)
     : combinedB.totalAdjustmentSeconds;
+  // Convert mode's own "What Changed" view: the net, per-factor difference
+  // between B and A (already-scaled, so this is in whatever unit the rest
+  // of the breakdown is already in), rather than two separate vs.-ideal
+  // breakdowns a reader would have to subtract themselves.
+  const breakdownResultsNet = goalMode === "convert" ? netEngineResults(breakdownResultsA, breakdownResultsB) : [];
+  const breakdownTotalNet = breakdownTotalB - breakdownTotalA;
 
   // The same underlying breakdown, whichever mode produced it -- used to
   // generate the top-of-results coaching summary and each mode's own
@@ -2478,10 +2485,31 @@ export function EnvironmentalCalculator() {
           )}
 
           <div className="mt-4">
-            <p className={sectionLabelClass}>What Slowed You Down (Or Helped)</p>
+            <p className={sectionLabelClass}>{goalMode === "convert" ? "What Changed From A to B" : "What Slowed You Down (Or Helped)"}</p>
             <div className={statCardClass}>
               {goalMode === "convert" ? (
-                <div className="space-y-6">
+                <EquivalentPerformanceBar results={breakdownResultsNet} totalAdjustmentSeconds={breakdownTotalNet} />
+              ) : (
+                <EquivalentPerformanceBar results={breakdownResultsA} totalAdjustmentSeconds={breakdownTotalA} />
+              )}
+            </div>
+            <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+              Shown as seconds per {showsPaceDisplay ? paceUnitLabel : "this rep (total)"}.
+              {goalMode === "convert" ? " Green means that factor helps moving from A to B; red means it costs." : null}
+            </p>
+            {(goalMode === "convert" ? breakdownResultsNet : resultsA).length > 0 && (
+              <ul className="mt-3 space-y-1 text-xs text-zinc-600 dark:text-zinc-300">
+                {(goalMode === "convert" ? breakdownResultsNet : resultsA).map((result) => (
+                  <li key={result.factor}>
+                    <span className="font-semibold text-zinc-800 dark:text-zinc-100">{result.factor}:</span> {result.summary}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {goalMode === "convert" && (
+              <details className={`mt-3 ${detailsClass}`}>
+                <summary className={summaryClass}>See Conditions A and B each on their own, versus ideal</summary>
+                <div className={`${detailsBodyClass} space-y-6`}>
                   <div>
                     <p className={`${labelClass} mb-2`}>Conditions A</p>
                     <EquivalentPerformanceBar results={breakdownResultsA} totalAdjustmentSeconds={breakdownTotalA} />
@@ -2491,21 +2519,7 @@ export function EnvironmentalCalculator() {
                     <EquivalentPerformanceBar results={breakdownResultsB} totalAdjustmentSeconds={breakdownTotalB} />
                   </div>
                 </div>
-              ) : (
-                <EquivalentPerformanceBar results={breakdownResultsA} totalAdjustmentSeconds={breakdownTotalA} />
-              )}
-            </div>
-            <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
-              Shown as seconds per {showsPaceDisplay ? paceUnitLabel : "this rep (total)"}.
-            </p>
-            {resultsA.length > 0 && (
-              <ul className="mt-3 space-y-1 text-xs text-zinc-600 dark:text-zinc-300">
-                {resultsA.map((result) => (
-                  <li key={result.factor}>
-                    <span className="font-semibold text-zinc-800 dark:text-zinc-100">{result.factor}:</span> {result.summary}
-                  </li>
-                ))}
-              </ul>
+              </details>
             )}
           </div>
 
