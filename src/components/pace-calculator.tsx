@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { bpmFromPercent, estimateMaxHr } from "@/lib/hr-model";
+import {
+  calculatePaceCalculatorTrainingPaces,
+  predictSeconds,
+  type PaceCalculatorTrainingPaces,
+} from "@/lib/pace-calculator-math";
 import { metersFor } from "@/lib/race-distances";
 import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
@@ -161,8 +166,6 @@ const DISPLAY_GROUPS: DisplayGroup[] = [
   "Track & Cross Country",
   "Road",
 ];
-const MARATHON_METERS = metersFor("marathon");
-
 const MILE_METERS = metersFor("mile");
 const SPLIT_METERS = [200, 300, 400, 600, 800, 1000, 1200, 1600];
 const STORAGE_KEY = "haarchive-pace-calculator-state";
@@ -228,27 +231,6 @@ function formatPaceValue(value: number | [number, number]): string {
     return `${formatClock(value[0])}–${formatPace(value[1])}`;
   }
   return formatPace(value);
-}
-
-function predictSeconds(
-  knownMeters: number,
-  knownSeconds: number,
-  targetMeters: number,
-): number {
-  return knownSeconds * Math.pow(targetMeters / knownMeters, 1.06);
-}
-
-// A recent race predicts marathon fitness less reliably the further it sits
-// from marathon distance, since it has to bridge fatigue resistance and
-// fueling demands a shorter race never tests. This is a rough, illustrative
-// widening — not a statistically derived confidence interval.
-function marathonRangeSeconds(
-  pointSeconds: number,
-  fromMeters: number,
-): [number, number] {
-  const gap = Math.log2(MARATHON_METERS / Math.max(fromMeters, 1500));
-  const pct = Math.min(0.1, Math.max(0.02, gap * 0.012));
-  return [pointSeconds * (1 - pct), pointSeconds * (1 + pct)];
 }
 
 function lapTime(secondsPerMile: number, meters: number): number {
@@ -440,34 +422,17 @@ export function PaceCalculator() {
   // Easy/Tempo/VO2 max are anchored to cross country 5K effort specifically
   // (that's the benchmark the underlying training system is built around),
   // so a track/road entry gets reverse-adjusted — the inverse of the XC
-  // adjustment above — before being used for these three.
-  const xcAnchorSeconds = knownSeconds
-    ? course === "xc"
-      ? knownSeconds
-      : knownSeconds / xcAdjustment
+  // adjustment above — before being used for these three. Shared with the
+  // interactive pace-model comparison on choosing-a-pace-calculator (see
+  // pace-calculator-math.ts) so both reads of this model can never drift
+  // apart.
+  const trainingPaces: PaceCalculatorTrainingPaces | null = knownSeconds
+    ? calculatePaceCalculatorTrainingPaces(selectedDistance.meters, knownSeconds, course, xcAdjustment)
     : null;
-  const xcFiveKSeconds = xcAnchorSeconds
-    ? predictSeconds(selectedDistance.meters, xcAnchorSeconds, 5000)
-    : null;
-  const xcFiveKPace = xcFiveKSeconds
-    ? xcFiveKSeconds / (5000 / MILE_METERS)
-    : null;
-
-  const marathonSeconds = effectiveSeconds
-    ? predictSeconds(selectedDistance.meters, effectiveSeconds, MARATHON_METERS)
-    : null;
-  const marathonRange = marathonSeconds
-    ? marathonRangeSeconds(marathonSeconds, selectedDistance.meters)
-    : null;
-  const marathonPaceRange: [number, number] | null = marathonRange
-    ? [
-        marathonRange[0] / (MARATHON_METERS / MILE_METERS),
-        marathonRange[1] / (MARATHON_METERS / MILE_METERS),
-      ]
-    : null;
-  const marathonPaceMid = marathonPaceRange
-    ? (marathonPaceRange[0] + marathonPaceRange[1]) / 2
-    : null;
+  const xcFiveKPace = trainingPaces ? trainingPaces.vo2OrientedPaceSecPerMile : null;
+  const marathonRange = trainingPaces ? trainingPaces.marathonFinishRangeSeconds : null;
+  const marathonPaceRange = trainingPaces ? trainingPaces.marathonPaceRange : null;
+  const marathonPaceMid = trainingPaces ? trainingPaces.marathonPaceMidSecPerMile : null;
 
   const rawPacePerMile = knownSeconds
     ? knownSeconds / (selectedDistance.meters / MILE_METERS)

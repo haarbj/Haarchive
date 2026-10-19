@@ -42,6 +42,7 @@ import { FuelingCalculator } from "@/components/fueling-calculator";
 import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
+import { PaceModelComparison } from "@/components/pace-model-comparison";
 import { TrainingPhilosophyPage } from "@/components/training-philosophy-page";
 import { ArticleHero } from "@/components/article-hero";
 import { ArticleLayout } from "@/components/article-layout";
@@ -74,6 +75,17 @@ const sectionTools: Record<string, ComponentType> = {
   "training-philosophy": TrainingPhilosophyPage,
   "coaching-library": CoachingLibraryHome,
   "athlete-library": AthleteLibraryHome,
+};
+
+// Sections whose hand-authored content (ContentBlocks, via ArticleLayout)
+// gets an interactive tool ABOVE it rather than instead of it -- distinct
+// from sectionTools above, which replaces the content entirely. Currently
+// only choosing-a-pace-calculator: the guide explains why the three pace
+// models disagree, and the comparison table above it makes that
+// disagreement concrete and interactive before the reader gets to the
+// explanation (see pace-model-comparison.tsx's own header comment).
+const sectionIntroTools: Record<string, ComponentType> = {
+  "choosing-a-pace-calculator": PaceModelComparison,
 };
 
 type SectionPageProps = {
@@ -499,6 +511,7 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
   if (section) {
     const parentCategory = categoryMap.get(section.category)!;
     const ToolComponent = sectionTools[section.slug];
+    const IntroTool = sectionIntroTools[section.slug];
     const content = section.content;
     const isArticle = !!content && content.length > 0;
 
@@ -657,7 +670,10 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
         {ToolComponent ? (
           <ToolComponent />
         ) : isArticle ? (
-          <ArticleLayout section={section} category={parentCategory} content={content} />
+          <>
+            {IntroTool && <IntroTool />}
+            <ArticleLayout section={section} category={parentCategory} content={content} />
+          </>
         ) : (
           <Card padding="lg" className="mt-10">
             <h2 className="text-lg font-semibold">Planned Topics</h2>
