@@ -11,6 +11,7 @@ import {
   MountainSnow,
   Mountain,
   Percent,
+  Repeat,
   Route,
   Thermometer,
   Wheat,
@@ -83,6 +84,12 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   "pace-calculator": { icon: Gauge, accentFrom: "#0ea5e9", accentTo: "#6366f1", category: "pacing" },
   "cv-threshold-calculator": { icon: Activity, accentFrom: "#f43f5e", accentTo: "#ec4899", category: "pacing" },
   "tinman-calculator": { icon: Compass, accentFrom: "#6366f1", accentTo: "#172554", category: "pacing" },
+  // Downstream of every pace calculator above it (it takes a pace as a
+  // given, same as race-pace-planner does with a goal pace), not another
+  // pace-prediction model of its own -- still Pacing, since what it gives
+  // back (a structured session built around a pace) is squarely in that
+  // category's "what pace should I run" lineage, just one step further.
+  "workout-builder": { icon: Repeat, accentFrom: "#3b82f6", accentTo: "#1e40af", category: "pacing" },
   "race-pace-calculator": { icon: Flag, accentFrom: "#f59e0b", accentTo: "#f97316", category: "pacing" },
   "pace-percent-calculator": { icon: Percent, accentFrom: "#a855f7", accentTo: "#6366f1", category: "pacing" },
   // Uses terrain/weather physics as an input, but its output is a full
