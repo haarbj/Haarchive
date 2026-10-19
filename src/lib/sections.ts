@@ -4079,6 +4079,15 @@ export const sections: Section[] = [
     category: "tools",
   },
   {
+    slug: "heat-acclimation-planner",
+    title: "Heat Acclimation Planner",
+    mission:
+      "Enter your race date and current heat training status, and get a day-by-day heat acclimation protocol -- gradual easy-effort exposure building toward race day, with hydration guidance and a race-week taper built in.",
+    topics: ["Day-by-day exposure progression", "Race-week taper timing", "Honest limits when race day is close"],
+    category: "tools",
+    lastUpdated: "2026-10-19",
+  },
+  {
     slug: "pace-calculator",
     title: "Pace & Heart Rate Calculator",
     mission:

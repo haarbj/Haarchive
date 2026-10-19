@@ -942,6 +942,17 @@ export function HeatTracker() {
         combines heat with wind, humidity, and elevation into one equivalent time.
       </p>
 
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Racing in heat? Build your acclimation plan &rarr; the{" "}
+        <Link
+          href="/heat-acclimation-planner"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Heat Acclimation Planner
+        </Link>{" "}
+        turns your race date into a day-by-day exposure protocol, not just today&rsquo;s flag.
+      </p>
+
       <p className="border-t border-black/10 pt-4 text-xs text-zinc-600 dark:border-white/10 dark:text-zinc-300">
         Data: Open-Meteo forecast &amp; geocoding APIs · Formula: Australian
         Bureau of Meteorology outdoor WBGT approximation · Flag thresholds:

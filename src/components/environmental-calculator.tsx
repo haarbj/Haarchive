@@ -2902,7 +2902,15 @@ export function EnvironmentalCalculator() {
                   you specifically -- heat acclimatization, sweat rate, wind-sensitivity, hill strength, and
                   altitude tolerance all differ by runner. The combined range simply adds each factor&rsquo;s own
                   low/high bound rather than assuming they&rsquo;re statistically independent, which is a wider,
-                  more conservative range than a more sophisticated model might produce.
+                  more conservative range than a more sophisticated model might produce. Heat acclimatization
+                  specifically is something you can actually plan for rather than just estimate around -- see the{" "}
+                  <Link
+                    href="/heat-acclimation-planner"
+                    className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+                  >
+                    Heat Acclimation Planner
+                  </Link>
+                  .
                 </p>
                 <p className="mt-2">
                   <strong className="font-semibold text-zinc-900 dark:text-white">Weather resolution:</strong>{" "}
