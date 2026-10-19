@@ -77,9 +77,9 @@ export function computeZoneBounds(referenceSeconds: number, row: PaceZoneRow): P
 
 // Altitude-adjusts one pace-per-unit-distance value, by treating it as a
 // full performance at `distanceMeters` and converting that performance,
-// then converting back -- the same pseudo-performance trick the
-// Altitude-Adjusted Pace calculator's own "Pace" entry mode already uses
-// (see altitude-adjusted-pace-calculator.tsx's timeFromPace/predictedPaceMi),
+// then converting back -- the same pseudo-performance trick the Altitude
+// Calculator's own Performance-mode "Pace" entry already uses (see
+// altitude-calculator.tsx's runPaceSeconds/davisPaceSecondsPerMeter),
 // applied here to a whole table of zone boundaries instead of one single
 // result. Venue is always sea level: the reference pace entered into this
 // tool is assumed to represent the athlete's flatland/sea-level fitness,
