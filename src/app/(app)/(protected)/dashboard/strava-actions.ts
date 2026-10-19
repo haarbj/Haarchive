@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/db/server";
 import { decryptToken, encryptToken } from "@/lib/crypto";
 import { fetchRecentActivities, refreshStravaToken } from "@/lib/strava/client";
-import { activityLocalDate, isRunningActivity, mapToWorkoutCompletion } from "@/lib/strava/map-activity";
+import { activityLocalDate, clusterActivitiesByStartTime, combineActivities, isRunningActivity, mapToWorkoutCompletion } from "@/lib/strava/map-activity";
+import type { StravaActivity } from "@/lib/strava/types";
 
 const DEFAULT_LOOKBACK_DAYS = 30; // first sync ever -- how far back to reach
 
@@ -84,6 +85,7 @@ export async function syncStravaActivities(_prevState: SyncStravaState): Promise
   // silently dropped: the schema (and this dedup column) already supports
   // extending this later.
   let syncedCount = 0;
+  const leftoverActivities: StravaActivity[] = [];
   for (const activity of activities.filter(isRunningActivity)) {
     const { data: existing } = await supabase
       .from("workout_completions")
@@ -128,15 +130,41 @@ export async function syncStravaActivities(_prevState: SyncStravaState): Promise
       continue;
     }
 
-    // Private coaching (Phase 8): a third, independent pipeline from the
-    // two above (see the Phase 1 migration -- scheduled_workouts is
-    // deliberately decoupled from both workouts and group_plan_workouts).
-    // Reuses this same sync/token/matching machinery rather than a
-    // separate Strava integration -- the abstraction the product brief
-    // asks for already exists one level up, at connected_accounts.provider
-    // (garmin/strava/coros/apple_health); a real Garmin provider would
-    // plug in here as its own fetch+map module without touching this
-    // matching logic's shape, just what feeds it.
+    // Not matched to a self-serve or team workout -- a private-coaching
+    // candidate, processed below once grouped by date, so a warmup/main
+    // set/cooldown split across several Strava recordings on the same day
+    // can be combined into one suggestion instead of competing separately
+    // (see clusterActivitiesByStartTime below). Collected here rather than
+    // handled inline so that grouping can see every leftover activity on
+    // a date together, not one at a time.
+    leftoverActivities.push(activity);
+  }
+
+  // Private coaching (Phase 8): a third, independent pipeline from the two
+  // above (see the Phase 1 migration -- scheduled_workouts is deliberately
+  // decoupled from both workouts and group_plan_workouts). Reuses this same
+  // sync/token/matching machinery rather than a separate Strava integration
+  // -- the abstraction the product brief asks for already exists one level
+  // up, at connected_accounts.provider (garmin/strava/coros/apple_health);
+  // a real Garmin provider would plug in here as its own fetch+map module
+  // without touching this matching logic's shape, just what feeds it.
+  //
+  // Grouped by calendar date (not processed per-activity) specifically so
+  // multiple same-date activities can be clustered by start time and
+  // considered together -- a lone 6am run and a lone 6pm run on the same
+  // date land in the same date-group but, if they're more than
+  // COMBINE_WINDOW_SECONDS apart, still end up as two separate one-activity
+  // clusters (and therefore two separate pending-match candidates), not one
+  // false combination.
+  const leftoverByDate = new Map<string, StravaActivity[]>();
+  for (const activity of leftoverActivities) {
+    const date = activityLocalDate(activity);
+    const list = leftoverByDate.get(date);
+    if (list) list.push(activity);
+    else leftoverByDate.set(date, [activity]);
+  }
+
+  for (const [date, dateActivities] of leftoverByDate) {
     const { data: privateCoachingWorkouts } = await supabase
       .from("scheduled_workouts")
       .select("id")
@@ -162,29 +190,32 @@ export async function syncStravaActivities(_prevState: SyncStravaState): Promise
     // completion-actions.ts's approveStravaMatch/dismissStravaMatch.
     // Upserted (not inserted) so a re-sync before the athlete has acted
     // just refreshes an existing candidate's own data rather than erroring.
-    // Keyed on (workout, activity) rather than workout alone -- two runs on
-    // the same day both matching the same scheduled workout used to
-    // collapse into a single row here (whichever activity this loop
-    // processed last silently overwrote the other's data before the
-    // athlete ever saw it); each distinct activity now gets to coexist as
-    // its own real candidate. dismissed_at is deliberately never part of
-    // this payload, so ON CONFLICT DO UPDATE never resurrects a candidate
-    // the athlete already said "not this one" to.
-    const mapped = mapToWorkoutCompletion(activity);
-    const { error: pendingError } = await supabase.from("strava_pending_matches").upsert(
-      {
-        scheduled_workout_id: privateCoachingWorkout.id,
-        athlete_id: userId,
-        strava_activity_id: mapped.strava_activity_id,
-        activity_name: activity.name,
-        activity_distance_m: mapped.actual_distance_m,
-        activity_duration_s: mapped.actual_time_s,
-        activity_avg_hr: mapped.avg_hr,
-        activity_started_at: activity.start_date_local,
-      },
-      { onConflict: "scheduled_workout_id,strava_activity_id" },
-    );
-    if (!pendingError) syncedCount += 1;
+    // Keyed on (workout, the cluster's earliest activity) rather than
+    // workout alone -- two unrelated runs on the same day both matching
+    // the same scheduled workout used to collapse into a single row here
+    // (whichever this loop processed last silently overwrote the other's
+    // data before the athlete ever saw it); each distinct cluster now gets
+    // to coexist as its own real candidate. dismissed_at is deliberately
+    // never part of this payload, so ON CONFLICT DO UPDATE never
+    // resurrects a candidate the athlete already said "not this one" to.
+    for (const cluster of clusterActivitiesByStartTime(dateActivities)) {
+      const combined = combineActivities(cluster);
+      const { error: pendingError } = await supabase.from("strava_pending_matches").upsert(
+        {
+          scheduled_workout_id: privateCoachingWorkout.id,
+          athlete_id: userId,
+          strava_activity_id: combined.strava_activity_id,
+          activity_name: combined.combinedActivities ? `${cluster.length} activities combined` : cluster[0].name,
+          activity_distance_m: combined.actual_distance_m,
+          activity_duration_s: combined.actual_time_s,
+          activity_avg_hr: combined.avg_hr,
+          activity_started_at: cluster[0].start_date_local,
+          combined_activities: combined.combinedActivities,
+        },
+        { onConflict: "scheduled_workout_id,strava_activity_id" },
+      );
+      if (!pendingError) syncedCount += 1;
+    }
   }
 
   await supabase
