@@ -4109,6 +4109,7 @@ export const sections: Section[] = [
       "Ran 20:00 in the heat? See what it was really worth. Adjusts your time for temperature, humidity, wind, altitude, and hills -- with a per-factor breakdown showing exactly what slowed you down.",
     topics: ["Equivalent performance", "Environmental breakdown", "Analyze / predict / convert"],
     category: "tools",
+    lastUpdated: "2026-10-19",
   },
   {
     slug: "gap-calculator",
