@@ -35,6 +35,7 @@ import { RacePaceCalculator } from "@/components/race-pace-calculator";
 import { HrThresholdCalculator } from "@/components/hr-threshold-calculator";
 import { TinmanCalculator } from "@/components/tinman-calculator";
 import { RacePacePlanner } from "@/components/race-pace-planner";
+import { CourseComparator } from "@/components/course-comparator";
 import { AltitudeCalculator } from "@/components/altitude-calculator";
 import { FuelingCalculator } from "@/components/fueling-calculator";
 import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
@@ -68,6 +69,7 @@ const sectionTools: Record<string, ComponentType> = {
   "hr-threshold-calculator": HrThresholdCalculator,
   "tinman-calculator": TinmanCalculator,
   "race-pace-planner": RacePacePlanner,
+  "course-comparator": CourseComparator,
   "altitude-calculator": AltitudeCalculator,
   "fueling-calculator": FuelingCalculator,
   "workout-builder": WorkoutBuilder,

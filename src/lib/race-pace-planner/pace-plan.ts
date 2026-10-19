@@ -24,7 +24,7 @@ import type { CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { formatClock } from "@/lib/running-format";
 
 export const MARATHON_MILES = 26; // full miles only -- see the module doc above and split-generator.ts's own precedent for not splitting out the final partial 0.2mi
-const FEET_PER_MILE_NOISE_THRESHOLD = 15; // a net per-mile elevation change at or below this is ~5 sec of noise, not worth adjusting for
+export const FEET_PER_MILE_NOISE_THRESHOLD = 15; // a net per-mile elevation change at or below this is ~5 sec of noise, not worth adjusting for -- exported since the Course Comparator reuses this exact threshold rather than inventing its own
 const UPHILL_SEC_PER_MILE_PER_100FT = 12;
 const DOWNHILL_SEC_PER_MILE_PER_100FT = -6; // smaller magnitude than uphill -- downhill gives back less than an equivalent climb costs, the same uphill/downhill asymmetry the GAP Calculator's real physics shows
 
@@ -68,7 +68,7 @@ export type CourseInput = {
 
 export const FLAT_COURSE: CourseInput = { totalGainFt: 0, totalLossFt: 0, climbs: [] };
 
-const FEET_PER_MILE = 5280;
+export const FEET_PER_MILE = 5280; // exported for the same reason as the other primitives above -- a plain unit conversion, not a modeling choice, shared with any other course-data consumer (e.g. the Course Comparator) that needs to convert course-analysis.ts's decimal grade into feet/mile
 
 /**
  * Converts a GPS route's own analyzed per-mile grade (course-analysis.ts's
@@ -129,8 +129,14 @@ function flatPaceDeltaForMile(mile: number, strategy: StartStrategy): number {
   return PROGRESSIVE_OPENING_MILE1_DELTA_SEC * rampFraction;
 }
 
-/** Net elevation change (feet) for one mile -- from the GPS route's own per-mile grade when available, otherwise from the named climbs that cover it. */
-function netGradeFtForMile(mile: number, course: CourseInput): number {
+/**
+ * Net elevation change (feet) for one mile -- from the GPS route's own
+ * per-mile grade when available, otherwise from the named climbs that
+ * cover it. Exported so other tools built on the same course model (the
+ * Course Comparator) can read a course's per-mile grade directly, without
+ * going through a full fixed-length marathon pacing plan to get it.
+ */
+export function netGradeFtForMile(mile: number, course: CourseInput): number {
   if (course.perMileNetGradeFt) {
     return course.perMileNetGradeFt[mile - 1] ?? 0;
   }
@@ -146,7 +152,8 @@ function netGradeFtForMile(mile: number, course: CourseInput): number {
   return net;
 }
 
-function gradeAdjustSecPerMile(netGradeFt: number): number {
+/** The grade heuristic itself: feet of net elevation change for one mile -> the seconds/mile adjustment to apply. Exported for the same reason as netGradeFtForMile above -- the Course Comparator reuses this exact function rather than re-deriving its own version of the same +12/-6 sec-per-100ft rule. */
+export function gradeAdjustSecPerMile(netGradeFt: number): number {
   if (Math.abs(netGradeFt) <= FEET_PER_MILE_NOISE_THRESHOLD) return 0;
   const magnitudeHundredFt = Math.abs(netGradeFt) / 100;
   return netGradeFt > 0

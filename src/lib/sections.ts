@@ -4187,6 +4187,15 @@ export const sections: Section[] = [
     lastUpdated: "2026-10-19",
   },
   {
+    slug: "course-comparator",
+    title: "Course Comparator",
+    mission:
+      "Compare two courses head-to-head: side-by-side elevation profiles, a grade-adjusted difficulty delta in seconds per mile, and a plain verdict on which one's harder and why.",
+    topics: ["Side-by-side elevation profiles", "Grade-adjusted difficulty delta", "GPS route or manual course entry"],
+    category: "tools",
+    lastUpdated: "2026-10-19",
+  },
+  {
     slug: "altitude-calculator",
     title: "Altitude Calculator",
     mission:

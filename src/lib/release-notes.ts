@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Course Comparator launched",
+    detail:
+      "A new tool for the question that comes before pacing: which of two courses is actually harder, and by how much. Import a GPS route or enter a course map manually for each side (independently -- GPS vs. GPS, manual vs. manual, or mixed), and it shows side-by-side elevation profiles, each course's gain/loss and hilliest mile, and a grade-adjusted difficulty delta in seconds per mile, using the same grade heuristic the Race Pace Planner already uses.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Marathon Pacing Calculator and Race Pace Planner merged into one tool",
     detail:
       "These two race-day planning tools overlapped enough to be confusing: one took a GPS file and the other a hand-entered course map, but both ultimately answered \"how should I pace this marathon.\" The Race Pace Planner (at /race-pace-planner) is now the one tool, with a GPS-route-or-manual-entry choice up front -- upload a GPX/TCX/FIT file (or import from Strava) and elevation is extracted automatically, or enter total gain/loss and the handful of hills worth naming if you don't have a file. The old /marathon-pacing-calculator URL redirects here.",
