@@ -4183,22 +4183,17 @@ export const sections: Section[] = [
     lastUpdated: "2026-10-17",
   },
   {
-    slug: "endurance-fueling-calculator",
-    title: "Endurance Fueling Calculator",
-    mission:
-      "Science-informed carb, fluid, and sodium targets for endurance efforts, based on your effort intensity, gut training, body weight, and conditions.",
-    topics: ["Carb rate by effort and GI training", "Fluid loss by weight, heat, and intensity", "Sodium loss and target rates"],
-    category: "tools",
-    lastUpdated: "2026-10-17",
-  },
-  {
     slug: "fueling-calculator",
-    title: "Fueling Calculator",
+    title: "Fueling Planner",
     mission:
-      "Turn your body weight and goal time into concrete race-week fueling numbers: an hourly carb rate and gut-training progression, a gel schedule, carb-loading and pre-race breakfast targets, and a caffeine dose.",
-    topics: ["Carb rate target and gut-training progression", "Carb-loading and breakfast gram targets", "Caffeine dosing and timing"],
+      "Plan fueling for a race or a single training run: an effort- and gut-training-adjusted carb rate, a product-specific gel/drink schedule, fluid and sodium targets, and -- in Race mode -- carb-loading, pre-race breakfast, and caffeine timing.",
+    topics: [
+      "Race mode: carb-loading, breakfast, caffeine, gel schedule",
+      "Training-run mode: carb/fluid/sodium targets by effort and conditions",
+      "A 266-product fuel database or a DIY drink recipe",
+    ],
     category: "tools",
-    lastUpdated: "2026-10-17",
+    lastUpdated: "2026-10-19",
   },
 ];
 

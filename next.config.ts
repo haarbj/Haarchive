@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
       // notes/saved-topics dashboard), so the Library category's real slug
       // had to be "archive" instead (see sections.ts's comment on that entry).
       { source: "/writing-and-resources", destination: "/archive", permanent: true },
+      // The Endurance Fueling Calculator and the Fueling Calculator were
+      // unified into one Fueling Planner at the latter's URL (see
+      // fueling-calculator.tsx's Race / Training run mode selector) --
+      // /fueling-calculator is the canonical, primary entry point.
+      { source: "/endurance-fueling-calculator", destination: "/fueling-calculator", permanent: true },
     ];
   },
 };
