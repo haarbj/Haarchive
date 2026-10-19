@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -12,6 +12,7 @@ import {
   Compass,
   Droplet,
   Globe,
+  Link2,
   Map,
   MapPin,
   Minus,
@@ -42,6 +43,12 @@ import {
   type CombinedAdjustment,
   type TimeEstimate,
 } from "@/lib/environmental/combine";
+import {
+  buildShareUrl,
+  parseShareUrlParams,
+  serializeShareUrlParams,
+  type ShareableFields,
+} from "@/lib/environmental/share-url";
 import { altitudeEngine, type AltitudeEngineInput } from "@/lib/environmental/altitude-engine";
 import { preciseAltitudeEngine, type PreciseAltitudeEngineInput } from "@/lib/environmental/precise-altitude-engine";
 import { elevationEngine, type ElevationEngineInput } from "@/lib/environmental/elevation-engine";
@@ -676,15 +683,101 @@ function ManualWeatherFields({
   );
 }
 
+/**
+ * "Copy Link" -- builds the full shareable URL from the current
+ * shareableState memo (the one place that state is computed, shared with
+ * the live-sync effect above) and copies it, showing a brief confirmation.
+ * Tries the async Clipboard API first; falls back to a hidden textarea +
+ * execCommand("copy") for browsers/contexts (e.g. non-HTTPS, older
+ * Safari) where navigator.clipboard isn't available.
+ */
+function CopyLinkButton({ getUrl }: { getUrl: () => string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    const url = getUrl();
+    const showConfirmation = () => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(showConfirmation)
+        .catch(() => fallbackCopy(url, showConfirmation));
+    } else {
+      fallbackCopy(url, showConfirmation);
+    }
+  }
+
+  function fallbackCopy(url: string, onSuccess: () => void) {
+    if (typeof document === "undefined") return;
+    const textarea = document.createElement("textarea");
+    textarea.value = url;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      onSuccess();
+    } catch {
+      // Nothing more to fall back to -- the user can still select the URL from the address bar.
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1.5 rounded-full border border-zinc-900/15 px-3 py-1 text-xs font-semibold text-zinc-700 transition hover:bg-black/5 dark:border-white/20 dark:text-zinc-200 dark:hover:bg-white/10"
+    >
+      {copied ? (
+        <>
+          <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+          Link copied
+        </>
+      ) : (
+        <>
+          <Link2 className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden="true" />
+          Copy Link
+        </>
+      )}
+    </button>
+  );
+}
+
 export function EnvironmentalCalculator() {
   const baseId = useId();
   const persisted = usePersistedJSON<PersistedState>(STORAGE_KEY);
 
-  const [courseType, setCourseType] = usePersistedField<CourseType>(persisted?.courseType, "road");
-  const [distancePreset, setDistancePreset] = usePersistedField<DistancePreset>(persisted?.distancePreset, "5k");
-  const [customDistanceInput, setCustomDistanceInput] = usePersistedField(persisted?.customDistanceInput, "5000");
-  const [repType, setRepType] = usePersistedField<RepType>(persisted?.repType, "400m");
-  const [speedOrEffort, setSpeedOrEffort] = usePersistedField<SpeedOrEffort>(persisted?.speedOrEffort, "constant-effort");
+  // A mount-only read of the current URL's query string -- not reactive
+  // to later edits the way `persisted` is to localStorage (this component
+  // is itself the one writing the URL back out, via the live-sync effect
+  // further down, so there's nothing external left to watch for). Uses
+  // the same useSyncExternalStore trick usePersistedJSON uses for
+  // localStorage, for the same reason: getServerSnapshot returns null for
+  // both the server render AND the client's first (hydration-matching)
+  // render, so `window.location.search` is never read until just after
+  // mount -- reading it synchronously during hydration would otherwise
+  // produce a real server/client mismatch (see use-persisted-field.ts's
+  // own comment on exactly this class of bug).
+  const urlSearch = useSyncExternalStore(
+    () => () => {},
+    () => window.location.search,
+    () => null,
+  );
+  const urlOverrides: Partial<ShareableFields> = useMemo(() => (urlSearch === null ? {} : parseShareUrlParams(urlSearch)), [urlSearch]);
+
+  const [courseType, setCourseType] = usePersistedField<CourseType>(urlOverrides.course ?? persisted?.courseType, "road");
+  const [distancePreset, setDistancePreset] = usePersistedField<DistancePreset>(urlOverrides.dist ?? persisted?.distancePreset, "5k");
+  const [customDistanceInput, setCustomDistanceInput] = usePersistedField(urlOverrides.cdist ?? persisted?.customDistanceInput, "5000");
+  const [repType, setRepType] = usePersistedField<RepType>(urlOverrides.rep ?? persisted?.repType, "400m");
+  const [speedOrEffort, setSpeedOrEffort] = usePersistedField<SpeedOrEffort>(urlOverrides.effort ?? persisted?.speedOrEffort, "constant-effort");
   // A parsed route's full point-by-point data isn't persisted (could be
   // thousands of points) -- re-importing a file or picking a Strava
   // activity again is quick, so this deliberately resets on reload.
@@ -694,14 +787,14 @@ export function EnvironmentalCalculator() {
   // analyzeCourse below) instead of elevation-engine.ts's coarse
   // assumed-grade fallback -- see precise-elevation-engine.ts.
   const [route, setRoute] = useState<ParsedRoute | null>(null);
-  const [timeInput, setTimeInput] = usePersistedField(persisted?.timeInput, "20:00");
-  const [goalMode, setGoalMode] = usePersistedField<GoalMode>(persisted?.goalMode, "analyze");
+  const [timeInput, setTimeInput] = usePersistedField(urlOverrides.t ?? persisted?.timeInput, "20:00");
+  const [goalMode, setGoalMode] = usePersistedField<GoalMode>(urlOverrides.mode ?? persisted?.goalMode, "analyze");
 
-  const [weightInput, setWeightInput] = usePersistedField(persisted?.weightInput, String(WEIGHT_DEFAULT_LBS));
-  const [weightUnit, setWeightUnit] = usePersistedField<WeightUnit>(persisted?.weightUnit, "lbs");
-  const [headingDeg, setHeadingDeg] = usePersistedField(persisted?.headingDeg, 0);
-  const [windProfile, setWindProfile] = usePersistedField<WindProfile>(persisted?.windProfile, "suburban");
-  const [windExposureScore, setWindExposureScore] = usePersistedField(persisted?.windExposureScore, EXPOSURE_LABEL_SCORE.suburban);
+  const [weightInput, setWeightInput] = usePersistedField(urlOverrides.wt ?? persisted?.weightInput, String(WEIGHT_DEFAULT_LBS));
+  const [weightUnit, setWeightUnit] = usePersistedField<WeightUnit>(urlOverrides.wu ?? persisted?.weightUnit, "lbs");
+  const [headingDeg, setHeadingDeg] = usePersistedField(urlOverrides.hd ?? persisted?.headingDeg, 0);
+  const [windProfile, setWindProfile] = usePersistedField<WindProfile>(urlOverrides.wprof ?? persisted?.windProfile, "suburban");
+  const [windExposureScore, setWindExposureScore] = usePersistedField(urlOverrides.wexp ?? persisted?.windExposureScore, EXPOSURE_LABEL_SCORE.suburban);
   const [exposureDetected, setExposureDetected] = useState<{ score: number; label: ExposureLabel } | null>(null);
   const [exposureMessage, setExposureMessage] = useState<string | null>(null);
   // Tracked as its own boolean (not inferred from exposureMessage's text)
@@ -709,42 +802,50 @@ export function EnvironmentalCalculator() {
   // same underlying fact and can never disagree with each other.
   const [exposureDetectionFailed, setExposureDetectionFailed] = useState(false);
 
-  const [elevationGainInput, setElevationGainInput] = usePersistedField(persisted?.elevationGainInput, "0");
-  const [elevationLossInput, setElevationLossInput] = usePersistedField(persisted?.elevationLossInput, "0");
-  const [elevationUnit, setElevationUnit] = usePersistedField<ElevationUnit>(persisted?.elevationUnit, "ft");
+  const [elevationGainInput, setElevationGainInput] = usePersistedField(urlOverrides.egain ?? persisted?.elevationGainInput, "0");
+  const [elevationLossInput, setElevationLossInput] = usePersistedField(urlOverrides.eloss ?? persisted?.elevationLossInput, "0");
+  const [elevationUnit, setElevationUnit] = usePersistedField<ElevationUnit>(urlOverrides.eunit ?? persisted?.elevationUnit, "ft");
 
+  // sourceA (manual vs. auto weather fetch) deliberately has no URL
+  // override -- "auto" depends on a live network fetch that isn't
+  // replayable from a query string, so a shared link always restores in
+  // manual mode with whichever resolved values were actually in effect
+  // when the link was copied (see share-url.ts's module comment).
   const [sourceA, setSourceA] = usePersistedField<WeatherSource>(persisted?.sourceA, "manual");
-  const [tempInputA, setTempInputA] = usePersistedField(persisted?.tempInputA, "59");
-  const [tempUnitA, setTempUnitA] = usePersistedField<TempUnit>(persisted?.tempUnitA, "f");
-  const [rhInputA, setRhInputA] = usePersistedField(persisted?.rhInputA, "50");
-  const [windSpeedInputA, setWindSpeedInputA] = usePersistedField(persisted?.windSpeedInputA, "5");
-  const [windSpeedUnitA, setWindSpeedUnitA] = usePersistedField<WindSpeedUnit>(persisted?.windSpeedUnitA, "mph");
-  const [relativeWindAngleA, setRelativeWindAngleA] = usePersistedField(persisted?.relativeWindAngleA, 0);
-  const [altitudeInputA, setAltitudeInputA] = usePersistedField(persisted?.altitudeInputA, "");
+  const [tempInputA, setTempInputA] = usePersistedField(urlOverrides.tempA ?? persisted?.tempInputA, "59");
+  const [tempUnitA, setTempUnitA] = usePersistedField<TempUnit>(urlOverrides.tuA ?? persisted?.tempUnitA, "f");
+  const [rhInputA, setRhInputA] = usePersistedField(urlOverrides.humA ?? persisted?.rhInputA, "50");
+  const [windSpeedInputA, setWindSpeedInputA] = usePersistedField(urlOverrides.windA ?? persisted?.windSpeedInputA, "5");
+  const [windSpeedUnitA, setWindSpeedUnitA] = usePersistedField<WindSpeedUnit>(urlOverrides.wuA ?? persisted?.windSpeedUnitA, "mph");
+  const [relativeWindAngleA, setRelativeWindAngleA] = usePersistedField(urlOverrides.wdA ?? persisted?.relativeWindAngleA, 0);
+  const [altitudeInputA, setAltitudeInputA] = usePersistedField(urlOverrides.altA ?? persisted?.altitudeInputA, "");
 
   // Conditions B is a "what if" comparison scenario for Convert mode only --
   // deliberately not persisted (nor location/auto-fetch-capable) to keep it
   // a lightweight scratch comparison rather than a second full weather flow.
-  const [tempInputB, setTempInputB] = usePersistedField<string>(undefined, "50");
-  const [tempUnitB, setTempUnitB] = usePersistedField<TempUnit>(undefined, "f");
-  const [rhInputB, setRhInputB] = usePersistedField<string>(undefined, "40");
-  const [windSpeedInputB, setWindSpeedInputB] = usePersistedField<string>(undefined, "0");
-  const [windSpeedUnitB, setWindSpeedUnitB] = usePersistedField<WindSpeedUnit>(undefined, "mph");
-  const [relativeWindAngleB, setRelativeWindAngleB] = usePersistedField<number>(undefined, 0);
-  const [altitudeInputB, setAltitudeInputB] = usePersistedField<string>(undefined, "");
+  // It IS always shareable via the URL though (tempB/humB/windB/etc.),
+  // independent of goalMode -- see share-url.ts's module comment on why
+  // Conditions B always round-trips rather than only in Convert mode.
+  const [tempInputB, setTempInputB] = usePersistedField<string>(urlOverrides.tempB, "50");
+  const [tempUnitB, setTempUnitB] = usePersistedField<TempUnit>(urlOverrides.tuB, "f");
+  const [rhInputB, setRhInputB] = usePersistedField<string>(urlOverrides.humB, "40");
+  const [windSpeedInputB, setWindSpeedInputB] = usePersistedField<string>(urlOverrides.windB, "0");
+  const [windSpeedUnitB, setWindSpeedUnitB] = usePersistedField<WindSpeedUnit>(urlOverrides.wuB, "mph");
+  const [relativeWindAngleB, setRelativeWindAngleB] = usePersistedField<number>(urlOverrides.wdB, 0);
+  const [altitudeInputB, setAltitudeInputB] = usePersistedField<string>(urlOverrides.altB, "");
 
-  const [workoutType, setWorkoutType] = usePersistedField<WorkoutType>(persisted?.workoutType, "tempo");
+  const [workoutType, setWorkoutType] = usePersistedField<WorkoutType>(urlOverrides.wtype ?? persisted?.workoutType, "tempo");
   // Set only when an imported activity's title/distance/elevation produced
   // an automatic guess -- drives the "We detected this as..." + Change
   // framing so the user only has to intervene when the guess is wrong,
   // rather than always being asked to classify the run themselves.
   const [workoutTypeGuess, setWorkoutTypeGuess] = useState<WorkoutTypeGuess | null>(null);
   const [showWorkoutTypeOverride, setShowWorkoutTypeOverride] = useState(false);
-  const [workoutPaceInput, setWorkoutPaceInput] = usePersistedField(persisted?.workoutPaceInput, "7:00");
-  const [paceDisplayUnit, setPaceDisplayUnit] = usePersistedField<PaceDisplayUnit>(persisted?.paceDisplayUnit, "mi");
-  const [workoutInputMode, setWorkoutInputMode] = usePersistedField<WorkoutInputMode>(persisted?.workoutInputMode, "distance");
-  const [workoutDistanceInput, setWorkoutDistanceInput] = usePersistedField(persisted?.workoutDistanceInput, "4");
-  const [workoutDurationInput, setWorkoutDurationInput] = usePersistedField(persisted?.workoutDurationInput, "28:00");
+  const [workoutPaceInput, setWorkoutPaceInput] = usePersistedField(urlOverrides.wpace ?? persisted?.workoutPaceInput, "7:00");
+  const [paceDisplayUnit, setPaceDisplayUnit] = usePersistedField<PaceDisplayUnit>(urlOverrides.pu ?? persisted?.paceDisplayUnit, "mi");
+  const [workoutInputMode, setWorkoutInputMode] = usePersistedField<WorkoutInputMode>(urlOverrides.wmode ?? persisted?.workoutInputMode, "distance");
+  const [workoutDistanceInput, setWorkoutDistanceInput] = usePersistedField(urlOverrides.wdist ?? persisted?.workoutDistanceInput, "4");
+  const [workoutDurationInput, setWorkoutDurationInput] = usePersistedField(urlOverrides.wdur ?? persisted?.workoutDurationInput, "28:00");
 
   const [showAdvanced, setShowAdvanced] = usePersistedField(persisted?.showAdvanced, false);
   const [showEducation, setShowEducation] = usePersistedField(persisted?.showEducation, false);
@@ -823,6 +924,99 @@ export function EnvironmentalCalculator() {
     showAdvanced,
     showEducation,
   ]);
+
+  // Every result-affecting input, shaped to the share-url.ts schema --
+  // the single source both the live URL-sync effect below and the Copy
+  // Link buttons read from, so there's exactly one place that lists every
+  // shareable field rather than two independently-maintained copies.
+  const shareableState: ShareableFields = useMemo(
+    () => ({
+      mode: goalMode,
+      course: courseType,
+      dist: distancePreset,
+      cdist: customDistanceInput,
+      rep: repType,
+      effort: speedOrEffort,
+      t: timeInput,
+      wt: weightInput,
+      wu: weightUnit,
+      hd: headingDeg,
+      wprof: windProfile,
+      wexp: windExposureScore,
+      egain: elevationGainInput,
+      eloss: elevationLossInput,
+      eunit: elevationUnit,
+      tempA: tempInputA,
+      tuA: tempUnitA,
+      humA: rhInputA,
+      windA: windSpeedInputA,
+      wuA: windSpeedUnitA,
+      wdA: relativeWindAngleA,
+      altA: altitudeInputA,
+      tempB: tempInputB,
+      tuB: tempUnitB,
+      humB: rhInputB,
+      windB: windSpeedInputB,
+      wuB: windSpeedUnitB,
+      wdB: relativeWindAngleB,
+      altB: altitudeInputB,
+      wtype: workoutType,
+      wpace: workoutPaceInput,
+      wmode: workoutInputMode,
+      wdist: workoutDistanceInput,
+      wdur: workoutDurationInput,
+      pu: paceDisplayUnit,
+    }),
+    [
+      goalMode,
+      courseType,
+      distancePreset,
+      customDistanceInput,
+      repType,
+      speedOrEffort,
+      timeInput,
+      weightInput,
+      weightUnit,
+      headingDeg,
+      windProfile,
+      windExposureScore,
+      elevationGainInput,
+      elevationLossInput,
+      elevationUnit,
+      tempInputA,
+      tempUnitA,
+      rhInputA,
+      windSpeedInputA,
+      windSpeedUnitA,
+      relativeWindAngleA,
+      altitudeInputA,
+      tempInputB,
+      tempUnitB,
+      rhInputB,
+      windSpeedInputB,
+      windSpeedUnitB,
+      relativeWindAngleB,
+      altitudeInputB,
+      workoutType,
+      workoutPaceInput,
+      workoutInputMode,
+      workoutDistanceInput,
+      workoutDurationInput,
+      paceDisplayUnit,
+    ],
+  );
+
+  // Keeps the address bar itself shareable without a button click --
+  // replaceState (never pushState) so this never pollutes browser back/
+  // forward history with one entry per keystroke, and debounced so a fast
+  // typist doesn't trigger a history write on every character.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const query = serializeShareUrlParams(shareableState);
+      window.history.replaceState(null, "", `${window.location.pathname}?${query}`);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [shareableState]);
 
   // Automatically estimate wind exposure from map data whenever a real
   // location becomes available -- a route's own GPS centroid takes
@@ -2146,7 +2340,10 @@ export function EnvironmentalCalculator() {
         <div>
           <p className={sectionLabelClass}>Result</p>
           <div className={heroCardClass}>
-            <p className={statLabelClass}>Recommended Workout Pace</p>
+            <div className="flex items-start justify-between gap-3">
+              <p className={statLabelClass}>Recommended Workout Pace</p>
+              <CopyLinkButton getUrl={() => buildShareUrl(window.location.pathname, shareableState, window.location.origin)} />
+            </div>
             {courseType === "track" ? (
               <>
                 <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">Planned time for this rep</p>
@@ -2334,7 +2531,10 @@ export function EnvironmentalCalculator() {
           <p className={sectionLabelClass}>Result</p>
           <div className={`${heroCardClass} ${courseType === "track" ? "flex flex-col gap-6 sm:flex-row sm:items-start" : ""}`}>
             <div className="flex-1">
-              <p className={statLabelClass}>{copy.resultLabel}</p>
+              <div className="flex items-start justify-between gap-3">
+                <p className={statLabelClass}>{copy.resultLabel}</p>
+                <CopyLinkButton getUrl={() => buildShareUrl(window.location.pathname, shareableState, window.location.origin)} />
+              </div>
               <p className="mt-1 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
                 {formatTime(outcome.estimateSeconds)}
               </p>
