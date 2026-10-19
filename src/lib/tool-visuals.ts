@@ -6,6 +6,7 @@ import {
   Compass,
   Flag,
   Gauge,
+  GitCompare,
   HeartPulse,
   Milestone,
   MountainSnow,
@@ -97,6 +98,11 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   // this file's own header comment on why that puts it here, not in
   // Environment.
   "race-pace-planner": { icon: Milestone, accentFrom: "#14b8a6", accentTo: "#0f766e", category: "pacing" },
+  // Same grade heuristic as race-pace-planner above, applied to a
+  // comparison question ("which course is harder") instead of a single
+  // course's own pacing plan -- still Pacing, by the same "what it gives
+  // back, not what it consumes" rule this file's header comment states.
+  "course-comparator": { icon: GitCompare, accentFrom: "#8b5cf6", accentTo: "#6d28d9", category: "pacing" },
   // Environment -- adjusts effort/pace for grade, heat, altitude, or
   // weather, rather than predicting fitness from a result or producing a
   // pacing plan.
