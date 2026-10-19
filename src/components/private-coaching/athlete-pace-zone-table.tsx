@@ -663,15 +663,16 @@ export function AthletePaceZoneTable({ suggestions }: { suggestions: SuggestedRe
               </summary>
               <div className={detailsBodyClass}>
                 <p>
-                  Uses the same model as the{" "}
+                  Uses the same model as the second, independently-derived model shown in the{" "}
                   <Link
-                    href="/altitude-adjusted-pace-calculator"
+                    href="/altitude-calculator"
                     className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
                   >
-                    Altitude-Adjusted Pace calculator
+                    Altitude Calculator&rsquo;s
                   </Link>{" "}
-                  (also from John Davis / Running Writings), applied to each zone&rsquo;s pace boundary the same way
-                  that calculator&rsquo;s own &ldquo;Pace&rdquo; entry mode treats a single pace: as a full
+                  Performance mode (also from John Davis / Running Writings), applied to each zone&rsquo;s pace
+                  boundary the same way that calculator&rsquo;s own &ldquo;Pace&rdquo; entry mode treats a single
+                  pace: as a full
                   performance over the reference distance (5K or marathon), converted from sea level to your home
                   altitude, then converted back to a pace. This answers &ldquo;what should I actually run at my
                   altitude for the same effort,&rdquo; not &ldquo;how would a sea-level race translate on race

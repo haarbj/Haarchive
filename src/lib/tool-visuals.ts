@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
-  ArrowUpDown,
   CloudSun,
   Compass,
   Flag,
@@ -107,18 +106,10 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   "gap-calculator": { icon: Mountain, accentFrom: "#4ade80", accentTo: "#166534", category: "environment" },
   "environmental-calculator": { icon: CloudSun, accentFrom: "#06b6d4", accentTo: "#0ea5e9", category: "environment" },
   "heat-tracker": { icon: Thermometer, accentFrom: "#f97316", accentTo: "#dc2626", category: "environment" },
+  // Unifies what were two separate tools -- VO2max/capacity conversion and
+  // a specific performance's pace/time conversion -- behind one mode
+  // toggle (see altitude-calculator.tsx's own header comment).
   "altitude-calculator": { icon: MountainSnow, accentFrom: "#94a3b8", accentTo: "#312e81", category: "environment" },
-  // Converts one specific performance between altitudes -- a genuinely
-  // different question from altitude-calculator's VO2max/capacity
-  // conversion (see that tool's own "Behind the calculator" section for
-  // the distinction), but still squarely an environmental adjustment, not
-  // a from-scratch pace prediction.
-  "altitude-adjusted-pace-calculator": {
-    icon: ArrowUpDown,
-    accentFrom: "#0891b2",
-    accentTo: "#1e3a8a",
-    category: "environment",
-  },
   // Physiology -- a population physiological reference, not a personal
   // pace prediction or a conditions adjustment; its own category rather
   // than folded into either of the other two for that reason, even though

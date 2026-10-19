@@ -37,7 +37,6 @@ import { TinmanCalculator } from "@/components/tinman-calculator";
 import { MarathonPacingCalculator } from "@/components/marathon-pacing-calculator";
 import { RacePacePlanner } from "@/components/race-pace-planner";
 import { AltitudeCalculator } from "@/components/altitude-calculator";
-import { AltitudeAdjustedPaceCalculator } from "@/components/altitude-adjusted-pace-calculator";
 import { FuelingCalculator } from "@/components/fueling-calculator";
 import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
 import { HeatTracker } from "@/components/heat-tracker";
@@ -69,7 +68,6 @@ const sectionTools: Record<string, ComponentType> = {
   "marathon-pacing-calculator": MarathonPacingCalculator,
   "race-pace-planner": RacePacePlanner,
   "altitude-calculator": AltitudeCalculator,
-  "altitude-adjusted-pace-calculator": AltitudeAdjustedPaceCalculator,
   "fueling-calculator": FuelingCalculator,
   "workout-builder": WorkoutBuilder,
   "training-plans": TrainingPlansHome,

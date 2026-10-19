@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
       // fueling-calculator.tsx's Race / Training run mode selector) --
       // /fueling-calculator is the canonical, primary entry point.
       { source: "/endurance-fueling-calculator", destination: "/fueling-calculator", permanent: true },
+      // The Altitude-Adjusted Pace Calculator and the Altitude Calculator
+      // were unified into one Altitude Calculator with a VO2max/Performance
+      // mode toggle (see altitude-calculator.tsx's own header comment) --
+      // /altitude-calculator is the canonical, primary entry point.
+      { source: "/altitude-adjusted-pace-calculator", destination: "/altitude-calculator", permanent: true },
     ];
   },
 };
