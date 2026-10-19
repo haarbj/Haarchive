@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
+import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
@@ -14,6 +15,7 @@ type CoachProfile = {
   coach_display_name: string | null;
   coach_bio: string | null;
   coach_philosophy: string | null;
+  avatar_url: string | null;
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,19 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!session?.isCoachedAthlete) return { title: "Coach Profile", robots: { index: false, follow: false } };
 
   const supabase = await createClient();
-  const { data: relationship } = await supabase
-    .from("coach_athletes")
-    .select("coach_id")
-    .eq("athlete_id", session.userId)
-    .eq("status", "active")
-    .limit(1)
-    .maybeSingle<{ coach_id: string }>();
+  const relationship = await getActiveCoachRelationship(supabase, session.userId);
   if (!relationship) return { title: "Coach Profile", robots: { index: false, follow: false } };
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("display_name, coach_display_name")
-    .eq("id", relationship.coach_id)
+    .eq("id", relationship.coachId)
     .maybeSingle<{ display_name: string; coach_display_name: string | null }>();
   const name = profile?.coach_display_name || profile?.display_name || "Your Coach";
   return { title: name, robots: { index: false, follow: false } };
@@ -49,19 +45,13 @@ export default async function CoachProfilePage() {
   if (!session?.isCoachedAthlete) redirect("/coaching");
 
   const supabase = await createClient();
-  const { data: relationship } = await supabase
-    .from("coach_athletes")
-    .select("coach_id")
-    .eq("athlete_id", session.userId)
-    .eq("status", "active")
-    .limit(1)
-    .maybeSingle<{ coach_id: string }>();
+  const relationship = await getActiveCoachRelationship(supabase, session.userId);
   if (!relationship) redirect("/coaching");
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, coach_display_name, coach_bio, coach_philosophy")
-    .eq("id", relationship.coach_id)
+    .select("display_name, coach_display_name, coach_bio, coach_philosophy, avatar_url")
+    .eq("id", relationship.coachId)
     .maybeSingle<CoachProfile>();
 
   const name = profile?.coach_display_name || profile?.display_name || "Your Coach";
@@ -69,7 +59,19 @@ export default async function CoachProfilePage() {
   return (
     <Container variant="narrow">
       <BackLink href="/coaching">My Coaching</BackLink>
-      <Heading>{name}</Heading>
+      <div className="flex items-center gap-4">
+        {profile?.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL, same pattern as community/[id]/page.tsx
+          <img
+            src={profile.avatar_url}
+            alt=""
+            className="h-16 w-16 rounded-full border border-black/10 object-cover dark:border-white/10"
+          />
+        ) : (
+          <div className="h-16 w-16 rounded-full bg-black/5 dark:bg-white/10" />
+        )}
+        <Heading variant="compact">{name}</Heading>
+      </div>
       {profile?.coach_bio ? (
         <p className="mt-3 text-lg leading-8 text-zinc-600 dark:text-zinc-300">{profile.coach_bio}</p>
       ) : null}

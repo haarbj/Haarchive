@@ -9,6 +9,7 @@ import { addDays } from "@/lib/coaching-engine";
 import { mostRecentMonday } from "@/lib/week";
 import type { WorkoutType } from "@/lib/coaching-engine";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
+import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
 import { loadCoachHomeData } from "./coach-home-data";
 import { CoachTrainsSelfPrompt } from "@/components/private-coaching/coach-trains-self-prompt";
 import { SelfCoachPrompt } from "@/components/private-coaching/self-coach-prompt";
@@ -34,8 +35,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   return { title, robots: { index: false, follow: false } };
 }
 
-type CoachRow = { coach_id: string };
-type Profile = { display_name: string; coach_display_name: string | null };
+type Profile = { display_name: string; coach_display_name: string | null; avatar_url: string | null };
 type UpcomingWorkout = {
   id: string;
   scheduled_date: string;
@@ -271,26 +271,20 @@ async function CoachHomeSection({ userId }: { userId: string }) {
 
 async function AthleteHomeSection({ userId }: { userId: string }) {
   const supabase = await createClient();
-  const { data: relationship } = await supabase
-    .from("coach_athletes")
-    .select("coach_id")
-    .eq("athlete_id", userId)
-    .eq("status", "active")
-    .limit(1)
-    .maybeSingle<CoachRow>();
+  const relationship = await getActiveCoachRelationship(supabase, userId);
   const { data: coachProfile } = relationship
     ? await supabase
         .from("profiles")
-        .select("display_name, coach_display_name")
-        .eq("id", relationship.coach_id)
+        .select("display_name, coach_display_name, avatar_url")
+        .eq("id", relationship.coachId)
         .maybeSingle<Profile>()
     : { data: null };
   const coachName = coachProfile?.coach_display_name || coachProfile?.display_name;
-  const isSelfCoached = relationship?.coach_id === userId;
+  const isSelfCoached = relationship?.isSelfCoached ?? true;
   // Pace Zone Table is scoped to admin-coached athletes only (see
   // coaching/pace-zones/page.tsx's own gate) -- hidden here rather than
   // shown as a dead-end link that would just redirect back to this page.
-  const coachEmail = relationship ? await getUserEmailById(relationship.coach_id) : null;
+  const coachEmail = relationship && !relationship.isSelfCoached ? await getUserEmailById(relationship.coachId) : null;
   const showPaceZoneTool = isAdminEmail(coachEmail);
 
   // A quiet, sorted list -- not a month grid -- reads as editorial rather
@@ -328,7 +322,22 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
 
   return (
     <div>
-      <p className="max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+      {!isSelfCoached && coachName ? (
+        <Link href="/coaching/coach-profile" className="group flex items-center gap-3">
+          {coachProfile?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element -- arbitrary external URL, same pattern as community/[id]/page.tsx
+            <img
+              src={coachProfile.avatar_url}
+              alt=""
+              className="h-12 w-12 rounded-full border border-black/10 object-cover dark:border-white/10"
+            />
+          ) : (
+            <div className="h-12 w-12 rounded-full bg-black/5 dark:bg-white/10" />
+          )}
+          <span className="text-lg font-semibold text-zinc-900 group-hover:underline dark:text-white">{coachName}</span>
+        </Link>
+      ) : null}
+      <p className="mt-2 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {isSelfCoached
           ? "You're coaching yourself."
           : coachName

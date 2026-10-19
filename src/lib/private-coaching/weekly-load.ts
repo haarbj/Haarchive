@@ -27,12 +27,18 @@ export type WeeklyLoadResult = {
   estimatedCount: number;
 };
 
-// Scheduled totals count EVERY entry regardless of publish status -- this
-// footer is a coach-only view of the coach's own planning work (its one
-// caller, week-calendar.tsx, lives under /coaching/athletes/[athleteId]/
-// schedule; nothing athlete-facing reads this module), so a draft isn't
-// hidden information the coach needs protecting from -- it's exactly the
-// content they're actively building and need an honest running total for.
+// Scheduled totals count EVERY entry regardless of publish status. For
+// week-calendar.tsx (/coaching/athletes/[athleteId]/schedule, the coach's
+// own planning view), that's deliberate -- a draft isn't hidden
+// information the coach needs protecting from, it's exactly the content
+// they're actively building and need an honest running total for. The
+// athlete-facing /plan week view (plan-view.tsx, via
+// assigned-week-workouts.ts) is the other caller -- it only ever passes
+// already-published entries in (drafts are filtered out well before they
+// reach this function, see publishedAssignedWorkoutsThisWeek), so the
+// "count everything" behavior here never actually surfaces a draft to an
+// athlete; this function itself just stays agnostic about publish state
+// either way, same as it always has.
 // A previous revision gated this on `publishedAt` (carried over from an
 // earlier footer that predates this module), which meant a week that was
 // entirely drafts -- the normal state while a coach is still laying out

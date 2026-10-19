@@ -11,11 +11,18 @@ import {
 } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
+import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
+import { publishedAssignedWorkoutsThisWeek, weeklyLoadEntriesFromAssignedWorkouts } from "@/lib/private-coaching/assigned-week-workouts";
+import { computeWeeklyLoad, formatWeeklyLoadText } from "@/lib/private-coaching/weekly-load";
+import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
+import { fetchCalendarWorkouts, summarizeWorkoutFigure } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-data";
+import type { CalendarWorkout } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-types";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 import { TeamScheduleView } from "./team-schedule-view";
 import { WorkoutCard } from "./workout-card";
 import { Card } from "@/components/ui/card";
+import { CardLink } from "@/components/ui/card-link";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 
@@ -65,6 +72,42 @@ function ReadOnlyWorkoutRow({ workout, completion }: { workout: WorkoutRow; comp
         )}
       </div>
     </Card>
+  );
+}
+
+// A coach-assigned workout (scheduled_workouts), rendered alongside this
+// page's own self-serve WorkoutCard/ReadOnlyWorkoutRow list -- links
+// straight into /coaching/workouts/[id], the exact same page a
+// workout_assigned notification links to, rather than reimplementing
+// completion here. "Completing it from the grid works the same as from
+// the notification link" is true by construction: it's the same link.
+function AssignedWorkoutRow({ workout }: { workout: CalendarWorkout }) {
+  const figure = summarizeWorkoutFigure(
+    getWorkoutDisplayLabel(workout.dayLabel, workout.title),
+    workout.resolvedDistanceM ?? workout.plannedDistanceM,
+    workout.resolvedDistanceMaxM ?? workout.plannedDistanceMaxM,
+    workout.resolvedDurationS ?? workout.plannedDurationS,
+    workout.resolvedDurationMaxS ?? workout.plannedDurationMaxS,
+  );
+  const isCompleted = workout.status === "completed";
+  return (
+    <CardLink href={`/coaching/workouts/${workout.id}`} padding="sm">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <p className="text-sm font-semibold text-zinc-900 group-hover:underline dark:text-white">
+            {formatDate(workout.scheduledDate)} · {figure}
+          </p>
+          {workout.notesFromCoach ? (
+            <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-300">{workout.notesFromCoach}</p>
+          ) : null}
+        </div>
+        {isCompleted && (
+          <Badge tone="success" className="shrink-0">
+            Completed
+          </Badge>
+        )}
+      </div>
+    </CardLink>
   );
 }
 
@@ -193,6 +236,37 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
     (completions ?? []).map((c) => [c.workout_id, coachView ? { ...c, strava_activity_id: null } : c]),
   );
 
+  // Coach-assigned workouts (scheduled_workouts) are a completely separate
+  // table from this page's self-serve workouts/training_plans -- an
+  // athlete with an active coach_athletes relationship (self-coach or a
+  // real coach) can have both at once, and this page previously only ever
+  // queried the self-serve table, so a coach-assigned workout never
+  // appeared here even though it was fully visible and completable from
+  // its own notification link (/coaching/workouts/[id]). Scoped to the
+  // self-view path only (coachView already has its own dedicated
+  // per-athlete calendar at /coaching/athletes/[athleteId]/schedule --
+  // this fetch is additive here, not a replacement for that view).
+  let assignedWorkouts: CalendarWorkout[] = [];
+  if (!coachView) {
+    const relationship = await getActiveCoachRelationship(supabase, userId);
+    if (relationship) {
+      const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+      const workoutsByDate = await fetchCalendarWorkouts(supabase, userId, relationship.coachId, weekDates, today);
+      assignedWorkouts = publishedAssignedWorkoutsThisWeek(workoutsByDate);
+    }
+  }
+
+  // "Weekly Load" here covers coach-assigned workouts only (the gap this
+  // fix closes) -- self-serve workouts/prescriptions are a separate,
+  // already-working display (the WorkoutCard list below, same as always)
+  // and this doesn't attempt to fold their own distance/duration into one
+  // combined figure, which would mean parsing workoutPrescriptionSchema's
+  // kind-specific union generically here. computeWeeklyLoad/
+  // formatWeeklyLoadText are the exact same functions the coach's own
+  // week-calendar.tsx footer uses -- reused, not reimplemented.
+  const assignedWeeklyLoad = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts), null);
+  const { scheduledText, completedText } = formatWeeklyLoadText(assignedWeeklyLoad, "miles", null);
+
   return (
     <>
       <Heading>
@@ -234,25 +308,38 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
           )}
 
           <div className="mt-8">
-            <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
-              This week
-            </p>
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
+                This week
+              </p>
+              {assignedWorkouts.length > 0 && (
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  <span>Scheduled: {scheduledText}</span>
+                  <span className="mx-1.5">·</span>
+                  <span>Completed: {completedText}</span>
+                </p>
+              )}
+            </div>
             <div className="mt-3 space-y-3">
-              {workouts && workouts.length > 0 ? (
-                workouts.map((workout) =>
-                  coachView ? (
-                    <ReadOnlyWorkoutRow key={workout.id} workout={workout} completion={completionByWorkoutId.get(workout.id) ?? null} />
-                  ) : (
-                    <WorkoutCard
-                      key={workout.id}
-                      workout={workout}
-                      phase={currentMesocycle?.phase ?? null}
-                      distanceBucket={bucket}
-                      completion={completionByWorkoutId.get(workout.id) ?? null}
-                    />
-                  ),
-                )
-              ) : (
+              {workouts && workouts.length > 0
+                ? workouts.map((workout) =>
+                    coachView ? (
+                      <ReadOnlyWorkoutRow key={workout.id} workout={workout} completion={completionByWorkoutId.get(workout.id) ?? null} />
+                    ) : (
+                      <WorkoutCard
+                        key={workout.id}
+                        workout={workout}
+                        phase={currentMesocycle?.phase ?? null}
+                        distanceBucket={bucket}
+                        completion={completionByWorkoutId.get(workout.id) ?? null}
+                      />
+                    ),
+                  )
+                : null}
+              {assignedWorkouts.map((workout) => (
+                <AssignedWorkoutRow key={workout.id} workout={workout} />
+              ))}
+              {(!workouts || workouts.length === 0) && assignedWorkouts.length === 0 && (
                 <p className="text-sm text-zinc-600 dark:text-zinc-300">
                   No workouts scheduled this week.
                 </p>

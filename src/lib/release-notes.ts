@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Fixed: athletes couldn't see their coach or their assigned workouts",
+    detail:
+      "Two bugs found in production QA, both athlete-facing. After accepting a coach's invite, an athlete's /coaching page kept saying \"You're coaching yourself\" -- caused by a self-coaching row and a real-coach row both being active at once, with no guaranteed preference for which one a query returned; coach lookups now always prefer the real relationship. Separately, a coach-assigned workout never showed up on the athlete's own weekly schedule (though it worked fine from its notification link) because that view only ever queried self-created workouts; it now also pulls in assigned ones, including their mileage in the weekly total.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Course Comparator launched",
     detail:
       "A new tool for the question that comes before pacing: which of two courses is actually harder, and by how much. Import a GPS route or enter a course map manually for each side (independently -- GPS vs. GPS, manual vs. manual, or mixed), and it shows side-by-side elevation profiles, each course's gain/loss and hilliest mile, and a grade-adjusted difficulty delta in seconds per mile, using the same grade heuristic the Race Pace Planner already uses.",
