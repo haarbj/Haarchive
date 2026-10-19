@@ -128,6 +128,16 @@ export type Section = {
   mission: string;
   topics: string[];
   category: string;
+  // Optional overrides for the <title>/meta-description tags only (see
+  // generateMetadata in src/app/[slug]/page.tsx) -- `title`/`mission`
+  // stay the single source for the page's own visible H1 and subtitle
+  // (and, for a tool, its Tools-grid card blurb), since a search-engine
+  // snippet is written to a different brief (a hook, a keyword-rich
+  // phrase) than this site's own restrained editorial voice calls for on
+  // the page itself. Falls back to `title`/`mission` when unset, so most
+  // sections need neither field.
+  metaTitle?: string;
+  metaDescription?: string;
   content?: ContentBlock[];
   // Slugs of other sections to show as an index of clickable cards instead
   // of this section's own content -- e.g. "articles" listing individual
@@ -4100,6 +4110,9 @@ export const sections: Section[] = [
     title: "Environmental Performance Calculator",
     mission:
       "Combine heat, humidity, wind, and elevation into one equivalent time -- analyze a past race, predict an upcoming one, or convert between conditions.",
+    metaTitle: "Running Pace Adjuster: Heat, Wind, Humidity & Altitude",
+    metaDescription:
+      "Ran 20:00 in the heat? See what it was really worth. Adjusts your time for temperature, humidity, wind, altitude, and hills -- with a per-factor breakdown showing exactly what slowed you down.",
     topics: ["Equivalent performance", "Environmental breakdown", "Analyze / predict / convert"],
     category: "tools",
   },

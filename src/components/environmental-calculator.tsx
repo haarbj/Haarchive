@@ -2739,6 +2739,74 @@ export function EnvironmentalCalculator() {
         </div>
       )}
 
+      <details className={`${detailsClass} max-w-[64ch]`}>
+        <summary className={summaryClass}>
+          <span
+            aria-hidden="true"
+            className="inline-block text-[10px] text-zinc-500 transition-transform group-open:rotate-90 dark:text-zinc-400"
+          >
+            ▶
+          </span>
+          How the model works
+        </summary>
+        <div className={detailsBodyClass}>
+          <p>
+            One number in, one number out -- with the receipt. You enter a time and the conditions you ran it in. The
+            calculator estimates what that performance was worth under ideal conditions, then shows exactly how much
+            each factor cost you, in seconds per mile.
+          </p>
+          <p className="mt-2">
+            <strong className="font-semibold text-zinc-900 dark:text-white">The baseline.</strong> &ldquo;Ideal&rdquo;
+            means ~50&ndash;59&deg;F, low humidity, calm wind, flat terrain, sea-level altitude. Every adjustment is
+            measured against this same baseline, which is why converting between two real conditions works: the
+            model computes A&nbsp;&rarr;&nbsp;ideal and B&nbsp;&rarr;&nbsp;ideal, and the difference is
+            A&nbsp;&rarr;&nbsp;B.
+          </p>
+          <p className="mt-2 font-semibold text-zinc-900 dark:text-white">The factors:</p>
+          <ul className="mt-2 space-y-2">
+            <li>
+              <strong className="font-semibold text-zinc-900 dark:text-white">Heat.</strong> Temperature slows you
+              down on its own, and the cost compounds with duration -- longer efforts generate more heat over more
+              time. The adjustment accelerates as temperature climbs past the ideal band.
+            </li>
+            <li>
+              <strong className="font-semibold text-zinc-900 dark:text-white">Humidity.</strong> High relative
+              humidity slows sweat evaporation, adding cooling strain on top of the temperature itself. It&rsquo;s
+              modeled as an interaction with heat, not a separate flat penalty.
+            </li>
+            <li>
+              <strong className="font-semibold text-zinc-900 dark:text-white">Wind.</strong> Uses wind speed and
+              direction relative to your heading, adjusted for terrain exposure (a sheltered tree-lined course
+              isn&rsquo;t the same as an open highway). Headwinds cost more than tailwinds give back.
+            </li>
+            <li>
+              <strong className="font-semibold text-zinc-900 dark:text-white">Altitude.</strong> Thinner air costs
+              aerobic performance even on a flat course, and the cost accelerates with height -- 7,000ft costs
+              roughly twice what 5,000ft does.
+            </li>
+            <li>
+              <strong className="font-semibold text-zinc-900 dark:text-white">Elevation.</strong> Total climbing and
+              descending. Climbing costs far more time than descending returns.
+            </li>
+          </ul>
+          <p className="mt-2">
+            <strong className="font-semibold text-zinc-900 dark:text-white">Uncertainty, not false precision.</strong>{" "}
+            Every result ships with a likely range, not just a point estimate. The range widens when the course or
+            elevation data is rough (manual entry) and tightens when it&rsquo;s measured (an imported GPS route).
+            Weather source -- typed in vs. automatically retrieved -- is flagged separately as its own confidence
+            signal, rather than changing the width of the range itself. The confidence panel tells you why -- so you
+            know which inputs to improve.
+          </p>
+          <p className="mt-2">
+            <strong className="font-semibold text-zinc-900 dark:text-white">What this isn&rsquo;t.</strong> It&rsquo;s
+            an estimate, not a lab measurement. Individual heat tolerance, wind sensitivity, and hill strength all
+            vary. Treat the range as a sanity check: if a race went badly in brutal conditions, this shows whether it
+            was still a strong effort. If you&rsquo;re setting a goal, use the low end of the range for a
+            conservative target.
+          </p>
+        </div>
+      </details>
+
       <div>
         <button
           type="button"

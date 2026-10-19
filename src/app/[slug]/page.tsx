@@ -207,20 +207,26 @@ export async function generateMetadata({
     : {};
 
   if (entry) {
+    // metaTitle/metaDescription (Section-only) let a tool page's search
+    // snippet differ from its own visible H1/subtitle -- see the Section
+    // type's own comment in sections.ts for why. Falls back to
+    // title/mission for every section that doesn't set them.
+    const metaTitle = section?.metaTitle ?? entry.title;
+    const metaDescription = section?.metaDescription ?? entry.mission;
     return {
-      title: entry.title,
-      description: entry.mission,
+      title: metaTitle,
+      description: metaDescription,
       ...canonicalUrl(`/${slug}`),
       ...tagFilterRobots,
       openGraph: {
-        title: entry.title,
-        description: entry.mission,
+        title: metaTitle,
+        description: metaDescription,
         images: ["/opengraph-image.png"],
       },
       twitter: {
         card: "summary_large_image",
-        title: entry.title,
-        description: entry.mission,
+        title: metaTitle,
+        description: metaDescription,
         images: ["/opengraph-image.png"],
       },
     };
