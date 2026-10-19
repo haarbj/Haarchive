@@ -13,7 +13,6 @@ import {
   Percent,
   Route,
   Thermometer,
-  Utensils,
   Wheat,
 } from "lucide-react";
 
@@ -123,12 +122,10 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   // Fueling/hydration targets are a physiological prescription, not a
   // pace prediction or a conditions-based pace adjustment -- same
   // reasoning that puts hr-threshold-calculator here rather than in
-  // Environment despite temperature being one of its inputs.
-  "endurance-fueling-calculator": { icon: Utensils, accentFrom: "#f59e0b", accentTo: "#b45309", category: "physiology" },
-  // A race-week fueling prescription (carb-loading, breakfast, caffeine,
-  // and a gel schedule from a flat goal duration), not a per-hour target
-  // driven by effort intensity -- same category as
-  // endurance-fueling-calculator for the same reason, a distinct icon and
-  // color since the two are siblings, not the same tool twice.
+  // Environment despite temperature being one of its inputs. Formerly
+  // two siblings (a race-week prescription and a per-hour effort-driven
+  // model) that have since been unified into one tool with a Race /
+  // Training run mode selector -- see fueling-calculator.tsx's own header
+  // comment and fueling-calculator-math.ts's resolveCarbTargetGPerHour.
   "fueling-calculator": { icon: Wheat, accentFrom: "#ca8a04", accentTo: "#854d0e", category: "physiology" },
 };

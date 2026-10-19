@@ -18,10 +18,37 @@
 // and takes a single target rate as a given, the same way the Race Pace
 // Planner takes a goal pace as a given rather than predicting it.
 
+import { suggestedCarbsPerHour, type GiTrainingLevel, type HeartRateZone } from "@/lib/endurance-fueling-math";
 import { caffeinePreloadDoseMg } from "@/lib/fueling-products";
 import { buildGelTimingSchedule, caffeineTiming, mouthRinseRecommended, PRE_RACE_GEL_MINUTES_BEFORE_START } from "@/lib/fueling-schedule-core";
 
-export const DEFAULT_TARGET_CARB_G_PER_HOUR = 60; // ACSM/ISSN-consistent default for an effort of marathon length or longer, with multiple transportable carb sources (glucose + fructose)
+export const DEFAULT_TARGET_CARB_G_PER_HOUR = 60; // ACSM/ISSN-consistent flat default, kept as the fallback for any caller that doesn't have an effort level to work from
+
+// --- Fueling Planner: shared mode/target logic ------------------------------
+//
+// The Fueling Planner (this tool's unified race/training-run form) resolves
+// one target carb rate for both modes, rather than the Fueling Calculator's
+// old flat DEFAULT_TARGET_CARB_G_PER_HOUR above: suggestedCarbsPerHour
+// (endurance-fueling-math.ts's reverse-engineered HR-zone x GI-training
+// lookup table) is now the suggestion for both race and training-run
+// sessions, and an explicit custom override -- when the runner sets one --
+// still wins, the same "suggestion vs. override" pattern
+// endurance-fueling-math.ts's own UI already used for training runs. This is
+// the resolved conflict between the two original tools' default carb rates
+// (a flat 60g/hr vs. an effort-adjusted 35-120g/hr table): the effort-
+// adjusted figure wins per this tool's own enrichment goal, but nothing is
+// lost -- a runner who wants the old flat 60g/hr can still type it into the
+// override field.
+export type FuelingPlannerMode = "race" | "training";
+
+export function resolveCarbTargetGPerHour(
+  zone: HeartRateZone,
+  giTraining: GiTrainingLevel,
+  customOverrideGPerHour: number | null,
+): number {
+  if (customOverrideGPerHour !== null && customOverrideGPerHour > 0) return customOverrideGPerHour;
+  return suggestedCarbsPerHour(zone, giTraining);
+}
 
 // The gut, not fitness, is what actually limits carb intake during
 // exercise -- SGLT1 (the glucose transporter) and GLUT5 (the fructose
