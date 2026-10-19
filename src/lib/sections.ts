@@ -4143,6 +4143,15 @@ export const sections: Section[] = [
     category: "tools",
   },
   {
+    slug: "workout-builder",
+    title: "Workout Builder",
+    mission:
+      "Turn a training pace from any of this site's pace calculators into a complete interval session -- warmup, a repeated work/recovery main set, and cooldown -- with totals and a step sequence you can program straight onto a GPS watch.",
+    topics: ["Reps x distance or time @ pace", "Jog/walk/stand recovery", "A ready-to-program watch summary"],
+    category: "tools",
+    lastUpdated: "2026-10-19",
+  },
+  {
     slug: "marathon-pacing-calculator",
     title: "Marathon Pacing Calculator",
     mission:

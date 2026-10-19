@@ -802,6 +802,15 @@ export function PaceCalculator() {
                 />
               </div>
 
+              <p className="mt-4 text-xs text-zinc-600 dark:text-zinc-300">
+                <Link
+                  href="/workout-builder"
+                  className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+                >
+                  Build a workout with these paces →
+                </Link>
+              </p>
+
               {showAdvanced && (
                 <div className="mt-6 overflow-x-auto">
                   <p className={sectionLabelClass}>Workout pace reference</p>
