@@ -21,8 +21,8 @@ import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
 import { sectionLabelClass, statCardClass } from "@/lib/tool-styles";
 
 // Fetched once and cached at module scope, same pattern as
-// cv-threshold-calculator.tsx and marathon-pacing-calculator.tsx's own
-// copies of this exact loader -- each consumer of the statistical model
+// cv-threshold-calculator.tsx's own copy of this exact loader -- each
+// consumer of the statistical model
 // keeps its own small cache rather than sharing one, which is this
 // codebase's existing convention for this file, not something introduced
 // here.

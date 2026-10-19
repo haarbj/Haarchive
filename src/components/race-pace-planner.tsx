@@ -1,12 +1,14 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 
+import { RouteImportPanel } from "@/components/route-import-panel";
 import { SaveCalculationButton } from "@/components/save-calculation-button";
 import { Button } from "@/components/ui/button";
 import { LabeledInput } from "@/components/ui/labeled-input";
+import { analyzeCourse, type CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { evaluateConditions, type ConditionsInput } from "@/lib/race-pace-planner/conditions";
 import { buildFuelingSchedule } from "@/lib/race-pace-planner/fueling-plan";
 import {
@@ -14,11 +16,15 @@ import {
   buildCheckpoints,
   buildRacePacePlan,
   formatPace,
+  MARATHON_MILES,
+  perMileNetGradeFtFromCourseAnalysis,
   type PlanMile,
   type RaceClimb,
   type StartStrategy,
 } from "@/lib/race-pace-planner/pace-plan";
 import { fieldClass, labelClass } from "@/lib/form-styles";
+import type { ParsedRoute } from "@/lib/route-import/types";
+import type { RouteSummary } from "@/lib/route-import/route-summary";
 import { formatClock, parseTimeToSeconds } from "@/lib/running-format";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
 import {
@@ -35,9 +41,12 @@ import {
 const STORAGE_KEY = "haarchive-race-pace-planner-state";
 const DEFAULT_CLIMB: RaceClimb = { atMile: 10, lengthMiles: 1, feet: 150, direction: "climb" };
 
+type CourseMode = "gps" | "manual";
+
 type PersistedState = {
   goalTimeInput: string;
   strategy: StartStrategy;
+  courseMode: CourseMode;
   totalGainFtInput: string;
   totalLossFtInput: string;
   climbs: RaceClimb[];
@@ -59,23 +68,58 @@ const EFFORT_TONE: Record<PlanMile["effort"], string> = {
   "Strong finish": "text-emerald-700 dark:text-emerald-400",
 };
 
-// A race-day planner that turns a goal pace, a sketch of the course's
-// hills, and expected conditions into a mile-by-mile plan, a fueling
-// schedule, and segment-by-segment mental strategy -- the "what do I
-// actually do on race day" layer, not a fitness-prediction model. See
-// pace-plan.ts's own module doc for how this deliberately differs in
-// shape from the Marathon Pacing Calculator's GPS/physics engine: this
-// tool works from what a runner can read off a course map (a goal time,
-// total gain/loss, a few named climbs), not an uploaded route file.
+// A race-day planner that turns a goal pace, the course's hills, and
+// expected conditions into a mile-by-mile plan, a fueling schedule, and
+// segment-by-segment mental strategy -- the "what do I actually do on
+// race day" layer, not a fitness-prediction model. Course data comes from
+// either of two input modes: an imported GPS route (GPX/TCX/FIT or
+// Strava, elevation extracted automatically via course-analysis.ts) or a
+// quick manual course-map entry (total gain/loss plus a few named
+// climbs/descents, flat assumed elsewhere). Both modes feed the exact
+// same pacing model -- see pace-plan.ts's own module doc.
 export function RacePacePlanner() {
   const baseId = useId();
   const persisted = usePersistedJSON<PersistedState>(STORAGE_KEY);
 
   const [goalTimeInput, setGoalTimeInput] = usePersistedField(persisted?.goalTimeInput, "3:45:00");
   const [strategy, setStrategy] = usePersistedField<StartStrategy>(persisted?.strategy, "progressive");
+  const [courseMode, setCourseMode] = usePersistedField<CourseMode>(persisted?.courseMode, "manual");
   const [totalGainFtInput, setTotalGainFtInput] = usePersistedField(persisted?.totalGainFtInput, "0");
   const [totalLossFtInput, setTotalLossFtInput] = usePersistedField(persisted?.totalLossFtInput, "0");
   const [climbs, setClimbs] = usePersistedField<RaceClimb[]>(persisted?.climbs, []);
+
+  // The parsed GPS route itself is deliberately not persisted (same
+  // precedent as the Environmental Calculator's own route state) --
+  // re-importing a file is quick, and a route's full point data is too
+  // large to round-trip through localStorage. `routeNotice` surfaces when
+  // a loaded route couldn't be analyzed (e.g. too few GPS points) --
+  // handled by falling back to manual mode with a notice, never by
+  // crashing.
+  const [routeLabel, setRouteLabel] = useState<string | null>(null);
+  const [routeSummary, setRouteSummary] = useState<RouteSummary | null>(null);
+  const [courseAnalysis, setCourseAnalysis] = useState<CourseAnalysis | null>(null);
+  const [routeNotice, setRouteNotice] = useState<string | null>(null);
+
+  function handleRouteLoaded(summary: RouteSummary, label: string, route: ParsedRoute) {
+    try {
+      const analysis = analyzeCourse(route);
+      setRouteSummary(summary);
+      setRouteLabel(label);
+      setCourseAnalysis(analysis);
+      setRouteNotice(null);
+    } catch (error) {
+      // A route with too few usable GPS/elevation points to analyze --
+      // fall back to manual entry rather than leaving the tool stuck with
+      // no usable course data (or, worse, crashing on a malformed file).
+      setRouteSummary(null);
+      setRouteLabel(null);
+      setCourseAnalysis(null);
+      setCourseMode("manual");
+      setRouteNotice(
+        `Couldn't read the elevation from ${label} (${error instanceof Error ? error.message : "unknown error"}) -- switched to manual course entry instead.`,
+      );
+    }
+  }
 
   const [useConditions, setUseConditions] = usePersistedField(persisted?.useConditions, false);
   const [tempFInput, setTempFInput] = usePersistedField(persisted?.tempFInput, "55");
@@ -92,6 +136,7 @@ export function RacePacePlanner() {
       const state: PersistedState = {
         goalTimeInput,
         strategy,
+        courseMode,
         totalGainFtInput,
         totalLossFtInput,
         climbs,
@@ -128,17 +173,26 @@ export function RacePacePlanner() {
   const goalTimeSeconds = parseTimeToSeconds(goalTimeInput);
   const totalGainFt = Number(totalGainFtInput);
   const totalLossFt = Number(totalLossFtInput);
-  const courseValid = Number.isFinite(totalGainFt) && Number.isFinite(totalLossFt);
+  const manualCourseValid = Number.isFinite(totalGainFt) && Number.isFinite(totalLossFt);
 
+  const courseValid = courseMode === "gps" ? courseAnalysis !== null : manualCourseValid;
   const canGeneratePlan = goalTimeSeconds !== null && goalTimeSeconds > 0 && courseValid;
 
-  const plan = canGeneratePlan
-    ? buildRacePacePlan(goalTimeSeconds!, strategy, {
-        totalGainFt: Math.max(0, totalGainFt),
-        totalLossFt: Math.max(0, totalLossFt),
-        climbs,
-      })
-    : null;
+  const plan =
+    canGeneratePlan && courseMode === "gps" && courseAnalysis
+      ? buildRacePacePlan(goalTimeSeconds!, strategy, {
+          totalGainFt: Math.round(courseAnalysis.totalClimbM * 3.28084),
+          totalLossFt: Math.round(courseAnalysis.totalDescentM * 3.28084),
+          climbs: [],
+          perMileNetGradeFt: perMileNetGradeFtFromCourseAnalysis(courseAnalysis),
+        })
+      : canGeneratePlan && courseMode === "manual"
+        ? buildRacePacePlan(goalTimeSeconds!, strategy, {
+            totalGainFt: Math.max(0, totalGainFt),
+            totalLossFt: Math.max(0, totalLossFt),
+            climbs,
+          })
+        : null;
 
   const checkpoints = plan ? buildCheckpoints(plan) : [];
   const hillImpact = plan ? averageHillImpactSecPerMile(plan) : 0;
@@ -193,14 +247,7 @@ export function RacePacePlanner() {
             >
               Threshold, CV &amp; VO2 Max Pace Calculator
             </Link>{" "}
-            and{" "}
-            <Link
-              href="/marathon-pacing-calculator"
-              className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
-            >
-              Marathon Pacing Calculator
-            </Link>{" "}
-            can both help you get there from a recent race.
+            can help you get there from a recent race.
           </p>
           <div>
             <p className={labelClass}>Start strategy</p>
@@ -239,131 +286,233 @@ export function RacePacePlanner() {
 
       <div>
         <p className={sectionLabelClass}>Course</p>
-        <div className={`${statCardClass} space-y-4`}>
-          <div className="flex flex-wrap gap-4">
-            <LabeledInput
-              id={`${baseId}-gain`}
-              label="Total elevation gain (ft)"
-              type="number"
-              inputMode="decimal"
-              min={0}
-              value={totalGainFtInput}
-              onChange={(event) => {
-                setTotalGainFtInput(event.target.value);
-                persistState();
-              }}
-              className="w-32"
-            />
-            <LabeledInput
-              id={`${baseId}-loss`}
-              label="Total elevation loss (ft)"
-              type="number"
-              inputMode="decimal"
-              min={0}
-              value={totalLossFtInput}
-              onChange={(event) => {
-                setTotalLossFtInput(event.target.value);
-                persistState();
-              }}
-              className="w-32"
-            />
-          </div>
-
-          <div>
-            <p className={labelClass}>Notable climbs &amp; descents</p>
-            <p className="mb-2 text-xs text-zinc-600 dark:text-zinc-300">
-              Only the hills big enough to actually change your pacing -- a net change of 15ft/mi or less is roughly
-              5 seconds of noise and gets ignored. This can&rsquo;t discover a short, steep hill in the middle of a
-              mile you haven&rsquo;t named here; for that level of precision from an actual GPS course file, see the{" "}
-              <Link
-                href="/marathon-pacing-calculator"
-                className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
-              >
-                Marathon Pacing Calculator
-              </Link>
-              .
-            </p>
-            <div className="space-y-3">
-              {climbs.map((climb, index) => (
-                <div key={index} className="flex flex-wrap items-end gap-3 rounded-lg border border-black/10 p-3 dark:border-white/10">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => updateClimb(index, { direction: "climb" })}
-                      aria-pressed={climb.direction === "climb"}
-                      className={segmentedButtonClass(climb.direction === "climb")}
-                    >
-                      Climb
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => updateClimb(index, { direction: "descent" })}
-                      aria-pressed={climb.direction === "descent"}
-                      className={segmentedButtonClass(climb.direction === "descent")}
-                    >
-                      Descent
-                    </button>
-                  </div>
-                  <div>
-                    <label htmlFor={`${baseId}-climb-${index}-mile`} className={labelClass}>
-                      At mile
-                    </label>
-                    <input
-                      id={`${baseId}-climb-${index}-mile`}
-                      type="number"
-                      inputMode="decimal"
-                      min={1}
-                      max={26}
-                      value={climb.atMile}
-                      onChange={(event) => updateClimb(index, { atMile: Number(event.target.value) })}
-                      className={`w-20 ${fieldClass}`}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor={`${baseId}-climb-${index}-length`} className={labelClass}>
-                      Length (mi)
-                    </label>
-                    <input
-                      id={`${baseId}-climb-${index}-length`}
-                      type="number"
-                      inputMode="decimal"
-                      min={0.1}
-                      step={0.1}
-                      value={climb.lengthMiles}
-                      onChange={(event) => updateClimb(index, { lengthMiles: Number(event.target.value) })}
-                      className={`w-20 ${fieldClass}`}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor={`${baseId}-climb-${index}-feet`} className={labelClass}>
-                      Elevation change (ft)
-                    </label>
-                    <input
-                      id={`${baseId}-climb-${index}-feet`}
-                      type="number"
-                      inputMode="decimal"
-                      min={0}
-                      value={climb.feet}
-                      onChange={(event) => updateClimb(index, { feet: Number(event.target.value) })}
-                      className={`w-24 ${fieldClass}`}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeClimb(index)}
-                    aria-label={`Remove climb at mile ${climb.atMile}`}
-                    className="ml-auto flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-black/5 hover:text-red-700 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-red-400"
-                  >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <Button variant="outline" size="sm" className="mt-3" onClick={addClimb}>
-              + Add a climb or descent
-            </Button>
-          </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setCourseMode("gps");
+              persistState();
+            }}
+            aria-pressed={courseMode === "gps"}
+            className={segmentedButtonClass(courseMode === "gps")}
+          >
+            GPS route
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setCourseMode("manual");
+              persistState();
+            }}
+            aria-pressed={courseMode === "manual"}
+            className={segmentedButtonClass(courseMode === "manual")}
+          >
+            Course map (manual)
+          </button>
         </div>
+        <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+          {courseMode === "gps"
+            ? "Upload a GPX, TCX, or FIT file (or import from Strava) and this plan uses the route's own real per-mile elevation -- no hill-naming required."
+            : "The quick path: enter total gain/loss and name only the hills big enough to actually matter, flat is assumed everywhere else."}
+        </p>
+
+        {routeNotice && (
+          <p className="mt-3 rounded-lg bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">{routeNotice}</p>
+        )}
+
+        {courseMode === "gps" ? (
+          <div className={`${statCardClass} mt-3 space-y-4`}>
+            <RouteImportPanel onRouteLoaded={handleRouteLoaded} />
+            {!courseAnalysis && (
+              <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                No route loaded yet -- a plan needs a course to adjust for, upload one above or switch to manual
+                entry.
+              </p>
+            )}
+            {courseAnalysis && (
+              <div>
+                <p className={labelClass}>
+                  Parsed elevation profile{routeLabel ? ` -- ${routeLabel}` : ""}
+                </p>
+                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div className={statCardClass}>
+                    <p className={statLabelClass}>Distance</p>
+                    <p className="mt-1 text-sm font-semibold text-zinc-900 dark:text-white">
+                      {(routeSummary!.totalDistanceM / 1609.344).toFixed(1)} mi
+                    </p>
+                  </div>
+                  <div className={statCardClass}>
+                    <p className={statLabelClass}>Total gain</p>
+                    <p className="mt-1 text-sm font-semibold text-zinc-900 dark:text-white">
+                      {Math.round(courseAnalysis.totalClimbM * 3.28084)} ft
+                    </p>
+                  </div>
+                  <div className={statCardClass}>
+                    <p className={statLabelClass}>Total loss</p>
+                    <p className="mt-1 text-sm font-semibold text-zinc-900 dark:text-white">
+                      {Math.round(courseAnalysis.totalDescentM * 3.28084)} ft
+                    </p>
+                  </div>
+                  <div className={statCardClass}>
+                    <p className={statLabelClass}>Miles analyzed</p>
+                    <p className="mt-1 text-sm font-semibold text-zinc-900 dark:text-white">
+                      {Math.min(MARATHON_MILES, courseAnalysis.perMileGrade.length)} / {MARATHON_MILES}
+                    </p>
+                  </div>
+                </div>
+                {courseAnalysis.perMileGrade.length < MARATHON_MILES && (
+                  <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+                    This route is shorter than a full marathon -- miles beyond mile{" "}
+                    {courseAnalysis.perMileGrade.length} are assumed flat.
+                  </p>
+                )}
+                <p className="mt-2 mb-1 text-xs text-zinc-600 dark:text-zinc-300">
+                  Confirm this looks right before generating a plan from it:
+                </p>
+                <div className="max-h-48 overflow-y-auto rounded-lg border border-black/10 dark:border-white/10">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-surface sticky top-0">
+                      <tr className="border-b border-black/10 text-zinc-600 uppercase dark:border-white/10 dark:text-zinc-300">
+                        <th className="py-1.5 pr-3 pl-3">Mile</th>
+                        <th className="py-1.5 pr-3">Net grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {perMileNetGradeFtFromCourseAnalysis(courseAnalysis).map((netFt, i) => (
+                        <tr key={i} className="border-b border-black/5 last:border-0 dark:border-white/5">
+                          <td className="py-1 pr-3 pl-3 font-semibold text-zinc-900 dark:text-white">{i + 1}</td>
+                          <td className="py-1 pr-3 tabular-nums">
+                            {netFt === 0 ? "flat" : `${netFt > 0 ? "+" : ""}${Math.round(netFt)} ft`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className={`${statCardClass} mt-3 space-y-4`}>
+            <div className="flex flex-wrap gap-4">
+              <LabeledInput
+                id={`${baseId}-gain`}
+                label="Total elevation gain (ft)"
+                type="number"
+                inputMode="decimal"
+                min={0}
+                value={totalGainFtInput}
+                onChange={(event) => {
+                  setTotalGainFtInput(event.target.value);
+                  persistState();
+                }}
+                className="w-32"
+              />
+              <LabeledInput
+                id={`${baseId}-loss`}
+                label="Total elevation loss (ft)"
+                type="number"
+                inputMode="decimal"
+                min={0}
+                value={totalLossFtInput}
+                onChange={(event) => {
+                  setTotalLossFtInput(event.target.value);
+                  persistState();
+                }}
+                className="w-32"
+              />
+            </div>
+
+            <div>
+              <p className={labelClass}>Notable climbs &amp; descents</p>
+              <p className="mb-2 text-xs text-zinc-600 dark:text-zinc-300">
+                Only the hills big enough to actually change your pacing -- a net change of 15ft/mi or less is
+                roughly 5 seconds of noise and gets ignored. This can&rsquo;t discover a short, steep hill in the
+                middle of a mile you haven&rsquo;t named here; switch to GPS route above for that level of
+                precision from an actual course file.
+              </p>
+              <div className="space-y-3">
+                {climbs.map((climb, index) => (
+                  <div key={index} className="flex flex-wrap items-end gap-3 rounded-lg border border-black/10 p-3 dark:border-white/10">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => updateClimb(index, { direction: "climb" })}
+                        aria-pressed={climb.direction === "climb"}
+                        className={segmentedButtonClass(climb.direction === "climb")}
+                      >
+                        Climb
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateClimb(index, { direction: "descent" })}
+                        aria-pressed={climb.direction === "descent"}
+                        className={segmentedButtonClass(climb.direction === "descent")}
+                      >
+                        Descent
+                      </button>
+                    </div>
+                    <div>
+                      <label htmlFor={`${baseId}-climb-${index}-mile`} className={labelClass}>
+                        At mile
+                      </label>
+                      <input
+                        id={`${baseId}-climb-${index}-mile`}
+                        type="number"
+                        inputMode="decimal"
+                        min={1}
+                        max={26}
+                        value={climb.atMile}
+                        onChange={(event) => updateClimb(index, { atMile: Number(event.target.value) })}
+                        className={`w-20 ${fieldClass}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`${baseId}-climb-${index}-length`} className={labelClass}>
+                        Length (mi)
+                      </label>
+                      <input
+                        id={`${baseId}-climb-${index}-length`}
+                        type="number"
+                        inputMode="decimal"
+                        min={0.1}
+                        step={0.1}
+                        value={climb.lengthMiles}
+                        onChange={(event) => updateClimb(index, { lengthMiles: Number(event.target.value) })}
+                        className={`w-20 ${fieldClass}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor={`${baseId}-climb-${index}-feet`} className={labelClass}>
+                        Elevation change (ft)
+                      </label>
+                      <input
+                        id={`${baseId}-climb-${index}-feet`}
+                        type="number"
+                        inputMode="decimal"
+                        min={0}
+                        value={climb.feet}
+                        onChange={(event) => updateClimb(index, { feet: Number(event.target.value) })}
+                        className={`w-24 ${fieldClass}`}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeClimb(index)}
+                      aria-label={`Remove climb at mile ${climb.atMile}`}
+                      className="ml-auto flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-black/5 hover:text-red-700 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-red-400"
+                    >
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <Button variant="outline" size="sm" className="mt-3" onClick={addClimb}>
+                + Add a climb or descent
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div>
@@ -472,7 +621,11 @@ export function RacePacePlanner() {
       </div>
 
       {!canGeneratePlan && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">Enter a valid goal marathon time to generate a plan.</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-300">
+          {goalTimeSeconds === null || goalTimeSeconds <= 0
+            ? "Enter a valid goal marathon time to generate a plan."
+            : "Upload a GPS route above to generate a plan."}
+        </p>
       )}
 
       {plan && (
@@ -545,7 +698,7 @@ export function RacePacePlanner() {
 
             <SaveCalculationButton
               calculatorType="race-pace-planner"
-              input={{ goalTimeInput, strategy, totalGainFtInput, totalLossFtInput, climbs }}
+              input={{ goalTimeInput, strategy, courseMode, totalGainFtInput, totalLossFtInput, climbs }}
               output={{ projectedFinish: formatClock(Math.round(plan.totalElapsedSeconds)) }}
               label={`${goalTimeInput} marathon, ${strategy} start`}
             />
@@ -696,16 +849,10 @@ export function RacePacePlanner() {
           <div className={detailsBodyClass}>
             <p>
               Your goal pace should reflect your actual current fitness, a range is a perfectly reasonable input,
-              not a number you&rsquo;re hoping race-day magic delivers. This plan can&rsquo;t discover a hill you
-              didn&rsquo;t name, and its grade adjustment is a widely-used rule of thumb, not a fitted physical
-              model -- for that level of precision from a real GPS course file, see the{" "}
-              <Link
-                href="/marathon-pacing-calculator"
-                className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
-              >
-                Marathon Pacing Calculator
-              </Link>
-              , and for precise grade-adjusted pace on its own, see the{" "}
+              not a number you&rsquo;re hoping race-day magic delivers. In manual course-map mode, this plan
+              can&rsquo;t discover a hill you didn&rsquo;t name -- switch to GPS route mode above if you have a
+              file for the course. Either way, the grade adjustment itself is a widely-used rule of thumb, not a
+              fitted physical model; for precise grade-adjusted pace on its own, see the{" "}
               <Link
                 href="/gap-calculator"
                 className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"

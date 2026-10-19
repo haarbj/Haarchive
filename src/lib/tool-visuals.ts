@@ -12,7 +12,6 @@ import {
   Mountain,
   Percent,
   Repeat,
-  Route,
   Thermometer,
   TrendingUp,
   Wheat,
@@ -35,11 +34,11 @@ import {
 // taxonomy describes implementation, not the problem a runner is actually
 // trying to solve, which is the one CATEGORY_LABELS is meant to answer.
 //
-// marathon-pacing-calculator sits in Pacing, not Environment: it uses
-// terrain/weather physics as an *input*, but its actual output -- a full
-// mile-by-mile pacing plan -- is the same kind of thing every other
-// Pacing tool produces. What a tool gives you back, not what it consumes,
-// is the categorization signal.
+// race-pace-planner sits in Pacing, not Environment: it uses terrain and
+// weather as an *input* (via its GPS-route or course-map entry), but its
+// actual output -- a full mile-by-mile pacing plan -- is the same kind of
+// thing every other Pacing tool produces. What a tool gives you back, not
+// what it consumes, is the categorization signal.
 export type ToolCategory = "pacing" | "environment" | "physiology";
 
 export const TOOL_CATEGORY_ORDER: ToolCategory[] = ["pacing", "environment", "physiology"];
@@ -93,14 +92,10 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   "workout-builder": { icon: Repeat, accentFrom: "#3b82f6", accentTo: "#1e40af", category: "pacing" },
   "race-pace-calculator": { icon: Flag, accentFrom: "#f59e0b", accentTo: "#f97316", category: "pacing" },
   "pace-percent-calculator": { icon: Percent, accentFrom: "#a855f7", accentTo: "#6366f1", category: "pacing" },
-  // Uses terrain/weather physics as an input, but its output is a full
-  // pacing plan like every tool above it -- see this file's own header
-  // comment on why that puts it here, not in Environment.
-  "marathon-pacing-calculator": { icon: Route, accentFrom: "#06b6d4", accentTo: "#2563eb", category: "pacing" },
-  // Same reasoning as marathon-pacing-calculator above (its output -- a
-  // race-day plan -- is what puts it in Pacing), but a distinct icon/color
-  // since the two are deliberately different-weight siblings, not the
-  // same tool twice.
+  // Uses terrain/weather as an input (via GPS route or course-map entry),
+  // but its output is a full pacing plan like every tool above it -- see
+  // this file's own header comment on why that puts it here, not in
+  // Environment.
   "race-pace-planner": { icon: Milestone, accentFrom: "#14b8a6", accentTo: "#0f766e", category: "pacing" },
   // Environment -- adjusts effort/pace for grade, heat, altitude, or
   // weather, rather than predicting fitness from a result or producing a

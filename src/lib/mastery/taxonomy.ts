@@ -106,7 +106,7 @@ export const TOPIC_SEEDS: TopicSeed[] = [
   { slug: "race-pace-calculator", title: "Race Pace Calculator", categorySlug: "tools", sectionSlug: "race-pace-calculator" },
   { slug: "hr-threshold-calculator", title: "LT1 & LT2 Heart Rate Reference Ranges", categorySlug: "tools", sectionSlug: "hr-threshold-calculator" },
   { slug: "tinman-calculator", title: "Tinman Running Calculator", categorySlug: "tools", sectionSlug: "tinman-calculator" },
-  { slug: "marathon-pacing-calculator", title: "Marathon Pacing Calculator", categorySlug: "tools", sectionSlug: "marathon-pacing-calculator" },
+  { slug: "race-pace-planner", title: "Race Pace Planner", categorySlug: "tools", sectionSlug: "race-pace-planner" },
   { slug: "altitude-calculator", title: "Altitude Calculator", categorySlug: "tools", sectionSlug: "altitude-calculator" },
 ];
 

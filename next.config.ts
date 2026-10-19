@@ -39,6 +39,14 @@ const nextConfig: NextConfig = {
       // mode toggle (see altitude-calculator.tsx's own header comment) --
       // /altitude-calculator is the canonical, primary entry point.
       { source: "/altitude-adjusted-pace-calculator", destination: "/altitude-calculator", permanent: true },
+      // The Marathon Pacing Calculator and the Race Pace Planner were
+      // unified into one tool at the latter's URL: the Ch. 18-20 pacing
+      // heuristic (progressive/even start, fast finish, grade adjustment,
+      // fueling, segment strategy) that lived at race-pace-planner is the
+      // canonical pacing model, now reachable from either a GPS route
+      // import or the original manual course-map entry -- see
+      // race-pace-planner.tsx's own header comment.
+      { source: "/marathon-pacing-calculator", destination: "/race-pace-planner", permanent: true },
     ];
   },
 };

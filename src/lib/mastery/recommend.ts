@@ -121,7 +121,7 @@ export function recommendNextTopic(
     // under the Familiar threshold (see mastery-explanation.ts's
     // hasReadableContent comment for the full mechanism). Without this
     // exclusion, a path ending in a tools-category topic (e.g. Marathon
-    // Training's own marathon-pacing-calculator) could recommend that
+    // Training's own race-pace-planner) could recommend that
     // same already-used topic forever once every other path member
     // reaches Proficient+, since it can never join them there. Only
     // excludes it once already visited -- an unvisited tool topic still

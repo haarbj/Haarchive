@@ -34,7 +34,6 @@ import { CvThresholdCalculator } from "@/components/cv-threshold-calculator";
 import { RacePaceCalculator } from "@/components/race-pace-calculator";
 import { HrThresholdCalculator } from "@/components/hr-threshold-calculator";
 import { TinmanCalculator } from "@/components/tinman-calculator";
-import { MarathonPacingCalculator } from "@/components/marathon-pacing-calculator";
 import { RacePacePlanner } from "@/components/race-pace-planner";
 import { AltitudeCalculator } from "@/components/altitude-calculator";
 import { FuelingCalculator } from "@/components/fueling-calculator";
@@ -68,7 +67,6 @@ const sectionTools: Record<string, ComponentType> = {
   "race-pace-calculator": RacePaceCalculator,
   "hr-threshold-calculator": HrThresholdCalculator,
   "tinman-calculator": TinmanCalculator,
-  "marathon-pacing-calculator": MarathonPacingCalculator,
   "race-pace-planner": RacePacePlanner,
   "altitude-calculator": AltitudeCalculator,
   "fueling-calculator": FuelingCalculator,

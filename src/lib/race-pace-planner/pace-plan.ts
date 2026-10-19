@@ -1,30 +1,26 @@
 // Builds the mile-by-mile idealized pace plan this tool's whole output is
 // built from: a goal pace shaped into either a progressive or even opening,
 // a fast finish in the closing miles, and a simplified grade adjustment on
-// top of that.
-//
-// This is deliberately NOT the Marathon Pacing Calculator's physics engine
-// (course-analysis.ts/mile-cost-model.ts's Minetti-polynomial terrain cost,
-// solved against a GPS route at ~20m resolution). That tool answers "what
-// does this specific course really cost, mile by mile, given my tracked
-// fatigue state" -- this one answers a narrower, more approachable
-// question: "given a goal pace and the handful of hills someone can name
-// off a course map, roughly how should I shape my effort." A runner who
-// wants the precise version already has that tool; this one is the
-// read-the-course-map-and-go version, not a worse copy of it. See
-// race-pace-planner.tsx's own links out to Marathon Pacing Calculator and
-// GAP Calculator for the precise alternative.
+// top of that. This is the single pacing model behind both of the tool's
+// course-input modes (GPS route and course-map manual entry, see
+// race-pace-planner.tsx) -- the input mode only changes how per-mile grade
+// gets into `CourseInput` (a GPS route's own real per-mile grade vs. a
+// runner's named climbs/descents), not the pacing logic applied to it.
 //
 // The grade heuristic below (roughly +12 sec/mi per 100ft of climb,
 // -6 sec/mi per 100ft of descent, net change under NOISE_THRESHOLD_FT_PER_MILE
-// ignored) is a commonly-cited rough rule of thumb for marathon-pace
-// effort, not a fitted physical model -- it deliberately trades precision
-// for something a runner can sanity-check by eye. It also only ever sees
-// the climbs a runner names explicitly (see RaceClimb below): it has no
-// way to "discover" a mid-mile hill that isn't named, which is a real
-// known limitation of working from a course description instead of a GPS
-// track -- stated explicitly in the tool's own copy, not hidden.
+// ignored) is John Davis's commonly-cited rough rule of thumb for
+// marathon-pace effort (Marathon Excellence for Everyone, Ch. 18-20), not a
+// fitted physical model -- it deliberately trades precision for something
+// a runner can sanity-check by eye. In manual course-map mode, it also
+// only ever sees the climbs a runner names explicitly (see RaceClimb
+// below): it has no way to "discover" a mid-mile hill that isn't named,
+// which is a real known limitation of working from a course description
+// instead of a GPS track -- stated explicitly in the tool's own copy, not
+// hidden. GPS mode doesn't have that limitation, since `perMileNetGradeFt`
+// comes from the route's own measured elevation.
 
+import type { CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { formatClock } from "@/lib/running-format";
 
 export const MARATHON_MILES = 26; // full miles only -- see the module doc above and split-generator.ts's own precedent for not splitting out the final partial 0.2mi
@@ -51,13 +47,42 @@ export type RaceClimb = {
 };
 
 export type CourseInput = {
-  /** Total elevation gain for the full course, in feet -- used only for the summary card's "hills changed your pace by" framing; the per-mile adjustment itself comes from `climbs`. */
+  /** Total elevation gain for the full course, in feet -- used only for the summary card's "hills changed your pace by" framing; the per-mile adjustment itself comes from `perMileNetGradeFt` when present, otherwise `climbs`. */
   totalGainFt: number;
   totalLossFt: number;
   climbs: RaceClimb[];
+  /**
+   * Net elevation change (feet) for each full mile, indexed 0 = mile 1,
+   * from an imported GPS route's own real terrain (see course-analysis.ts's
+   * `perMileGrade`, converted from decimal grade to feet/mile by the
+   * caller) -- the "GPS route" input mode's course data. When present,
+   * this is used directly instead of deriving net grade from the named
+   * `climbs` list (the "course map" manual-entry mode), since the GPS
+   * route already tells us the real per-mile grade without a runner
+   * having to name individual hills. A mile beyond this array's length
+   * (a route shorter than a full marathon) is treated as flat, same as a
+   * mile no named climb covers.
+   */
+  perMileNetGradeFt?: number[];
 };
 
 export const FLAT_COURSE: CourseInput = { totalGainFt: 0, totalLossFt: 0, climbs: [] };
+
+const FEET_PER_MILE = 5280;
+
+/**
+ * Converts a GPS route's own analyzed per-mile grade (course-analysis.ts's
+ * `perMileGrade`, a decimal grade over each full mile) into the feet of
+ * net elevation change per mile this module's grade heuristic expects --
+ * the GPS route input mode's bridge into the same pacing model the manual
+ * course-map mode uses. Always returns exactly MARATHON_MILES entries: a
+ * route shorter than a full marathon is treated as flat for the remaining
+ * miles, the same "no data = flat" assumption the manual mode makes for a
+ * mile with no named climb.
+ */
+export function perMileNetGradeFtFromCourseAnalysis(analysis: CourseAnalysis): number[] {
+  return Array.from({ length: MARATHON_MILES }, (_, i) => (analysis.perMileGrade[i] ?? 0) * FEET_PER_MILE);
+}
 
 export type EffortLabel = "Relaxed" | "Settling in" | "Marathon effort" | "Comfortably hard" | "Strong finish";
 
@@ -104,10 +129,13 @@ function flatPaceDeltaForMile(mile: number, strategy: StartStrategy): number {
   return PROGRESSIVE_OPENING_MILE1_DELTA_SEC * rampFraction;
 }
 
-/** Net elevation change (feet) for one mile, from the named climbs that cover it. */
-function netGradeFtForMile(mile: number, climbs: RaceClimb[]): number {
+/** Net elevation change (feet) for one mile -- from the GPS route's own per-mile grade when available, otherwise from the named climbs that cover it. */
+function netGradeFtForMile(mile: number, course: CourseInput): number {
+  if (course.perMileNetGradeFt) {
+    return course.perMileNetGradeFt[mile - 1] ?? 0;
+  }
   let net = 0;
-  for (const climb of climbs) {
+  for (const climb of course.climbs) {
     const start = climb.atMile;
     const end = climb.atMile + climb.lengthMiles;
     if (mile >= start && mile < end) {
@@ -149,7 +177,7 @@ export function buildRacePacePlan(goalTimeSeconds: number, strategy: StartStrate
 
   for (let mile = 1; mile <= MARATHON_MILES; mile += 1) {
     const flatPaceSecPerMile = goalPaceSecPerMile + flatPaceDeltaForMile(mile, strategy);
-    const netGradeFt = netGradeFtForMile(mile, course.climbs);
+    const netGradeFt = netGradeFtForMile(mile, course);
     const adjust = gradeAdjustSecPerMile(netGradeFt);
     const watchPaceSecPerMile = flatPaceSecPerMile + adjust;
     elapsed += watchPaceSecPerMile;

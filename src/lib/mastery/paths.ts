@@ -48,7 +48,7 @@ export const LEARNING_PATHS: LearningPath[] = [
       "marathon-training",
       "nutrition-and-fueling",
       "recovery",
-      "marathon-pacing-calculator",
+      "race-pace-planner",
     ],
   },
   {

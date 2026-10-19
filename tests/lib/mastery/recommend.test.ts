@@ -126,7 +126,7 @@ describe("recommendNextTopic", () => {
     it("prefers a candidate whose category matches a stated interest over plain path order", () => {
       // marathon-training path order: the-aerobic-base (physiology),
       // marathon-training (practice), nutrition-and-fueling (physiology),
-      // recovery (physiology), marathon-pacing-calculator (tools). With no
+      // recovery (physiology), race-pace-planner (tools). With no
       // interests, a brand-new user gets the path's first topic
       // (the-aerobic-base). With a "practice" interest -- which the first
       // candidate does NOT match -- the earliest matching candidate
@@ -233,8 +233,8 @@ describe("recommendNextTopic", () => {
   });
 
   describe("tools-category path members never get stuck at their honest ceiling", () => {
-    // Phase 4 path-verification finding: a "tools" topic (marathon-pacing-
-    // calculator is Marathon Training's own) can only ever fire tool_used,
+    // Phase 4 path-verification finding: a "tools" topic (race-pace-planner
+    // is Marathon Training's own) can only ever fire tool_used,
     // a flat, once-ever, non-repeating score contribution well under the
     // Familiar threshold -- it can never reach Proficient the way every
     // other path member eventually can. Without excluding it once visited,
@@ -247,10 +247,10 @@ describe("recommendNextTopic", () => {
         { topicSlug: "nutrition-and-fueling", level: "proficient" },
         { topicSlug: "recovery", level: "proficient" },
         // Permanently capped at exploring -- tools-category, already visited.
-        { topicSlug: "marathon-pacing-calculator", level: "exploring" },
+        { topicSlug: "race-pace-planner", level: "exploring" },
       ];
       const result = recommendNextTopic("training_goal", progress);
-      expect(result.topicSlug).not.toBe("marathon-pacing-calculator");
+      expect(result.topicSlug).not.toBe("race-pace-planner");
       // Falls back to the path's own entry point, matching the existing
       // "every topic already Proficient+" fallback exactly.
       expect(result.topicSlug).toBe("the-aerobic-base");
@@ -262,10 +262,10 @@ describe("recommendNextTopic", () => {
         { topicSlug: "marathon-training", level: "proficient" },
         { topicSlug: "nutrition-and-fueling", level: "proficient" },
         { topicSlug: "recovery", level: "proficient" },
-        // marathon-pacing-calculator deliberately omitted -- never visited.
+        // race-pace-planner deliberately omitted -- never visited.
       ];
       const result = recommendNextTopic("training_goal", progress);
-      expect(result.topicSlug).toBe("marathon-pacing-calculator");
+      expect(result.topicSlug).toBe("race-pace-planner");
     });
   });
 });

@@ -600,15 +600,15 @@ export function CvThresholdCalculator() {
       </p>
 
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
-        Want to see your critical speed play out mile-by-mile on race day (terrain, weather, and fueling durability
-        included), rather than another set of training paces? The{" "}
+        Want to turn a marathon goal pace into a full race-day plan -- mile-by-mile pacing, a fueling schedule, and
+        segment-by-segment strategy -- rather than just training paces? The{" "}
         <Link
-          href="/marathon-pacing-calculator"
+          href="/race-pace-planner"
           className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
         >
-          Marathon Pacing Calculator
+          Race Pace Planner
         </Link>{" "}
-        uses this same fitness model to build a full race-day pacing plan.
+        takes a goal pace like this one and builds it out, from an imported GPS route or a quick course-map entry.
       </p>
 
       <p className="text-xs text-zinc-600 dark:text-zinc-300">
