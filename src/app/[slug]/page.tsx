@@ -39,6 +39,7 @@ import { RacePacePlanner } from "@/components/race-pace-planner";
 import { AltitudeCalculator } from "@/components/altitude-calculator";
 import { FuelingCalculator } from "@/components/fueling-calculator";
 import { TrainingPlansHome } from "@/components/training-plans/training-plans-home";
+import { HeatAcclimationPlanner } from "@/components/heat-acclimation-planner";
 import { HeatTracker } from "@/components/heat-tracker";
 import { PaceCalculator } from "@/components/pace-calculator";
 import { PaceModelComparison } from "@/components/pace-model-comparison";
@@ -58,6 +59,7 @@ import { Heading } from "@/components/ui/heading";
 // the generic "Planned Topics" list. Add future tools as another entry here.
 const sectionTools: Record<string, ComponentType> = {
   "heat-tracker": HeatTracker,
+  "heat-acclimation-planner": HeatAcclimationPlanner,
   "pace-calculator": PaceCalculator,
   "environmental-calculator": EnvironmentalCalculator,
   "gap-calculator": GapCalculator,

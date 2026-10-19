@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
+  CalendarClock,
   CloudSun,
   Compass,
   Flag,
@@ -107,6 +108,11 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   "gap-calculator": { icon: Mountain, accentFrom: "#4ade80", accentTo: "#166534", category: "environment" },
   "environmental-calculator": { icon: CloudSun, accentFrom: "#06b6d4", accentTo: "#0ea5e9", category: "environment" },
   "heat-tracker": { icon: Thermometer, accentFrom: "#f97316", accentTo: "#dc2626", category: "environment" },
+  // Pairs with heat-tracker above (same Environment reasoning -- it
+  // adjusts training for a real condition rather than predicting fitness
+  // or producing a pacing plan), but plans the adaptation itself over
+  // time rather than reading today's live conditions.
+  "heat-acclimation-planner": { icon: CalendarClock, accentFrom: "#fb923c", accentTo: "#c2410c", category: "environment" },
   // Unifies what were two separate tools -- VO2max/capacity conversion and
   // a specific performance's pace/time conversion -- behind one mode
   // toggle (see altitude-calculator.tsx's own header comment).
