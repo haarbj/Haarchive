@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import Link from "next/link";
 
 import { LabeledInput } from "@/components/ui/labeled-input";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -521,6 +522,17 @@ export function WorkoutBuilder() {
           </div>
         </>
       )}
+
+      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+        Planning your week? Check your ramp &rarr; the{" "}
+        <Link
+          href="/training-load-planner"
+          className="font-semibold underline decoration-black/30 underline-offset-2 hover:decoration-black dark:decoration-white/30 dark:hover:decoration-white"
+        >
+          Training Load Planner
+        </Link>{" "}
+        turns your recent mileage and a goal into a safe week-by-week ramp with an injury-risk check.
+      </p>
     </div>
   );
 }

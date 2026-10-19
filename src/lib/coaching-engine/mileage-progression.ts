@@ -1,8 +1,12 @@
 import { distanceBucket, type DistanceBucket } from "@/lib/coaching-engine/distance-buckets";
 import type { WeekPlan } from "@/lib/coaching-engine/types";
 
-const WEEKLY_INCREASE_CAP = 0.1; // the classic "10% rule"
-const CUTBACK_REDUCTION = 0.25; // cutback weeks drop to 75% of the last ramp week
+// Exported so the public Training Load Planner (training-load-planner-math.ts)
+// can build a plan from the same ramp convention this engine already uses
+// for a coach-assigned season, rather than a second, independently-chosen
+// rate living on the public site.
+export const WEEKLY_INCREASE_CAP = 0.1; // the classic "10% rule"
+export const CUTBACK_REDUCTION = 0.25; // cutback weeks drop to 75% of the last ramp week
 // Percent of peak mileage, ordered furthest-from-race first -- e.g. in a
 // 3-week taper the first week runs at 80% of peak, the last (closest to
 // race day) at 50%.

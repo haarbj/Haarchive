@@ -13,6 +13,7 @@ import {
   Repeat,
   Route,
   Thermometer,
+  TrendingUp,
   Wheat,
 } from "lucide-react";
 
@@ -117,6 +118,13 @@ export const TOOL_VISUALS: Record<string, ToolVisual> = {
   // own essay, which explicitly separates "population reference" from
   // both the pace-prediction models and the conditions-adjustment tools).
   "hr-threshold-calculator": { icon: HeartPulse, accentFrom: "#ef4444", accentTo: "#f43f5e", category: "physiology" },
+  // A population-level training-load/injury-risk reference (how fast is it
+  // safe to ramp mileage), the same genre as hr-threshold-calculator's own
+  // population reference above -- not a pace prediction and not a
+  // conditions-based pace adjustment, so Physiology over inventing a
+  // fourth tools category for one tool (see this file's own "three
+  // categories, not four or five" header comment).
+  "training-load-planner": { icon: TrendingUp, accentFrom: "#10b981", accentTo: "#047857", category: "physiology" },
   // Fueling/hydration targets are a physiological prescription, not a
   // pace prediction or a conditions-based pace adjustment -- same
   // reasoning that puts hr-threshold-calculator here rather than in
