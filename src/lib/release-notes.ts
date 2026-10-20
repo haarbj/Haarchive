@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Conditions-adjusted actuals: what a Strava-matched run was really worth",
+    detail:
+      "Approve a Strava match on a completed workout, and the platform now automatically works out what that run was worth once heat, wind, and hills are accounted for -- using the same environmental engine behind the Environmental Performance Calculator, applied to the run's own real GPS trace and the weather at the time and place it happened. The workout detail page shows actual pace next to the ideal-equivalent, with the top contributing factors in seconds per mile and the raw conditions alongside for anyone who wants to check the math. No manual entry, ever -- and if there's nothing to analyze (a manually-logged completion) or analysis fails, nothing is shown that wasn't earned; a coach or athlete can always ask for it directly.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Intake gap-check: what a coach needs to know before planning, flagged, never blocked",
     detail:
       "Before planning depends on it, the platform now checks whether an athlete's intake is actually complete -- training environment and facility access, home altitude, a real baseline of their last few weeks of training, injury/limitations history, and schedule constraints, alongside the goal race and fitness anchor already tracked elsewhere. Missing items show up as a completion prompt on the athlete's own profile and \"Your Plan\" view, each linking straight to the field, and never reappear once answered. A coach sees exactly what's missing on the athlete's page and a neutral \"Intake incomplete\" badge on the roster. Nothing here blocks anything -- a coach who knows the athlete can assign and publish regardless.",

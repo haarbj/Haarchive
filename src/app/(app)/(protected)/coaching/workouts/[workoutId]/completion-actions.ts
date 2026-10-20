@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 
 import { getAppSession } from "@/lib/auth/session";
@@ -11,6 +12,7 @@ import { parseTimeToSeconds } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { EFFORT_LEVEL_VALUES } from "@/lib/private-coaching/effort-levels";
+import { analyzeCompletedWorkoutConditions } from "@/lib/private-coaching/completion-conditions-service";
 
 // Same string-input shape as the self-serve/team completion forms
 // (completeWorkoutSchema in lib/validation/plan.ts) -- entered as free
@@ -236,19 +238,23 @@ export async function approveStravaMatch(scheduledWorkoutId: string, pendingMatc
     .maybeSingle<{ id: string; coach_id: string; athlete_id: string; title: string | null; day_label: string | null }>();
   if (!workout || workout.athlete_id !== session.userId) return { error: "That workout isn't yours to complete." };
 
-  const { error: upsertError } = await supabase.from("completed_workouts").upsert(
-    {
-      scheduled_workout_id: scheduledWorkoutId,
-      athlete_id: session.userId,
-      actual_distance_m: pending.activity_distance_m,
-      actual_duration_s: pending.activity_duration_s,
-      avg_hr: pending.activity_avg_hr,
-      strava_activity_id: pending.strava_activity_id,
-      strava_activity_ids: sourceActivityIds,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "scheduled_workout_id" },
-  );
+  const { data: upserted, error: upsertError } = await supabase
+    .from("completed_workouts")
+    .upsert(
+      {
+        scheduled_workout_id: scheduledWorkoutId,
+        athlete_id: session.userId,
+        actual_distance_m: pending.activity_distance_m,
+        actual_duration_s: pending.activity_duration_s,
+        avg_hr: pending.activity_avg_hr,
+        strava_activity_id: pending.strava_activity_id,
+        strava_activity_ids: sourceActivityIds,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "scheduled_workout_id" },
+    )
+    .select("id")
+    .single<{ id: string }>();
   if (upsertError) return { error: upsertError.message };
 
   // Approving one candidate settles the question for this workout --
@@ -282,6 +288,15 @@ export async function approveStravaMatch(scheduledWorkoutId: string, pendingMatc
     entity_id: workout.id,
     metadata: { source: "strava", strava_activity_id: pending.strava_activity_id, strava_activity_ids: sourceActivityIds },
   });
+
+  // Best-effort, after the response: the approval above is already
+  // saved and returned to the athlete regardless of what happens here.
+  // analyzeCompletedWorkoutConditions never throws past its own boundary
+  // (every failure mode persists a 'failed' status instead), but this is
+  // wrapped anyway so a truly unexpected throw can never surface as an
+  // unhandled rejection or, worse, retroactively affect this action's
+  // own already-returned result.
+  after(() => analyzeCompletedWorkoutConditions(upserted.id).catch(() => {}));
 
   revalidatePath(`/coaching/workouts/${scheduledWorkoutId}`);
   return { success: true };
@@ -339,6 +354,34 @@ export async function deleteWorkoutCompletion(scheduledWorkoutId: string): Promi
   const admin = createServiceRoleClient();
   await admin.from("scheduled_workouts").update({ status: "scheduled" }).eq("id", scheduledWorkoutId);
 
+  revalidatePath(`/coaching/workouts/${scheduledWorkoutId}`);
+  return {};
+}
+
+// On-demand trigger (b): the athlete or their active coach can ask for
+// analysis when none exists yet or the last attempt failed -- viewing
+// the detail page never auto-fetches (see page.tsx), only this explicit
+// action does. Authorization is left to completed_workouts' own RLS
+// (completed_workouts_all_own / completed_workouts_select_coach) rather
+// than re-implemented here: the session-scoped select below returns the
+// row only if the caller is the athlete or their active coach, exactly
+// the same two parties the stored result is meant to be visible to.
+export async function triggerConditionsAnalysis(scheduledWorkoutId: string): Promise<{ error?: string }> {
+  const session = await getAppSession();
+  if (!session) return { error: "Sign in first." };
+
+  const supabase = await createClient();
+  const { data: completion } = await supabase
+    .from("completed_workouts")
+    .select("id, strava_activity_id, strava_activity_ids")
+    .eq("scheduled_workout_id", scheduledWorkoutId)
+    .maybeSingle<{ id: string; strava_activity_id: number | null; strava_activity_ids: number[] | null }>();
+  if (!completion) return { error: "No completion to analyze." };
+  if (completion.strava_activity_id == null && (completion.strava_activity_ids ?? []).length === 0) {
+    return { error: "This completion has no Strava data to analyze." };
+  }
+
+  await analyzeCompletedWorkoutConditions(completion.id);
   revalidatePath(`/coaching/workouts/${scheduledWorkoutId}`);
   return {};
 }

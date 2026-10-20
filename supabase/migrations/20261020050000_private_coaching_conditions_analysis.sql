@@ -1,0 +1,28 @@
+-- Conditions-adjusted actuals: for a Strava-matched completed workout,
+-- what the performance was worth once heat, wind, and grade are undone
+-- (the environmental engine's own recorded-run-effort model, composed
+-- for this purpose in completed-workout-conditions.ts). A single
+-- nullable JSONB column, same reasoning as every other advisory-result
+-- column in this schema (e.g. strava_pending_matches.combined_activities):
+-- the shape is still evolving and has no query/filter need of its own,
+-- so a typed jsonb blob beats a half-dozen new scalar columns.
+--
+-- No RLS change needed: this column lives on the row completed_workouts
+-- already has, and completed_workouts_all_own/completed_workouts_select_coach
+-- (20260825020000_private_coaching_workouts.sql) already scope every
+-- column on that row to the athlete (full CRUD) and their active coach
+-- (read-only) -- exactly "visible only to the athlete + their coach,"
+-- automatically, by virtue of being the same row.
+--
+-- Shape (documented here since jsonb has no schema of its own -- see
+-- completed-workout-conditions.ts's ConditionsAnalysis type for the
+-- authoritative TypeScript definition):
+--   status: "pending" | "ready" | "failed"
+--   computedAt: ISO timestamp | null
+--   error: string | null -- set only when status is "failed"
+--   activityIds: the Strava activity id(s) actually analyzed
+--   distanceM, actualTimeS, idealTimeS, actualPaceSPerMi, idealPaceSPerMi
+--   factors: [{ factor, label, secPerMi }] -- heat_humidity / wind / grade
+--   conditions: the real WeatherConditions readings used, so any number
+--     here can always be traced back to its inputs
+alter table public.completed_workouts add column conditions_analysis jsonb;

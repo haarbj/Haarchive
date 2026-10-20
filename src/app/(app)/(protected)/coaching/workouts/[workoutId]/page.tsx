@@ -36,6 +36,8 @@ import { CompletionForm, type CompletionFormInitial } from "./completion-form";
 import { missedWorkoutGuidance } from "@/lib/private-coaching/adjustment-playbook";
 import { InjuryTriagePanel } from "./injury-triage-panel";
 import { StravaMatchReview, type PendingStravaMatch } from "./strava-match-review";
+import { ConditionsSection } from "./conditions-section";
+import type { ConditionsAnalysis } from "@/lib/private-coaching/completion-conditions-service";
 import { WorkoutComments, type CommentItem } from "./workout-comments";
 import { ExtrasDetail } from "./extras-detail";
 import { CompletionSummary, type CompletionDetail } from "@/app/(app)/(protected)/plan/completion-detail";
@@ -118,6 +120,8 @@ type CompletionRow = {
   pain_reported: boolean;
   pain_notes: string | null;
   strava_activity_id: number | null;
+  strava_activity_ids: number[] | null;
+  conditions_analysis: ConditionsAnalysis | null;
 };
 type PendingMatchRow = {
   id: string;
@@ -216,7 +220,7 @@ export default async function WorkoutDetailPage({
       supabase
         .from("completed_workouts")
         .select(
-          "actual_distance_m, actual_duration_s, avg_hr, rpe, effort_level, conditions_notes, activity_type, athlete_notes, pain_reported, pain_notes, strava_activity_id",
+          "actual_distance_m, actual_duration_s, avg_hr, rpe, effort_level, conditions_notes, activity_type, athlete_notes, pain_reported, pain_notes, strava_activity_id, strava_activity_ids, conditions_analysis",
         )
         .eq("scheduled_workout_id", workoutId)
         .maybeSingle<CompletionRow>(),
@@ -669,6 +673,12 @@ export default async function WorkoutDetailPage({
                 } satisfies CompletionDetail
               }
             />
+            <ConditionsSection
+              scheduledWorkoutId={workoutId}
+              hasStravaActivity={completion.strava_activity_id != null}
+              analysis={completion.conditions_analysis}
+            />
+
             {/* The effort/conditions context behind the RPE above. This is
                 what a fitness-estimate review actually reads: an easy 8 in
                 90-degree heat means something different from an easy 8 on a
