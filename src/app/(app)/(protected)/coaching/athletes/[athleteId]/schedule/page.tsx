@@ -22,6 +22,9 @@ import { WeekCalendar } from "./week-calendar";
 import { DayView } from "./day-view";
 import { MonthView, type MonthWeekSummary } from "./month-view";
 import { PhaseView, type PhaseViewWeekInfo } from "./phase-view";
+import { TimelineView } from "./timeline-view";
+import { loadTimelineWeeks } from "./timeline-actions";
+import { initialWeekWindow } from "./timeline-helpers";
 import type { ProgramOption } from "./assign-program-form";
 import { WeekStrip } from "./week-strip";
 import { WeekCopyPasteControls } from "./week-copy-paste-controls";
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type CalendarView = "week" | "day" | "month" | "phase";
+type CalendarView = "week" | "day" | "month" | "phase" | "timeline";
 
 type Profile = { display_name: string };
 type ExtraPresetRow = {
@@ -123,7 +126,7 @@ export default async function AthleteSchedulePage({
   // given (there isn't one) -- the assign flow only exists there.
   const view: CalendarView = sp.assignProgramId
     ? "phase"
-    : sp.view === "day" || sp.view === "month" || sp.view === "phase"
+    : sp.view === "day" || sp.view === "month" || sp.view === "phase" || sp.view === "timeline"
       ? sp.view
       : "week";
   const copiedWeek = isValidIsoDate(sp.copiedWeek) ? sp.copiedWeek : null;
@@ -290,6 +293,7 @@ export default async function AthleteSchedulePage({
     if (targetView === "week") return `?view=week&week=${week}`;
     if (targetView === "day") return `?view=day&date=${date}`;
     if (targetView === "month") return `?view=month&month=${month}`;
+    if (targetView === "timeline") return `?view=timeline&week=${week}`;
     return "?view=phase";
   }
   const switcherQueryString = new URLSearchParams(
@@ -299,7 +303,9 @@ export default async function AthleteSchedulePage({
         ? { view: "day", date }
         : view === "month"
           ? { view: "month", month }
-          : { view: "phase" },
+          : view === "timeline"
+            ? { view: "timeline", week }
+            : { view: "phase" },
   ).toString();
 
   return (
@@ -308,7 +314,7 @@ export default async function AthleteSchedulePage({
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <nav className="flex items-center gap-1 rounded-control border border-black/10 p-0.5 dark:border-white/10">
-          {(["week", "day", "month", "phase"] as const).map((v) => (
+          {(["week", "day", "month", "phase", "timeline"] as const).map((v) => (
             <Link
               key={v}
               href={tabHref(v)}
@@ -378,6 +384,17 @@ export default async function AthleteSchedulePage({
           copiedWeek={copiedWeek}
           supabase={supabase}
           preselectProgramId={sp.assignProgramId ?? null}
+        />
+      ) : null}
+
+      {view === "timeline" ? (
+        <TimelineViewSection
+          athleteId={athleteId}
+          week={week}
+          today={today}
+          phases={phases}
+          templates={templates}
+          extraPresets={extraPresets}
         />
       ) : null}
     </Container>
@@ -871,6 +888,44 @@ async function PhaseViewSection({
         copiedWeek={copiedWeek}
         programs={programs}
         preselectProgramId={preselectProgramId}
+      />
+    </div>
+  );
+}
+
+async function TimelineViewSection({
+  athleteId,
+  week,
+  today,
+  phases,
+  templates,
+  extraPresets,
+}: {
+  athleteId: string;
+  week: string;
+  today: string;
+  phases: TrainingPhase[];
+  templates: TemplateOption[];
+  extraPresets: ExtraPresetOption[];
+}) {
+  // ~2 weeks behind, ~4 weeks ahead of the reference week on first render
+  // (initialWeekWindow, timeline-helpers.ts) -- TimelineView itself loads
+  // more in either direction as the coach scrolls, via timeline-
+  // actions.ts's own loadTimelineWeeks (the same fetchCalendarWorkouts
+  // every other view's own section above already calls, just invoked
+  // from the client for the weeks beyond this initial window).
+  const initialWeeks = await loadTimelineWeeks(athleteId, initialWeekWindow(week));
+
+  return (
+    <div className="mt-4">
+      <TimelineView
+        athleteId={athleteId}
+        initialWeeks={initialWeeks}
+        centerWeek={week}
+        today={today}
+        templates={templates}
+        extraPresets={extraPresets}
+        phases={phases}
       />
     </div>
   );

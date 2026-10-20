@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Timeline view added to the coaching calendar",
+    detail:
+      "A fifth way to browse an athlete's training alongside Week, Day, Month, and Phase: a continuous, scrollable Timeline with sticky week headers, the way TrainingPeaks, Final Surge, and Runna already work. It loads ~2 weeks behind and ~4 ahead on open and fetches more in either direction as you scroll, with a compact date picker for jumping straight to a far-off week without paging through months. Each workout tile shows distance, duration, and pace or effort inline -- denser than the other views' tiles, since that's the point of this one. Completing or editing a workout from Timeline uses the exact same editor the other views already use, so nothing about how workouts get marked done changed.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Coaching platform cleanup: six small fixes from production QA",
     detail:
       "A leftover dev seed command was showing up as real copy on three coaching empty states, pointing coaches at a shell command instead of just telling them to ask their admin. /coaching/roster had no link to it for a coach whose roster was still just themselves. A datalist used by the day-label, cross-training-type, and workout-extra pickers shared one hardcoded id across every instance on a page, so suggestions could show up on the wrong field once a form had more than one of them -- each now gets its own real id. A program's initial/peak mileage range inputs had no accessible label distinguishing the min from the max field, and a coach-less athlete's \"You're coaching yourself\" copy read as if they held a coach role; both are reworded/labeled now. An athlete's check-in note is guaranteed to render in full in the coach's view, with a scrollable max-height instead of an unbounded block.",
