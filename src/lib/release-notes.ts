@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Plan Realignment: a proposed way back in after missed training",
+    detail:
+      "When an athlete flags that they couldn't train (sick, traveling, life) -- or a coach starts it themselves from the athlete's schedule -- the system now drafts a revised version of the coming week: the first day back stays easy, the next key session and the long run get protected by moving them to a safely-spaced day rather than dropped, and easy/recovery sessions are shortened or dropped first to make room. Missed training is never made up, and rest days are never all eliminated to cram sessions in. Nothing changes until the coach reviews a plain-language diff of every affected workout, tweaks anything they want, and explicitly accepts it -- realigned workouts land as drafts, same as any other coach-authored change, and the athlete only sees them once published.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Roster became a real scanning dashboard",
     detail:
       "/coaching/roster now shows every athlete's current program/phase/week, this week's planned-vs-completed distance and workout count, when they last logged something and last checked in, and their next race with a countdown -- all in one row, no clicking into each athlete's schedule to find out. A quiet badge appears only when something's actually worth a look: a missed workout in the last week, a noteworthy RPE, no check-in in a week (for athletes on an active program), or no logged activity despite workouts being on the calendar -- plain facts, no compliance scores. Sorts by attention, name, or next race, client-side over the roster already loaded.",

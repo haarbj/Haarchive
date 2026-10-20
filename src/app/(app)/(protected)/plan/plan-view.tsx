@@ -21,6 +21,7 @@ import { fetchCalendarWorkouts, summarizeWorkoutFigure } from "@/app/(app)/(prot
 import type { CalendarWorkout } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-types";
 import { initialWeekWindow } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-helpers";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
+import { DisruptionFlagForm } from "./disruption-flag-form";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
 import { PlanTimelineView } from "./plan-timeline-view";
 import { weeklyLoadEntriesFromSelfServeWorkouts } from "./self-serve-weekly-load";
@@ -298,6 +299,16 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
       <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {goal?.race_name ? `Building toward ${goal.race_name} on ${formatDate(plan.end_date)}.` : null}
       </p>
+
+      {/* Plan Realignment's athlete-facing trigger -- flagging a
+          disruption only ever notifies the coach (realign-panel.tsx, on
+          their schedule page); nothing here changes this athlete's own
+          plan or shows them a proposal. */}
+      {!coachView && (
+        <div className="mt-4">
+          <DisruptionFlagForm />
+        </div>
+      )}
 
       {/* Week stays the default, unchanged view -- Timeline is an
           additional way to browse the same training, not a replacement,

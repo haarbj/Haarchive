@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Roster became a real scanning dashboard
+**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Plan Realignment: a proposed way back in after missed training
 
 Recent highlights:
+- Roster became a real scanning dashboard (Oct 20, 2026)
 - Athlete RPE and notes now show up right on the schedule tile (Oct 20, 2026)
 - Planned vs completed, now visible on every workout tile and weekly rollup (Oct 20, 2026)
-- Fixed "Today" marking the wrong day in the evening (Oct 19, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

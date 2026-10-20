@@ -22,6 +22,7 @@ import { PlanHealthPanel } from "./plan-health-panel";
 import { EstimateReviewPanel } from "./estimate-review-panel";
 import { MultiCyclePanel } from "./multi-cycle-panel";
 import { PostRacePanel } from "./post-race-panel";
+import { RealignPanel } from "./realign-panel";
 import { AdvancedTechniquesPanel } from "./advanced-techniques-panel";
 import { FuelingOversightPanel } from "./fueling-oversight-panel";
 import { OnboardingPanel } from "./onboarding-panel";
@@ -281,6 +282,12 @@ export function PhaseView({
       {/* Part H, coach-only. Fires once a goal race has passed and goes
           quiet after eight weeks, so it sits above the rest while live. */}
       <PostRacePanel athleteId={athleteId} />
+
+      {/* Plan Realignment -- coach-initiated trigger lives here; the
+          athlete's own "flag a disruption" trigger lives on /plan
+          (plan-realignment-panel.tsx), both funneling into the same
+          proposal lifecycle (realignment-service.ts). */}
+      <RealignPanel athleteId={athleteId} />
 
       {/* Part B, coach-only. Renders nothing when there is nothing to say. */}
       <PlanHealthPanel athleteId={athleteId} />
