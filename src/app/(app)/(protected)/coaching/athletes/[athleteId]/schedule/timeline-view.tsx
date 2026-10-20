@@ -8,7 +8,7 @@ import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { getPhaseForWeek, weekPositionInPhase, type TrainingPhase } from "@/lib/private-coaching/training-phases";
 import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
 import { loadTimelineWeeks, type TimelineWeek } from "./timeline-actions";
-import { weekRangeLabel, nextWeeksToLoad, jumpWindowForDate, buildTimelineTileFigures } from "./timeline-helpers";
+import { weekRangeLabel, nextWeeksToLoad, jumpWindowForDate, mergeTimelineWeeks, buildTimelineTileFigures } from "./timeline-helpers";
 import type { CalendarWorkout } from "./calendar-types";
 import type { ExtraPresetOption } from "./actions";
 import type { TemplateOption } from "./workout-form";
@@ -63,6 +63,30 @@ export function TimelineView({
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
   const weekRefs = useRef<Map<string, HTMLElement>>(new Map());
 
+  // The IntersectionObserver below is created once per athleteId (its
+  // effect deps are `[athleteId]`, not `[weeks]`, so it doesn't churn on
+  // every scroll-triggered load) and holds onto loadMoreAbove/
+  // loadMoreBelow from whatever render it mounted on. Reading `weeks`/
+  // `loadingTop`/`loadingBottom` as plain closed-over state there means
+  // every later sentinel intersection would see that *first* render's
+  // values forever -- the actual bug behind the reported duplicate-key
+  // warning: a second intersection of the same sentinel re-ran
+  // nextWeeksToLoad from the *original* edge week every time, silently
+  // re-fetching (and re-appending) a window it had already loaded. Refs
+  // are mutable objects whose identity never changes across renders, so
+  // keeping weeksRef synced after each commit (the effect just below)
+  // lets the original, never-re-subscribed closures still read the
+  // current value when they actually run; loadingTopRef/loadingBottomRef
+  // are set directly inside loadMoreAbove/loadMoreBelow themselves (an
+  // event-handler-like context, not render), which is safe without an
+  // effect.
+  const weeksRef = useRef(weeks);
+  useEffect(() => {
+    weeksRef.current = weeks;
+  }, [weeks]);
+  const loadingTopRef = useRef(false);
+  const loadingBottomRef = useRef(false);
+
   const { openCreate, openEdit, editorModals } = useCalendarWorkoutEditor({ athleteId, templates, extraPresets });
 
   // A save inside the editor modal calls router.refresh(), which re-runs
@@ -82,14 +106,15 @@ export function TimelineView({
   }
 
   async function loadMoreAbove() {
-    if (loadingTop || weeks.length === 0) return;
+    if (loadingTopRef.current || weeksRef.current.length === 0) return;
+    loadingTopRef.current = true;
     setLoadingTop(true);
-    const toLoad = nextWeeksToLoad(weeks[0].weekStart, "before");
+    const toLoad = nextWeeksToLoad(weeksRef.current[0].weekStart, "before");
     const container = containerRef.current;
     const prevScrollHeight = container?.scrollHeight ?? 0;
     const prevScrollTop = container?.scrollTop ?? 0;
     const loaded = await loadTimelineWeeks(athleteId, toLoad);
-    setWeeks((current) => [...loaded, ...current]);
+    setWeeks((current) => mergeTimelineWeeks([...loaded, ...current]));
     // Prepending content above the viewport shifts everything below it
     // down by exactly the new content's height -- restore scrollTop by
     // that same delta on the next paint so the coach's own scroll
@@ -99,15 +124,18 @@ export function TimelineView({
       const delta = container.scrollHeight - prevScrollHeight;
       container.scrollTop = prevScrollTop + delta;
     });
+    loadingTopRef.current = false;
     setLoadingTop(false);
   }
 
   async function loadMoreBelow() {
-    if (loadingBottom || weeks.length === 0) return;
+    if (loadingBottomRef.current || weeksRef.current.length === 0) return;
+    loadingBottomRef.current = true;
     setLoadingBottom(true);
-    const toLoad = nextWeeksToLoad(weeks[weeks.length - 1].weekStart, "after");
+    const toLoad = nextWeeksToLoad(weeksRef.current[weeksRef.current.length - 1].weekStart, "after");
     const loaded = await loadTimelineWeeks(athleteId, toLoad);
-    setWeeks((current) => [...current, ...loaded]);
+    setWeeks((current) => mergeTimelineWeeks([...current, ...loaded]));
+    loadingBottomRef.current = false;
     setLoadingBottom(false);
   }
 
@@ -130,7 +158,7 @@ export function TimelineView({
     observer.observe(topSentinel);
     observer.observe(bottomSentinel);
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadMoreAbove/loadMoreBelow close over `weeks` on purpose (they read weeks[0]/weeks[weeks.length-1] fresh via the functional setWeeks form where it matters); re-subscribing the observer on every weeks change would also work but churns the IntersectionObserver instance on every scroll-triggered load for no behavioral difference.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadMoreAbove/loadMoreBelow read the live edge week and loading flags via weeksRef/loadingTopRef/loadingBottomRef (see their declaration above), not closed-over state, so this observer is safe to create once per athleteId instead of re-subscribing (and churning the IntersectionObserver instance) on every scroll-triggered load.
   }, [athleteId]);
 
   // The date picker's jump target: fetch a fresh window centered on the
@@ -141,7 +169,7 @@ export function TimelineView({
   async function jumpToDate(isoDate: string) {
     const { weekStart, weeks: toLoad } = jumpWindowForDate(isoDate);
     const loaded = await loadTimelineWeeks(athleteId, toLoad);
-    setWeeks(loaded);
+    setWeeks(mergeTimelineWeeks(loaded));
     setPendingScrollTarget(weekStart);
   }
 

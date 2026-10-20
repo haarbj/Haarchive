@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Fixed a duplicate-week glitch in the coaching calendar's Timeline view",
+    detail:
+      "Scrolling Timeline far enough in one direction, then back, could re-fetch and re-insert a week that was already loaded -- visible as a flash where a day row sat half-covered under the week above it. The infinite-scroll loader was computing \"what's the next week to fetch\" from a stale snapshot of the loaded range instead of the current one; it now always reads the live range, and the merge that adds newly-loaded weeks now also guarantees no week can appear twice regardless of how scrolling or the date picker got there.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Timeline view added to the coaching calendar",
     detail:
       "A fifth way to browse an athlete's training alongside Week, Day, Month, and Phase: a continuous, scrollable Timeline with sticky week headers, the way TrainingPeaks, Final Surge, and Runna already work. It loads ~2 weeks behind and ~4 ahead on open and fetches more in either direction as you scroll, with a compact date picker for jumping straight to a far-off week without paging through months. Each workout tile shows distance, duration, and pace or effort inline -- denser than the other views' tiles, since that's the point of this one. Completing or editing a workout from Timeline uses the exact same editor the other views already use, so nothing about how workouts get marked done changed.",

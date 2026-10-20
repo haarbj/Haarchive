@@ -8,6 +8,7 @@ import {
   initialWeekWindow,
   nextWeeksToLoad,
   jumpWindowForDate,
+  mergeTimelineWeeks,
   buildTimelineTileFigures,
 } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-helpers";
 import type { CalendarWorkout } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-types";
@@ -97,6 +98,92 @@ describe("nextWeeksToLoad (infinite scroll's load-more step)", () => {
     expect(more).toHaveLength(WEEKS_PER_LOAD);
     expect(more[0]).toBe(shiftWeek(CENTER_WEEK, 1));
     expect(more[more.length - 1]).toBe(shiftWeek(CENTER_WEEK, WEEKS_PER_LOAD));
+  });
+});
+
+describe("mergeTimelineWeeks (the one place week lists get merged, before they become `weeks` state)", () => {
+  const block = (weekStart: string) => ({ weekStart });
+
+  it("drops a duplicate weekStart, keeping only its first occurrence", () => {
+    const merged = mergeTimelineWeeks([block("2026-09-14"), block("2026-09-21"), block("2026-09-14")]);
+    expect(merged.map((w) => w.weekStart)).toEqual(["2026-09-14", "2026-09-21"]);
+  });
+
+  it("is a no-op when every weekStart is already unique", () => {
+    const weeks = [block("2026-09-07"), block("2026-09-14"), block("2026-09-21")];
+    expect(mergeTimelineWeeks(weeks)).toEqual(weeks);
+  });
+
+  it("prefers the first-listed occurrence's own object -- a prepend ([...loaded, ...current]) keeps the freshly-fetched week over a stale duplicate already in state", () => {
+    const stale = { weekStart: "2026-09-14", tag: "stale" };
+    const fresh = { weekStart: "2026-09-14", tag: "fresh" };
+    const merged = mergeTimelineWeeks([fresh, stale]);
+    expect(merged).toHaveLength(1);
+    expect(merged[0]).toBe(fresh);
+  });
+
+  it("repeated prepend steps starting from a stale (already-loaded) edge never reintroduce a week twice -- the regression this fix guards against", () => {
+    // Simulates the actual bug: loadMoreAbove computed from a stale,
+    // never-updated edge week (weeksRef not yet wired) would keep
+    // re-fetching and re-prepending the exact same nextWeeksToLoad()
+    // window every time a sentinel re-intersected. mergeTimelineWeeks is
+    // the safety net that makes that scenario harmless even if some
+    // future load path reintroduces a stale edge.
+    let weeks = initialWeekWindow("2026-09-28").map(block); // includes 2026-09-14 (2 weeks behind)
+    const staleEdge = weeks[0].weekStart; // the edge nextWeeksToLoad was (bug-era) always computed from
+    for (let i = 0; i < 4; i++) {
+      const more = nextWeeksToLoad(staleEdge, "before").map(block);
+      weeks = mergeTimelineWeeks([...more, ...weeks]);
+    }
+    const weekStarts = weeks.map((w) => w.weekStart);
+    expect(weekStarts).toHaveLength(new Set(weekStarts).size);
+    expect(weekStarts.filter((d) => d === "2026-09-14")).toHaveLength(1);
+  });
+
+  it("repeated append steps from the live edge stay unique across many loads", () => {
+    let weeks = initialWeekWindow("2026-09-28").map(block);
+    for (let i = 0; i < 5; i++) {
+      const edge = weeks[weeks.length - 1].weekStart;
+      const more = nextWeeksToLoad(edge, "after").map(block);
+      weeks = mergeTimelineWeeks([...weeks, ...more]);
+    }
+    const weekStarts = weeks.map((w) => w.weekStart);
+    expect(weekStarts).toHaveLength(new Set(weekStarts).size);
+  });
+
+  it("a date-picker jump followed by scroll-triggered loads in both directions never duplicates a weekStart, including 2026-09-14 specifically", () => {
+    const { weekStart: jumpWeekStart, weeks: jumpWeeks } = jumpWindowForDate("2026-09-16"); // lands the jump window on 2026-09-14's week
+    expect(jumpWeekStart).toBe("2026-09-14");
+    let weeks = mergeTimelineWeeks(jumpWeeks.map(block));
+
+    for (let i = 0; i < 3; i++) {
+      const topEdge = weeks[0].weekStart;
+      const above = nextWeeksToLoad(topEdge, "before").map(block);
+      weeks = mergeTimelineWeeks([...above, ...weeks]);
+
+      const bottomEdge = weeks[weeks.length - 1].weekStart;
+      const below = nextWeeksToLoad(bottomEdge, "after").map(block);
+      weeks = mergeTimelineWeeks([...weeks, ...below]);
+    }
+
+    const weekStarts = weeks.map((w) => w.weekStart);
+    expect(weekStarts).toHaveLength(new Set(weekStarts).size);
+    expect(weekStarts.filter((d) => d === "2026-09-14")).toHaveLength(1);
+  });
+
+  it("no sequence of loads produces any date twice -- a general scan across many random-ish jump + scroll sequences", () => {
+    const centers = ["2026-01-05", "2026-04-20", "2026-09-14", "2026-12-28"];
+    for (const center of centers) {
+      let weeks = mergeTimelineWeeks(initialWeekWindow(center).map(block));
+      for (let i = 0; i < 6; i++) {
+        const direction = i % 2 === 0 ? "before" : "after";
+        const edge = direction === "before" ? weeks[0].weekStart : weeks[weeks.length - 1].weekStart;
+        const more = nextWeeksToLoad(edge, direction).map(block);
+        weeks = direction === "before" ? mergeTimelineWeeks([...more, ...weeks]) : mergeTimelineWeeks([...weeks, ...more]);
+      }
+      const weekStarts = weeks.map((w) => w.weekStart);
+      expect(weekStarts).toHaveLength(new Set(weekStarts).size);
+    }
   });
 });
 

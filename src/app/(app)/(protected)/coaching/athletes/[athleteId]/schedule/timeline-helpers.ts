@@ -11,6 +11,8 @@ import { effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
 import { formatCompactDistanceRange, formatDurationRange, formatPaceRange } from "@/lib/private-coaching/workout-distance";
 import type { CalendarWorkout } from "./calendar-types";
 
+type WeekBlock = { weekStart: string };
+
 export const WEEKS_BEHIND_INITIAL = 2;
 export const WEEKS_AHEAD_INITIAL = 4;
 export const WEEKS_PER_LOAD = 3;
@@ -70,6 +72,27 @@ export type TimelineTileFigures = {
  * from the exact same fetchCalendarWorkouts query, so there's no separate
  * code path to keep in sync here.
  */
+/**
+ * The single place week lists get merged -- prepend, append, and a
+ * date-jump's fresh window all funnel through this before becoming the
+ * new `weeks` state, so no load path (present or future) can land two
+ * sections keyed by the same weekStart. `weeks` is read in the order
+ * given; the first occurrence of each weekStart wins and every later
+ * duplicate is dropped. Pass the newly-loaded block(s) first for a
+ * prepend (so freshly-fetched data wins over a stale duplicate already
+ * in state) and last for an append.
+ */
+export function mergeTimelineWeeks<T extends WeekBlock>(weeks: T[]): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+  for (const week of weeks) {
+    if (seen.has(week.weekStart)) continue;
+    seen.add(week.weekStart);
+    result.push(week);
+  }
+  return result;
+}
+
 export function buildTimelineTileFigures(workout: CalendarWorkout): TimelineTileFigures {
   const effective = effectiveWorkoutVolume(workout);
   const distanceText = formatCompactDistanceRange(effective.distanceM, effective.distanceMaxM);
