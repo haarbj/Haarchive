@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** "Your Plan": a welcome payoff for a newly assigned program
+**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Intake gap-check: what a coach needs to know before planning, flagged, never blocked
 
 Recent highlights:
+- "Your Plan": a welcome payoff for a newly assigned program (Oct 20, 2026)
 - Adaptation cards: the plan quietly watches itself, and tells the coach what it sees (Oct 20, 2026)
 - Plan Realignment: a proposed way back in after missed training (Oct 20, 2026)
-- Roster became a real scanning dashboard (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
