@@ -72,7 +72,11 @@ describe("Missed reads as muted/de-emphasized, never alarm-colored, on every sur
   });
 
   it("the self-serve /plan WorkoutCard also dims a missed, never-completed workout", () => {
-    expect(PLAN_WORKOUT_CARD).toMatch(/isMissed \? "opacity-60" : undefined/);
+    // The literal className expression changed shape (joined with the
+    // RPE-emphasis ring class by a later task) but still applies
+    // opacity-60 whenever isMissed is true -- check the ingredient, not
+    // the exact assembled string.
+    expect(PLAN_WORKOUT_CARD).toMatch(/isMissed \? "opacity-60" : ""/);
   });
 
   it("no tile component ever labels a missed workout as 'Failed' -- the badge/label text itself stays plainly descriptive", () => {

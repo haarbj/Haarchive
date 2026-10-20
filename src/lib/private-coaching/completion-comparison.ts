@@ -114,3 +114,63 @@ export function describeCompletionFigures(
         : null,
   };
 }
+
+// --- Subjective feedback (RPE/notes/feel) -- surfaced on the tile, not
+// hidden behind a click, so a coach scanning a week spots the workout
+// that felt off without opening it. Same neutrality rule as the
+// planned-vs-completed figures above: an honest RPE 9 on an easy day is
+// information, never a demerit, and there is no grading/scoring here.
+
+/** How far above prescribed RPE (or, unprescribed, how high an absolute RPE) a logged RPE has to be before the pairing is shown at all. */
+export const RPE_PAIRING_THRESHOLD = 2;
+/** How far above prescribed RPE makes a completed workout worth a second look while scanning a week. */
+export const RPE_EMPHASIS_DIFF_THRESHOLD = 3;
+/** With no prescribed RPE at all, how high a logged RPE alone has to be to warrant the same emphasis. */
+export const RPE_EMPHASIS_UNPRESCRIBED_THRESHOLD = 9;
+
+export type RpeDisplay = { kind: "logged-only"; loggedRpe: number } | { kind: "pair"; prescribedRpe: number; loggedRpe: number };
+
+function prescribedRpeValue(prescribedRpe: number | null, prescribedRpeMax: number | null): number | null {
+  if (prescribedRpe == null) return null;
+  return prescribedRpeMax != null && prescribedRpeMax !== prescribedRpe ? (prescribedRpe + prescribedRpeMax) / 2 : prescribedRpe;
+}
+
+/**
+ * The logged RPE is always shown alone once logged ("RPE 8") -- this
+ * function only decides whether to additionally show what was
+ * prescribed, which only matters once the two differ by
+ * RPE_PAIRING_THRESHOLD or more (prescribed easy, felt hard is the
+ * signal; prescribed 6, felt 7 is noise). Returns null when nothing was
+ * ever logged -- an upcoming/missed workout, or a Strava-matched
+ * completion (which never carries an RPE), shows no RPE at all.
+ */
+export function describeRpe(prescribedRpe: number | null, prescribedRpeMax: number | null, loggedRpe: number | null): RpeDisplay | null {
+  if (loggedRpe == null) return null;
+  const prescribedValue = prescribedRpeValue(prescribedRpe, prescribedRpeMax);
+  if (prescribedValue == null || Math.abs(loggedRpe - prescribedValue) < RPE_PAIRING_THRESHOLD) {
+    return { kind: "logged-only", loggedRpe };
+  }
+  return { kind: "pair", prescribedRpe: prescribedValue, loggedRpe };
+}
+
+/** "RPE 8" or "RPE 6 → 8" -- same planned-then-actual arrow convention as formatDistanceDelta/formatDurationDelta. */
+export function formatRpeDisplay(display: RpeDisplay): string {
+  if (display.kind === "logged-only") return `RPE ${display.loggedRpe}`;
+  return `RPE ${display.prescribedRpe} → ${display.loggedRpe}`;
+}
+
+/**
+ * Worth a second look while scanning a week: meaningfully harder than
+ * prescribed (RPE_EMPHASIS_DIFF_THRESHOLD or more above it), or, with no
+ * prescription to compare against, a high absolute RPE on its own
+ * (RPE_EMPHASIS_UNPRESCRIBED_THRESHOLD or above). Deliberately
+ * asymmetric -- an easy day that felt easier than planned is not a
+ * signal worth flagging; a day that felt much harder than planned is.
+ * Never true for a workout with no logged RPE.
+ */
+export function isRpeNoteworthy(prescribedRpe: number | null, prescribedRpeMax: number | null, loggedRpe: number | null): boolean {
+  if (loggedRpe == null) return false;
+  const prescribedValue = prescribedRpeValue(prescribedRpe, prescribedRpeMax);
+  if (prescribedValue == null) return loggedRpe >= RPE_EMPHASIS_UNPRESCRIBED_THRESHOLD;
+  return loggedRpe - prescribedValue >= RPE_EMPHASIS_DIFF_THRESHOLD;
+}

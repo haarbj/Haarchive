@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { MessageSquare } from "lucide-react";
 
 import { addDays } from "@/lib/week";
 import { DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals";
@@ -300,7 +301,8 @@ function TimelineTile({ entry }: { entry: TimelineEntryView }) {
       {entry.distanceText ? <span>{entry.distanceText}</span> : null}
       {entry.durationText ? <span>{entry.durationText}</span> : null}
       {entry.effortText ? <span>{entry.effortText}</span> : null}
-      {!entry.distanceText && !entry.durationText && !entry.effortText ? (
+      {entry.feedbackText ? <span>{entry.feedbackText}</span> : null}
+      {!entry.distanceText && !entry.durationText && !entry.effortText && !entry.feedbackText ? (
         <span className="text-zinc-400 dark:text-zinc-500">No targets set</span>
       ) : null}
     </div>
@@ -313,6 +315,10 @@ function TimelineTile({ entry }: { entry: TimelineEntryView }) {
           {entry.sessionSlot ? `${entry.sessionSlot} ` : ""}
           {entry.label}
         </span>
+        {/* Indicator only -- the note's own text never reaches this tile
+            (see TimelineEntryView's own comment); the full text lives in
+            the detail view, one click/expand away. */}
+        {entry.hasNotes ? <MessageSquare className="h-3 w-3 shrink-0 text-zinc-400 dark:text-zinc-500" aria-label="Has a note" /> : null}
       </div>
       {figures}
     </>
@@ -320,7 +326,11 @@ function TimelineTile({ entry }: { entry: TimelineEntryView }) {
   // Muted/de-emphasized, not alarm-styled -- a lower opacity is the only
   // thing that changes for a missed entry; its accent border, background,
   // and hover treatment all stay exactly what every other status uses.
-  const tileClass = `block w-full rounded-control border-l-2 bg-black/[0.02] px-2 py-1.5 text-left hover:bg-black/5 dark:bg-white/[0.03] dark:hover:bg-white/10 ${DAY_TYPE_BORDER_CLASSES[entry.accent]} ${entry.statusTone === "missed" ? "opacity-60" : ""}`;
+  // emphasize (a logged RPE meaningfully above prescribed, or a high
+  // absolute RPE with nothing prescribed) adds a subtle ring -- the same
+  // neutral accent-tip token "Today" already uses, "worth a look while
+  // scanning," never a red/alarm treatment.
+  const tileClass = `block w-full rounded-control border-l-2 bg-black/[0.02] px-2 py-1.5 text-left hover:bg-black/5 dark:bg-white/[0.03] dark:hover:bg-white/10 ${DAY_TYPE_BORDER_CLASSES[entry.accent]} ${entry.statusTone === "missed" ? "opacity-60" : ""} ${entry.emphasize ? "ring-1 ring-inset ring-accent-tip/40" : ""}`;
 
   if (entry.kind === "link") {
     return (

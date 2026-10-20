@@ -15,7 +15,7 @@ import {
 import type { WorkoutExtraInput } from "@/lib/private-coaching/extras";
 import { getWorkoutDisplayLabel, effectiveWorkoutVolume, computeWorkoutStatus } from "@/lib/private-coaching/workout-status";
 import { formatDistanceRange, formatDurationRange } from "@/lib/private-coaching/workout-distance";
-import { compareCompletionToPlan, formatDistanceDelta, formatDurationDelta } from "@/lib/private-coaching/completion-comparison";
+import { compareCompletionToPlan, describeRpe, formatDistanceDelta, formatDurationDelta, formatRpeDisplay } from "@/lib/private-coaching/completion-comparison";
 import { isBareXt } from "@/lib/private-coaching/day-type-visuals";
 import { getWorkoutGlossaryEntry } from "@/lib/private-coaching/workout-glossary";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -360,6 +360,11 @@ export default async function WorkoutDetailPage({
         actualDurationS: completion.actual_duration_s,
       })
     : null;
+  // Same RPE pairing rule as every tile (completion-comparison.ts): only
+  // an extra line when prescribed and logged differ meaningfully --
+  // CompletionSummary (below) already shows the logged RPE alone, so
+  // "logged-only" needs nothing added here either.
+  const rpeDisplay = completion ? describeRpe(workout.planned_rpe, workout.planned_rpe_max, completion.rpe) : null;
 
   const distanceText = formatDistanceRange(effectiveVolume.distanceM, effectiveVolume.distanceMaxM);
   const durationText = formatDurationRange(effectiveVolume.durationS, effectiveVolume.durationMaxS);
@@ -649,6 +654,9 @@ export default async function WorkoutDetailPage({
                   .filter(Boolean)
                   .join(" · ")}
               </p>
+            ) : null}
+            {rpeDisplay && rpeDisplay.kind === "pair" ? (
+              <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-300">{formatRpeDisplay(rpeDisplay)}</p>
             ) : null}
             <CompletionSummary
               completion={

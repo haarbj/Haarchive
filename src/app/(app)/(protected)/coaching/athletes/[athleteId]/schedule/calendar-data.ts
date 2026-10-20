@@ -87,6 +87,9 @@ type CompletionRow = {
   actual_distance_m: number | null;
   actual_duration_s: number | null;
   strava_activity_id: number | null;
+  rpe: number | null;
+  athlete_notes: string | null;
+  effort_level: string | null;
 };
 
 export function mapSteps(rows: StepRow[], parentId: string): StepInput[] {
@@ -201,7 +204,7 @@ export async function fetchCalendarWorkouts(
     workoutIds.length
       ? supabase
           .from("completed_workouts")
-          .select("scheduled_workout_id, actual_distance_m, actual_duration_s, strava_activity_id")
+          .select("scheduled_workout_id, actual_distance_m, actual_duration_s, strava_activity_id, rpe, athlete_notes, effort_level")
           .in("scheduled_workout_id", workoutIds)
           .returns<CompletionRow[]>()
       : Promise.resolve({ data: [] as CompletionRow[] }),
@@ -291,6 +294,9 @@ export async function fetchCalendarWorkouts(
             actualDistanceM: completion.actual_distance_m,
             actualDurationS: completion.actual_duration_s,
             stravaActivityId: completion.strava_activity_id,
+            rpe: completion.rpe,
+            hasNotes: !!completion.athlete_notes?.trim(),
+            effortLevel: completion.effort_level,
           }
         : null,
       status: computeWorkoutStatus({

@@ -40,7 +40,7 @@ export function CoachTimelineView({
   const { openCreate, openEdit, editorModals } = useCalendarWorkoutEditor({ athleteId, templates, extraPresets });
 
   function normalizeEntry(workout: CalendarWorkout, date: string): TimelineEntryView {
-    const { distanceText, durationText, effortText } = buildTimelineTileFigures(workout);
+    const { distanceText, durationText, effortText, feedbackText, hasNotes, emphasize } = buildTimelineTileFigures(workout);
     return {
       id: workout.id,
       accent: getDayTypeAccent(workout.dayLabel),
@@ -50,6 +50,9 @@ export function CoachTimelineView({
       distanceText,
       durationText,
       effortText,
+      feedbackText,
+      hasNotes,
+      emphasize,
       kind: "click",
       onClick: () => openEdit(date, workout),
     };

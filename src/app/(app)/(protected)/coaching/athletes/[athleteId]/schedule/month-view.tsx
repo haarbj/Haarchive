@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import { Flag, Pencil } from "lucide-react";
+import { Flag, MessageSquare, Pencil } from "lucide-react";
 
 import type { CalendarWorkout } from "./calendar-types";
 import type { ExtraPresetOption } from "./actions";
@@ -16,7 +16,13 @@ import {
   formatPaceRange,
   formatCompactDistanceRange,
 } from "@/lib/private-coaching/workout-distance";
-import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
+import {
+  compareCompletionToPlan,
+  describeCompletionFigures,
+  describeRpe,
+  formatRpeDisplay,
+  isRpeNoteworthy,
+} from "@/lib/private-coaching/completion-comparison";
 import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
 import { WeekCopyPasteControls } from "./week-copy-paste-controls";
 import { WeekPlanQuickEditModal, type WeekPlanValues } from "./week-plan-editor";
@@ -240,7 +246,15 @@ export function MonthView({
                           const paceText = w.paceReference
                             ? formatPaceRange(w.resolvedPaceMinSPerMi, w.resolvedPaceMaxSPerMi)
                             : formatPaceRange(w.plannedPaceSPerMi, w.plannedPaceMaxSPerMi);
-                          const rangeText = [distanceText, durationText, paceText].filter(Boolean).join(" · ") || null;
+                          // RPE/notes feedback (completion-comparison.ts) --
+                          // same rule as every other tile surface: the
+                          // logged RPE alone, or paired with what was
+                          // prescribed once they differ meaningfully.
+                          const rpeDisplay = w.status === "completed" ? describeRpe(w.plannedRpe, w.plannedRpeMax, w.completion?.rpe ?? null) : null;
+                          const feedbackText = rpeDisplay ? formatRpeDisplay(rpeDisplay) : null;
+                          const hasNotes = w.status === "completed" && (w.completion?.hasNotes ?? false);
+                          const emphasize = w.status === "completed" && isRpeNoteworthy(w.plannedRpe, w.plannedRpeMax, w.completion?.rpe ?? null);
+                          const rangeText = [distanceText, durationText, paceText, feedbackText].filter(Boolean).join(" · ") || null;
                           const detail = rangeText ?? stepsSummary;
                           // "AM 4-6mi Easy" -- slot, then the number, then
                           // what kind of day it is, the coaching shorthand
@@ -254,11 +268,12 @@ export function MonthView({
                               type="button"
                               onClick={() => openEdit(date, w)}
                               title={extrasText ? `${line1} w/ ${extrasText}` : line1}
-                              className={`block w-full border-l-2 pl-1 text-left text-[11px] leading-tight text-zinc-700 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/5 ${DAY_TYPE_BORDER_CLASSES[accent]} ${w.status === "missed" ? "opacity-60" : ""}`}
+                              className={`block w-full border-l-2 pl-1 text-left text-[11px] leading-tight text-zinc-700 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/5 ${DAY_TYPE_BORDER_CLASSES[accent]} ${w.status === "missed" ? "opacity-60" : ""} ${emphasize ? "ring-1 ring-inset ring-accent-tip/40" : ""}`}
                             >
                               <span className="flex items-center gap-1">
                                 <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[w.status]}`} aria-hidden />
                                 <span className="truncate font-medium">{line1}</span>
+                                {hasNotes ? <MessageSquare className="h-2.5 w-2.5 shrink-0 text-zinc-400 dark:text-zinc-500" aria-label="Has a note" /> : null}
                               </span>
                               {extrasText ? <span className="block truncate text-zinc-500 dark:text-zinc-400">w/ {extrasText}</span> : null}
                             </button>

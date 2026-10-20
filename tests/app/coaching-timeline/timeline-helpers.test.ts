@@ -266,6 +266,20 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
     expect(figures.effortText).toBeNull();
   });
 
+  // Completion fixture helper -- rpe/hasNotes/effortLevel default to
+  // "nothing logged," same as a Strava-only match would leave them.
+  function completionOf(overrides: Partial<NonNullable<CalendarWorkout["completion"]>> = {}): NonNullable<CalendarWorkout["completion"]> {
+    return {
+      actualDistanceM: null,
+      actualDurationS: null,
+      stravaActivityId: null,
+      rpe: null,
+      hasNotes: false,
+      effortLevel: null,
+      ...overrides,
+    };
+  }
+
   // Planned-vs-completed (completion-comparison.ts) -- once a tile's own
   // workout is completed, distance/duration switch from planned figures
   // to the comparison; effortText always stays the planned pace/RPE
@@ -286,7 +300,7 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
         status: "completed",
         plannedDistanceM: 8000, // ~4.97mi
         plannedDurationS: null,
-        completion: { actualDistanceM: 8100, actualDurationS: null, stravaActivityId: null },
+        completion: completionOf({ actualDistanceM: 8100 }),
       });
       const figures = buildTimelineTileFigures(w);
       expect(figures.distanceText).not.toContain("→");
@@ -298,7 +312,7 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
         status: "completed",
         plannedDistanceM: 8000,
         plannedDurationS: null,
-        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: null }, // roughly double
+        completion: completionOf({ actualDistanceM: 16000 }), // roughly double
       });
       expect(buildTimelineTileFigures(w).distanceText).toContain("→");
     });
@@ -308,7 +322,7 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
         status: "completed",
         plannedDistanceM: 16000,
         plannedDurationS: null,
-        completion: { actualDistanceM: 8000, actualDurationS: null, stravaActivityId: null },
+        completion: completionOf({ actualDistanceM: 8000 }),
       });
       expect(buildTimelineTileFigures(w).distanceText).toContain("→");
     });
@@ -318,7 +332,7 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
         status: "completed",
         plannedDistanceM: null,
         plannedDurationS: null,
-        completion: { actualDistanceM: 8000, actualDurationS: 2400, stravaActivityId: null },
+        completion: completionOf({ actualDistanceM: 8000, actualDurationS: 2400 }),
       });
       const figures = buildTimelineTileFigures(w);
       expect(figures.distanceText).not.toContain("→");
@@ -333,26 +347,42 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
         plannedPaceSPerMi: null,
         plannedPaceMaxSPerMi: null,
         plannedRpe: null,
-        completion: { actualDistanceM: null, actualDurationS: null, stravaActivityId: null },
+        completion: completionOf(),
       });
       const figures = buildTimelineTileFigures(w);
       expect(figures.distanceText).toBeNull();
       expect(figures.durationText).toBeNull();
       expect(figures.effortText).toBeNull();
+      expect(figures.feedbackText).toBeNull();
+      expect(figures.hasNotes).toBe(false);
+      expect(figures.emphasize).toBe(false);
     });
 
     it("a Strava-matched completion produces identical figures to a manually-logged one with the same actual numbers", () => {
       const manual = workout({
         status: "completed",
         plannedDistanceM: 8000,
-        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: null },
+        completion: completionOf({ actualDistanceM: 16000 }),
       });
       const strava = workout({
         status: "completed",
         plannedDistanceM: 8000,
-        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: 123456 },
+        completion: completionOf({ actualDistanceM: 16000, stravaActivityId: 123456 }),
       });
       expect(buildTimelineTileFigures(strava)).toEqual(buildTimelineTileFigures(manual));
+    });
+
+    it("a Strava-matched completion with no RPE/notes at all shows no feedback indicators -- Strava doesn't supply them", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: 8000,
+        plannedRpe: 6,
+        completion: completionOf({ actualDistanceM: 8100, stravaActivityId: 123456 }),
+      });
+      const figures = buildTimelineTileFigures(w);
+      expect(figures.feedbackText).toBeNull();
+      expect(figures.hasNotes).toBe(false);
+      expect(figures.emphasize).toBe(false);
     });
 
     it("effortText always stays the planned pace/RPE target regardless of completion -- no actual pace is ever fabricated", () => {
@@ -361,9 +391,87 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
         plannedDistanceM: 8000,
         plannedPaceSPerMi: 420,
         plannedPaceMaxSPerMi: 440,
-        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: null },
+        completion: completionOf({ actualDistanceM: 16000 }),
       });
       expect(buildTimelineTileFigures(w).effortText).not.toBeNull();
+    });
+  });
+
+  // RPE/notes feedback indicators -- the tile's own view of
+  // completion-comparison.ts's describeRpe/isRpeNoteworthy.
+  describe("RPE and notes feedback", () => {
+    it("shows nothing when no RPE was logged, even on a completed workout", () => {
+      const w = workout({ status: "completed", plannedRpe: 6, completion: completionOf({ actualDistanceM: 8000 }) });
+      expect(buildTimelineTileFigures(w).feedbackText).toBeNull();
+    });
+
+    it("shows the logged RPE alone when no prescribed RPE exists at all", () => {
+      const w = workout({ status: "completed", plannedRpe: null, completion: completionOf({ actualDistanceM: 8000, rpe: 9 }) });
+      expect(buildTimelineTileFigures(w).feedbackText).toBe("RPE 9");
+    });
+
+    it("pairing boundary: a 1-point difference from prescribed stays logged-only", () => {
+      const w = workout({ status: "completed", plannedRpe: 6, completion: completionOf({ actualDistanceM: 8000, rpe: 7 }) });
+      expect(buildTimelineTileFigures(w).feedbackText).toBe("RPE 7");
+    });
+
+    it("pairing boundary: exactly a 2-point difference shows the pair", () => {
+      const w = workout({ status: "completed", plannedRpe: 6, completion: completionOf({ actualDistanceM: 8000, rpe: 8 }) });
+      expect(buildTimelineTileFigures(w).feedbackText).toBe("RPE 6 → 8");
+    });
+
+    it("emphasis boundary: exactly a 2-point difference above prescribed is not yet noteworthy", () => {
+      const w = workout({ status: "completed", plannedRpe: 6, completion: completionOf({ actualDistanceM: 8000, rpe: 8 }) });
+      expect(buildTimelineTileFigures(w).emphasize).toBe(false);
+    });
+
+    it("emphasis boundary: exactly a 3-point difference above prescribed is noteworthy", () => {
+      const w = workout({ status: "completed", plannedRpe: 6, completion: completionOf({ actualDistanceM: 8000, rpe: 9 }) });
+      expect(buildTimelineTileFigures(w).emphasize).toBe(true);
+    });
+
+    it("emphasis boundary, unprescribed: RPE 8 with nothing prescribed is not noteworthy", () => {
+      const w = workout({ status: "completed", plannedRpe: null, completion: completionOf({ actualDistanceM: 8000, rpe: 8 }) });
+      expect(buildTimelineTileFigures(w).emphasize).toBe(false);
+    });
+
+    it("emphasis boundary, unprescribed: RPE 9 with nothing prescribed is noteworthy", () => {
+      const w = workout({ status: "completed", plannedRpe: null, completion: completionOf({ actualDistanceM: 8000, rpe: 9 }) });
+      expect(buildTimelineTileFigures(w).emphasize).toBe(true);
+    });
+
+    it("hasNotes mirrors the completion's own hasNotes flag exactly", () => {
+      const withNote = workout({ status: "completed", completion: completionOf({ actualDistanceM: 8000, hasNotes: true }) });
+      const withoutNote = workout({ status: "completed", completion: completionOf({ actualDistanceM: 8000, hasNotes: false }) });
+      expect(buildTimelineTileFigures(withNote).hasNotes).toBe(true);
+      expect(buildTimelineTileFigures(withoutNote).hasNotes).toBe(false);
+    });
+
+    it("an upcoming or missed workout never shows feedback indicators -- nothing has been logged yet", () => {
+      const upcoming = workout({ status: "scheduled", plannedRpe: 6 });
+      const missed = workout({ status: "missed", plannedRpe: 6, completion: null });
+      expect(buildTimelineTileFigures(upcoming).feedbackText).toBeNull();
+      expect(buildTimelineTileFigures(upcoming).hasNotes).toBe(false);
+      expect(buildTimelineTileFigures(upcoming).emphasize).toBe(false);
+      expect(buildTimelineTileFigures(missed).feedbackText).toBeNull();
+    });
+
+    it("tiles without any subjective data render byte-identical to the pre-feedback planned-vs-completed output -- feedbackText null, hasNotes false, emphasize false, same distance/duration/effort as before", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: 8000,
+        plannedDurationS: null,
+        completion: completionOf({ actualDistanceM: 8100 }),
+      });
+      const figures = buildTimelineTileFigures(w);
+      expect(figures).toEqual({
+        distanceText: figures.distanceText,
+        durationText: figures.durationText,
+        effortText: figures.effortText,
+        feedbackText: null,
+        hasNotes: false,
+        emphasize: false,
+      });
     });
   });
 });

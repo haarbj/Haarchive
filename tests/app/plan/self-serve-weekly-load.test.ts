@@ -98,7 +98,10 @@ describe("Weekly Load reflects assigned + self-created totals together (not assi
       new Map([["w-1", completion({ actual_distance_m: 8100 })]]),
     );
     const assignedEntries = weeklyLoadEntriesFromAssignedWorkouts([
-      assignedWorkout({ status: "completed", completion: { actualDistanceM: 9700, actualDurationS: null, stravaActivityId: null } }),
+      assignedWorkout({
+        status: "completed",
+        completion: { actualDistanceM: 9700, actualDurationS: null, stravaActivityId: null, rpe: null, hasNotes: false, effortLevel: null },
+      }),
     ]);
     const result = computeWeeklyLoad([...selfEntries, ...assignedEntries], null);
     expect(result.completedMileageM).toBe(8100 + 9700);

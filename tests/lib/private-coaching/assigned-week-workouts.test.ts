@@ -74,7 +74,13 @@ describe("publishedAssignedWorkoutsThisWeek", () => {
 
   it("includes a completed workout -- completion must not hide it from the week list", () => {
     const byDate = {
-      "2026-10-20": [workout({ id: "w-done", status: "completed", completion: { actualDistanceM: 9000, actualDurationS: 2400, stravaActivityId: null } })],
+      "2026-10-20": [
+        workout({
+          id: "w-done",
+          status: "completed",
+          completion: { actualDistanceM: 9000, actualDurationS: 2400, stravaActivityId: null, rpe: null, hasNotes: false, effortLevel: null },
+        }),
+      ],
     };
     const result = publishedAssignedWorkoutsThisWeek(byDate);
     expect(result.map((w) => w.id)).toEqual(["w-done"]);
@@ -98,7 +104,7 @@ describe("weeklyLoadEntriesFromAssignedWorkouts", () => {
       workout({
         plannedDistanceM: 10 * MILE_METERS,
         status: "completed",
-        completion: { actualDistanceM: 9.5 * MILE_METERS, actualDurationS: 3000, stravaActivityId: null },
+        completion: { actualDistanceM: 9.5 * MILE_METERS, actualDurationS: 3000, stravaActivityId: null, rpe: null, hasNotes: false, effortLevel: null },
       }),
     ]);
     expect(entries[0].distanceM).toBe(10 * MILE_METERS);
@@ -128,7 +134,7 @@ describe("end to end: completing an assigned workout moves it from Scheduled to 
       id: "w-1",
       plannedDistanceM: 8 * MILE_METERS,
       status: "completed",
-      completion: { actualDistanceM: 8.2 * MILE_METERS, actualDurationS: 3300, stravaActivityId: null },
+      completion: { actualDistanceM: 8.2 * MILE_METERS, actualDurationS: 3300, stravaActivityId: null, rpe: null, hasNotes: false, effortLevel: null },
     });
 
     const before = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts([beforeCompletion]), null);

@@ -2,11 +2,17 @@ import { describe, expect, it } from "vitest";
 
 import {
   COMPLETION_TOLERANCE,
+  RPE_EMPHASIS_DIFF_THRESHOLD,
+  RPE_EMPHASIS_UNPRESCRIBED_THRESHOLD,
+  RPE_PAIRING_THRESHOLD,
   compareCompletionToPlan,
   describeCompletionFigures,
+  describeRpe,
   formatActualDistance,
   formatDistanceDelta,
   formatDurationDelta,
+  formatRpeDisplay,
+  isRpeNoteworthy,
   type CompletionComparison,
 } from "@/lib/private-coaching/completion-comparison";
 import { MILE_METERS } from "@/lib/race-distances";
@@ -327,5 +333,91 @@ describe("formatting helpers", () => {
       actualDurationS: 2292,
     });
     expect(formatDurationDelta(comparison.durationDelta!)).toBe("45:00 → 38:12");
+  });
+});
+
+describe("thresholds", () => {
+  it("RPE_PAIRING_THRESHOLD is 2, RPE_EMPHASIS_DIFF_THRESHOLD is 3, RPE_EMPHASIS_UNPRESCRIBED_THRESHOLD is 9", () => {
+    expect(RPE_PAIRING_THRESHOLD).toBe(2);
+    expect(RPE_EMPHASIS_DIFF_THRESHOLD).toBe(3);
+    expect(RPE_EMPHASIS_UNPRESCRIBED_THRESHOLD).toBe(9);
+  });
+});
+
+describe("describeRpe", () => {
+  it("returns null when no RPE was logged -- an upcoming/missed workout, or a Strava-matched completion, which never carries one", () => {
+    expect(describeRpe(6, null, null)).toBeNull();
+    expect(describeRpe(null, null, null)).toBeNull();
+  });
+
+  it("logged-only when nothing was ever prescribed, regardless of how high the logged value is", () => {
+    const display = describeRpe(null, null, 9);
+    expect(display).toEqual({ kind: "logged-only", loggedRpe: 9 });
+  });
+
+  it("logged-only when prescribed and logged are identical", () => {
+    expect(describeRpe(6, null, 6)).toEqual({ kind: "logged-only", loggedRpe: 6 });
+  });
+
+  describe("the pairing boundary (diff 1 vs exactly 2)", () => {
+    it("a 1-point difference stays logged-only -- noise, not signal", () => {
+      expect(describeRpe(6, null, 7)).toEqual({ kind: "logged-only", loggedRpe: 7 });
+    });
+
+    it("exactly a 2-point difference shows the pair (the boundary is inclusive)", () => {
+      expect(describeRpe(6, null, 8)).toEqual({ kind: "pair", prescribedRpe: 6, loggedRpe: 8 });
+    });
+
+    it("a 2-point difference in the other direction (felt easier than prescribed) also shows the pair -- the pairing rule isn't one-directional", () => {
+      expect(describeRpe(8, null, 6)).toEqual({ kind: "pair", prescribedRpe: 8, loggedRpe: 6 });
+    });
+  });
+
+  it("averages a prescribed RPE range's min/max into one representative value, same convention as the distance/duration deltas", () => {
+    const display = describeRpe(5, 7, 9); // midpoint 6, logged 9 -> diff 3
+    expect(display).toEqual({ kind: "pair", prescribedRpe: 6, loggedRpe: 9 });
+  });
+
+  it("formatRpeDisplay: 'RPE N' alone, or 'RPE prescribed → logged' for a real pair", () => {
+    expect(formatRpeDisplay({ kind: "logged-only", loggedRpe: 8 })).toBe("RPE 8");
+    expect(formatRpeDisplay({ kind: "pair", prescribedRpe: 6, loggedRpe: 8 })).toBe("RPE 6 → 8");
+  });
+});
+
+describe("isRpeNoteworthy (coach scan-ability emphasis)", () => {
+  it("never noteworthy with no logged RPE at all", () => {
+    expect(isRpeNoteworthy(6, null, null)).toBe(false);
+    expect(isRpeNoteworthy(null, null, null)).toBe(false);
+  });
+
+  describe("the emphasis-diff boundary (diff 2 vs exactly 3, above prescribed)", () => {
+    it("a 2-point difference above prescribed is not yet noteworthy", () => {
+      expect(isRpeNoteworthy(6, null, 8)).toBe(false);
+    });
+
+    it("exactly a 3-point difference above prescribed is noteworthy (the boundary is inclusive)", () => {
+      expect(isRpeNoteworthy(6, null, 9)).toBe(true);
+    });
+
+    it("a 3-point difference BELOW prescribed is never noteworthy -- the rule is asymmetric, an easier-than-planned day isn't a signal to flag", () => {
+      expect(isRpeNoteworthy(9, null, 6)).toBe(false);
+    });
+  });
+
+  describe("the unprescribed boundary (RPE 8 vs exactly 9, no prescription)", () => {
+    it("RPE 8 with nothing prescribed is not noteworthy", () => {
+      expect(isRpeNoteworthy(null, null, 8)).toBe(false);
+    });
+
+    it("RPE 9 with nothing prescribed is noteworthy (the boundary is inclusive)", () => {
+      expect(isRpeNoteworthy(null, null, 9)).toBe(true);
+    });
+  });
+
+  it("uses the same prescribed-range midpoint convention as describeRpe", () => {
+    // prescribed 5-7 (midpoint 6), logged 9 -> diff 3 -> noteworthy
+    expect(isRpeNoteworthy(5, 7, 9)).toBe(true);
+    // prescribed 5-7 (midpoint 6), logged 8 -> diff 2 -> not yet
+    expect(isRpeNoteworthy(5, 7, 8)).toBe(false);
   });
 });

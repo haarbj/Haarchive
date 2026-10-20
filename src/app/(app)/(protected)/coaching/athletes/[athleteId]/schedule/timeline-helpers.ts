@@ -11,7 +11,13 @@ import { addDays, shiftWeek, mostRecentMonday } from "@/lib/week";
 import { formatDate } from "@/lib/format";
 import { effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
 import { formatCompactDistanceRange, formatDurationRange, formatPaceRange } from "@/lib/private-coaching/workout-distance";
-import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
+import {
+  compareCompletionToPlan,
+  describeCompletionFigures,
+  describeRpe,
+  formatRpeDisplay,
+  isRpeNoteworthy,
+} from "@/lib/private-coaching/completion-comparison";
 import type { DayTypeAccent } from "@/lib/private-coaching/day-type-visuals";
 import type { CalendarWorkout } from "./calendar-types";
 
@@ -53,6 +59,12 @@ export type TimelineEntryView = {
   distanceText: string | null;
   durationText: string | null;
   effortText: string | null;
+  /** Logged RPE ("RPE 8" or, when meaningfully off prescription, "RPE 6 → 8") -- null whenever nothing was logged (upcoming, missed, or a Strava-only completion). See completion-comparison.ts's describeRpe. */
+  feedbackText: string | null;
+  /** An athlete left a note/comment on the completion -- the tile shows an indicator only, never the note text itself. */
+  hasNotes: boolean;
+  /** Worth a second look while scanning a week (isRpeNoteworthy) -- a subtle visual cue, never alarm-styled. */
+  emphasize: boolean;
 } & ({ kind: "link"; href: string } | { kind: "click"; onClick: () => void } | { kind: "expand"; content: ReactNode });
 
 export const WEEKS_BEHIND_INITIAL = 2;
@@ -101,8 +113,12 @@ export function jumpWindowForDate(isoDate: string): { weekStart: string; weeks: 
 export type TimelineTileFigures = {
   distanceText: string | null;
   durationText: string | null;
-  /** Pace when set; RPE ("RPE 5" / "RPE 5–7") only as a fallback when no pace is set at all -- never both at once. */
+  /** Pace when set; the planned RPE TARGET ("RPE 5" / "RPE 5–7") only as a fallback when no pace is set at all -- never both at once. Always the plan, never the logged value -- see feedbackText for that. */
   effortText: string | null;
+  /** The athlete's logged RPE feedback, see completion-comparison.ts's describeRpe -- null unless completed with an RPE actually logged. */
+  feedbackText: string | null;
+  hasNotes: boolean;
+  emphasize: boolean;
 };
 
 /**
@@ -164,10 +180,19 @@ export function buildTimelineTileFigures(workout: CalendarWorkout): TimelineTile
       { actualDistanceM: workout.completion?.actualDistanceM ?? null, actualDurationS: workout.completion?.actualDurationS ?? null },
       "compact",
     );
-    return { distanceText, durationText, effortText };
+    const loggedRpe = workout.completion?.rpe ?? null;
+    const rpeDisplay = describeRpe(workout.plannedRpe, workout.plannedRpeMax, loggedRpe);
+    return {
+      distanceText,
+      durationText,
+      effortText,
+      feedbackText: rpeDisplay ? formatRpeDisplay(rpeDisplay) : null,
+      hasNotes: workout.completion?.hasNotes ?? false,
+      emphasize: isRpeNoteworthy(workout.plannedRpe, workout.plannedRpeMax, loggedRpe),
+    };
   }
 
   const distanceText = formatCompactDistanceRange(effective.distanceM, effective.distanceMaxM);
   const durationText = formatDurationRange(effective.durationS, effective.durationMaxS);
-  return { distanceText, durationText, effortText };
+  return { distanceText, durationText, effortText, feedbackText: null, hasNotes: false, emphasize: false };
 }

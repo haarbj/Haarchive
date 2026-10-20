@@ -3,13 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { MessageSquare } from "lucide-react";
 
 import { deleteScheduledWorkout, duplicateScheduledWorkout, rescheduleWorkout } from "./actions";
 import type { CalendarWorkout } from "./calendar-types";
 import { getDayTypeAccent, DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals";
 import { getWorkoutDisplayLabel, describeWorkoutDetail, effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
 import { getWorkoutPlannedDistanceM } from "@/lib/private-coaching/workout-distance";
-import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
+import {
+  compareCompletionToPlan,
+  describeCompletionFigures,
+  describeRpe,
+  formatRpeDisplay,
+  isRpeNoteworthy,
+} from "@/lib/private-coaching/completion-comparison";
+import { effortLevelLabel } from "@/lib/private-coaching/effort-levels";
 import { formatClock } from "@/lib/running-format";
 import { formatMiles } from "@/lib/format";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
@@ -119,6 +127,18 @@ export function WorkoutCard({
           .join(" · ")}`
       : undefined;
 
+  // RPE/notes feedback (completion-comparison.ts) -- same rule as every
+  // other tile surface: the logged RPE alone, or paired with what was
+  // prescribed once they differ meaningfully; a note is an indicator
+  // only, never its own text, here either. Strava-matched completions
+  // never carry any of this, so these all stay null/false for one.
+  const loggedRpe = workout.completion?.rpe ?? null;
+  const rpeDisplay = workout.status === "completed" ? describeRpe(workout.plannedRpe, workout.plannedRpeMax, loggedRpe) : null;
+  const feedbackText = rpeDisplay ? formatRpeDisplay(rpeDisplay) : null;
+  const hasNotes = workout.status === "completed" && (workout.completion?.hasNotes ?? false);
+  const emphasize = workout.status === "completed" && isRpeNoteworthy(workout.plannedRpe, workout.plannedRpeMax, loggedRpe);
+  const feelLabel = workout.status === "completed" ? effortLevelLabel(workout.completion?.effortLevel ?? null) : null;
+
   async function handleMoveSubmit() {
     setMoveError(null);
     if (!moveDate || moveDate === workout.scheduledDate) return setMoveOpen(false);
@@ -140,7 +160,7 @@ export function WorkoutCard({
   return (
     <div
       data-workout-card
-      className={`rounded-control border border-l-4 border-black/10 bg-white p-2.5 text-sm dark:border-white/10 ${DAY_TYPE_BORDER_CLASSES[accent]} dark:bg-zinc-900 ${workout.status === "missed" ? "opacity-60" : ""}`}
+      className={`rounded-control border border-l-4 border-black/10 bg-white p-2.5 text-sm dark:border-white/10 ${DAY_TYPE_BORDER_CLASSES[accent]} dark:bg-zinc-900 ${workout.status === "missed" ? "opacity-60" : ""} ${emphasize ? "ring-1 ring-inset ring-accent-tip/40" : ""}`}
     >
       <div className="flex items-start justify-between gap-1">
         {/* day_label (what KIND of day this is -- MLR, Threshold, Fartlek)
@@ -194,10 +214,21 @@ export function WorkoutCard({
       </div>
 
       {workout.completion && comparison ? (
-        <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400" title={plannedHoverTitle}>
-          {[completionFigures.distanceText, completionFigures.durationText, workout.completion.stravaActivityId != null ? "Strava" : null]
-            .filter(Boolean)
-            .join(" · ")}
+        <p className="mt-1.5 flex flex-wrap items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400" title={plannedHoverTitle}>
+          <span>
+            {[
+              completionFigures.distanceText,
+              completionFigures.durationText,
+              feedbackText,
+              feelLabel,
+              workout.completion.stravaActivityId != null ? "Strava" : null,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
+          {/* Indicator only -- the note's own text never reaches this
+              card; the full text lives on the workout detail page. */}
+          {hasNotes ? <MessageSquare className="h-3 w-3 shrink-0" aria-label="Has a note" /> : null}
         </p>
       ) : null}
 

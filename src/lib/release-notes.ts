@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Athlete RPE and notes now show up right on the schedule tile",
+    detail:
+      "A coach scanning a week no longer has to open every workout to see how it actually felt: a logged RPE now shows on the tile itself (coach schedule and /plan alike), paired with the prescribed RPE only when they differ by 2 or more points -- that's the \"prescribed easy, felt hard\" signal worth noticing. A completed workout that ran 3+ points above its prescribed RPE (or 9+ with nothing prescribed) gets a subtle highlight while scanning, never a red flag. A note or comment shows as a small icon, never its text, on the tile -- the full note is still one click away. Strava-matched completions show nothing here, since Strava has no way to supply RPE or notes.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Planned vs completed, now visible on every workout tile and weekly rollup",
     detail:
       "Every workout tile across the coaching calendar and /plan -- Week, Month, both Timeline views, and the workout detail page -- now shows the prescription and, once logged, the actual: one clean number when you hit the target within about 10%, or the planned-vs-actual delta (\"8.0 mi planned → 6.2 mi\") when you didn't. A missed workout reads as muted, not flagged red, and there's no grading, scoring, or streak language anywhere -- a delta is information, not a judgment. Weekly Load now shows planned and completed distance and duration side by side on both the coach's schedule and the athlete's own /plan.",

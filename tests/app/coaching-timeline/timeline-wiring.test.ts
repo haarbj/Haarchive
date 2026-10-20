@@ -89,8 +89,13 @@ describe("5. denser tiles, Timeline-only", () => {
     // this is a drift check, not a content rewrite: if someone densified
     // Month View's tiles as a side effect of building Timeline, this
     // line (and its " · " join of distance/duration/pace into one
-    // possibly-truncated figure) would be gone.
-    expect(monthViewSource).toContain('[distanceText, durationText, paceText].filter(Boolean).join(" · ")');
+    // possibly-truncated figure) would be gone. feedbackText (the RPE
+    // indicator) was deliberately added to this same join by a later,
+    // unrelated task (surfacing athlete RPE/notes on tiles) -- that's a
+    // real, intentional addition to the join, not the density creep this
+    // check originally guarded against, so the assertion was updated
+    // rather than left to fail.
+    expect(monthViewSource).toContain('[distanceText, durationText, paceText, feedbackText].filter(Boolean).join(" · ")');
   });
 });
 

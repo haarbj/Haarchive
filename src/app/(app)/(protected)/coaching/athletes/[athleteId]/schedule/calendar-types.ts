@@ -89,6 +89,21 @@ export type CalendarWorkout = {
     actualDistanceM: number | null;
     actualDurationS: number | null;
     stravaActivityId: number | null;
+    // Subjective feedback for the schedule tiles' RPE/notes indicators
+    // (completion-comparison.ts) -- a Strava-matched completion never
+    // populates any of these (Strava has no way to supply them), so they
+    // stay null/false exactly like an unlogged workout would, never a
+    // fabricated zero. hasNotes is a boolean, not the note text itself --
+    // the raw text deliberately never reaches this view-model, so no
+    // tile surface can accidentally render it; the full text is read
+    // from completed_workouts directly on the workout detail page.
+    rpe: number | null;
+    hasNotes: boolean;
+    // The athlete's self-described effort/feel category (e.g. "High-end
+    // aerobic") when logged -- see effort-levels.ts. Self-serve
+    // completions (workout_completions) have no equivalent field; this
+    // stays null there, which is the honest answer, not a gap to fill.
+    effortLevel: string | null;
   } | null;
   status: WorkoutStatus;
 };

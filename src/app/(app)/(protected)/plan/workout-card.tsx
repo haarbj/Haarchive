@@ -13,7 +13,7 @@ import {
   type WorkoutType,
 } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
-import { compareCompletionToPlan, formatDistanceDelta, formatDurationDelta } from "@/lib/private-coaching/completion-comparison";
+import { compareCompletionToPlan, formatDistanceDelta, formatDurationDelta, isRpeNoteworthy } from "@/lib/private-coaching/completion-comparison";
 import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { ExplainWorkoutButton } from "./explain-workout-button";
@@ -91,8 +91,17 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion, today 
           .join(" · ")}`
       : undefined;
 
+  // Self-serve has no prescribed-RPE concept at all (no field in
+  // WorkoutPrescription), so isRpeNoteworthy always falls back to its
+  // unprescribed, high-absolute-RPE branch here -- the honest answer,
+  // not a gap. CompletionSummary (below) already shows the logged RPE
+  // and the note's full text plainly, so this card doesn't need a
+  // separate RPE/notes indicator the way the denser tile surfaces do --
+  // only the same "worth a second look while scanning" ring.
+  const emphasize = isRpeNoteworthy(null, null, completion?.rpe ?? null);
+
   return (
-    <Card padding="sm" className={isMissed ? "opacity-60" : undefined}>
+    <Card padding="sm" className={[isMissed ? "opacity-60" : "", emphasize ? "ring-1 ring-inset ring-accent-tip/40" : ""].filter(Boolean).join(" ") || undefined}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">
