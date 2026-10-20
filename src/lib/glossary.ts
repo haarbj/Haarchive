@@ -455,4 +455,21 @@ export const glossaryTerms: GlossaryTerm[] = [
     aliases: ["Ingebrigtsens"],
     href: "/athlete-library/jakob-ingebrigtsen",
   },
+  // Tool names -- the tools themselves live in sections.ts (category
+  // "tools") but have no `content` array of their own for
+  // section-linkify.tsx's "X in Y" convention to key off, so a bare
+  // mention of a tool's name in prose elsewhere needs its own glossary
+  // entry to become a real link. Only added for a tool that's actually
+  // named in real prose (athlete-education.ts) -- not registered
+  // speculatively for every tool on the site.
+  {
+    id: "fueling-planner",
+    aliases: ["Fueling Planner"],
+    href: "/fueling-calculator",
+  },
+  {
+    id: "race-pace-planner",
+    aliases: ["Race Pace Planner"],
+    href: "/race-pace-planner",
+  },
 ];

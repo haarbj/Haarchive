@@ -150,6 +150,10 @@ const PACING_AND_EFFORT: ContentBlock[] = [
     type: "paragraph",
     text: "For the marathon basis specifically, the useful framing is the pace you could hold today for the first 16 miles of a marathon, not the pace you are hoping to average on race day. Conservative is correct. Your estimate then gets revised as workouts give you evidence, which is one of the things your coach is watching for.",
   },
+  {
+    type: "paragraph",
+    text: "Once that estimate firms up into an actual goal pace, the Race Pace Planner turns it into a real race-day plan: a mile-by-mile pace table, a fueling schedule, and a strategy built around the actual course.",
+  },
 
   { type: "heading", text: "Effort first, precision later" },
   {
@@ -277,6 +281,10 @@ const FUELING_AND_HYDRATION: ContentBlock[] = [
     variant: "tip",
     title: "Your gut trains like a muscle",
     text: "Practice your intended race rate in workouts rather than discovering it on race day. Taking 60 to 90 grams per hour in training, if you tolerate it, is how you build the tolerance you want to have available.",
+  },
+  {
+    type: "paragraph",
+    text: "Once you have a rate you trust, the Fueling Planner turns a specific long run's distance and duration into a real gel-by-gel schedule, and it now shows up right on the workout itself so you do not have to come looking for it.",
   },
 
   { type: "heading", text: "Carb loading without the feast" },
