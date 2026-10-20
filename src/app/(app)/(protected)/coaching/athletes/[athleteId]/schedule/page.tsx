@@ -8,6 +8,7 @@ import { createClient } from "@/lib/db/server";
 import type { WorkoutType } from "@/lib/coaching-engine";
 import type { PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { mostRecentMonday, shiftWeek, shiftMonth, weekDates, monthGridDates, addDays } from "@/lib/week";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import { formatDate } from "@/lib/format";
 import { getAthleteGoalRace, weeksUntilGoalRace, formatGoalRaceContext, formatWeeksAwayLabel } from "@/lib/private-coaching/goal-race";
 import { getAthleteMostRecentRace, resolvePaceReference } from "@/lib/private-coaching/pace-reference";
@@ -130,7 +131,8 @@ export default async function AthleteSchedulePage({
       ? sp.view
       : "week";
   const copiedWeek = isValidIsoDate(sp.copiedWeek) ? sp.copiedWeek : null;
-  const today = new Date().toISOString().slice(0, 10);
+  // The viewer's own local date, not the server's -- see viewer-timezone.ts.
+  const today = await todayForViewer();
 
   // A single canonical "reference date," derived from whichever param the
   // active view actually uses -- lets every view's own tab link (Week/Day/
@@ -435,7 +437,10 @@ async function WeekViewSection({
   const days = weekDates(week);
   const prevWeek = shiftWeek(week, -1);
   const nextWeek = shiftWeek(week, 1);
-  const thisWeek = mostRecentMonday(new Date());
+  // Derived from the already-viewer-local `today` param, not a second,
+  // independent `new Date()` -- two separate "what day is it" calls here
+  // could otherwise drift from each other right at a day boundary.
+  const thisWeek = mostRecentMonday(new Date(`${today}T00:00:00Z`));
 
   const [workoutsByDate, prevSummary, nextSummary, weekPlanRow, mostRecentRace, coachProfile] = await Promise.all([
     fetchCalendarWorkouts(supabase, athleteId, session.userId, days, today),

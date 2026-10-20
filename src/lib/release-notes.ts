@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Fixed \"Today\" marking the wrong day in the evening",
+    detail:
+      "The coaching calendar and training schedule (Week, Day, Month, Phase, both Timeline views, and the date pickers within them) were resolving \"today\" in UTC, not the viewer's own timezone -- so anyone west of UTC (most of the Americas) could see the wrong day highlighted as Today once their evening had already crossed into UTC's next calendar day. Today, this week, and this month now resolve in whichever timezone the viewer's own browser reports.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Timeline view added to /plan -- athletes can now scroll their own schedule too",
     detail:
       "The continuous, scrollable Timeline that shipped on the coach's calendar is now available on an athlete's own training page, alongside the existing week view (a new Week/Timeline switcher, with Week still the default). It shows both self-created and coach-assigned workouts side by side, with the same sticky week headers, date-jump picker, and dense per-day figures as the coach side. Completing a workout from Timeline works exactly like it does from the week view, and the weekly mileage total now adds up self-created and coach-assigned workouts together, instead of only ever counting assigned ones.",

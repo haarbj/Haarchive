@@ -3,6 +3,7 @@
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { weekDates, addDays } from "@/lib/week";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import type { MesocyclePhase, WorkoutType } from "@/lib/coaching-engine";
 import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
 import { fetchCalendarWorkouts } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-data";
@@ -46,7 +47,7 @@ export async function loadAthleteTimelineWeeks(weekStarts: string[]): Promise<Ti
   if (weekStarts.length === 0) return [];
 
   const supabase = await createClient();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await todayForViewer();
   const sortedStarts = [...weekStarts].sort();
   const rangeStart = sortedStarts[0];
   const rangeEnd = addDays(sortedStarts[sortedStarts.length - 1], 6);

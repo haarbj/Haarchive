@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 
-import { monthGridDates, shiftMonth } from "@/lib/week";
+import { monthGridDates, shiftMonth, todayInTimeZone } from "@/lib/week";
 import { formatDate } from "@/lib/format";
+
+// The browser's own timezone -- client components can read this
+// directly and synchronously. See viewer-timezone.ts's own comment for
+// why Server Components need a different approach (they can't call
+// this at all; the browser's zone isn't knowable server-side without the
+// cookie that file reads).
+function viewerToday(): string {
+  return todayInTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
+}
 
 const WEEKDAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -28,9 +37,9 @@ export function DateRangePicker({
   endDate: string | null;
   onChange: (next: { startDate: string | null; endDate: string | null }) => void;
 }) {
-  const [month, setMonth] = useState(() => (startDate ?? endDate ?? new Date().toISOString().slice(0, 10)).slice(0, 7));
+  const [month, setMonth] = useState(() => (startDate ?? endDate ?? viewerToday()).slice(0, 7));
   const gridDates = monthGridDates(month);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = viewerToday();
 
   function handleClick(date: string) {
     if (!startDate || (startDate && endDate)) {

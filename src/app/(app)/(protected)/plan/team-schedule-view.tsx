@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/db/server";
 import { formatClock } from "@/lib/running-format";
+import { addDays } from "@/lib/week";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import { WorkoutLengthLine, WorkoutMetaLine } from "@/components/workout-summary-line";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { GroupWorkoutCompleteForm, UndoGroupCompletionButton } from "./group-workout-complete-form";
@@ -147,18 +149,22 @@ export async function TeamScheduleView({ userId, coachView = false }: { userId: 
     );
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const windowStart = new Date();
-  windowStart.setDate(windowStart.getDate() - 2);
-  const windowEnd = new Date();
-  windowEnd.setDate(windowEnd.getDate() + 12);
+  // The viewer's own local date, not the server's -- see viewer-timezone.ts.
+  // windowStart/windowEnd are derived from this one value via addDays'
+  // pure ISO-string arithmetic, rather than each taking its own
+  // independent `new Date()` snapshot (the previous shape -- three
+  // separate "what time is it right now" reads that could drift from
+  // each other right at a day boundary).
+  const today = await todayForViewer();
+  const windowStart = addDays(today, -2);
+  const windowEnd = addDays(today, 12);
 
   let workoutsQuery = supabase
     .from("group_plan_workouts")
     .select("id, scheduled_date, time_of_day, location, description, secondary_activity, workout_type, duration_min, distance_m, pace_fast_sec_per_mile, pace_slow_sec_per_mile, is_race, notes, published_at, explanation")
     .eq("group_plan_id", groupPlan.id)
-    .gte("scheduled_date", windowStart.toISOString().slice(0, 10))
-    .lte("scheduled_date", windowEnd.toISOString().slice(0, 10));
+    .gte("scheduled_date", windowStart)
+    .lte("scheduled_date", windowEnd);
   // A coach previewing an athlete's page sees everything they've built,
   // published or not -- their own session's RLS grant (group_plan_workouts_
   // all_coach) already permits reading unpublished rows, so this app-layer

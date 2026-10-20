@@ -104,3 +104,41 @@ export function shiftMonth(monthIso: string, deltaMonths: number): string {
   const newMonth = (totalMonths % 12) + 1;
   return `${newYear}-${String(newMonth).padStart(2, "0")}`;
 }
+
+// "What day is it right now" in a given IANA timeZone -- the one place
+// the calendar/schedule surfaces should answer that question, since
+// `new Date().toISOString().slice(0, 10)` (seen all over this codebase
+// before this function existed) resolves in UTC, which mislabels "Today"
+// for anyone whose local evening has already crossed into UTC's next
+// calendar day (most of the Americas, most of the day). en-CA's
+// YYYY-MM-DD formatting is the standard trick for getting a sortable,
+// already-zero-padded ISO date string straight out of Intl. Falls back
+// to the UTC date for an invalid/unrecognized zone (the same value every
+// caller already used before this fix), so a bad zone is never worse
+// than the pre-fix behavior, only a missed improvement.
+export function todayInTimeZone(timeZone: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
+// Validates a candidate IANA zone (e.g. a cookie value a visitor's
+// browser could in principle send tampered or stale) and falls back to
+// UTC for anything missing or unrecognized -- UTC being the exact value
+// every "today" call site already used before viewer-timezone.ts
+// existed, so this fallback is never a regression. Pure on purpose (no
+// `cookies()`/`next/headers` here) so it's testable without the
+// "server-only" guard that src/lib/viewer-timezone.ts's own async
+// wrapper carries -- that wrapper is the only thing that should ever
+// call this with an actual cookie value.
+export function resolveViewerTimeZone(candidate: string | undefined | null): string {
+  if (!candidate) return "UTC";
+  try {
+    new Intl.DateTimeFormat(undefined, { timeZone: candidate });
+    return candidate;
+  } catch {
+    return "UTC";
+  }
+}

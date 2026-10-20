@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   addDays,
@@ -6,8 +6,10 @@ import {
   monthGridDates,
   mostRecentCompletedMonday,
   mostRecentMonday,
+  resolveViewerTimeZone,
   shiftMonth,
   shiftWeek,
+  todayInTimeZone,
   weekDates,
 } from "@/lib/week";
 
@@ -140,6 +142,65 @@ describe("shiftMonth", () => {
 
   it("is a no-op for delta 0", () => {
     expect(shiftMonth("2026-08", 0)).toBe("2026-08");
+  });
+});
+
+describe("todayInTimeZone (resolves 'today' in the VIEWER's zone, not the server's/UTC)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("the reported case: 21:20 on Oct 19 in America/Phoenix (already 04:20 Oct 20 in UTC) still reads as Oct 19 for a Phoenix viewer", () => {
+    // Phoenix (Arizona) never observes DST -- a fixed UTC-7 year-round --
+    // so 21:20 Oct 19 local is exactly 04:20 Oct 20 UTC.
+    vi.setSystemTime(new Date("2026-10-20T04:20:00Z"));
+    expect(todayInTimeZone("America/Phoenix")).toBe("2026-10-19");
+  });
+
+  it("a positive-offset case: an instant already the next day in Australia/Sydney while still the previous day in UTC resolves to the Sydney date", () => {
+    // Sydney observes AEDT (UTC+11) in October -- 23:30 UTC on Oct 19 is
+    // already 10:30 the morning of Oct 20 in Sydney.
+    vi.setSystemTime(new Date("2026-10-19T23:30:00Z"));
+    expect(todayInTimeZone("Australia/Sydney")).toBe("2026-10-20");
+  });
+
+  it("a UTC viewer sees no behavior change -- still resolves to the UTC date", () => {
+    vi.setSystemTime(new Date("2026-10-19T23:30:00Z"));
+    expect(todayInTimeZone("UTC")).toBe("2026-10-19");
+  });
+
+  it("falls back to the UTC date for a zone Intl doesn't recognize, rather than throwing", () => {
+    vi.setSystemTime(new Date("2026-10-19T12:00:00Z"));
+    expect(todayInTimeZone("Not/ARealZone")).toBe("2026-10-19");
+  });
+
+  it("the same instant gives three different calendar dates depending on viewer zone -- Phoenix, UTC, and Sydney disagree, which is exactly the bug this function exists to resolve correctly per-viewer", () => {
+    vi.setSystemTime(new Date("2026-10-20T04:20:00Z"));
+    expect(todayInTimeZone("America/Phoenix")).toBe("2026-10-19");
+    expect(todayInTimeZone("UTC")).toBe("2026-10-20");
+    expect(todayInTimeZone("Australia/Sydney")).toBe("2026-10-20");
+  });
+});
+
+describe("resolveViewerTimeZone (validates a cookie-reported zone, falling back to UTC)", () => {
+  it("returns a real IANA zone unchanged", () => {
+    expect(resolveViewerTimeZone("America/Phoenix")).toBe("America/Phoenix");
+  });
+
+  it("falls back to UTC when there's no cookie value at all (undefined or null)", () => {
+    expect(resolveViewerTimeZone(undefined)).toBe("UTC");
+    expect(resolveViewerTimeZone(null)).toBe("UTC");
+  });
+
+  it("falls back to UTC for an empty string", () => {
+    expect(resolveViewerTimeZone("")).toBe("UTC");
+  });
+
+  it("falls back to UTC for a value Intl doesn't recognize as a real zone, rather than throwing", () => {
+    expect(resolveViewerTimeZone("Not/ARealZone")).toBe("UTC");
   });
 });
 

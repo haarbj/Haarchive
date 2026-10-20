@@ -6,6 +6,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { createNotification } from "@/lib/notifications/create-notification";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import {
   resolveProgramGeneration,
   type GenerateProgramAnchor,
@@ -195,7 +196,7 @@ export async function proposePhaseLayoutFromRaceDay(input: {
     .eq("user_id", input.athleteId)
     .maybeSingle<{ years_running: number | null }>();
 
-  const start = input.startDate ?? new Date().toISOString().slice(0, 10);
+  const start = input.startDate ?? (await todayForViewer());
   const { weeks, spareDays } = weeksAvailableBetween(start, input.raceDate);
   if (weeks === 0) {
     return { error: "That race date is less than a week away, so there is nothing to lay out." };

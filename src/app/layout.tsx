@@ -79,6 +79,22 @@ export default function RootLayout({
               'try{var t=localStorage.getItem("haarchive-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d){document.documentElement.classList.add("dark")}}catch(e){}',
           }}
         />
+        {/* Reports the viewer's real IANA timezone to the server via a
+            cookie, the same "client knows something the server can't"
+            shape as the theme script just above -- Server Components
+            computing "today" for the schedule/calendar surfaces (see
+            src/lib/viewer-timezone.ts) read this instead of trusting the
+            server's own clock/zone, which has no reason to match any
+            given visitor's. Runs on every page load (not just once) so a
+            visitor who travels across zones stays current; a 1-year
+            maxAge just means it doesn't need to re-set itself every
+            single load for someone who hasn't moved. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{var tz=Intl.DateTimeFormat().resolvedOptions().timeZone;if(tz){document.cookie="haarchive-tz="+tz+";path=/;max-age=31536000;samesite=lax"}}catch(e){}',
+          }}
+        />
         {/* id="page-content" is a real capture boundary, not decoration --
             src/lib/bug-report/capture-screenshot.ts renders exactly this
             element for the bug-report screenshot. Every Drawer/modal in the

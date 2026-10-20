@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/lib/db/server";
 import { parseTimeToSeconds } from "@/lib/running-format";
 import { MILE_METERS } from "@/lib/race-distances";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import { completeWorkoutSchema, generatePlanSchema } from "@/lib/validation/plan";
 
 const MILES_TO_METERS = MILE_METERS;
@@ -98,7 +99,7 @@ export async function generatePlan(
       currentWeeklyMileageM: parsed.data.currentWeeklyMileage * MILES_TO_METERS,
       daysPerWeek: parsed.data.daysPerWeek,
     },
-    today: new Date().toISOString().slice(0, 10),
+    today: await todayForViewer(),
   });
   if (!result.ok) {
     return { error: result.error };

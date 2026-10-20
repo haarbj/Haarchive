@@ -11,6 +11,7 @@ import {
   type PlanHealthView,
   type PlaybookView,
 } from "./plan-health-actions";
+import { todayInTimeZone } from "@/lib/week";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { crossTrainingProtocol, detrainingReassurance } from "@/lib/private-coaching/setbacks";
 import { ADAPTATION_WINDOW_DAYS, type SessionLoadClass } from "@/lib/private-coaching/plan-health";
@@ -35,7 +36,12 @@ const LOAD_CLASS_LABEL: Record<SessionLoadClass, string> = {
 const LOAD_CLASS_ORDER: SessionLoadClass[] = ["load-bearing", "supporting", "droppable"];
 
 function daysUntil(date: string): number {
-  const today = new Date(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`).getTime();
+  // The browser's own timezone -- client components can read this
+  // directly and synchronously, no cookie/server round trip needed. See
+  // src/lib/viewer-timezone.ts's own comment for the server-side
+  // equivalent of this same fix.
+  const viewerTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const today = new Date(`${todayInTimeZone(viewerTz)}T00:00:00Z`).getTime();
   return Math.round((new Date(`${date}T00:00:00Z`).getTime() - today) / (24 * 60 * 60 * 1000));
 }
 

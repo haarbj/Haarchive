@@ -12,6 +12,7 @@ import {
 } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
 import { publishedAssignedWorkoutsThisWeek, weeklyLoadEntriesFromAssignedWorkouts } from "@/lib/private-coaching/assigned-week-workouts";
 import { computeWeeklyLoad, formatWeeklyLoadText } from "@/lib/private-coaching/weekly-load";
@@ -196,7 +197,8 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
     .order("start_date", { ascending: true })
     .returns<Mesocycle[]>();
 
-  const today = new Date().toISOString().slice(0, 10);
+  // The viewer's own local date, not the server's -- see viewer-timezone.ts.
+  const today = await todayForViewer();
   const currentMesocycle =
     mesocycles?.find((m) => m.start_date <= today && today <= m.end_date) ?? null;
   const planComplete = !currentMesocycle && mesocycles && today > (mesocycles.at(-1)?.end_date ?? "");

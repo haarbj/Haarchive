@@ -13,7 +13,7 @@ import {
 } from "@/lib/private-coaching/training-phases";
 import { formatWeeksAwayLabel, weeksUntilGoalRace, type AthleteGoalRace } from "@/lib/private-coaching/goal-race";
 import { DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals";
-import { mostRecentMonday } from "@/lib/week";
+import { mostRecentMonday, todayInTimeZone } from "@/lib/week";
 import { formatDate } from "@/lib/format";
 import { PhaseForm, type ExistingPhase, type PhaseGoalOption } from "./phase-form";
 import { AssignProgramForm, type ProgramOption } from "./assign-program-form";
@@ -308,7 +308,13 @@ export function PhaseView({
           <>
             <p className="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">{goalRace.raceName}</p>
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
-              {formatDate(goalRace.goalDate)} · {formatWeeksAwayLabel(weeksUntilGoalRace(mostRecentMonday(new Date()), goalRace.goalDate))}
+              {formatDate(goalRace.goalDate)} ·{" "}
+              {formatWeeksAwayLabel(
+                weeksUntilGoalRace(
+                  mostRecentMonday(new Date(`${todayInTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone)}T00:00:00Z`)),
+                  goalRace.goalDate,
+                ),
+              )}
             </p>
             {/* Part A item 2. Writes drafts onto the fourteen days ending on
                 race day and never touches a phase, so it can be run over an

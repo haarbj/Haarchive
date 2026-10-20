@@ -3,6 +3,7 @@
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { weekDates } from "@/lib/week";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import { fetchCalendarWorkouts } from "./calendar-data";
 import type { CalendarWorkout } from "./calendar-types";
 import type { TimelineWeekBlock } from "./timeline-helpers";
@@ -26,7 +27,7 @@ export async function loadTimelineWeeks(athleteId: string, weekStarts: string[])
   if (weekStarts.length === 0) return [];
 
   const supabase = await createClient();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await todayForViewer();
   const allDates = weekStarts.flatMap((weekStart) => weekDates(weekStart));
   const workoutsByDate = await fetchCalendarWorkouts(supabase, athleteId, session.userId, allDates, today);
 
