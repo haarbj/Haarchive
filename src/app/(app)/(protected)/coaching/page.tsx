@@ -11,6 +11,8 @@ import type { WorkoutType } from "@/lib/coaching-engine";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
 import { loadCoachHomeData } from "./coach-home-data";
+import { loadAdaptationCardsForCoach } from "./adaptation-cards-data";
+import { CoachHomeAdaptationCards } from "./coach-home-adaptation-cards";
 import { CoachTrainsSelfPrompt } from "@/components/private-coaching/coach-trains-self-prompt";
 import { SelfCoachPrompt } from "@/components/private-coaching/self-coach-prompt";
 import { Container } from "@/components/ui/container";
@@ -130,7 +132,10 @@ async function CoachSection({ userId, isCoachedAthlete }: { userId: string; isCo
 }
 
 async function CoachHomeSection({ userId }: { userId: string }) {
-  const { athletesNeedingAttention, athletesOnTrack, upcomingRaces, recentCompletions } = await loadCoachHomeData(userId);
+  const [{ athletesNeedingAttention, athletesOnTrack, upcomingRaces, recentCompletions }, adaptationCards] = await Promise.all([
+    loadCoachHomeData(userId),
+    loadAdaptationCardsForCoach(userId),
+  ]);
   const totalAthletes = athletesNeedingAttention.length + athletesOnTrack.length;
   // Not the same thing as isSelfServeCoach (permission provenance) -- this
   // is "does this coach's roster today consist of ONLY themselves," true
@@ -183,6 +188,16 @@ async function CoachHomeSection({ userId }: { userId: string }) {
           Programs
         </Button>
       </div>
+
+      {/* Consent-based adaptation cards -- the proactive counterpart to
+          Plan Realignment: a deterministic signal engine
+          (adaptation-signals.ts) flags a pattern in an athlete's recent
+          training and proposes one concrete action, applied only on
+          Accept. Sits alongside "Needs Attention" as a primary scan
+          surface, not inside it -- an adaptation card is a proposal to
+          act on, not a raw attention flag. Skipped for a self-only coach
+          for the same reason "Needs Attention" is. */}
+      {adaptationCards.length > 0 && !isSelfOnly ? <CoachHomeAdaptationCards cards={adaptationCards} /> : null}
 
       {/* "Who needs my attention today" -- the point of this whole page,
           per the product brief. Needing-attention athletes lead, each

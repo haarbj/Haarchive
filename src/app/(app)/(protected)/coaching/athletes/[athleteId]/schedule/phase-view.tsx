@@ -23,6 +23,7 @@ import { EstimateReviewPanel } from "./estimate-review-panel";
 import { MultiCyclePanel } from "./multi-cycle-panel";
 import { PostRacePanel } from "./post-race-panel";
 import { RealignPanel } from "./realign-panel";
+import { AdaptationCardsPanel } from "./adaptation-cards-panel";
 import { AdvancedTechniquesPanel } from "./advanced-techniques-panel";
 import { FuelingOversightPanel } from "./fueling-oversight-panel";
 import { OnboardingPanel } from "./onboarding-panel";
@@ -288,6 +289,13 @@ export function PhaseView({
           (plan-realignment-panel.tsx), both funneling into the same
           proposal lifecycle (realignment-service.ts). */}
       <RealignPanel athleteId={athleteId} />
+
+      {/* Consent-based adaptation cards -- the proactive counterpart to
+          Plan Realignment: a deterministic signal engine
+          (adaptation-signals.ts) flags a pattern and proposes one
+          concrete action, applied only on Accept. Renders nothing when
+          there's no active signal and no history yet. */}
+      <AdaptationCardsPanel athleteId={athleteId} />
 
       {/* Part B, coach-only. Renders nothing when there is nothing to say. */}
       <PlanHealthPanel athleteId={athleteId} />

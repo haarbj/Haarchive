@@ -50,6 +50,13 @@ export function notificationHref(type: NotificationType, relatedEntityId: string
     // (/coaching/messages/[coachAthleteId]).
     return relatedEntityId ? `/coaching/messages/${relatedEntityId}` : "/coaching";
   }
+  if (type === "checkin_requested") {
+    // The coach's own "send a check-in request" adaptation-card action --
+    // routes straight to the athlete's existing check-in submission page,
+    // the exact same destination checkin_submitted's own coach-side view
+    // is about.
+    return "/coaching/checkin";
+  }
   if (type === "checkin_submitted") {
     // relatedEntityId is the submitting athlete's user id (see
     // checkin/actions.ts) -- the coach's per-athlete page now renders their

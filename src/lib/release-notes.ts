@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Adaptation cards: the plan quietly watches itself, and tells the coach what it sees",
+    detail:
+      "A deterministic engine now scans each athlete's recent training for four specific patterns -- easy days consistently feeling too easy, fatigue stacking up, a plan that keeps coming in well over distance, or an athlete going quiet -- and surfaces a card on coach home and the athlete's schedule page showing the real evidence (the actual workouts and numbers that fired it) and one concrete proposed action. Nothing changes until the coach explicitly accepts: workout changes land as drafts, same as any other coach-authored edit, and a dismissed card stays quiet for two weeks unless new evidence fires it again. No scores, no ML -- every threshold is a stated rule.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Plan Realignment: a proposed way back in after missed training",
     detail:
       "When an athlete flags that they couldn't train (sick, traveling, life) -- or a coach starts it themselves from the athlete's schedule -- the system now drafts a revised version of the coming week: the first day back stays easy, the next key session and the long run get protected by moving them to a safely-spaced day rather than dropped, and easy/recovery sessions are shortened or dropped first to make room. Missed training is never made up, and rest days are never all eliminated to cram sessions in. Nothing changes until the coach reviews a plain-language diff of every affected workout, tweaks anything they want, and explicitly accepts it -- realigned workouts land as drafts, same as any other coach-authored change, and the athlete only sees them once published.",

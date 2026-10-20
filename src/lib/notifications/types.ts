@@ -23,6 +23,11 @@ export type NotificationType =
   | "workout_comment"
   | "message_received"
   | "checkin_submitted"
+  // Coach -> athlete, the opposite direction of checkin_submitted: a
+  // "going quiet" adaptation card's own proposed action (see
+  // adaptation-signals.ts) is nothing more than this one notification --
+  // no new flow, just the existing check-in system's other direction.
+  | "checkin_requested"
   | "pain_reported"
   | "race_approaching"
   | "missed_workout"
