@@ -5,6 +5,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
 import { addDays } from "@/lib/coaching-engine";
+import { todayForViewer } from "@/lib/viewer-timezone";
 import { ATHLETE_LEVEL_LABELS, type ATHLETE_LEVELS } from "@/lib/validation/athlete-profile";
 import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ import { IllnessPanel } from "./illness-panel";
 import { PostSeasonReviewSection } from "./post-season-review-section";
 import { loadCheckinPraiseCandidates } from "./checkin-praise-data";
 import { CheckinResponseComposer } from "./checkin-response-composer";
+import { loadPatternViewData } from "@/app/(app)/(protected)/plan/pattern-view-data";
+import { PatternViewPanel } from "@/components/private-coaching/pattern-view-panel";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -166,6 +169,11 @@ export default async function CoachingAthleteDetailPage({
       ? await loadCheckinPraiseCandidates(supabase, athleteId, checkin.week_start, addDays(checkin.week_start, 6))
       : [];
 
+  // Six weeks of patterns (Wetmore) -- the viewer here is the coach, so
+  // the window is computed in the coach's own timezone (todayForViewer),
+  // per the task's own instruction, not any stored athlete timezone.
+  const patternSeries = coachAthleteRow ? await loadPatternViewData(supabase, athleteId, await todayForViewer()) : null;
+
   if (!profile) notFound();
 
   const currentYear = new Date().getFullYear();
@@ -288,6 +296,12 @@ export default async function CoachingAthleteDetailPage({
           <IllnessPanel />
         ) : null}
       </div>
+
+      {patternSeries ? (
+        <div className="mt-8">
+          <PatternViewPanel series={patternSeries} />
+        </div>
+      ) : null}
 
       <div className="mt-8">
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Profile</p>

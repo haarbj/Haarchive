@@ -27,7 +27,10 @@ import { PlanTimelineView } from "./plan-timeline-view";
 import { weeklyLoadEntriesFromSelfServeWorkouts } from "./self-serve-weekly-load";
 import { TeamScheduleView } from "./team-schedule-view";
 import { loadAthleteTimelineWeeks } from "./timeline-actions";
+import { loadPatternViewData } from "./pattern-view-data";
 import { WorkoutCard } from "./workout-card";
+import { PatternViewPanel } from "@/components/private-coaching/pattern-view-panel";
+import type { PatternSeries } from "@/lib/private-coaching/pattern-view";
 import { TodayConditionsCard } from "./today-conditions-card";
 import { TodayConditionsGeolocation } from "./today-conditions-geolocation";
 import { buildTodayConditionsCard, resolveStoredLocation, type TodayWorkoutInput } from "./today-conditions-service";
@@ -269,12 +272,18 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
   // per-athlete calendar at /coaching/athletes/[athleteId]/schedule --
   // this fetch is additive here, not a replacement for that view).
   let assignedWorkouts: CalendarWorkout[] = [];
+  // Six weeks of patterns (Wetmore) -- only meaningful for a coached
+  // athlete (scheduled_workouts is the private-coaching table this reads
+  // from), so scoped to the exact same "has an active relationship"
+  // branch assignedWorkouts already uses, not a second lookup.
+  let patternSeries: PatternSeries | null = null;
   if (!coachView) {
     const relationship = await getActiveCoachRelationship(supabase, userId);
     if (relationship) {
       const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
       const workoutsByDate = await fetchCalendarWorkouts(supabase, userId, relationship.coachId, weekDates, today);
       assignedWorkouts = publishedAssignedWorkoutsThisWeek(workoutsByDate);
+      patternSeries = await loadPatternViewData(supabase, userId, today);
     }
   }
 
@@ -464,6 +473,12 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
               )}
             </div>
           </div>
+
+          {patternSeries ? (
+            <div className="mt-10">
+              <PatternViewPanel series={patternSeries} />
+            </div>
+          ) : null}
         </>
       )}
     </>
