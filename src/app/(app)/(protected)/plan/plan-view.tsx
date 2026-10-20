@@ -288,7 +288,7 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
     ...weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts),
   ];
   const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, null);
-  const { scheduledText, completedText } = formatWeeklyLoadText(weeklyLoad, "miles", null);
+  const { scheduledText, completedText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(weeklyLoad, "miles", null);
 
   return (
     <>
@@ -370,9 +370,15 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
               </p>
               {weeklyLoadEntries.length > 0 && (
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  <span>Scheduled: {scheduledText}</span>
+                  <span>
+                    Scheduled: {scheduledText}
+                    {scheduledDurationText ? ` / ${scheduledDurationText}` : ""}
+                  </span>
                   <span className="mx-1.5">·</span>
-                  <span>Completed: {completedText}</span>
+                  <span>
+                    Completed: {completedText}
+                    {completedDurationText ? ` / ${completedDurationText}` : ""}
+                  </span>
                 </p>
               )}
             </div>
@@ -388,6 +394,7 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
                         phase={currentMesocycle?.phase ?? null}
                         distanceBucket={bucket}
                         completion={completionByWorkoutId.get(workout.id) ?? null}
+                        today={today}
                       />
                     ),
                   )

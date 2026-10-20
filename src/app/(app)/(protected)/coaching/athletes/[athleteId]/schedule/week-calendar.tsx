@@ -167,7 +167,11 @@ export function WeekCalendar({
     };
   });
   const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, easyPaceSPerMi);
-  const { scheduledText, completedText } = formatWeeklyLoadText(weeklyLoad, volumeUnitPreference, easyPaceSPerMi);
+  const { scheduledText, completedText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(
+    weeklyLoad,
+    volumeUnitPreference,
+    easyPaceSPerMi,
+  );
   const targetText = formatTargetVolume(weekPlan);
 
   // Signed, not clamped to 0 -- completed exceeding scheduled is a real
@@ -178,7 +182,15 @@ export function WeekCalendar({
   const rawDifferenceM = weeklyLoad.scheduledMileageM - weeklyLoad.completedMileageM;
   const differenceLabel = rawDifferenceM >= 0 ? "Remaining" : "Over";
   const { scheduledText: differenceText } = formatWeeklyLoadText(
-    { scheduledMileageM: Math.abs(rawDifferenceM), scheduledXtDurationS: 0, completedMileageM: 0, completedXtDurationS: 0, estimatedCount: 0 },
+    {
+      scheduledMileageM: Math.abs(rawDifferenceM),
+      scheduledXtDurationS: 0,
+      completedMileageM: 0,
+      completedXtDurationS: 0,
+      estimatedCount: 0,
+      scheduledDurationS: 0,
+      completedDurationS: 0,
+    },
     volumeUnitPreference,
     easyPaceSPerMi,
   );
@@ -316,11 +328,17 @@ export function WeekCalendar({
         <div className="mt-2 flex flex-wrap gap-x-8 gap-y-1 text-sm">
           <p>
             <span className="text-zinc-500 dark:text-zinc-400">Scheduled: </span>
-            <span className="font-semibold text-zinc-900 dark:text-white">{scheduledText}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">
+              {scheduledText}
+              {scheduledDurationText ? ` / ${scheduledDurationText}` : ""}
+            </span>
           </p>
           <p>
             <span className="text-zinc-500 dark:text-zinc-400">Completed: </span>
-            <span className="font-semibold text-zinc-900 dark:text-white">{completedText}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">
+              {completedText}
+              {completedDurationText ? ` / ${completedDurationText}` : ""}
+            </span>
           </p>
           <p>
             <span className="text-zinc-500 dark:text-zinc-400">{differenceLabel}: </span>

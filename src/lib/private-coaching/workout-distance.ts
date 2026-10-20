@@ -60,7 +60,7 @@ export function formatDistanceRange(minM: number | null, maxM: number | null): s
 // unit. For density-constrained surfaces (Month View's day cells,
 // WeekStrip's adjacent-week summaries) where formatDistanceRange's own
 // one-decimal/spaced convention costs real room without adding meaning.
-function formatCompactMiles(m: number): string {
+export function formatCompactMiles(m: number): string {
   return (m / MILE_METERS).toFixed(1).replace(/\.0$/, "");
 }
 export function formatCompactDistanceRange(minM: number | null, maxM: number | null): string | null {

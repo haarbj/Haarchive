@@ -11,6 +11,7 @@ import { addDays, shiftWeek, mostRecentMonday } from "@/lib/week";
 import { formatDate } from "@/lib/format";
 import { effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
 import { formatCompactDistanceRange, formatDurationRange, formatPaceRange } from "@/lib/private-coaching/workout-distance";
+import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
 import type { DayTypeAccent } from "@/lib/private-coaching/day-type-visuals";
 import type { CalendarWorkout } from "./calendar-types";
 
@@ -133,14 +134,40 @@ export function mergeTimelineWeeks<T extends { weekStart: string }>(weeks: T[]):
  * scheduled_workouts) -- both are the exact same CalendarWorkout shape
  * from the exact same fetchCalendarWorkouts query, so there's no separate
  * code path to keep in sync here.
+ *
+ * Once completed, distance/duration switch from planned figures to the
+ * planned-vs-completed comparison (completion-comparison.ts): one clean
+ * actual-only line when within tolerance of plan, or the delta
+ * ("8mi → 6.2mi") when not. effortText always stays the planned
+ * pace/RPE target -- CalendarWorkout's own completion never carries an
+ * actual pace/RPE (see calendar-types.ts), so there is nothing truthful
+ * to show there instead.
  */
 export function buildTimelineTileFigures(workout: CalendarWorkout): TimelineTileFigures {
   const effective = effectiveWorkoutVolume(workout);
-  const distanceText = formatCompactDistanceRange(effective.distanceM, effective.distanceMaxM);
-  const durationText = formatDurationRange(effective.durationS, effective.durationMaxS);
   const paceText = workout.paceReference
     ? formatPaceRange(workout.resolvedPaceMinSPerMi, workout.resolvedPaceMaxSPerMi)
     : formatPaceRange(workout.plannedPaceSPerMi, workout.plannedPaceMaxSPerMi);
   const effortText = paceText ?? (workout.plannedRpe != null ? `RPE ${workout.plannedRpe}${workout.plannedRpeMax ? `–${workout.plannedRpeMax}` : ""}` : null);
+
+  if (workout.status === "completed") {
+    const comparison = compareCompletionToPlan({
+      plannedDistanceM: effective.distanceM,
+      plannedDistanceMaxM: effective.distanceMaxM,
+      plannedDurationS: effective.durationS,
+      plannedDurationMaxS: effective.durationMaxS,
+      actualDistanceM: workout.completion?.actualDistanceM ?? null,
+      actualDurationS: workout.completion?.actualDurationS ?? null,
+    });
+    const { distanceText, durationText } = describeCompletionFigures(
+      comparison,
+      { actualDistanceM: workout.completion?.actualDistanceM ?? null, actualDurationS: workout.completion?.actualDurationS ?? null },
+      "compact",
+    );
+    return { distanceText, durationText, effortText };
+  }
+
+  const distanceText = formatCompactDistanceRange(effective.distanceM, effective.distanceMaxM);
+  const durationText = formatDurationRange(effective.durationS, effective.durationMaxS);
   return { distanceText, durationText, effortText };
 }

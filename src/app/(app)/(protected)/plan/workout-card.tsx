@@ -5,6 +5,7 @@ import { useActionState, useId, useTransition } from "react";
 import { completeWorkout, deleteWorkoutCompletion } from "@/app/(app)/(protected)/plan/actions";
 import { fieldClass, labelClass } from "@/app/(app)/(protected)/dashboard/form-constants";
 import {
+  coreDistanceOf,
   estimatedDurationRangeMin,
   workoutPrescriptionSchema,
   type DistanceBucket,
@@ -12,6 +13,7 @@ import {
   type WorkoutType,
 } from "@/lib/coaching-engine";
 import { formatDate } from "@/lib/format";
+import { compareCompletionToPlan, formatDistanceDelta, formatDurationDelta } from "@/lib/private-coaching/completion-comparison";
 import { AdaptWorkoutPanel } from "./adapt-workout-panel";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { ExplainWorkoutButton } from "./explain-workout-button";
@@ -56,17 +58,41 @@ type WorkoutCardProps = {
   phase: MesocyclePhase | null;
   distanceBucket: DistanceBucket;
   completion: CompletionDetail | null;
+  /** Today's date (viewer-local, YYYY-MM-DD) -- optional only for an existing call site that hasn't threaded it through yet; a workout never shows the Missed treatment without it, same as if it were still Scheduled. */
+  today?: string;
 };
 
-export function WorkoutCard({ workout, phase, distanceBucket, completion }: WorkoutCardProps) {
+export function WorkoutCard({ workout, phase, distanceBucket, completion, today }: WorkoutCardProps) {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(completeWorkout, {});
 
   const parsed = workoutPrescriptionSchema.safeParse(workout.prescription);
   const durationRange = parsed.success ? estimatedDurationRangeMin(parsed.data) : null;
+  const isMissed = !completion && today != null && workout.scheduled_date < today;
+
+  // Planned-vs-completed (completion-comparison.ts), same rule every
+  // other tile surface follows: on-plan keeps CompletionSummary's own
+  // single actual-only line (planned shown on hover via the wrapping
+  // title below); off-plan adds the delta line ahead of it.
+  const comparison = completion
+    ? compareCompletionToPlan({
+        plannedDistanceM: parsed.success ? coreDistanceOf(parsed.data) : null,
+        plannedDistanceMaxM: null,
+        plannedDurationS: durationRange ? durationRange[0] * 60 : null,
+        plannedDurationMaxS: durationRange ? durationRange[1] * 60 : null,
+        actualDistanceM: completion.actual_distance_m,
+        actualDurationS: completion.actual_time_s,
+      })
+    : null;
+  const plannedHoverTitle =
+    comparison?.onPlan
+      ? `Planned: ${[parsed.success ? describePrescription(parsed.data) : null, durationRange ? `${durationRange[0]}–${durationRange[1]} min` : null]
+          .filter(Boolean)
+          .join(" · ")}`
+      : undefined;
 
   return (
-    <Card padding="sm">
+    <Card padding="sm" className={isMissed ? "opacity-60" : undefined}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">
@@ -76,11 +102,36 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion }: Work
           <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-300">
             {parsed.success ? describePrescription(parsed.data) : "Details unavailable"}
           </p>
-          {completion && <CompletionSummary completion={completion} />}
+          {/* Off-plan: the delta, ahead of CompletionSummary's own fuller
+              detail (pace/HR/RPE/notes), so the gap from plan is the first
+              thing read. On-plan: CompletionSummary's single actual-only
+              line is already the "one clean line" this state calls for --
+              planned stays available on hover via the wrapping title. */}
+          {completion && comparison && !comparison.onPlan && (comparison.distanceDelta || comparison.durationDelta) ? (
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              {[
+                comparison.distanceDelta ? formatDistanceDelta(comparison.distanceDelta, "full") : null,
+                comparison.durationDelta ? formatDurationDelta(comparison.durationDelta) : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          ) : null}
+          {completion && (
+            <div title={plannedHoverTitle}>
+              <CompletionSummary completion={completion} />
+            </div>
+          )}
+          {isMissed && !completion ? <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Not logged</p> : null}
         </div>
         {completion && (
           <Badge tone="success" className="shrink-0">
             Completed
+          </Badge>
+        )}
+        {isMissed && !completion && (
+          <Badge tone="neutral" className="shrink-0">
+            Missed
           </Badge>
         )}
       </div>

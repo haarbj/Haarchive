@@ -7,17 +7,23 @@ import Link from "next/link";
 import { deleteScheduledWorkout, duplicateScheduledWorkout, rescheduleWorkout } from "./actions";
 import type { CalendarWorkout } from "./calendar-types";
 import { getDayTypeAccent, DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals";
-import { getWorkoutDisplayLabel, describeWorkoutDetail } from "@/lib/private-coaching/workout-status";
+import { getWorkoutDisplayLabel, describeWorkoutDetail, effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
+import { getWorkoutPlannedDistanceM } from "@/lib/private-coaching/workout-distance";
+import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
 import { formatClock } from "@/lib/running-format";
 import { formatMiles } from "@/lib/format";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 
+// "Missed" is neutral, not alarm-colored -- see completion-comparison.ts's
+// own file-level comment on why a delta (or a missed session) is
+// information, never a grade. The card's own opacity-60 (below) is what
+// makes a missed workout read as muted/de-emphasized instead.
 const STATUS_BADGE: Record<CalendarWorkout["status"], { label: string; tone: BadgeTone }> = {
   draft: { label: "Draft", tone: "warning" },
   scheduled: { label: "Scheduled", tone: "neutral" },
   completed: { label: "Completed", tone: "success" },
-  missed: { label: "Missed", tone: "error" },
+  missed: { label: "Missed", tone: "neutral" },
 };
 
 // Prescription -> status -> actual, in that order, and nothing else --
@@ -78,6 +84,41 @@ export function WorkoutCard({
   const accent = getDayTypeAccent(workout.dayLabel);
   const displayLabel = getWorkoutDisplayLabel(workout.dayLabel, workout.title);
 
+  // Planned-vs-completed (completion-comparison.ts): once completed, the
+  // completion line below switches from "actual figures, unconnected to
+  // plan" to either one clean actual-only line (within ~10% of plan) or
+  // the planned-vs-actual delta (off-plan) -- the same rule every other
+  // tile surface follows.
+  const effectiveVolume = effectiveWorkoutVolume(workout);
+  const comparison =
+    workout.status === "completed"
+      ? compareCompletionToPlan({
+          plannedDistanceM: getWorkoutPlannedDistanceM(effectiveVolume.distanceM),
+          plannedDistanceMaxM: effectiveVolume.distanceMaxM,
+          plannedDurationS: effectiveVolume.durationS,
+          plannedDurationMaxS: effectiveVolume.durationMaxS,
+          actualDistanceM: workout.completion?.actualDistanceM ?? null,
+          actualDurationS: workout.completion?.actualDurationS ?? null,
+        })
+      : null;
+  const completionFigures = comparison
+    ? describeCompletionFigures(
+        comparison,
+        { actualDistanceM: workout.completion?.actualDistanceM ?? null, actualDurationS: workout.completion?.actualDurationS ?? null },
+        "full",
+      )
+    : { distanceText: null, durationText: null };
+  const plannedDistanceForTitle = getWorkoutPlannedDistanceM(effectiveVolume.distanceM);
+  const plannedHoverTitle =
+    comparison?.onPlan && (plannedDistanceForTitle != null || effectiveVolume.durationS != null)
+      ? `Planned: ${[
+          plannedDistanceForTitle != null ? formatMiles(plannedDistanceForTitle) : null,
+          effectiveVolume.durationS != null ? formatClock(effectiveVolume.durationS) : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")}`
+      : undefined;
+
   async function handleMoveSubmit() {
     setMoveError(null);
     if (!moveDate || moveDate === workout.scheduledDate) return setMoveOpen(false);
@@ -99,7 +140,7 @@ export function WorkoutCard({
   return (
     <div
       data-workout-card
-      className={`rounded-control border border-l-4 border-black/10 bg-white p-2.5 text-sm dark:border-white/10 ${DAY_TYPE_BORDER_CLASSES[accent]} dark:bg-zinc-900`}
+      className={`rounded-control border border-l-4 border-black/10 bg-white p-2.5 text-sm dark:border-white/10 ${DAY_TYPE_BORDER_CLASSES[accent]} dark:bg-zinc-900 ${workout.status === "missed" ? "opacity-60" : ""}`}
     >
       <div className="flex items-start justify-between gap-1">
         {/* day_label (what KIND of day this is -- MLR, Threshold, Fartlek)
@@ -152,13 +193,9 @@ export function WorkoutCard({
         <Badge tone={status.tone}>{status.label}</Badge>
       </div>
 
-      {workout.completion ? (
-        <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-          {[
-            workout.completion.actualDistanceM != null ? formatMiles(workout.completion.actualDistanceM) : null,
-            workout.completion.actualDurationS != null ? formatClock(workout.completion.actualDurationS) : null,
-            workout.completion.stravaActivityId != null ? "Strava" : null,
-          ]
+      {workout.completion && comparison ? (
+        <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400" title={plannedHoverTitle}>
+          {[completionFigures.distanceText, completionFigures.durationText, workout.completion.stravaActivityId != null ? "Strava" : null]
             .filter(Boolean)
             .join(" · ")}
         </p>

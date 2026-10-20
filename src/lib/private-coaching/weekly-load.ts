@@ -1,6 +1,7 @@
 import { isXtLabel, splitDayLabel } from "./day-type-visuals";
 import { distanceMFromDurationPace, durationSFromDistancePace } from "./workout-distance";
 import { formatMiles } from "@/lib/format";
+import { formatClock } from "@/lib/running-format";
 
 // The Weekly Load footer's reconciled figure -- everything except
 // cross-training counts toward mileage (a duration-only non-XT day is
@@ -25,6 +26,18 @@ export type WeeklyLoadResult = {
   completedXtDurationS: number;
   /** How many entries were pace-estimated -- coach-only context for why the number moves once a real race is logged. */
   estimatedCount: number;
+  /**
+   * The week's real total time, XT included -- a plain sum of every
+   * entry's own known durationS/actualDurationS, never pace-estimated
+   * (unlike scheduledMileageM/completedMileageM's duration-only-day
+   * estimate above): a workout with no logged duration at all simply
+   * doesn't contribute one, rather than fabricating it from distance.
+   * Lets "planned vs completed" show distance AND duration side by side
+   * (see formatWeeklyLoadText) without inventing a second, parallel
+   * mileage-estimation calculation for time.
+   */
+  scheduledDurationS: number;
+  completedDurationS: number;
 };
 
 // Scheduled totals count EVERY entry regardless of publish status. For
@@ -53,6 +66,8 @@ export function computeWeeklyLoad(entries: WeeklyLoadEntry[], easyPaceSPerMi: nu
   let completedMileageM = 0;
   let completedXtDurationS = 0;
   let estimatedCount = 0;
+  let scheduledDurationS = 0;
+  let completedDurationS = 0;
 
   for (const entry of entries) {
     const { base } = splitDayLabel(entry.dayLabel ?? "");
@@ -68,6 +83,7 @@ export function computeWeeklyLoad(entries: WeeklyLoadEntry[], easyPaceSPerMi: nu
     }
     // else: duration-only with no race on file -- contributes 0, never a
     // fabricated distance.
+    if (entry.durationS != null) scheduledDurationS += entry.durationS;
 
     if (isXt) {
       completedXtDurationS += entry.actualDurationS ?? 0;
@@ -76,6 +92,7 @@ export function computeWeeklyLoad(entries: WeeklyLoadEntry[], easyPaceSPerMi: nu
     } else if (entry.actualDurationS != null && easyPaceSPerMi != null) {
       completedMileageM += distanceMFromDurationPace(entry.actualDurationS, easyPaceSPerMi);
     }
+    if (entry.actualDurationS != null) completedDurationS += entry.actualDurationS;
   }
 
   return {
@@ -84,6 +101,8 @@ export function computeWeeklyLoad(entries: WeeklyLoadEntry[], easyPaceSPerMi: nu
     completedMileageM: Math.round(completedMileageM),
     completedXtDurationS,
     estimatedCount,
+    scheduledDurationS,
+    completedDurationS,
   };
 }
 
@@ -96,7 +115,13 @@ export function formatWeeklyLoadText(
   result: WeeklyLoadResult,
   unitPreference: "miles" | "minutes",
   easyPaceSPerMi: number | null,
-): { scheduledText: string; completedText: string } {
+): {
+  scheduledText: string;
+  completedText: string;
+  /** Null when nothing in the week had a known duration at all -- same "say nothing rather than fabricate" rule as scheduledMileageM/completedMileageM's own duration-only-day estimate, just for the figure itself rather than for a day's distance. */
+  scheduledDurationText: string | null;
+  completedDurationText: string | null;
+} {
   function primaryText(mileageM: number): string {
     if (unitPreference === "minutes" && easyPaceSPerMi != null) {
       const minutes = Math.round(durationSFromDistancePace(mileageM, easyPaceSPerMi) / 60);
@@ -112,5 +137,7 @@ export function formatWeeklyLoadText(
   return {
     scheduledText: combine(result.scheduledMileageM, result.scheduledXtDurationS),
     completedText: combine(result.completedMileageM, result.completedXtDurationS),
+    scheduledDurationText: result.scheduledDurationS > 0 ? formatClock(result.scheduledDurationS) : null,
+    completedDurationText: result.completedDurationS > 0 ? formatClock(result.completedDurationS) : null,
   };
 }

@@ -1,12 +1,14 @@
 "use client";
 
 import {
+  coreDistanceOf,
   estimatedDurationRangeMin,
   workoutPrescriptionSchema,
   type DistanceBucket,
 } from "@/lib/coaching-engine";
 import { getDayTypeAccent, abbreviateDayLabel } from "@/lib/private-coaching/day-type-visuals";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
+import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
 import { buildTimelineTileFigures, type TimelineEntryView } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-helpers";
 import { TimelineView } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-view";
 import type { TimelineWeekBlock } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-helpers";
@@ -60,6 +62,33 @@ export function PlanTimelineView({
     const durationRange = parsed.success ? estimatedDurationRangeMin(parsed.data) : null;
     const statusTone: TimelineEntryView["statusTone"] = completion ? "completed" : workout.scheduled_date < today ? "missed" : "scheduled";
 
+    // Planned-vs-completed (completion-comparison.ts), same rule as the
+    // coach-assigned branch above (via buildTimelineTileFigures) -- once
+    // completed, distance/duration switch to the comparison: one clean
+    // actual-only line within ~10% of plan, the delta otherwise.
+    const plannedDistanceM = parsed.success ? coreDistanceOf(parsed.data) : null;
+    const comparison = completion
+      ? compareCompletionToPlan({
+          plannedDistanceM,
+          plannedDistanceMaxM: null,
+          plannedDurationS: durationRange ? durationRange[0] * 60 : null,
+          plannedDurationMaxS: durationRange ? durationRange[1] * 60 : null,
+          actualDistanceM: completion.actual_distance_m,
+          actualDurationS: completion.actual_time_s,
+        })
+      : null;
+    const { distanceText, durationText } = comparison
+      ? describeCompletionFigures(comparison, { actualDistanceM: completion!.actual_distance_m, actualDurationS: completion!.actual_time_s }, "compact")
+      : {
+          // Self-serve distance and pace are only ever available combined
+          // (see describePrescription's own doc comment) -- shown as one
+          // figure rather than split into separate distance/pace fields
+          // that would just re-derive what that function already does
+          // correctly.
+          distanceText: parsed.success ? describePrescription(parsed.data) : null,
+          durationText: durationRange ? `${durationRange[0]}–${durationRange[1]} min` : null,
+        };
+
     return {
       id: workout.id,
       // Self-serve workouts have no free-text day_label (that's the
@@ -70,15 +99,11 @@ export function PlanTimelineView({
       statusTone,
       sessionSlot: null,
       label: workoutTypeLabel(workout.workout_type),
-      // Self-serve distance and pace are only ever available combined (see
-      // describePrescription's own doc comment) -- shown as one figure
-      // rather than split into separate distance/pace fields that would
-      // just re-derive what that function already does correctly.
-      distanceText: parsed.success ? describePrescription(parsed.data) : null,
-      durationText: durationRange ? `${durationRange[0]}–${durationRange[1]} min` : null,
+      distanceText,
+      durationText,
       effortText: null,
       kind: "expand",
-      content: <WorkoutCard workout={workout} phase={phase} distanceBucket={distanceBucket} completion={completion} />,
+      content: <WorkoutCard workout={workout} phase={phase} distanceBucket={distanceBucket} completion={completion} today={today} />,
     };
   }
 

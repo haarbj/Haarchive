@@ -265,4 +265,105 @@ describe("buildTimelineTileFigures (denser tile content)", () => {
     expect(figures.durationText).toBeNull();
     expect(figures.effortText).toBeNull();
   });
+
+  // Planned-vs-completed (completion-comparison.ts) -- once a tile's own
+  // workout is completed, distance/duration switch from planned figures
+  // to the comparison; effortText always stays the planned pace/RPE
+  // target (CalendarWorkout.completion never carries an actual pace).
+  describe("completed-workout figures", () => {
+    it("upcoming (status: scheduled) keeps showing planned figures, unaffected by this -- the baseline this whole describe block compares against", () => {
+      const w = workout({ status: "scheduled", plannedDistanceM: 8000 });
+      expect(buildTimelineTileFigures(w).distanceText).toBe("5mi");
+    });
+
+    it("missed keeps showing planned figures too -- a missed workout never had actuals to switch to", () => {
+      const w = workout({ status: "missed", plannedDistanceM: 8000, completion: null });
+      expect(buildTimelineTileFigures(w).distanceText).toBe("5mi");
+    });
+
+    it("completed as planned: one clean actual-only distance figure, within ~10% of the planned 5mi", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: 8000, // ~4.97mi
+        plannedDurationS: null,
+        completion: { actualDistanceM: 8100, actualDurationS: null, stravaActivityId: null },
+      });
+      const figures = buildTimelineTileFigures(w);
+      expect(figures.distanceText).not.toContain("→");
+      expect(figures.distanceText).toMatch(/mi$/);
+    });
+
+    it("completed off-plan, over: shows the delta, planned then actual", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: 8000,
+        plannedDurationS: null,
+        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: null }, // roughly double
+      });
+      expect(buildTimelineTileFigures(w).distanceText).toContain("→");
+    });
+
+    it("completed off-plan, under: shows the delta too, not just the over direction", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: 16000,
+        plannedDurationS: null,
+        completion: { actualDistanceM: 8000, actualDurationS: null, stravaActivityId: null },
+      });
+      expect(buildTimelineTileFigures(w).distanceText).toContain("→");
+    });
+
+    it("no targets set, completed: shows the actual alone, never a delta arrow, since nothing was ever planned", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: null,
+        plannedDurationS: null,
+        completion: { actualDistanceM: 8000, actualDurationS: 2400, stravaActivityId: null },
+      });
+      const figures = buildTimelineTileFigures(w);
+      expect(figures.distanceText).not.toContain("→");
+      expect(figures.durationText).not.toContain("→");
+    });
+
+    it("no targets set, completed, nothing logged either: both figures null, same as the never-set-anything case above", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: null,
+        plannedDurationS: null,
+        plannedPaceSPerMi: null,
+        plannedPaceMaxSPerMi: null,
+        plannedRpe: null,
+        completion: { actualDistanceM: null, actualDurationS: null, stravaActivityId: null },
+      });
+      const figures = buildTimelineTileFigures(w);
+      expect(figures.distanceText).toBeNull();
+      expect(figures.durationText).toBeNull();
+      expect(figures.effortText).toBeNull();
+    });
+
+    it("a Strava-matched completion produces identical figures to a manually-logged one with the same actual numbers", () => {
+      const manual = workout({
+        status: "completed",
+        plannedDistanceM: 8000,
+        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: null },
+      });
+      const strava = workout({
+        status: "completed",
+        plannedDistanceM: 8000,
+        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: 123456 },
+      });
+      expect(buildTimelineTileFigures(strava)).toEqual(buildTimelineTileFigures(manual));
+    });
+
+    it("effortText always stays the planned pace/RPE target regardless of completion -- no actual pace is ever fabricated", () => {
+      const w = workout({
+        status: "completed",
+        plannedDistanceM: 8000,
+        plannedPaceSPerMi: 420,
+        plannedPaceMaxSPerMi: 440,
+        completion: { actualDistanceM: 16000, actualDurationS: null, stravaActivityId: null },
+      });
+      expect(buildTimelineTileFigures(w).effortText).not.toBeNull();
+    });
+  });
 });

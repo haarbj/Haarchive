@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-20",
+    headline: "Planned vs completed, now visible on every workout tile and weekly rollup",
+    detail:
+      "Every workout tile across the coaching calendar and /plan -- Week, Month, both Timeline views, and the workout detail page -- now shows the prescription and, once logged, the actual: one clean number when you hit the target within about 10%, or the planned-vs-actual delta (\"8.0 mi planned → 6.2 mi\") when you didn't. A missed workout reads as muted, not flagged red, and there's no grading, scoring, or streak language anywhere -- a delta is information, not a judgment. Weekly Load now shows planned and completed distance and duration side by side on both the coach's schedule and the athlete's own /plan.",
+  },
+  {
     date: "2026-10-19",
     headline: "Fixed \"Today\" marking the wrong day in the evening",
     detail:

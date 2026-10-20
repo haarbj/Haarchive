@@ -9,11 +9,15 @@ import { weekRangeLabel, nextWeeksToLoad, jumpWindowForDate, mergeTimelineWeeks,
 
 const WEEKDAY_COUNT = 7;
 
+// Missed is a hollow ring, not a filled color -- distinct from every
+// other status at a glance, but deliberately not alarm-colored (no red,
+// no "failed" language anywhere near it; see completion-comparison.ts's
+// own file-level comment on why a delta is information, never a grade).
 const STATUS_DOT: Record<TimelineEntryView["statusTone"], string> = {
   draft: "bg-accent-warning",
   scheduled: "bg-zinc-400 dark:bg-zinc-500",
   completed: "bg-accent-success",
-  missed: "bg-accent-error",
+  missed: "border border-zinc-400 dark:border-zinc-500",
 };
 
 // Timeline View -- a continuous, scrollable presentation of a training
@@ -313,7 +317,10 @@ function TimelineTile({ entry }: { entry: TimelineEntryView }) {
       {figures}
     </>
   );
-  const tileClass = `block w-full rounded-control border-l-2 bg-black/[0.02] px-2 py-1.5 text-left hover:bg-black/5 dark:bg-white/[0.03] dark:hover:bg-white/10 ${DAY_TYPE_BORDER_CLASSES[entry.accent]}`;
+  // Muted/de-emphasized, not alarm-styled -- a lower opacity is the only
+  // thing that changes for a missed entry; its accent border, background,
+  // and hover treatment all stay exactly what every other status uses.
+  const tileClass = `block w-full rounded-control border-l-2 bg-black/[0.02] px-2 py-1.5 text-left hover:bg-black/5 dark:bg-white/[0.03] dark:hover:bg-white/10 ${DAY_TYPE_BORDER_CLASSES[entry.accent]} ${entry.statusTone === "missed" ? "opacity-60" : ""}`;
 
   if (entry.kind === "link") {
     return (

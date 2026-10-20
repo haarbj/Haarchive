@@ -15,6 +15,7 @@ import {
 import type { WorkoutExtraInput } from "@/lib/private-coaching/extras";
 import { getWorkoutDisplayLabel, effectiveWorkoutVolume, computeWorkoutStatus } from "@/lib/private-coaching/workout-status";
 import { formatDistanceRange, formatDurationRange } from "@/lib/private-coaching/workout-distance";
+import { compareCompletionToPlan, formatDistanceDelta, formatDurationDelta } from "@/lib/private-coaching/completion-comparison";
 import { isBareXt } from "@/lib/private-coaching/day-type-visuals";
 import { getWorkoutGlossaryEntry } from "@/lib/private-coaching/workout-glossary";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
@@ -343,6 +344,23 @@ export default async function WorkoutDetailPage({
     resolvedDurationMaxS: volumeFields?.resolvedDurationMaxS ?? null,
   });
 
+  // Planned-vs-completed (completion-comparison.ts) -- the same rule
+  // every tile already follows, so the detail page's own numbers can
+  // never disagree with what a tile showed to get here: on-plan needs no
+  // extra line (the Completion section's own CompletionSummary already
+  // reads as "one clean actual-only line"); off-plan gets the delta
+  // ahead of it.
+  const completionComparison = completion
+    ? compareCompletionToPlan({
+        plannedDistanceM: effectiveVolume.distanceM,
+        plannedDistanceMaxM: effectiveVolume.distanceMaxM,
+        plannedDurationS: effectiveVolume.durationS,
+        plannedDurationMaxS: effectiveVolume.durationMaxS,
+        actualDistanceM: completion.actual_distance_m,
+        actualDurationS: completion.actual_duration_s,
+      })
+    : null;
+
   const distanceText = formatDistanceRange(effectiveVolume.distanceM, effectiveVolume.distanceMaxM);
   const durationText = formatDurationRange(effectiveVolume.durationS, effectiveVolume.durationMaxS);
   // pace_reference and pace_percent_basis are mutually exclusive at the DB
@@ -621,6 +639,16 @@ export default async function WorkoutDetailPage({
             ) : null}
             {completion.activity_type ? (
               <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-300">Cross-training: {completion.activity_type}</p>
+            ) : null}
+            {completionComparison && !completionComparison.onPlan && (completionComparison.distanceDelta || completionComparison.durationDelta) ? (
+              <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-300">
+                {[
+                  completionComparison.distanceDelta ? formatDistanceDelta(completionComparison.distanceDelta, "full") : null,
+                  completionComparison.durationDelta ? formatDurationDelta(completionComparison.durationDelta) : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
             ) : null}
             <CompletionSummary
               completion={

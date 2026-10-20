@@ -16,6 +16,7 @@ import {
   formatPaceRange,
   formatCompactDistanceRange,
 } from "@/lib/private-coaching/workout-distance";
+import { compareCompletionToPlan, describeCompletionFigures } from "@/lib/private-coaching/completion-comparison";
 import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
 import { WeekCopyPasteControls } from "./week-copy-paste-controls";
 import { WeekPlanQuickEditModal, type WeekPlanValues } from "./week-plan-editor";
@@ -30,11 +31,14 @@ function formatCompactTargetVolume(min: number | null, max: number | null, unit:
   return `${min}–${max}${abbrev}`;
 }
 
+// Missed is a hollow ring, not a filled color -- see timeline-view.tsx's
+// identical treatment and its own comment on why (neutral, not alarm
+// styling; no red anywhere near a missed workout).
 const STATUS_DOT: Record<CalendarWorkout["status"], string> = {
   draft: "bg-accent-warning",
   scheduled: "bg-zinc-400 dark:bg-zinc-500",
   completed: "bg-accent-success",
-  missed: "bg-accent-error",
+  missed: "border border-zinc-400 dark:border-zinc-500",
 };
 
 const WEEKDAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -202,11 +206,37 @@ export function MonthView({
                           // when unresolved, same as any other workout with
                           // no distance/duration set at all.
                           const effectiveVolume = effectiveWorkoutVolume(w);
-                          const distanceText = formatCompactDistanceRange(
-                            getWorkoutPlannedDistanceM(effectiveVolume.distanceM),
-                            effectiveVolume.distanceMaxM,
-                          );
-                          const durationText = formatDurationRange(effectiveVolume.durationS, effectiveVolume.durationMaxS);
+                          // Once completed, the same two slots switch from
+                          // planned figures to the planned-vs-completed
+                          // comparison (completion-comparison.ts) -- one
+                          // clean actual-only number when within tolerance
+                          // of plan, the delta when not. Pace stays the
+                          // planned target regardless (no actual pace is
+                          // ever stored, see calendar-types.ts).
+                          const comparison =
+                            w.status === "completed"
+                              ? compareCompletionToPlan({
+                                  plannedDistanceM: getWorkoutPlannedDistanceM(effectiveVolume.distanceM),
+                                  plannedDistanceMaxM: effectiveVolume.distanceMaxM,
+                                  plannedDurationS: effectiveVolume.durationS,
+                                  plannedDurationMaxS: effectiveVolume.durationMaxS,
+                                  actualDistanceM: w.completion?.actualDistanceM ?? null,
+                                  actualDurationS: w.completion?.actualDurationS ?? null,
+                                })
+                              : null;
+                          const { distanceText, durationText } = comparison
+                            ? describeCompletionFigures(
+                                comparison,
+                                { actualDistanceM: w.completion?.actualDistanceM ?? null, actualDurationS: w.completion?.actualDurationS ?? null },
+                                "compact",
+                              )
+                            : {
+                                distanceText: formatCompactDistanceRange(
+                                  getWorkoutPlannedDistanceM(effectiveVolume.distanceM),
+                                  effectiveVolume.distanceMaxM,
+                                ),
+                                durationText: formatDurationRange(effectiveVolume.durationS, effectiveVolume.durationMaxS),
+                              };
                           const paceText = w.paceReference
                             ? formatPaceRange(w.resolvedPaceMinSPerMi, w.resolvedPaceMaxSPerMi)
                             : formatPaceRange(w.plannedPaceSPerMi, w.plannedPaceMaxSPerMi);
@@ -224,7 +254,7 @@ export function MonthView({
                               type="button"
                               onClick={() => openEdit(date, w)}
                               title={extrasText ? `${line1} w/ ${extrasText}` : line1}
-                              className={`block w-full border-l-2 pl-1 text-left text-[11px] leading-tight text-zinc-700 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/5 ${DAY_TYPE_BORDER_CLASSES[accent]}`}
+                              className={`block w-full border-l-2 pl-1 text-left text-[11px] leading-tight text-zinc-700 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/5 ${DAY_TYPE_BORDER_CLASSES[accent]} ${w.status === "missed" ? "opacity-60" : ""}`}
                             >
                               <span className="flex items-center gap-1">
                                 <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[w.status]}`} aria-hidden />
