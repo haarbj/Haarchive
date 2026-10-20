@@ -38,6 +38,8 @@ import { InjuryTriagePanel } from "./injury-triage-panel";
 import { StravaMatchReview, type PendingStravaMatch } from "./strava-match-review";
 import { ConditionsSection } from "./conditions-section";
 import type { ConditionsAnalysis } from "@/lib/private-coaching/completion-conditions-service";
+import { FuelingSection } from "./fueling-section";
+import { buildWorkoutFuelingCard } from "@/lib/private-coaching/workout-fueling";
 import { WorkoutComments, type CommentItem } from "./workout-comments";
 import { ExtrasDetail } from "./extras-detail";
 import { CompletionSummary, type CompletionDetail } from "@/app/(app)/(protected)/plan/completion-detail";
@@ -202,6 +204,7 @@ export default async function WorkoutDetailPage({
     fitnessEstimates,
     weekTargetRow,
     { data: phaseRowsForWorkout },
+    { data: athleteProfileForFueling },
   ] = await Promise.all([
       supabase
         .from("scheduled_workout_steps")
@@ -283,6 +286,16 @@ export default async function WorkoutDetailPage({
         .gte("end_date", workout.scheduled_date)
         .limit(1)
         .returns<{ phase_type: string; explainer: string | null }[]>(),
+      // Only ever used for the fueling card's own weight input below --
+      // same "resolved identically for both coach and athlete" reasoning
+      // as every other athlete_id-keyed fetch on this page. Absent on
+      // the athlete's profile degrades to the Fueling Planner's own
+      // default weight (workout-fueling.ts), never a fabricated number.
+      supabase
+        .from("athlete_profiles")
+        .select("weight_kg")
+        .eq("user_id", workout.athlete_id)
+        .maybeSingle<{ weight_kg: number | null }>(),
     ]);
   const workoutWeekTarget: WeekTarget | null = weekTargetRow
     ? { targetVolumeMin: weekTargetRow.target_volume_min, targetVolumeMax: weekTargetRow.target_volume_max, targetVolumeUnit: weekTargetRow.target_volume_unit }
@@ -390,6 +403,25 @@ export default async function WorkoutDetailPage({
       ? `${workout.planned_volume_percent}% of week — no target set yet`
       : null;
   const rangeText = [distanceText, durationText, dayPace.text].filter(Boolean).join(" · ") || volumeUnresolvedText;
+
+  // Fueling plans attached to workouts -- computed here, at read time,
+  // from this workout's own current fields; never stored, never stale.
+  // Uses the exact same resolved distance/pace this page already
+  // computed above (effectiveVolume, resolvedWorkoutPace) rather than
+  // re-resolving anything -- see workout-fueling.ts's own header comment
+  // for why duration derives from distance/pace only when no duration is
+  // stored at all.
+  const fuelingCard = buildWorkoutFuelingCard({
+    workoutType: workout.workout_type,
+    dayLabel: workout.day_label,
+    title: workout.title,
+    plannedRpe: workout.planned_rpe,
+    plannedRpeMax: workout.planned_rpe_max,
+    distanceM: effectiveVolume.distanceM,
+    durationS: effectiveVolume.durationS,
+    paceSPerMi: resolvedWorkoutPace?.minSPerMi ?? workout.planned_pace_s_per_mi,
+    weightKg: athleteProfileForFueling?.weight_kg ?? null,
+  });
   // Only the athlete whose own data this is can actually act on the nudge
   // below -- a coach viewing a different athlete's workout has no way to
   // edit that athlete's Settings, so the sentence stays plain text for them
@@ -630,6 +662,16 @@ export default async function WorkoutDetailPage({
           </div>
         </div>
       ) : null}
+
+      {/* Fueling plans attached to workouts: computed at read time from
+          this workout's own current distance/duration/type/RPE, via the
+          existing Fueling Planner engine (endurance-fueling-math.ts /
+          fueling-products.ts) -- see workout-fueling.ts's own header
+          comment. Absent entirely for a workout that isn't long enough
+          to need it; both the athlete and the coach see this identical
+          card, since both render the same FuelingSection from the same
+          fuelingCard computed above. */}
+      {fuelingCard ? <FuelingSection card={fuelingCard} /> : null}
 
       <div className="mt-8">
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Completion</p>
