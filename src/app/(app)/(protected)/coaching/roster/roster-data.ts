@@ -11,6 +11,7 @@ import {
   type RosterRecentCompletion,
   type RosterRow,
 } from "@/lib/private-coaching/roster-row";
+import { evaluateIntakeGaps } from "@/lib/private-coaching/intake-gaps";
 
 // The data-dense roster dashboard's own batched loader -- every query
 // here is fired once for the coach's WHOLE roster (.in(athleteId, ids)),
@@ -80,6 +81,17 @@ type CompletedWorkoutRow = {
 };
 type CheckinRow = { user_id: string; week_start: string };
 type GoalRow = { id: string; user_id: string; race_name: string; goal_date: string | null; status: string };
+type AthleteIntakeProfileRow = {
+  user_id: string;
+  training_facilities: string[] | null;
+  elevation_m: number | null;
+  recent_training_detail: string | null;
+  running_days_per_week: number | null;
+  long_run_day: string | null;
+  training_background_injury_history: string | null;
+};
+type RaceResultExistsRow = { user_id: string };
+type FitnessEstimateExistsRow = { athlete_id: string };
 
 export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
   const supabase = await createClient();
@@ -112,6 +124,9 @@ export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
     { data: completedRows },
     { data: checkinRows },
     { data: goalRows },
+    { data: intakeProfileRows },
+    { data: raceResultExistsRows },
+    { data: fitnessEstimateExistsRows },
   ] = await Promise.all([
     supabase.from("profiles").select("id, display_name, avatar_url").in("id", athleteIds).returns<ProfileRow[]>(),
     supabase
@@ -145,6 +160,17 @@ export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
       .eq("status", "active")
       .not("goal_date", "is", null)
       .returns<GoalRow[]>(),
+    // The next three are only ever used for the roster's own "Intake
+    // incomplete" badge (intake-gaps.ts) -- existence checks, not the
+    // actual race/estimate figures, which this dashboard has no other
+    // use for.
+    supabase
+      .from("athlete_profiles")
+      .select("user_id, training_facilities, elevation_m, recent_training_detail, running_days_per_week, long_run_day, training_background_injury_history")
+      .in("user_id", athleteIds)
+      .returns<AthleteIntakeProfileRow[]>(),
+    supabase.from("race_results").select("user_id").in("user_id", athleteIds).returns<RaceResultExistsRow[]>(),
+    supabase.from("athlete_fitness_estimates").select("athlete_id").in("athlete_id", athleteIds).returns<FitnessEstimateExistsRow[]>(),
   ]);
 
   // Program names are a second wave: which programs to look up depends on
@@ -211,6 +237,10 @@ export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
     goalsByAthlete.set(row.user_id, list);
   }
 
+  const intakeProfileByAthlete = new Map((intakeProfileRows ?? []).map((row) => [row.user_id, row]));
+  const athleteIdsWithRaceResult = new Set((raceResultExistsRows ?? []).map((row) => row.user_id));
+  const athleteIdsWithFitnessEstimate = new Set((fitnessEstimateExistsRows ?? []).map((row) => row.athlete_id));
+
   return relationships.map((rel) => {
     const athleteId = rel.athlete_id;
     const phases = phasesByAthlete.get(athleteId) ?? [];
@@ -271,6 +301,18 @@ export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
     const hasActiveProgram = hasActiveProgramForWeek(phases, weekStart);
     const lastCheckinWeekStart = lastCheckinByAthlete.get(athleteId) ?? null;
 
+    const intakeProfile = intakeProfileByAthlete.get(athleteId);
+    const intakeGaps = evaluateIntakeGaps({
+      hasGoalRace: (goalsByAthlete.get(athleteId) ?? []).length > 0,
+      hasFitnessAnchor: athleteIdsWithRaceResult.has(athleteId) || athleteIdsWithFitnessEstimate.has(athleteId),
+      trainingFacilities: intakeProfile?.training_facilities ?? null,
+      homeAltitudeM: intakeProfile?.elevation_m ?? null,
+      recentTrainingDetail: intakeProfile?.recent_training_detail ?? null,
+      injuryLimitations: intakeProfile?.training_background_injury_history ?? null,
+      runningDaysPerWeek: intakeProfile?.running_days_per_week ?? null,
+      longRunDay: intakeProfile?.long_run_day ?? null,
+    });
+
     const attentionBadges = computeRosterAttentionBadges({
       missedWorkoutDates,
       recentCompletions,
@@ -278,6 +320,7 @@ export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
       hasActiveProgram,
       lastCheckinWeekStart,
       today,
+      hasIncompleteIntake: intakeGaps.missing.length > 0,
     });
 
     const nextRaceGoal = pickClosestActiveGoal(goalsByAthlete.get(athleteId) ?? [], today);

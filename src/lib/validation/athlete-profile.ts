@@ -2,6 +2,19 @@ import { z } from "zod";
 
 const currentYear = new Date().getFullYear();
 
+export const TRAINING_FACILITIES = ["track", "treadmill", "trails", "hills", "gym_strength", "pool_cross_training"] as const;
+export type TrainingFacility = (typeof TRAINING_FACILITIES)[number];
+export const TRAINING_FACILITY_LABELS: Record<TrainingFacility, string> = {
+  track: "Track",
+  treadmill: "Treadmill",
+  trails: "Trails",
+  hills: "Hills",
+  gym_strength: "Gym / strength equipment",
+  pool_cross_training: "Pool / cross-training",
+};
+
+export const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+
 export const SEXES = ["male", "female", "unspecified"] as const;
 export const ATHLETE_LEVELS = ["new", "recreational", "hs", "college", "masters", "elite", "ultra"] as const;
 export const ATHLETE_LEVEL_LABELS: Record<(typeof ATHLETE_LEVELS)[number], string> = {
@@ -42,6 +55,14 @@ export const athleteProfileSchema = z.object({
   yearsRunning: z.coerce.number().int().min(0).max(90, "Enter a realistic number of years").optional(),
   currentLevel: z.enum(ATHLETE_LEVELS).optional(),
   primaryEvent: z.string().max(60).optional(),
+  // Intake gap-check (see intake-gaps.ts) -- all optional, same reasoning
+  // as every other field here: a coach plans around what's missing,
+  // nothing on this form blocks on being incomplete.
+  trainingFacilities: z.array(z.enum(TRAINING_FACILITIES)).optional(),
+  homeAltitudeM: z.coerce.number().min(0).max(6000, "That's higher than Everest base camp -- double check this number").optional(),
+  recentTrainingDetail: z.string().max(2000).optional(),
+  longRunDay: z.enum(WEEKDAYS).optional(),
+  blackoutDays: z.array(z.enum(WEEKDAYS)).optional(),
 });
 
 export type AthleteProfileInput = z.infer<typeof athleteProfileSchema>;

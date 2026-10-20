@@ -204,6 +204,11 @@ export async function updateAthleteProfile(
     yearsRunning: formData.get("yearsRunning") || undefined,
     currentLevel: formData.get("currentLevel") || undefined,
     primaryEvent: formData.get("primaryEvent") || undefined,
+    trainingFacilities: formData.getAll("trainingFacilities"),
+    homeAltitudeM: formData.get("homeAltitudeM") || undefined,
+    recentTrainingDetail: formData.get("recentTrainingDetail") || undefined,
+    longRunDay: formData.get("longRunDay") || undefined,
+    blackoutDays: formData.getAll("blackoutDays"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Please check the values above." };
@@ -227,6 +232,11 @@ export async function updateAthleteProfile(
     years_running: parsed.data.yearsRunning ?? null,
     current_level: parsed.data.currentLevel ?? null,
     primary_event: parsed.data.primaryEvent || null,
+    training_facilities: parsed.data.trainingFacilities && parsed.data.trainingFacilities.length > 0 ? parsed.data.trainingFacilities : null,
+    elevation_m: parsed.data.homeAltitudeM != null ? Math.round(parsed.data.homeAltitudeM) : null,
+    recent_training_detail: parsed.data.recentTrainingDetail || null,
+    long_run_day: parsed.data.longRunDay ?? null,
+    blackout_days: parsed.data.blackoutDays && parsed.data.blackoutDays.length > 0 ? parsed.data.blackoutDays : null,
   });
 
   if (error) {

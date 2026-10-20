@@ -51,6 +51,8 @@ export function PlanPayoffView({
 
       <FirstWeekSection data={data} />
 
+      <IntakeGapsSection data={data} isPreview={isPreview} />
+
       <HowThisWorksSection />
 
       <FirstActionSection data={data} isPreview={isPreview} />
@@ -221,6 +223,46 @@ function FirstWeekSection({ data }: { data: PlanPayoffData }) {
           })}
         </div>
       )}
+    </section>
+  );
+}
+
+// Goal race and fitness anchor already have their own dedicated remedies
+// above (GoalRaceHeader, PaceSection) -- showing them again here would be
+// a duplicate prompt for the same two things, so this section only ever
+// lists the other gap items (intake-gaps.ts's own full set still drives
+// the coach-facing Intake section and the roster badge; this is purely a
+// display-level filter for this one view).
+const PAYOFF_HANDLED_GAP_KEYS = new Set(["goal_race", "fitness_anchor"]);
+
+function IntakeGapsSection({ data, isPreview }: { data: PlanPayoffData; isPreview: boolean }) {
+  const remaining = data.intakeGaps.missing.filter((item) => !PAYOFF_HANDLED_GAP_KEYS.has(item.key));
+  if (remaining.length === 0) return null;
+
+  return (
+    <section>
+      <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Complete your intake</p>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+        Your coach uses this to plan around what you actually have access to.
+      </p>
+      <ul className="mt-3 space-y-2">
+        {remaining.map((item) =>
+          isPreview ? (
+            <li key={item.key} className="text-sm text-zinc-600 dark:text-zinc-300">
+              {item.athletePrompt}
+            </li>
+          ) : (
+            <li key={item.key}>
+              <Link
+                href={item.athleteHref}
+                className="text-sm font-semibold text-zinc-700 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-zinc-200 dark:decoration-white/30 dark:hover:decoration-white"
+              >
+                {item.athletePrompt}
+              </Link>
+            </li>
+          ),
+        )}
+      </ul>
     </section>
   );
 }

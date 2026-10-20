@@ -5,7 +5,14 @@ import { useId } from "react";
 import { fieldClass as baseFieldClass, labelClass } from "@/lib/form-styles";
 import { useAutoSaveForm } from "@/lib/use-auto-save-form";
 import { updateAthleteProfile } from "./actions";
-import { ATHLETE_LEVELS, ATHLETE_LEVEL_LABELS, SEXES } from "@/lib/validation/athlete-profile";
+import {
+  ATHLETE_LEVELS,
+  ATHLETE_LEVEL_LABELS,
+  SEXES,
+  TRAINING_FACILITIES,
+  TRAINING_FACILITY_LABELS,
+  WEEKDAYS,
+} from "@/lib/validation/athlete-profile";
 import { AutoSaveStatus } from "@/components/ui/auto-save-status";
 
 const fieldClass = `w-full ${baseFieldClass}`;
@@ -28,6 +35,11 @@ type AthleteProfileFormProps = {
   initialYearsRunning: number | null;
   initialCurrentLevel: (typeof ATHLETE_LEVELS)[number] | null;
   initialPrimaryEvent: string | null;
+  initialTrainingFacilities: string[] | null;
+  initialHomeAltitudeM: number | null;
+  initialRecentTrainingDetail: string | null;
+  initialLongRunDay: string | null;
+  initialBlackoutDays: string[] | null;
 };
 
 export function AthleteProfileForm({
@@ -40,6 +52,11 @@ export function AthleteProfileForm({
   initialYearsRunning,
   initialCurrentLevel,
   initialPrimaryEvent,
+  initialTrainingFacilities,
+  initialHomeAltitudeM,
+  initialRecentTrainingDetail,
+  initialLongRunDay,
+  initialBlackoutDays,
 }: AthleteProfileFormProps) {
   const baseId = useId();
   const { state, formRef, isPending, scheduleSave, saveNow } = useAutoSaveForm(updateAthleteProfile, {});
@@ -226,6 +243,111 @@ export function AthleteProfileForm({
         training load on your dashboard. Everything on this page stays private -- visible only to you and, for
         athletes on a team, your coach.
       </p>
+
+      {/* Intake gap-check (see intake-gaps.ts): what a coach needs to
+          know before planning, beyond the fitness basics above. Nothing
+          here is required -- a coach sees exactly what's missing and can
+          proceed anyway. */}
+      <div className="border-t border-black/10 pt-5 dark:border-white/10">
+        <p className="text-sm font-semibold text-zinc-900 dark:text-white">Training environment &amp; schedule</p>
+        <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
+          What your coach needs to plan around -- what you have access to, where you train, and how your week
+          actually fits together.
+        </p>
+
+        <div className="mt-4">
+          <p className={labelClass}>What do you have access to?</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {TRAINING_FACILITIES.map((facility) => (
+              <label key={facility} className="flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-200">
+                <input
+                  type="checkbox"
+                  name="trainingFacilities"
+                  value={facility}
+                  defaultChecked={initialTrainingFacilities?.includes(facility) ?? false}
+                  onChange={scheduleSave}
+                  className="h-4 w-4 rounded border-black/20 dark:border-white/20"
+                />
+                {TRAINING_FACILITY_LABELS[facility]}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          <div>
+            <label htmlFor={`${baseId}-altitude`} className={labelClass}>
+              Home training altitude (meters)
+            </label>
+            <input
+              id={`${baseId}-altitude`}
+              name="homeAltitudeM"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={6000}
+              defaultValue={initialHomeAltitudeM ?? undefined}
+              placeholder="e.g. 0 for sea level"
+              onBlur={scheduleSave}
+              className={fieldClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor={`${baseId}-long-run-day`} className={labelClass}>
+              Long-run day
+            </label>
+            <select
+              id={`${baseId}-long-run-day`}
+              name="longRunDay"
+              defaultValue={initialLongRunDay ?? ""}
+              onChange={scheduleSave}
+              className={fieldClass}
+            >
+              <option value="">Not set</option>
+              {WEEKDAYS.map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <p className={labelClass}>Blackout days (optional -- any day you&rsquo;re never available to train)</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {WEEKDAYS.map((day) => (
+              <label key={day} className="flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-200">
+                <input
+                  type="checkbox"
+                  name="blackoutDays"
+                  value={day}
+                  defaultChecked={initialBlackoutDays?.includes(day) ?? false}
+                  onChange={scheduleSave}
+                  className="h-4 w-4 rounded border-black/20 dark:border-white/20"
+                />
+                {day}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <label htmlFor={`${baseId}-recent-training`} className={labelClass}>
+            Your last 2-4 weeks of training
+          </label>
+          <textarea
+            id={`${baseId}-recent-training`}
+            name="recentTrainingDetail"
+            rows={4}
+            defaultValue={initialRecentTrainingDetail ?? ""}
+            placeholder="What does a typical week look like, what's your long run distance, and describe one recent key workout (type, distance, effort)."
+            onBlur={scheduleSave}
+            className={fieldClass}
+          />
+        </div>
+      </div>
 
       <AutoSaveStatus isPending={isPending} error={state.error} success={state.success} />
     </form>

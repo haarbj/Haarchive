@@ -5,6 +5,7 @@ import { getAthleteMostRecentRace } from "@/lib/private-coaching/pace-reference"
 import { getAthleteFitnessEstimates } from "@/lib/private-coaching/fitness-estimates";
 import { getPhaseForWeek, type TrainingPhase } from "@/lib/private-coaching/training-phases";
 import { phaseStripPurpose, pickFirstAction, PACE_BAND_WHY, type PlanPayoffFirstAction } from "@/lib/private-coaching/plan-payoff";
+import { evaluateIntakeGaps, type IntakeGapEvaluation } from "@/lib/private-coaching/intake-gaps";
 import { fetchCalendarWorkouts } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-data";
 import type { CalendarWorkout } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-types";
 import type { PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
@@ -47,6 +48,17 @@ export type PlanPayoffData = {
   weekWorkouts: CalendarWorkout[];
 
   firstAction: PlanPayoffFirstAction;
+
+  intakeGaps: IntakeGapEvaluation;
+};
+
+type IntakeProfileRow = {
+  training_facilities: string[] | null;
+  elevation_m: number | null;
+  recent_training_detail: string | null;
+  running_days_per_week: number | null;
+  long_run_day: string | null;
+  training_background_injury_history: string | null;
 };
 
 function paceReferenceLabel(key: PaceReferenceKey): string {
@@ -202,8 +214,27 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
     purpose: p.explainer?.trim() ? null : phaseStripPurpose(p.phaseType),
   }));
 
-  const [race, fitnessEstimates] = await Promise.all([getAthleteMostRecentRace(supabase, athleteId), getAthleteFitnessEstimates(supabase, athleteId)]);
+  const [race, fitnessEstimates, { data: intakeProfileRow }] = await Promise.all([
+    getAthleteMostRecentRace(supabase, athleteId),
+    getAthleteFitnessEstimates(supabase, athleteId),
+    supabase
+      .from("athlete_profiles")
+      .select("training_facilities, elevation_m, recent_training_detail, running_days_per_week, long_run_day, training_background_injury_history")
+      .eq("user_id", athleteId)
+      .maybeSingle<IntakeProfileRow>(),
+  ]);
   const hasFitnessAnchor = race != null || Object.keys(fitnessEstimates).length > 0;
+
+  const intakeGaps = evaluateIntakeGaps({
+    hasGoalRace: goalRace != null,
+    hasFitnessAnchor,
+    trainingFacilities: intakeProfileRow?.training_facilities ?? null,
+    homeAltitudeM: intakeProfileRow?.elevation_m ?? null,
+    recentTrainingDetail: intakeProfileRow?.recent_training_detail ?? null,
+    injuryLimitations: intakeProfileRow?.training_background_injury_history ?? null,
+    runningDaysPerWeek: intakeProfileRow?.running_days_per_week ?? null,
+    longRunDay: intakeProfileRow?.long_run_day ?? null,
+  });
 
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const workoutsByDate = await fetchCalendarWorkouts(supabase, athleteId, coachId, weekDates, today);
@@ -240,5 +271,6 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
     weekStart,
     weekWorkouts,
     firstAction,
+    intakeGaps,
   };
 }

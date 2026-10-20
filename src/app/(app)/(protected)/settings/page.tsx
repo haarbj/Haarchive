@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { createClient } from "@/lib/db/server";
 import { getAppSession } from "@/lib/auth/session";
@@ -11,12 +12,14 @@ import { FitnessEstimatesSection, type FitnessEstimateRow } from "@/app/(app)/(p
 import { InjuriesSection, type InjuryRow } from "@/app/(app)/(protected)/settings/injuries-section";
 import { TrainingBackgroundSection } from "@/app/(app)/(protected)/settings/training-background-section";
 import type { TrainingBackgroundSource } from "@/lib/private-coaching/training-background";
+import { evaluateIntakeGaps } from "@/lib/private-coaching/intake-gaps";
 import { SettingsForm } from "@/app/(app)/(protected)/settings/settings-form";
 import { CoachSettingsForm } from "@/app/(app)/(protected)/settings/coach-settings-form";
 import { LearningInterestsForm } from "@/app/(app)/(protected)/settings/learning-interests-form";
 import type { LearningInterestCategory, LearningOrientation } from "@/lib/validation/learning";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
+import { Card } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Settings",
@@ -44,6 +47,11 @@ type AthleteProfile = {
   years_running: number | null;
   current_level: (typeof ATHLETE_LEVELS)[number] | null;
   primary_event: string | null;
+  training_facilities: string[] | null;
+  elevation_m: number | null;
+  recent_training_detail: string | null;
+  long_run_day: string | null;
+  blackout_days: string[] | null;
 };
 
 type TrainingBackgroundProfile = {
@@ -83,6 +91,7 @@ export default async function SettingsPage() {
     { data: injuries },
     { data: learningPreferences },
     { data: fitnessEstimateRows },
+    { data: goalRows },
   ] = await Promise.all([
       supabase
         .from("profiles")
@@ -104,7 +113,7 @@ export default async function SettingsPage() {
       supabase
         .from("athlete_profiles")
         .select(
-          "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event, training_background_source, training_background_coach_name, training_background_program_name, training_background_recent_mileage, training_background_peak_mileage, training_background_summary, training_background_injury_history",
+          "birth_year, weight_kg, current_weekly_mileage, running_days_per_week, sex, height_cm, years_running, current_level, primary_event, training_facilities, elevation_m, recent_training_detail, long_run_day, blackout_days, training_background_source, training_background_coach_name, training_background_program_name, training_background_recent_mileage, training_background_peak_mileage, training_background_summary, training_background_injury_history",
         )
         .eq("user_id", session!.userId)
         .maybeSingle<AthleteProfile & TrainingBackgroundProfile>(),
@@ -144,12 +153,33 @@ export default async function SettingsPage() {
         .select("reference_key, estimated_time_s, updated_at")
         .eq("athlete_id", session!.userId)
         .returns<{ reference_key: "5k" | "marathon"; estimated_time_s: number; updated_at: string }[]>(),
+      // Only ever used for the intake gap-check's hasGoalRace signal
+      // below -- the self-serve dashboard has its own, separate goals
+      // query/display, which this intentionally doesn't duplicate.
+      supabase
+        .from("goals")
+        .select("id, goal_date")
+        .eq("user_id", session!.userId)
+        .eq("status", "active")
+        .not("goal_date", "is", null)
+        .returns<{ id: string; goal_date: string }[]>(),
     ]);
   const fitnessEstimates: FitnessEstimateRow[] = (fitnessEstimateRows ?? []).map((r) => ({
     referenceKey: r.reference_key,
     estimatedTimeS: r.estimated_time_s,
     updatedAt: r.updated_at,
   }));
+
+  const intakeGaps = evaluateIntakeGaps({
+    hasGoalRace: (goalRows ?? []).length > 0,
+    hasFitnessAnchor: (raceResults ?? []).length > 0 || fitnessEstimates.length > 0,
+    trainingFacilities: athleteProfile?.training_facilities ?? null,
+    homeAltitudeM: athleteProfile?.elevation_m ?? null,
+    recentTrainingDetail: athleteProfile?.recent_training_detail ?? null,
+    injuryLimitations: athleteProfile?.training_background_injury_history ?? null,
+    runningDaysPerWeek: athleteProfile?.running_days_per_week ?? null,
+    longRunDay: athleteProfile?.long_run_day ?? null,
+  });
 
   // A coach-only account (no reason to believe they train themselves --
   // isAthlete/isCoachedAthlete are real relationship-based evidence,
@@ -189,6 +219,33 @@ export default async function SettingsPage() {
         />
       </div>
 
+      {/* Intake gap-check (see intake-gaps.ts) -- a flag, never a block:
+          nothing below requires completing these before a coach assigns
+          or publishes a plan. Each prompt deep-links to the exact field;
+          a completed item simply stops appearing here. */}
+      {session!.isCoachedAthlete && intakeGaps.missing.length > 0 ? (
+        <Card padding="md" className="mt-8">
+          <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+            Complete your intake
+          </p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+            Your coach uses this to plan around what you actually have access to.
+          </p>
+          <ul className="mt-3 space-y-2">
+            {intakeGaps.missing.map((item) => (
+              <li key={item.key}>
+                <Link
+                  href={item.athleteHref}
+                  className="text-sm font-semibold text-zinc-700 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-zinc-200 dark:decoration-white/30 dark:hover:decoration-white"
+                >
+                  {item.athletePrompt}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
       {session!.isPrivateCoach ? (
         <>
           <h2 className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">Coaching</h2>
@@ -209,7 +266,9 @@ export default async function SettingsPage() {
 
       {showAthleteSections ? (
         <>
-          <h2 className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">Athlete profile</h2>
+          <h2 id="athlete-profile" className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+            Athlete profile
+          </h2>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
             This feeds calculators and your dashboard so you don&rsquo;t have to re-enter it every time.
           </p>
@@ -224,6 +283,11 @@ export default async function SettingsPage() {
               initialYearsRunning={athleteProfile?.years_running ?? null}
               initialCurrentLevel={athleteProfile?.current_level ?? null}
               initialPrimaryEvent={athleteProfile?.primary_event ?? null}
+              initialTrainingFacilities={athleteProfile?.training_facilities ?? null}
+              initialHomeAltitudeM={athleteProfile?.elevation_m ?? null}
+              initialRecentTrainingDetail={athleteProfile?.recent_training_detail ?? null}
+              initialLongRunDay={athleteProfile?.long_run_day ?? null}
+              initialBlackoutDays={athleteProfile?.blackout_days ?? null}
             />
           </div>
         </>
@@ -231,7 +295,7 @@ export default async function SettingsPage() {
 
       {session!.isCoachedAthlete ? (
         <>
-          <h2 className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+          <h2 id="training-background" className="mt-12 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
             Training background
           </h2>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">

@@ -10,6 +10,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { mentionsPossibleIllness } from "@/lib/private-coaching/setbacks";
+import { evaluateIntakeGaps } from "@/lib/private-coaching/intake-gaps";
 import { IllnessPanel } from "./illness-panel";
 import { PostSeasonReviewSection } from "./post-season-review-section";
 import { Container } from "@/components/ui/container";
@@ -30,6 +31,12 @@ type AthleteProfile = {
   current_level: (typeof ATHLETE_LEVELS)[number] | null;
   current_weekly_mileage: number | null;
   primary_event: string | null;
+  running_days_per_week: number | null;
+  training_facilities: string[] | null;
+  elevation_m: number | null;
+  recent_training_detail: string | null;
+  long_run_day: string | null;
+  training_background_injury_history: string | null;
 };
 type Goal = { id: string; race_name: string; distance_m: number; goal_time_s: number | null; goal_date: string | null; status: string };
 type RaceResult = { id: string; race_name: string; race_date: string; distance_m: number; finish_time_s: number };
@@ -79,12 +86,21 @@ export default async function CoachingAthleteDetailPage({
   // one of these to only athleteId's rows if -- and only if -- session's
   // caller actually, actively coaches them (coaches_this_athlete()). An
   // athleteId that isn't yours simply comes back empty across the board.
-  const [{ data: profile }, { data: athleteProfile }, { data: goals }, { data: raceResults }, { data: injuries }, { data: everPublished }] =
-    await Promise.all([
+  const [
+    { data: profile },
+    { data: athleteProfile },
+    { data: goals },
+    { data: raceResults },
+    { data: injuries },
+    { data: everPublished },
+    { data: fitnessEstimateRows },
+  ] = await Promise.all([
       supabase.from("profiles").select("id, display_name").eq("id", athleteId).maybeSingle<Profile>(),
       supabase
         .from("athlete_profiles")
-        .select("birth_year, sex, weight_kg, height_cm, years_running, current_level, current_weekly_mileage, primary_event")
+        .select(
+          "birth_year, sex, weight_kg, height_cm, years_running, current_level, current_weekly_mileage, primary_event, running_days_per_week, training_facilities, elevation_m, recent_training_detail, long_run_day, training_background_injury_history",
+        )
         .eq("user_id", athleteId)
         .maybeSingle<AthleteProfile>(),
       supabase
@@ -112,6 +128,14 @@ export default async function CoachingAthleteDetailPage({
       // /coaching/page.tsx) -- the coach-side mirror of that state, not a
       // second, independently-derived one.
       supabase.from("scheduled_workouts").select("id").eq("athlete_id", athleteId).not("published_at", "is", null).limit(1).maybeSingle(),
+      // Only ever used for the intake gap-check's hasFitnessAnchor signal
+      // below -- raceResults above already covers the "race result"
+      // half of that test.
+      supabase
+        .from("athlete_fitness_estimates")
+        .select("reference_key")
+        .eq("athlete_id", athleteId)
+        .returns<{ reference_key: string }[]>(),
     ]);
 
   // weekly_checkins_select_private_coach RLS -- the most recent row
@@ -129,6 +153,17 @@ export default async function CoachingAthleteDetailPage({
   if (!profile) notFound();
 
   const currentYear = new Date().getFullYear();
+
+  const intakeGaps = evaluateIntakeGaps({
+    hasGoalRace: (goals ?? []).some((g) => g.goal_date != null),
+    hasFitnessAnchor: (raceResults ?? []).length > 0 || (fitnessEstimateRows ?? []).length > 0,
+    trainingFacilities: athleteProfile?.training_facilities ?? null,
+    homeAltitudeM: athleteProfile?.elevation_m ?? null,
+    recentTrainingDetail: athleteProfile?.recent_training_detail ?? null,
+    injuryLimitations: athleteProfile?.training_background_injury_history ?? null,
+    runningDaysPerWeek: athleteProfile?.running_days_per_week ?? null,
+    longRunDay: athleteProfile?.long_run_day ?? null,
+  });
 
   return (
     <Container variant="content">
@@ -322,6 +357,27 @@ export default async function CoachingAthleteDetailPage({
             <EmptyState>No race results logged yet.</EmptyState>
           </div>
         )}
+      </div>
+
+      {/* Intake gap-check (see intake-gaps.ts) -- informational only,
+          never a block: assignment and publishing both work regardless
+          of what's missing here. Missing items are named, not just
+          counted, so a coach knows exactly what to ask about before
+          leaning on an assumption the athlete never actually confirmed. */}
+      <div className="mt-8">
+        <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Intake</p>
+        <Card padding="md" className="mt-3">
+          <ul className="space-y-2">
+            {intakeGaps.items.map((item) => (
+              <li key={item.key} className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-zinc-900 dark:text-white">{item.coachLabel}</span>
+                <span className={item.complete ? "text-zinc-500 dark:text-zinc-400" : "font-semibold text-accent-warning"}>
+                  {item.complete ? "Present" : "Missing"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </div>
 
       <PostSeasonReviewSection

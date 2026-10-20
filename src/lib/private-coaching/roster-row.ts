@@ -42,7 +42,7 @@ export type RosterThisWeek = {
   completedDistanceM: number;
 };
 
-export type RosterAttentionReason = "missed_workout" | "rpe_spike" | "no_checkin" | "no_activity";
+export type RosterAttentionReason = "missed_workout" | "rpe_spike" | "no_checkin" | "no_activity" | "intake_incomplete";
 
 export type RosterAttentionBadge = {
   reason: RosterAttentionReason;
@@ -68,6 +68,8 @@ export type RosterAttentionInput = {
   hasActiveProgram: boolean;
   lastCheckinWeekStart: string | null;
   today: string; // YYYY-MM-DD, viewer-local -- see viewer-timezone.ts
+  /** Whether this athlete's intake gap evaluation (intake-gaps.ts) found anything missing -- computed by the caller, not re-derived here, same reasoning as hasActiveProgram. */
+  hasIncompleteIntake: boolean;
 };
 
 /**
@@ -115,6 +117,13 @@ export function computeRosterAttentionBadges(input: RosterAttentionInput): Roste
   const hasScheduledInWindow = input.scheduledWorkoutDates.some((d) => d >= windowStart && d <= input.today);
   if (hasScheduledInWindow && completionsInWindow.length === 0) {
     badges.push({ reason: "no_activity", detail: "No activity 7d" });
+  }
+
+  // Neutral on purpose, last in priority order -- missing intake is
+  // worth knowing, never worth leading with ahead of a real, time-
+  // sensitive signal like a missed workout or an RPE spike.
+  if (input.hasIncompleteIntake) {
+    badges.push({ reason: "intake_incomplete", detail: "Intake incomplete" });
   }
 
   return badges;

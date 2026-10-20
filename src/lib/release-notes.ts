@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Intake gap-check: what a coach needs to know before planning, flagged, never blocked",
+    detail:
+      "Before planning depends on it, the platform now checks whether an athlete's intake is actually complete -- training environment and facility access, home altitude, a real baseline of their last few weeks of training, injury/limitations history, and schedule constraints, alongside the goal race and fitness anchor already tracked elsewhere. Missing items show up as a completion prompt on the athlete's own profile and \"Your Plan\" view, each linking straight to the field, and never reappear once answered. A coach sees exactly what's missing on the athlete's page and a neutral \"Intake incomplete\" badge on the roster. Nothing here blocks anything -- a coach who knows the athlete can assign and publish regardless.",
+  },
+  {
+    date: "2026-10-20",
     headline: "\"Your Plan\": a welcome payoff for a newly assigned program",
     detail:
       "The first time a coached athlete opens their coaching home after a program lands, they now see a dedicated page before the raw schedule: their goal race and countdown, their program's phases explained in plain language, their anchored paces with the why behind each one, their first week at a glance, and one clear first action to take. Missing a goal race or a fitness anchor shows an inline way to add one right there, never a dead end. Dismissible, shown once, and reachable afterward from coaching home -- and a coach can preview exactly what their athlete will see from the program-assignment flow, same component either way.",

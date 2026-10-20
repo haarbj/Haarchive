@@ -39,6 +39,7 @@ function attentionInput(overrides: Partial<RosterAttentionInput> = {}): RosterAt
     hasActiveProgram: true,
     lastCheckinWeekStart: null,
     today: TODAY,
+    hasIncompleteIntake: false,
     ...overrides,
   };
 }
@@ -176,6 +177,33 @@ describe("computeRosterAttentionBadges", () => {
     );
     // no_activity doesn't fire here since a completion did land in the window
     expect(badges.map((b) => b.reason)).toEqual(["missed_workout", "rpe_spike", "no_checkin"]);
+  });
+
+  describe("intake_incomplete -- driven entirely by the caller's own evaluateIntakeGaps result", () => {
+    it("fires when hasIncompleteIntake is true", () => {
+      const badges = computeRosterAttentionBadges(
+        attentionInput({ hasIncompleteIntake: true, lastCheckinWeekStart: "2026-10-19" }),
+      );
+      expect(badges).toEqual([{ reason: "intake_incomplete", detail: "Intake incomplete" }]);
+    });
+
+    it("does not fire when hasIncompleteIntake is false", () => {
+      const badges = computeRosterAttentionBadges(
+        attentionInput({ hasIncompleteIntake: false, lastCheckinWeekStart: "2026-10-19" }),
+      );
+      expect(badges.some((b) => b.reason === "intake_incomplete")).toBe(false);
+    });
+
+    it("sits last in priority order alongside every other flag", () => {
+      const badges = computeRosterAttentionBadges(
+        attentionInput({
+          missedWorkoutDates: ["2026-10-13"],
+          lastCheckinWeekStart: "2026-10-19",
+          hasIncompleteIntake: true,
+        }),
+      );
+      expect(badges.map((b) => b.reason)).toEqual(["missed_workout", "intake_incomplete"]);
+    });
   });
 });
 
