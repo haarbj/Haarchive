@@ -126,17 +126,41 @@ export function ProgramForm({ existing }: { existing?: ExistingProgram }) {
           <div>
             <span className={labelClass}>Initial mileage (mi/wk)</span>
             <div className="mt-1 flex items-center gap-2">
-              <input value={initialMileageMinInput} onChange={(e) => setInitialMileageMinInput(e.target.value)} placeholder="25" className={fieldClass} />
+              <input
+                aria-label="Initial mileage minimum (mi/wk)"
+                value={initialMileageMinInput}
+                onChange={(e) => setInitialMileageMinInput(e.target.value)}
+                placeholder="25"
+                className={fieldClass}
+              />
               <span className="text-sm text-zinc-500 dark:text-zinc-400">to</span>
-              <input value={initialMileageMaxInput} onChange={(e) => setInitialMileageMaxInput(e.target.value)} placeholder="34" className={fieldClass} />
+              <input
+                aria-label="Initial mileage maximum (mi/wk)"
+                value={initialMileageMaxInput}
+                onChange={(e) => setInitialMileageMaxInput(e.target.value)}
+                placeholder="34"
+                className={fieldClass}
+              />
             </div>
           </div>
           <div>
             <span className={labelClass}>Peak mileage (mi/wk)</span>
             <div className="mt-1 flex items-center gap-2">
-              <input value={peakMileageMinInput} onChange={(e) => setPeakMileageMinInput(e.target.value)} placeholder="40" className={fieldClass} />
+              <input
+                aria-label="Peak mileage minimum (mi/wk)"
+                value={peakMileageMinInput}
+                onChange={(e) => setPeakMileageMinInput(e.target.value)}
+                placeholder="40"
+                className={fieldClass}
+              />
               <span className="text-sm text-zinc-500 dark:text-zinc-400">to</span>
-              <input value={peakMileageMaxInput} onChange={(e) => setPeakMileageMaxInput(e.target.value)} placeholder="50" className={fieldClass} />
+              <input
+                aria-label="Peak mileage maximum (mi/wk)"
+                value={peakMileageMaxInput}
+                onChange={(e) => setPeakMileageMaxInput(e.target.value)}
+                placeholder="50"
+                className={fieldClass}
+              />
             </div>
           </div>
         </div>

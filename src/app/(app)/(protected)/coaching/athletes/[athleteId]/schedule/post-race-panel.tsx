@@ -76,8 +76,7 @@ export function PostRacePanel({ athleteId }: { athleteId: string }) {
                 </Link>
               ) : (
                 <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                  You don&rsquo;t have a recovery template yet. Seed it with{" "}
-                  <code>npm run seed:framework-programs -- --coach-email=you@example.com --recovery-program</code>.
+                  You don&rsquo;t have a recovery template yet. Ask your workspace admin to set one up.
                 </p>
               )
             ) : null}

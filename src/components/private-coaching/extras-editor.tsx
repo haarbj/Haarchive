@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { saveExtraPreset, type ExtraPresetOption } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/actions";
 import {
@@ -113,6 +113,13 @@ function ExtraRow({
   canMoveUp: boolean;
   canMoveDown: boolean;
 }) {
+  // ExtraRow renders once per extra -- a workout with 2+ extras (e.g.
+  // Strides and Drills together) mounts multiple rows at once, so this
+  // row's own datalist previously used one hardcoded, shared id across
+  // every row on the page, colliding the same way DayVocabularyFields'
+  // own day-label/XT-type datalists did (see that file's own comment) --
+  // the combobox bug QA found. useId() gives every row its own real id.
+  const extraKindListId = `${useId()}-extra-kind-suggestions`;
   const [newItem, setNewItem] = useState("");
   const [presetName, setPresetName] = useState("");
   const [isSavingPreset, setIsSavingPreset] = useState(false);
@@ -176,13 +183,13 @@ function ExtraRow({
         <label className="flex-1">
           <span className="sr-only">Kind</span>
           <input
-            list="extra-kind-suggestions"
+            list={extraKindListId}
             value={extra.kind}
             onChange={(e) => onChange({ kind: e.target.value })}
             placeholder="Strides, Drills, Plyos, Strength…"
             className={`${fieldClass} max-w-xs`}
           />
-          <datalist id="extra-kind-suggestions">
+          <datalist id={extraKindListId}>
             {SUGGESTED_EXTRA_KINDS.map((k) => (
               <option key={k} value={k} />
             ))}

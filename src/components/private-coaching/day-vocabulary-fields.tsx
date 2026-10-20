@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 import { SUGGESTED_DAY_LABELS, SUGGESTED_XT_TYPES, splitDayLabel, isXtLabel } from "@/lib/private-coaching/day-type-visuals";
 import { PACE_REFERENCE_KEYS, PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -149,6 +151,18 @@ export function DayVocabularyFields({
   // spelling this out in full).
   const { base, detail } = splitDayLabel(dayLabel);
   const isXt = isXtLabel(base);
+  // This component is shared across QuickCreatePanel, WorkoutForm,
+  // ProgramDayForm, and TemplateForm -- and ProgramDayForm's own caller
+  // (the extras/steps authoring flow) can mount more than one of these
+  // on a page at once. A static <datalist id="..."> would collide across
+  // instances: HTML ids must be unique, and a duplicate silently breaks
+  // which suggestions an <input list="..."> actually shows (the combobox
+  // bug found in QA -- wrong/missing suggestions depending on DOM order,
+  // not a selection or filtering bug in this component's own logic).
+  // useId() gives every instance its own real id.
+  const baseId = useId();
+  const dayLabelListId = `${baseId}-day-label-suggestions`;
+  const xtTypeListId = `${baseId}-xt-type-suggestions`;
 
   function handleXtTypeChange(xtType: string) {
     onDayLabelChange(xtType ? `${base || "Cross Training"} (${xtType})` : base || "Cross Training");
@@ -160,13 +174,13 @@ export function DayVocabularyFields({
         <label className="block">
           <span className={labelClass}>Day label</span>
           <input
-            list="day-label-suggestions"
+            list={dayLabelListId}
             value={dayLabel}
             onChange={(e) => onDayLabelChange(e.target.value)}
             placeholder="Easy, Medium Long Run, Threshold…"
             className={fieldClass}
           />
-          <datalist id="day-label-suggestions">
+          <datalist id={dayLabelListId}>
             {SUGGESTED_DAY_LABELS.map((label) => (
               <option key={label} value={label} />
             ))}
@@ -198,13 +212,13 @@ export function DayVocabularyFields({
         <label className="block max-w-xs">
           <span className={labelClass}>Cross-training type</span>
           <input
-            list="xt-type-suggestions"
+            list={xtTypeListId}
             value={detail}
             onChange={(e) => handleXtTypeChange(e.target.value)}
             placeholder="Pool, Bike, Elliptical…"
             className={fieldClass}
           />
-          <datalist id="xt-type-suggestions">
+          <datalist id={xtTypeListId}>
             {SUGGESTED_XT_TYPES.map((type) => (
               <option key={type} value={type} />
             ))}

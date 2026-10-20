@@ -95,7 +95,7 @@ export async function applyRaceLeadIn(input: { athleteId: string; raceDate: stri
   if (!program) {
     return {
       error:
-        "You don't have a race lead-in template yet. Seed it with: npm run seed:framework-programs -- --coach-email=you@example.com --race-lead-in",
+        "You don't have a race lead-in template yet. Ask your workspace admin to set one up.",
     };
   }
 

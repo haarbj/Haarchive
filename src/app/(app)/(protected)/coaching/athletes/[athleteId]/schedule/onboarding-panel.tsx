@@ -58,8 +58,7 @@ export function OnboardingPanel({ athleteId }: { athleteId: string }) {
             </Link>
           ) : (
             <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-              You don&rsquo;t have the Crash Course seeded yet. Seed it with{" "}
-              <code>npm run seed:framework-programs -- --coach-email=you@example.com --crash-course</code>.
+              You don&rsquo;t have the Crash Course set up yet. Ask your workspace admin to add it.
             </p>
           )}
         </div>

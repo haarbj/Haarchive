@@ -205,7 +205,17 @@ export default async function CoachingAthleteDetailPage({
                 {checkin.schedule_constraints}
               </p>
             ) : null}
-            {checkin.notes ? <p className="mt-1 text-sm italic text-zinc-500 dark:text-zinc-400">&ldquo;{checkin.notes}&rdquo;</p> : null}
+            {checkin.notes ? (
+              // Full text, always -- whitespace-pre-wrap keeps the
+              // athlete's own line breaks instead of collapsing them, and
+              // break-words plus a generous scrollable max-height stop an
+              // unusually long note from blowing out this card's layout
+              // or reading as cut off, without ever actually truncating
+              // the text a coach needs to read in full.
+              <p className="mt-1 max-h-48 overflow-y-auto text-sm leading-relaxed break-words whitespace-pre-wrap text-zinc-500 italic dark:text-zinc-400">
+                &ldquo;{checkin.notes}&rdquo;
+              </p>
+            ) : null}
           </Card>
         ) : (
           <div className="mt-3">

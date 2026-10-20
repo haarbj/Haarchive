@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Coaching platform cleanup: six small fixes from production QA",
+    detail:
+      "A leftover dev seed command was showing up as real copy on three coaching empty states, pointing coaches at a shell command instead of just telling them to ask their admin. /coaching/roster had no link to it for a coach whose roster was still just themselves. A datalist used by the day-label, cross-training-type, and workout-extra pickers shared one hardcoded id across every instance on a page, so suggestions could show up on the wrong field once a form had more than one of them -- each now gets its own real id. A program's initial/peak mileage range inputs had no accessible label distinguishing the min from the max field, and a coach-less athlete's \"You're coaching yourself\" copy read as if they held a coach role; both are reworded/labeled now. An athlete's check-in note is guaranteed to render in full in the coach's view, with a scrollable max-height instead of an unbounded block.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Fixed: athletes couldn't see their coach or their assigned workouts",
     detail:
       "Two bugs found in production QA, both athlete-facing. After accepting a coach's invite, an athlete's /coaching page kept saying \"You're coaching yourself\" -- caused by a self-coaching row and a real-coach row both being active at once, with no guaranteed preference for which one a query returned; coach lookups now always prefer the real relationship. Separately, a coach-assigned workout never showed up on the athlete's own weekly schedule (though it worked fine from its notification link) because that view only ever queried self-created workouts; it now also pulls in assigned ones, including their mileage in the weekly total.",

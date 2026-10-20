@@ -153,9 +153,19 @@ async function CoachHomeSection({ userId }: { userId: string }) {
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         {isSelfOnly ? (
-          <Button href={`/coaching/athletes/${userId}/schedule`} variant="outline" size="sm">
-            Your schedule
-          </Button>
+          <>
+            <Button href={`/coaching/athletes/${userId}/schedule`} variant="outline" size="sm">
+              Your schedule
+            </Button>
+            {/* Roster is still a real, useful link even for a self-only
+                coach (e.g. right before inviting their first real
+                athlete) -- previously only shown in the non-self-only
+                branch below, which made /coaching/roster unreachable by
+                any link until a coach had a second athlete. */}
+            <Button href="/coaching/roster" variant="outline" size="sm">
+              Roster
+            </Button>
+          </>
         ) : (
           <>
             <Button href="/coaching/roster" variant="outline" size="sm">
@@ -339,7 +349,7 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
       ) : null}
       <p className="mt-2 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
         {isSelfCoached
-          ? "You're coaching yourself."
+          ? "No coach assigned -- you're training on your own."
           : coachName
             ? `You're being coached by ${coachName}.`
             : "You're being privately coached."}

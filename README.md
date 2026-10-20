@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 19, 2026](https://brodyhaar.com/release-notes)):** Fixed: athletes couldn't see their coach or their assigned workouts
+**Latest update ([Oct 19, 2026](https://brodyhaar.com/release-notes)):** Coaching platform cleanup: six small fixes from production QA
 
 Recent highlights:
+- Fixed: athletes couldn't see their coach or their assigned workouts (Oct 19, 2026)
 - Course Comparator launched (Oct 19, 2026)
 - Marathon Pacing Calculator and Race Pace Planner merged into one tool (Oct 19, 2026)
-- Batch-publish drafts: a whole week, day, or phase at once (Oct 15, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
