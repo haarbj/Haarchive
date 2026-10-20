@@ -15,6 +15,28 @@ export type AthleteGoalRace = {
 
 type GoalRow = { id: string; race_name: string; goal_date: string | null; status: string };
 
+// The actual "which goal wins" rule, pure and reusable -- extracted so
+// the roster dashboard's own batched goals query (one .in(user_id, ids)
+// for the whole roster, see roster-data.ts) can apply this exact
+// tie-break per athlete in JS, rather than either calling
+// getAthleteGoalRace once per athlete (an N+1) or re-deriving a second,
+// possibly-drifted version of "closest to today."
+export function pickClosestActiveGoal<T extends { goal_date: string | null }>(rows: T[], today: string): T | null {
+  const candidates = rows.filter((g): g is T & { goal_date: string } => g.goal_date != null);
+  if (candidates.length === 0) return null;
+
+  let closest = candidates[0];
+  let closestDiff = Math.abs(daysBetween(today, closest.goal_date));
+  for (const g of candidates.slice(1)) {
+    const diff = Math.abs(daysBetween(today, g.goal_date));
+    if (diff < closestDiff) {
+      closest = g;
+      closestDiff = diff;
+    }
+  }
+  return closest;
+}
+
 // Picks the athlete's single most temporally relevant active goal -- the
 // one whose date is closest to today, whether that's still upcoming or
 // was recently passed without being marked achieved/abandoned yet. An
@@ -32,19 +54,9 @@ export async function getAthleteGoalRace(
     .eq("status", "active")
     .returns<GoalRow[]>();
 
-  const candidates = (data ?? []).filter((g): g is GoalRow & { goal_date: string } => g.goal_date != null);
-  if (candidates.length === 0) return null;
-
   const today = new Date().toISOString().slice(0, 10);
-  let closest = candidates[0];
-  let closestDiff = Math.abs(daysBetween(today, closest.goal_date));
-  for (const g of candidates.slice(1)) {
-    const diff = Math.abs(daysBetween(today, g.goal_date));
-    if (diff < closestDiff) {
-      closest = g;
-      closestDiff = diff;
-    }
-  }
+  const closest = pickClosestActiveGoal(data ?? [], today);
+  if (!closest || closest.goal_date == null) return null;
   return { id: closest.id, raceName: closest.race_name, goalDate: closest.goal_date };
 }
 

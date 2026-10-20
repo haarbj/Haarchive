@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Roster became a real scanning dashboard",
+    detail:
+      "/coaching/roster now shows every athlete's current program/phase/week, this week's planned-vs-completed distance and workout count, when they last logged something and last checked in, and their next race with a countdown -- all in one row, no clicking into each athlete's schedule to find out. A quiet badge appears only when something's actually worth a look: a missed workout in the last week, a noteworthy RPE, no check-in in a week (for athletes on an active program), or no logged activity despite workouts being on the calendar -- plain facts, no compliance scores. Sorts by attention, name, or next race, client-side over the roster already loaded.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Athlete RPE and notes now show up right on the schedule tile",
     detail:
       "A coach scanning a week no longer has to open every workout to see how it actually felt: a logged RPE now shows on the tile itself (coach schedule and /plan alike), paired with the prescribed RPE only when they differ by 2 or more points -- that's the \"prescribed easy, felt hard\" signal worth noticing. A completed workout that ran 3+ points above its prescribed RPE (or 9+ with nothing prescribed) gets a subtle highlight while scanning, never a red flag. A note or comment shows as a small icon, never its text, on the tile -- the full note is still one click away. Strava-matched completions show nothing here, since Strava has no way to supply RPE or notes.",

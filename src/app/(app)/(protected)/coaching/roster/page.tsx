@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
@@ -8,7 +7,8 @@ import { createServiceRoleClient } from "@/lib/db/service-role";
 import { formatDate } from "@/lib/format";
 import { GroupsSection, type TrainingGroup } from "./groups-section";
 import { InviteAthleteForm } from "./invite-athlete-form";
-import { RemoveAthleteButton } from "./remove-athlete-button";
+import { loadRosterRows } from "./roster-data";
+import { RosterTable } from "./roster-table";
 import { RevokeInviteButton } from "./revoke-invite-button";
 import { BackLink } from "@/components/ui/back-link";
 import { Container } from "@/components/ui/container";
@@ -87,6 +87,11 @@ export default async function CoachingRosterPage() {
       .map((member) => ({ membershipId: member.id, athleteId: member.athlete_id })),
   }));
 
+  // The data-dense scanning table -- its own batched loader
+  // (roster-data.ts), kept separate from the queries above since those
+  // serve the invite/groups sections, a genuinely different concern.
+  const rosterRows = await loadRosterRows(session.userId);
+
   return (
     <Container variant="content">
       <BackLink href="/coaching">Coaching</BackLink>
@@ -130,22 +135,9 @@ export default async function CoachingRosterPage() {
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
           All athletes
         </p>
-        {relationships && relationships.length > 0 ? (
-          <div className="mt-3 space-y-2">
-            {relationships.map((rel) => (
-              <div
-                key={rel.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-black/10 bg-white px-4 py-3 text-sm transition hover:border-black/20 dark:border-white/10 dark:bg-zinc-900 dark:hover:border-white/20"
-              >
-                <Link href={`/coaching/athletes/${rel.athlete_id}`} className="font-medium text-zinc-900 dark:text-white">
-                  {nameById.get(rel.athlete_id) ?? "Athlete"}
-                </Link>
-                <RemoveAthleteButton
-                  coachAthleteId={rel.id}
-                  athleteName={nameById.get(rel.athlete_id) ?? "this athlete"}
-                />
-              </div>
-            ))}
+        {rosterRows.length > 0 ? (
+          <div className="mt-3">
+            <RosterTable rows={rosterRows} />
           </div>
         ) : (
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">No athletes yet -- invite one above.</p>
