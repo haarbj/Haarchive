@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Conditions-adjusted actuals: what a Strava-matched run was really worth
+**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Fueling plans, computed automatically on long workouts and races
 
 Recent highlights:
+- Conditions-adjusted actuals: what a Strava-matched run was really worth (Oct 20, 2026)
 - Intake gap-check: what a coach needs to know before planning, flagged, never blocked (Oct 20, 2026)
 - "Your Plan": a welcome payoff for a newly assigned program (Oct 20, 2026)
-- Adaptation cards: the plan quietly watches itself, and tells the coach what it sees (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
