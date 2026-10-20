@@ -421,14 +421,17 @@ export async function fetchWeekSummary(
     return { date, label: parts.join(" + ") };
   });
 
-  // Same computation the main week's own footer already does today
-  // (published workouts only, summing each workout's own minimum/point
-  // distance, a volume-percent day already resolved to its real figure
-  // above) -- not pace-based estimation for a duration-only or XT day,
-  // that's Weekly Load's own separate Part B computation.
-  const totalDistanceM = (rows ?? [])
-    .filter((w) => w.published_at)
-    .reduce((sum, w) => sum + (getWorkoutPlannedDistanceM(effectiveFigure(w).distanceM) ?? 0), 0);
+  // Must sum the exact same workout set `days` above lists -- summing
+  // each workout's own minimum/point distance, a volume-percent day
+  // already resolved to its real figure above -- not pace-based
+  // estimation for a duration-only or XT day, that's Weekly Load's own
+  // separate Part B computation. Previously filtered to published-only,
+  // which disagreed with `days` (unfiltered) the moment a future week was
+  // entirely drafts: the day list showed every workout's real distance
+  // while this total silently summed to 0. Weekly Load's own footer
+  // (weekly-load.ts) was already fixed to be publish-agnostic for the
+  // same reason -- this brings fetchWeekSummary in line with it.
+  const totalDistanceM = (rows ?? []).reduce((sum, w) => sum + (getWorkoutPlannedDistanceM(effectiveFigure(w).distanceM) ?? 0), 0);
 
   return { days, totalDistanceM };
 }

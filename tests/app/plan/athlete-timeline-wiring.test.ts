@@ -123,6 +123,6 @@ describe("4. Weekly Load reflects assigned + self-created totals (see self-serve
   it("plan-view.tsx combines weeklyLoadEntriesFromSelfServeWorkouts with weeklyLoadEntriesFromAssignedWorkouts into one computeWeeklyLoad call", () => {
     expect(PLAN_VIEW_SOURCE).toContain("weeklyLoadEntriesFromSelfServeWorkouts(workouts");
     expect(PLAN_VIEW_SOURCE).toContain("weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts)");
-    expect(PLAN_VIEW_SOURCE).toMatch(/computeWeeklyLoad\(weeklyLoadEntries, null\)/);
+    expect(PLAN_VIEW_SOURCE).toMatch(/computeWeeklyLoad\(weeklyLoadEntries, null, today\)/);
   });
 });

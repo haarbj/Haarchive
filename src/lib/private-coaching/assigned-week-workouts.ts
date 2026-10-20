@@ -36,6 +36,7 @@ export function weeklyLoadEntriesFromAssignedWorkouts(workouts: CalendarWorkout[
       durationS: effective.durationS,
       actualDistanceM: workout.completion?.actualDistanceM ?? null,
       actualDurationS: workout.completion?.actualDurationS ?? null,
+      scheduledDate: workout.scheduledDate,
     };
   });
 }

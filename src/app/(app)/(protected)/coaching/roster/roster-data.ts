@@ -263,15 +263,15 @@ export async function loadRosterRows(coachId: string): Promise<RosterRow[]> {
         durationS: w.planned_duration_s,
         actualDistanceM: completion?.actual_distance_m ?? null,
         actualDurationS: completion?.actual_duration_s ?? null,
+        scheduledDate: w.scheduled_date,
       };
     });
-    const weeklyLoad = computeWeeklyLoad(thisWeekEntries, null);
-    const completedThisWeekCount = thisWeekScheduled.filter((w) => completionByWorkoutId.has(w.id)).length;
+    const weeklyLoad = computeWeeklyLoad(thisWeekEntries, null, today);
     const thisWeek =
-      thisWeekScheduled.length > 0
+      weeklyLoad.scheduledWorkoutCount > 0
         ? {
-            plannedCount: thisWeekScheduled.length,
-            completedCount: completedThisWeekCount,
+            plannedCount: weeklyLoad.scheduledWorkoutCount,
+            completedCount: weeklyLoad.completedWorkoutCount,
             plannedDistanceM: weeklyLoad.scheduledMileageM,
             completedDistanceM: weeklyLoad.completedMileageM,
           }

@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Weekly Load now reconciles per workout, not by netting totals",
+    detail:
+      "A run logged on an Off day (a Strava match or manual log with no scheduled workout to credit it to) used to net straight against the week's scheduled total, which could make Weekly Load's Remaining figure read lower than what's actually still ahead. It's now its own \"Unscheduled\" line -- real volume that happened, shown without ever being subtracted from the plan. Remaining is now the sum of each still-ahead scheduled workout individually, and a missed (already-past, never-completed) workout stays out of it without disappearing from the top-line Scheduled total. The \"X / Y workouts completed\" count now excludes Off days from Y. Shows up on the coach's week view, the roster dashboard, and the athlete's /plan week header -- one shared calculation, not three. A separate bug in the week-strip's collapsed next-week summary card is also fixed: an upcoming week made entirely of drafts listed every workout's real distance but summed to \"0.0 mi planned\" -- the total was filtering to published-only while the day list wasn't; now both agree.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Today's conditions guidance on the athlete's plan",
     detail:
       "Open /plan on a day with a workout scheduled, and -- when a location is available -- a quiet conditions card now shows today's weather and, for any workout with a pace target, what that pace becomes today: \"Tempo is 6:10/mi; in this afternoon's heat it'll run an estimated ~6:24 at the same effort.\" The adjustment is computed by the same environmental engine behind the Environmental Calculator and the conditions-adjusted-actuals work, never a new prescription -- the effort is still the target, the pace is just what that effort looks like today. A heat-caution note appears only once conditions cross the same real threshold the Heat Tracker already uses. No stored location yet triggers one quiet, optional \"use my location\" link, never an automatic prompt; no location or a weather-fetch hiccup just means no card, nothing else affected.",

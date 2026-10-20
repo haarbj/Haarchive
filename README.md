@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Today's conditions guidance on the athlete's plan
+**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Weekly Load now reconciles per workout, not by netting totals
 
 Recent highlights:
+- Today's conditions guidance on the athlete's plan (Oct 20, 2026)
 - Fueling plans, computed automatically on long workouts and races (Oct 20, 2026)
 - Conditions-adjusted actuals: what a Strava-matched run was really worth (Oct 20, 2026)
-- Intake gap-check: what a coach needs to know before planning, flagged, never blocked (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

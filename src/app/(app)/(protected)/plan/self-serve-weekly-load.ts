@@ -5,6 +5,7 @@ import type { CompletionDetail } from "./completion-detail";
 type SelfServeWorkoutLike = {
   id: string;
   prescription: unknown;
+  scheduled_date: string;
 };
 
 /**
@@ -33,6 +34,7 @@ export function weeklyLoadEntriesFromSelfServeWorkouts(
       durationS: null,
       actualDistanceM: completion?.actual_distance_m ?? null,
       actualDurationS: completion?.actual_time_s ?? null,
+      scheduledDate: workout.scheduled_date,
     };
   });
 }

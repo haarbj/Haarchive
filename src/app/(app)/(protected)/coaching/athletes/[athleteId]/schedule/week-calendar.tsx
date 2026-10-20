@@ -115,7 +115,6 @@ export function WeekCalendar({
   }
 
   const allWorkouts = days.flatMap((d) => workoutsByDate[d] ?? []);
-  const completedCount = allWorkouts.filter((w) => w.status === "completed").length;
 
   // Draft counts for the batch-publish affordances below -- week-wide for
   // the Weekly Load footer button, per-day for each column's own button.
@@ -164,36 +163,16 @@ export function WeekCalendar({
       durationS: effective.durationS,
       actualDistanceM: w.completion?.actualDistanceM ?? null,
       actualDurationS: w.completion?.actualDurationS ?? null,
+      scheduledDate: w.scheduledDate,
     };
   });
-  const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, easyPaceSPerMi);
-  const { scheduledText, completedText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(
+  const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, easyPaceSPerMi, today);
+  const { scheduledText, completedText, remainingText, unscheduledText, scheduledDurationText, completedDurationText, countText } = formatWeeklyLoadText(
     weeklyLoad,
     volumeUnitPreference,
     easyPaceSPerMi,
   );
   const targetText = formatTargetVolume(weekPlan);
-
-  // Signed, not clamped to 0 -- completed exceeding scheduled is a real
-  // signal (an athlete running more than prescribed, an overtraining risk
-  // a coach should actually see), not the same thing as "exactly on
-  // target." "Remaining"/"Over" makes the direction explicit rather than
-  // leaving a bare, ambiguous "Difference" number.
-  const rawDifferenceM = weeklyLoad.scheduledMileageM - weeklyLoad.completedMileageM;
-  const differenceLabel = rawDifferenceM >= 0 ? "Remaining" : "Over";
-  const { scheduledText: differenceText } = formatWeeklyLoadText(
-    {
-      scheduledMileageM: Math.abs(rawDifferenceM),
-      scheduledXtDurationS: 0,
-      completedMileageM: 0,
-      completedXtDurationS: 0,
-      estimatedCount: 0,
-      scheduledDurationS: 0,
-      completedDurationS: 0,
-    },
-    volumeUnitPreference,
-    easyPaceSPerMi,
-  );
 
   return (
     <div>
@@ -341,12 +320,18 @@ export function WeekCalendar({
             </span>
           </p>
           <p>
-            <span className="text-zinc-500 dark:text-zinc-400">{differenceLabel}: </span>
-            <span className="font-semibold text-zinc-900 dark:text-white">{differenceText}</span>
+            <span className="text-zinc-500 dark:text-zinc-400">Remaining: </span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{remainingText}</span>
           </p>
+          {unscheduledText ? (
+            <p>
+              <span className="text-zinc-500 dark:text-zinc-400">Unscheduled: </span>
+              <span className="font-semibold text-zinc-900 dark:text-white">{unscheduledText}</span>
+            </p>
+          ) : null}
         </div>
         <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          {completedCount} / {allWorkouts.length} workouts completed
+          {countText}
           {weeklyLoad.estimatedCount > 0
             ? ` · ${weeklyLoad.estimatedCount} duration-only ${weeklyLoad.estimatedCount === 1 ? "day" : "days"} estimated from easy pace`
             : ""}

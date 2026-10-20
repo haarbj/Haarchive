@@ -137,8 +137,8 @@ describe("end to end: completing an assigned workout moves it from Scheduled to 
       completion: { actualDistanceM: 8.2 * MILE_METERS, actualDurationS: 3300, stravaActivityId: null, rpe: null, hasNotes: false, effortLevel: null },
     });
 
-    const before = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts([beforeCompletion]), null);
-    const after = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts([afterCompletion]), null);
+    const before = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts([beforeCompletion]), null, "2026-10-20");
+    const after = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts([afterCompletion]), null, "2026-10-20");
 
     expect(before.scheduledMileageM).toBe(Math.round(8 * MILE_METERS));
     expect(before.completedMileageM).toBe(0);

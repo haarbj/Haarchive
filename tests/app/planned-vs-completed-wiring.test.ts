@@ -111,7 +111,7 @@ describe("Week rollups show planned vs completed for distance AND duration, one 
   it("/plan combines self-created and assigned entries before the one computeWeeklyLoad call (not two separate rollups)", () => {
     expect(PLAN_VIEW).toMatch(/weeklyLoadEntriesFromSelfServeWorkouts\(workouts/);
     expect(PLAN_VIEW).toMatch(/weeklyLoadEntriesFromAssignedWorkouts\(assignedWorkouts\)/);
-    expect(PLAN_VIEW).toMatch(/computeWeeklyLoad\(weeklyLoadEntries, null\)/);
+    expect(PLAN_VIEW).toMatch(/computeWeeklyLoad\(weeklyLoadEntries, null, today\)/);
   });
 });
 

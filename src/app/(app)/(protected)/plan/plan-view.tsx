@@ -291,8 +291,12 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
     ...weeklyLoadEntriesFromSelfServeWorkouts(workouts ?? [], completionByWorkoutId),
     ...weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts),
   ];
-  const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, null);
-  const { scheduledText, completedText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(weeklyLoad, "miles", null);
+  const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, null, today);
+  const { scheduledText, completedText, remainingText, unscheduledText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(
+    weeklyLoad,
+    "miles",
+    null,
+  );
 
   // Today's conditions guidance -- the forward-looking twin of
   // conditions-adjusted actuals. Scoped to coach-assigned workouts only
@@ -422,6 +426,14 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
                     Completed: {completedText}
                     {completedDurationText ? ` / ${completedDurationText}` : ""}
                   </span>
+                  <span className="mx-1.5">·</span>
+                  <span>Remaining: {remainingText}</span>
+                  {unscheduledText ? (
+                    <>
+                      <span className="mx-1.5">·</span>
+                      <span>Unscheduled: {unscheduledText}</span>
+                    </>
+                  ) : null}
                 </p>
               )}
             </div>

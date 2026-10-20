@@ -56,28 +56,44 @@ function assignedWorkout(overrides: Partial<CalendarWorkout> = {}): CalendarWork
   };
 }
 
+const SELF_SERVE_DATE = "2026-10-19";
+const TODAY = "2026-10-20";
+
 describe("weeklyLoadEntriesFromSelfServeWorkouts", () => {
   it("maps a self-created workout's prescription distance into a WeeklyLoadEntry, with no dayLabel (never counts as XT)", () => {
-    const entries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: EASY }], new Map());
+    const entries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: EASY, scheduled_date: SELF_SERVE_DATE }], new Map());
     expect(entries).toHaveLength(1);
-    expect(entries[0]).toEqual({ dayLabel: null, distanceM: 8000, durationS: null, actualDistanceM: null, actualDurationS: null });
+    expect(entries[0]).toEqual({
+      dayLabel: null,
+      distanceM: 8000,
+      durationS: null,
+      actualDistanceM: null,
+      actualDurationS: null,
+      scheduledDate: SELF_SERVE_DATE,
+    });
   });
 
   it("pulls actual distance/time from the completion map when one exists for that workout id", () => {
     const completions = new Map([["w-1", completion({ actual_distance_m: 8200, actual_time_s: 2500 })]]);
-    const entries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: EASY }], completions);
+    const entries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: EASY, scheduled_date: SELF_SERVE_DATE }], completions);
     expect(entries[0].actualDistanceM).toBe(8200);
     expect(entries[0].actualDurationS).toBe(2500);
   });
 
   it("gives a null distance (never fabricated) for a workout whose prescription doesn't parse", () => {
-    const entries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: { kind: "not-a-real-kind" } }], new Map());
+    const entries = weeklyLoadEntriesFromSelfServeWorkouts(
+      [{ id: "w-1", prescription: { kind: "not-a-real-kind" }, scheduled_date: SELF_SERVE_DATE }],
+      new Map(),
+    );
     expect(entries[0].distanceM).toBeNull();
   });
 
   it("handles several self-created workouts in one call, each via its own prescription", () => {
     const entries = weeklyLoadEntriesFromSelfServeWorkouts(
-      [{ id: "w-1", prescription: EASY }, { id: "w-2", prescription: LONG }],
+      [
+        { id: "w-1", prescription: EASY, scheduled_date: SELF_SERVE_DATE },
+        { id: "w-2", prescription: LONG, scheduled_date: SELF_SERVE_DATE },
+      ],
       new Map(),
     );
     expect(entries.map((e) => e.distanceM)).toEqual([8000, 24000]);
@@ -86,15 +102,15 @@ describe("weeklyLoadEntriesFromSelfServeWorkouts", () => {
 
 describe("Weekly Load reflects assigned + self-created totals together (not assigned-only)", () => {
   it("combines a self-created workout's scheduled distance with an assigned workout's scheduled distance in one computeWeeklyLoad call", () => {
-    const selfEntries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: EASY }], new Map());
+    const selfEntries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: EASY, scheduled_date: SELF_SERVE_DATE }], new Map());
     const assignedEntries = weeklyLoadEntriesFromAssignedWorkouts([assignedWorkout()]);
-    const result = computeWeeklyLoad([...selfEntries, ...assignedEntries], null);
+    const result = computeWeeklyLoad([...selfEntries, ...assignedEntries], null, TODAY);
     expect(result.scheduledMileageM).toBe(8000 + 9600);
   });
 
   it("completing an assigned workout is reflected in the combined completed mileage, without disturbing the self-created side", () => {
     const selfEntries = weeklyLoadEntriesFromSelfServeWorkouts(
-      [{ id: "w-1", prescription: EASY }],
+      [{ id: "w-1", prescription: EASY, scheduled_date: SELF_SERVE_DATE }],
       new Map([["w-1", completion({ actual_distance_m: 8100 })]]),
     );
     const assignedEntries = weeklyLoadEntriesFromAssignedWorkouts([
@@ -103,7 +119,7 @@ describe("Weekly Load reflects assigned + self-created totals together (not assi
         completion: { actualDistanceM: 9700, actualDurationS: null, stravaActivityId: null, rpe: null, hasNotes: false, effortLevel: null },
       }),
     ]);
-    const result = computeWeeklyLoad([...selfEntries, ...assignedEntries], null);
+    const result = computeWeeklyLoad([...selfEntries, ...assignedEntries], null, TODAY);
     expect(result.completedMileageM).toBe(8100 + 9700);
     // The self-created entry's own completion is untouched by the assigned
     // workout's completion -- each entry carries only its own actuals.
@@ -111,8 +127,8 @@ describe("Weekly Load reflects assigned + self-created totals together (not assi
   });
 
   it("an all-self-created week (no assigned workouts at all) still produces a real total -- the gap this fix closes", () => {
-    const selfEntries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: LONG }], new Map());
-    const result = computeWeeklyLoad([...selfEntries, ...weeklyLoadEntriesFromAssignedWorkouts([])], null);
+    const selfEntries = weeklyLoadEntriesFromSelfServeWorkouts([{ id: "w-1", prescription: LONG, scheduled_date: SELF_SERVE_DATE }], new Map());
+    const result = computeWeeklyLoad([...selfEntries, ...weeklyLoadEntriesFromAssignedWorkouts([])], null, TODAY);
     expect(result.scheduledMileageM).toBe(24000);
   });
 });
