@@ -28,6 +28,9 @@ import { weeklyLoadEntriesFromSelfServeWorkouts } from "./self-serve-weekly-load
 import { TeamScheduleView } from "./team-schedule-view";
 import { loadAthleteTimelineWeeks } from "./timeline-actions";
 import { WorkoutCard } from "./workout-card";
+import { TodayConditionsCard } from "./today-conditions-card";
+import { TodayConditionsGeolocation } from "./today-conditions-geolocation";
+import { buildTodayConditionsCard, resolveStoredLocation, type TodayWorkoutInput } from "./today-conditions-service";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
 import { Badge } from "@/components/ui/badge";
@@ -291,6 +294,24 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
   const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, null);
   const { scheduledText, completedText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(weeklyLoad, "miles", null);
 
+  // Today's conditions guidance -- the forward-looking twin of
+  // conditions-adjusted actuals. Scoped to coach-assigned workouts only
+  // (assignedWorkouts, already published, already pace-resolved) --
+  // self-serve workouts' free-text prescription has no equivalent
+  // resolved-pace field to adjust. `today` here is already
+  // todayForViewer()'s own viewer-timezone date, not UTC. Absent
+  // entirely (no card at all) when there's nothing scheduled today, no
+  // resolvable location, or a weather-fetch failure -- see
+  // today-conditions-service.ts's own "never fabricate, never block the
+  // page" discipline.
+  const todaysWorkouts: TodayWorkoutInput[] = coachView
+    ? []
+    : assignedWorkouts.filter((w) => w.scheduledDate === today).map((w) => ({ id: w.id, dayLabel: w.dayLabel, title: w.title, resolvedPaceMinSPerMi: w.resolvedPaceMinSPerMi }));
+  const storedLocation = todaysWorkouts.length > 0 ? await resolveStoredLocation(userId) : null;
+  const todayConditionsCard = storedLocation
+    ? await buildTodayConditionsCard(storedLocation.lat, storedLocation.lon, storedLocation.label, today, todaysWorkouts)
+    : null;
+
   return (
     <>
       <Heading>
@@ -309,6 +330,17 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
           <DisruptionFlagForm />
         </div>
       )}
+
+      {/* Today's conditions guidance -- sits with today's workout(s), not
+          global page chrome. Nothing renders at all when there's no
+          workout scheduled today or no location was ever resolved. */}
+      {!coachView && todaysWorkouts.length > 0 ? (
+        todayConditionsCard ? (
+          <TodayConditionsCard data={todayConditionsCard} />
+        ) : !storedLocation ? (
+          <TodayConditionsGeolocation todayDate={today} workouts={todaysWorkouts} />
+        ) : null
+      ) : null}
 
       {/* Week stays the default, unchanged view -- Timeline is an
           additional way to browse the same training, not a replacement,
