@@ -13,6 +13,8 @@ import { mentionsPossibleIllness } from "@/lib/private-coaching/setbacks";
 import { evaluateIntakeGaps } from "@/lib/private-coaching/intake-gaps";
 import { IllnessPanel } from "./illness-panel";
 import { PostSeasonReviewSection } from "./post-season-review-section";
+import { loadCheckinPraiseCandidates } from "./checkin-praise-data";
+import { CheckinResponseComposer } from "./checkin-response-composer";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -94,6 +96,7 @@ export default async function CoachingAthleteDetailPage({
     { data: injuries },
     { data: everPublished },
     { data: fitnessEstimateRows },
+    { data: coachAthleteRow },
   ] = await Promise.all([
       supabase.from("profiles").select("id, display_name").eq("id", athleteId).maybeSingle<Profile>(),
       supabase
@@ -136,6 +139,10 @@ export default async function CoachingAthleteDetailPage({
         .select("reference_key")
         .eq("athlete_id", athleteId)
         .returns<{ reference_key: string }[]>(),
+      // Needed to send a response to this check-in through the existing
+      // coach<->athlete message thread (sendCoachAthleteMessage) -- not a
+      // new storage path for the check-in itself.
+      supabase.from("coach_athletes").select("id").eq("coach_id", session.userId).eq("athlete_id", athleteId).maybeSingle<{ id: string }>(),
     ]);
 
   // weekly_checkins_select_private_coach RLS -- the most recent row
@@ -149,6 +156,15 @@ export default async function CoachingAthleteDetailPage({
     .order("week_start", { ascending: false })
     .limit(1)
     .maybeSingle<Checkin>();
+
+  // Specific, factual praise candidates drawn only from this check-in's
+  // own period (its week, start through end inclusive -- the same window
+  // the card above already displays) -- see checkin-praise.ts's own
+  // header for why this is a pure, deterministic read, never AI text.
+  const checkinPraiseCandidates =
+    checkin && coachAthleteRow
+      ? await loadCheckinPraiseCandidates(supabase, athleteId, checkin.week_start, addDays(checkin.week_start, 6))
+      : [];
 
   if (!profile) notFound();
 
@@ -257,6 +273,9 @@ export default async function CoachingAthleteDetailPage({
             <EmptyState>No check-ins submitted yet.</EmptyState>
           </div>
         )}
+        {checkin && coachAthleteRow ? (
+          <CheckinResponseComposer coachAthleteId={coachAthleteRow.id} candidates={checkinPraiseCandidates} />
+        ) : null}
         {/* Part I item 22, coach-only. Offered, not forced: a keyword scan
             over the check-in's own free text decides whether to SHOW this,
             never anything about training. A false positive costs nothing;
