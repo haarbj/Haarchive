@@ -105,9 +105,9 @@ describe("notificationHref -- private coaching", () => {
     expect(notificationHref("post_season_review_submitted", null)).toBe("/coaching");
   });
 
-  it("program_assigned always links to /coaching/training -- the athlete-facing route, not the coach-only schedule page relatedEntityId would otherwise point at", () => {
-    expect(notificationHref("program_assigned", "athlete-1")).toBe("/coaching/training");
-    expect(notificationHref("program_assigned", null)).toBe("/coaching/training");
+  it("program_assigned always links to /coaching/your-plan -- the onboarding payoff built for this exact moment, not the coach-only schedule page relatedEntityId would otherwise point at", () => {
+    expect(notificationHref("program_assigned", "athlete-1")).toBe("/coaching/your-plan");
+    expect(notificationHref("program_assigned", null)).toBe("/coaching/your-plan");
   });
 
   it.each(["pain_reported", "race_approaching"] as const)(

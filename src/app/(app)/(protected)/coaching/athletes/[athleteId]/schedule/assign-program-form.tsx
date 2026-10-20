@@ -451,16 +451,24 @@ export function AssignProgramForm({
         {assignResult.appliedStrengthOptions && assignResult.appliedStrengthOptions.length > 0 ? (
           <StrengthOptionsSummary options={assignResult.appliedStrengthOptions} />
         ) : null}
-        <Button
-          type="button"
-          size="sm"
-          onClick={() => {
-            onDone();
-            router.refresh();
-          }}
-        >
-          Done
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => {
+              onDone();
+              router.refresh();
+            }}
+          >
+            Done
+          </Button>
+          {/* Same component the athlete's own "Your Plan" payoff renders
+              (coaching/your-plan) -- read-only here, see that route's own
+              header comment on why there's no sample data to label. */}
+          <Button href={`/coaching/athletes/${athleteId}/your-plan-preview`} size="sm" variant="outline">
+            Preview their &ldquo;Your Plan&rdquo;
+          </Button>
+        </div>
       </div>
     );
   }

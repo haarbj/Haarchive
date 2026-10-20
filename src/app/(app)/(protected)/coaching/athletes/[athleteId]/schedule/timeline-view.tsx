@@ -294,7 +294,11 @@ export function TimelineView<TEntry>({
 // for why normalizing into this shape (rather than letting each route
 // render its own tile JSX) is what keeps the two routes' tiles genuinely
 // identical instead of just similar-looking today.
-function TimelineTile({ entry }: { entry: TimelineEntryView }) {
+// Exported for the "Your Plan" payoff view (coaching/your-plan), which
+// renders a handful of tiles as a static, non-scrolling week preview --
+// the same shared tile, not a reimplementation, see that view's own
+// header comment.
+export function TimelineTile({ entry }: { entry: TimelineEntryView }) {
   const [expanded, setExpanded] = useState(false);
   const figures = (
     <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-zinc-600 dark:text-zinc-300">

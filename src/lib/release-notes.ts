@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "\"Your Plan\": a welcome payoff for a newly assigned program",
+    detail:
+      "The first time a coached athlete opens their coaching home after a program lands, they now see a dedicated page before the raw schedule: their goal race and countdown, their program's phases explained in plain language, their anchored paces with the why behind each one, their first week at a glance, and one clear first action to take. Missing a goal race or a fitness anchor shows an inline way to add one right there, never a dead end. Dismissible, shown once, and reachable afterward from coaching home -- and a coach can preview exactly what their athlete will see from the program-assignment flow, same component either way.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Adaptation cards: the plan quietly watches itself, and tells the coach what it sees",
     detail:
       "A deterministic engine now scans each athlete's recent training for four specific patterns -- easy days consistently feeling too easy, fatigue stacking up, a plan that keeps coming in well over distance, or an athlete going quiet -- and surfaces a card on coach home and the athlete's schedule page showing the real evidence (the actual workouts and numbers that fired it) and one concrete proposed action. Nothing changes until the coach explicitly accepts: workout changes land as drafts, same as any other coach-authored edit, and a dismissed card stays quiet for two weeks unless new evidence fires it again. No scores, no ML -- every threshold is a stated rule.",

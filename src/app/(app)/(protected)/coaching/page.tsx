@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { getAppSession, isAdminEmail } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
@@ -296,6 +297,26 @@ async function CoachHomeSection({ userId }: { userId: string }) {
 
 async function AthleteHomeSection({ userId }: { userId: string }) {
   const supabase = await createClient();
+
+  // The "Your Plan" payoff's one-time auto-show: redirect here only once,
+  // the first time this athlete has at least one assigned training phase
+  // and has never dismissed the payoff. plan_payoff_dismissed_at is
+  // checked FIRST so a returning athlete who already saw it costs this
+  // page nothing extra -- the training_phases existence check only runs
+  // for the (rare, one-time-per-athlete) case where it's still null.
+  const { data: profileRow } = await supabase
+    .from("profiles")
+    .select("plan_payoff_dismissed_at")
+    .eq("id", userId)
+    .maybeSingle<{ plan_payoff_dismissed_at: string | null }>();
+  if (!profileRow?.plan_payoff_dismissed_at) {
+    const { count } = await supabase
+      .from("training_phases")
+      .select("id", { count: "exact", head: true })
+      .eq("athlete_id", userId);
+    if (count && count > 0) redirect("/coaching/your-plan");
+  }
+
   const relationship = await getActiveCoachRelationship(supabase, userId);
   const { data: coachProfile } = relationship
     ? await supabase
@@ -369,6 +390,17 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
             ? `You're being coached by ${coachName}.`
             : "You're being privately coached."}
       </p>
+
+      {/* Stays reachable after the one-time auto-show (see this
+          function's own redirect check above) dismisses -- revisiting
+          this link never re-triggers it, only the automatic redirect is
+          gated by plan_payoff_dismissed_at. */}
+      <Link
+        href="/coaching/your-plan"
+        className="mt-2 inline-block text-sm font-semibold text-zinc-600 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-300 dark:decoration-white/20 dark:hover:decoration-white"
+      >
+        Your plan overview
+      </Link>
 
       {thisWeekPlan?.notes ? (
         <div className="mt-6">
