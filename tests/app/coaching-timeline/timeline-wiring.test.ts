@@ -14,6 +14,12 @@ import { describe, expect, it } from "vitest";
 const SCHEDULE_ROOT = join(__dirname, "../../../src/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule");
 const PAGE_SOURCE = readFileSync(join(SCHEDULE_ROOT, "page.tsx"), "utf8");
 const TIMELINE_VIEW_SOURCE = readFileSync(join(SCHEDULE_ROOT, "timeline-view.tsx"), "utf8");
+// timeline-view.tsx is the shared, route-agnostic component (used by both
+// the coach route and /plan's athlete route, see plan-timeline-view.tsx)
+// -- the coach route's own editor wiring (useCalendarWorkoutEditor,
+// openEdit/openCreate) lives in coach-timeline-view.tsx, the coach's own
+// thin adapter onto the shared component, not in timeline-view.tsx itself.
+const COACH_TIMELINE_VIEW_SOURCE = readFileSync(join(SCHEDULE_ROOT, "coach-timeline-view.tsx"), "utf8");
 
 describe("1. Timeline in the view switcher", () => {
   it("the switcher's view list is week, day, month, phase, timeline -- in that order, Timeline fifth", () => {
@@ -89,9 +95,9 @@ describe("5. denser tiles, Timeline-only", () => {
 });
 
 describe("6. completing a workout from Timeline uses the same machinery as Week View", () => {
-  it("TimelineView mounts useCalendarWorkoutEditor -- the exact shared hook, not a reimplementation", () => {
-    expect(TIMELINE_VIEW_SOURCE).toContain('import { useCalendarWorkoutEditor } from "./calendar-workout-editor";');
-    expect(TIMELINE_VIEW_SOURCE).toContain("useCalendarWorkoutEditor({ athleteId, templates, extraPresets })");
+  it("the coach route's own Timeline adapter mounts useCalendarWorkoutEditor -- the exact shared hook, not a reimplementation", () => {
+    expect(COACH_TIMELINE_VIEW_SOURCE).toContain('import { useCalendarWorkoutEditor } from "./calendar-workout-editor";');
+    expect(COACH_TIMELINE_VIEW_SOURCE).toContain("useCalendarWorkoutEditor({ athleteId, templates, extraPresets })");
   });
 
   it("Week View's own calendar also uses the same hook/component family (week-calendar.tsx), confirming it's genuinely shared, not two parallel implementations", () => {
@@ -107,6 +113,11 @@ describe("6. completing a workout from Timeline uses the same machinery as Week 
   });
 
   it("click-to-open on a tile opens the shared editor (openEdit), not a Timeline-only detail view", () => {
-    expect(TIMELINE_VIEW_SOURCE).toContain("openEdit(date, workout)");
+    expect(COACH_TIMELINE_VIEW_SOURCE).toContain("openEdit(date, workout)");
+  });
+
+  it("the shared TimelineView itself has no coach-specific editor logic -- it only ever calls caller-supplied normalizeEntry/loadWeeks/onAddDay props", () => {
+    expect(TIMELINE_VIEW_SOURCE).not.toContain("useCalendarWorkoutEditor");
+    expect(TIMELINE_VIEW_SOURCE).not.toContain("openEdit");
   });
 });

@@ -175,7 +175,7 @@ function scalePace([fast, slow]: [number, number], factor: number): [number, num
 
 // Distance-only total, ignoring recovery-jog meters for vo2 (bonus volume,
 // not core work) -- matches how prescriptions.ts already treats it.
-function coreDistanceOf(prescription: WorkoutPrescription): number {
+export function coreDistanceOf(prescription: WorkoutPrescription): number {
   switch (prescription.kind) {
     case "easy":
     case "recovery":

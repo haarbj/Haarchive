@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 19, 2026](https://brodyhaar.com/release-notes)):** Fixed a duplicate-week glitch in the coaching calendar's Timeline view
+**Latest update ([Oct 19, 2026](https://brodyhaar.com/release-notes)):** Timeline view added to /plan -- athletes can now scroll their own schedule too
 
 Recent highlights:
+- Fixed a duplicate-week glitch in the coaching calendar's Timeline view (Oct 19, 2026)
 - Timeline view added to the coaching calendar (Oct 19, 2026)
 - Coaching platform cleanup: six small fixes from production QA (Oct 19, 2026)
-- Fixed: athletes couldn't see their coach or their assigned workouts (Oct 19, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

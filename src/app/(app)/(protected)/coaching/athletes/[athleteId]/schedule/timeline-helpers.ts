@@ -5,13 +5,54 @@
 // formatting are unit-testable without a component-rendering harness,
 // which this repo doesn't have (see vitest.config.ts's node environment).
 
+import type { ReactNode } from "react";
+
 import { addDays, shiftWeek, mostRecentMonday } from "@/lib/week";
 import { formatDate } from "@/lib/format";
 import { effectiveWorkoutVolume } from "@/lib/private-coaching/workout-status";
 import { formatCompactDistanceRange, formatDurationRange, formatPaceRange } from "@/lib/private-coaching/workout-distance";
+import type { DayTypeAccent } from "@/lib/private-coaching/day-type-visuals";
 import type { CalendarWorkout } from "./calendar-types";
 
-type WeekBlock = { weekStart: string };
+/**
+ * One week's worth of items for TimelineView, keyed by date -- generic
+ * over whatever item shape a given route's own data layer already uses
+ * (CalendarWorkout for the coach route, a coach-assigned/self-created
+ * union for /plan's athlete route). TimelineView itself never reads an
+ * item's own fields directly; it only ever sees what normalizeEntry (a
+ * caller-supplied prop) turns each one into -- see TimelineEntryView.
+ */
+export type TimelineWeekBlock<TEntry> = {
+  weekStart: string;
+  itemsByDate: Record<string, TEntry[]>;
+};
+
+/**
+ * The one shared shape TimelineView's own tile component renders --
+ * every route normalizes its own raw item type into this before handing
+ * it to TimelineView, which is what guarantees the tile markup (status
+ * dot, accent border, the dense distance/duration/effort line) is
+ * genuinely identical across routes rather than two components that
+ * happen to look similar today and drift apart later. The three
+ * interaction modes cover every click behavior a route needs without
+ * TimelineView having to know what a "workout" or a "completion" is:
+ * "link" navigates (coach-assigned workouts on /plan, straight to the
+ * same /coaching/workouts/[id] a notification already links to), "click"
+ * hands control back to the caller (the coach route's own edit modal),
+ * and "expand" toggles inline content open beneath the tile (a
+ * self-created workout's own existing WorkoutCard, complete form and
+ * all, reused as-is rather than rebuilt for this view).
+ */
+export type TimelineEntryView = {
+  id: string;
+  accent: DayTypeAccent;
+  statusTone: "draft" | "scheduled" | "completed" | "missed";
+  sessionSlot: string | null;
+  label: string;
+  distanceText: string | null;
+  durationText: string | null;
+  effortText: string | null;
+} & ({ kind: "link"; href: string } | { kind: "click"; onClick: () => void } | { kind: "expand"; content: ReactNode });
 
 export const WEEKS_BEHIND_INITIAL = 2;
 export const WEEKS_AHEAD_INITIAL = 4;
@@ -64,25 +105,16 @@ export type TimelineTileFigures = {
 };
 
 /**
- * Timeline View's own denser tile content -- distance, duration, and
- * pace/effort are ALL returned (when set), unlike Month View's
- * single-figure-wins compact chip. Works identically for a coach-assigned
- * workout and a self-coached one (coach_id === athlete_id on
- * scheduled_workouts) -- both are the exact same CalendarWorkout shape
- * from the exact same fetchCalendarWorkouts query, so there's no separate
- * code path to keep in sync here.
- */
-/**
  * The single place week lists get merged -- prepend, append, and a
  * date-jump's fresh window all funnel through this before becoming the
- * new `weeks` state, so no load path (present or future) can land two
- * sections keyed by the same weekStart. `weeks` is read in the order
- * given; the first occurrence of each weekStart wins and every later
- * duplicate is dropped. Pass the newly-loaded block(s) first for a
- * prepend (so freshly-fetched data wins over a stale duplicate already
- * in state) and last for an append.
+ * new `weeks` state, so no load path (present or future, on either
+ * route) can land two sections keyed by the same weekStart. `weeks` is
+ * read in the order given; the first occurrence of each weekStart wins
+ * and every later duplicate is dropped. Pass the newly-loaded block(s)
+ * first for a prepend (so freshly-fetched data wins over a stale
+ * duplicate already in state) and last for an append.
  */
-export function mergeTimelineWeeks<T extends WeekBlock>(weeks: T[]): T[] {
+export function mergeTimelineWeeks<T extends { weekStart: string }>(weeks: T[]): T[] {
   const seen = new Set<string>();
   const result: T[] = [];
   for (const week of weeks) {
@@ -93,6 +125,15 @@ export function mergeTimelineWeeks<T extends WeekBlock>(weeks: T[]): T[] {
   return result;
 }
 
+/**
+ * Timeline View's own denser tile content -- distance, duration, and
+ * pace/effort are ALL returned (when set), unlike Month View's
+ * single-figure-wins compact chip. Works identically for a coach-assigned
+ * workout and a self-coached one (coach_id === athlete_id on
+ * scheduled_workouts) -- both are the exact same CalendarWorkout shape
+ * from the exact same fetchCalendarWorkouts query, so there's no separate
+ * code path to keep in sync here.
+ */
 export function buildTimelineTileFigures(workout: CalendarWorkout): TimelineTileFigures {
   const effective = effectiveWorkoutVolume(workout);
   const distanceText = formatCompactDistanceRange(effective.distanceM, effective.distanceMaxM);

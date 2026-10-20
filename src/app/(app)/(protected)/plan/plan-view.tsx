@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 import {
   addDays,
@@ -17,9 +18,13 @@ import { computeWeeklyLoad, formatWeeklyLoadText } from "@/lib/private-coaching/
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { fetchCalendarWorkouts, summarizeWorkoutFigure } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-data";
 import type { CalendarWorkout } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/calendar-types";
+import { initialWeekWindow } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-helpers";
 import { CompletionSummary, type CompletionDetail } from "./completion-detail";
 import { describePrescription, workoutTypeLabel } from "./format-workout";
+import { PlanTimelineView } from "./plan-timeline-view";
+import { weeklyLoadEntriesFromSelfServeWorkouts } from "./self-serve-weekly-load";
 import { TeamScheduleView } from "./team-schedule-view";
+import { loadAthleteTimelineWeeks } from "./timeline-actions";
 import { WorkoutCard } from "./workout-card";
 import { Card } from "@/components/ui/card";
 import { CardLink } from "@/components/ui/card-link";
@@ -114,6 +119,8 @@ function AssignedWorkoutRow({ workout }: { workout: CalendarWorkout }) {
 type PlanViewProps = {
   userId: string;
   coachView?: boolean;
+  /** Week stays the default/fallback -- Timeline is opt-in via `?view=timeline`, and never offered at all to a coach viewing someone else's plan (coachView already has its own dedicated Timeline on /coaching/athletes/[athleteId]/schedule). */
+  view?: "week" | "timeline";
 };
 
 // Shared between the self-serve /plan page (userId = the caller's own
@@ -123,7 +130,8 @@ type PlanViewProps = {
 // coach-athlete RLS migration. Every query here is explicitly scoped by
 // userId rather than left to RLS alone, since RLS for a coach session
 // permits reading multiple different athletes' rows, not just one.
-export async function PlanView({ userId, coachView = false }: PlanViewProps) {
+export async function PlanView({ userId, coachView = false, view = "week" }: PlanViewProps) {
+  const activeView: "week" | "timeline" = !coachView && view === "timeline" ? "timeline" : "week";
   const supabase = await createClient();
 
   // Team-connected athletes get their schedule from a coach-published
@@ -209,6 +217,14 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
   const weekStart = addDays(plan.start_date, weekIndex * 7);
   const weekEnd = addDays(weekStart, 6);
 
+  // ~2 weeks behind, ~4 weeks ahead of the current week on first render --
+  // the exact same initialWeekWindow the coach route's own Timeline uses,
+  // via loadAthleteTimelineWeeks (this route's own data layer, see its own
+  // header comment for why it re-queries training_plans/mesocycles itself
+  // rather than reusing `plan`/`mesocycles` above: it also has to be
+  // independently callable from the client as the athlete scrolls).
+  const timelineInitialWeeks = activeView === "timeline" ? await loadAthleteTimelineWeeks(initialWeekWindow(weekStart)) : null;
+
   const { data: workouts } = await supabase
     .from("workouts")
     .select("id, scheduled_date, workout_type, prescription, adapted_at, adaptation_reason, adaptation_explanation")
@@ -256,16 +272,21 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
     }
   }
 
-  // "Weekly Load" here covers coach-assigned workouts only (the gap this
-  // fix closes) -- self-serve workouts/prescriptions are a separate,
-  // already-working display (the WorkoutCard list below, same as always)
-  // and this doesn't attempt to fold their own distance/duration into one
-  // combined figure, which would mean parsing workoutPrescriptionSchema's
-  // kind-specific union generically here. computeWeeklyLoad/
-  // formatWeeklyLoadText are the exact same functions the coach's own
-  // week-calendar.tsx footer uses -- reused, not reimplemented.
-  const assignedWeeklyLoad = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts), null);
-  const { scheduledText, completedText } = formatWeeklyLoadText(assignedWeeklyLoad, "miles", null);
+  // "Weekly Load" combines coach-assigned and self-created workouts into
+  // one figure -- weeklyLoadEntriesFromSelfServeWorkouts (self-serve-
+  // weekly-load.ts) maps a self-created workout's own prescription into
+  // the same WeeklyLoadEntry shape weeklyLoadEntriesFromAssignedWorkouts
+  // already builds for assigned ones, via coreDistanceOf (coaching-
+  // engine/adaptations.ts) rather than re-deriving a prescription's
+  // distance here. computeWeeklyLoad/formatWeeklyLoadText are the exact
+  // same functions the coach's own week-calendar.tsx footer uses --
+  // reused, not reimplemented.
+  const weeklyLoadEntries = [
+    ...weeklyLoadEntriesFromSelfServeWorkouts(workouts ?? [], completionByWorkoutId),
+    ...weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts),
+  ];
+  const weeklyLoad = computeWeeklyLoad(weeklyLoadEntries, null);
+  const { scheduledText, completedText } = formatWeeklyLoadText(weeklyLoad, "miles", null);
 
   return (
     <>
@@ -276,7 +297,40 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
         {goal?.race_name ? `Building toward ${goal.race_name} on ${formatDate(plan.end_date)}.` : null}
       </p>
 
-      {planComplete ? (
+      {/* Week stays the default, unchanged view -- Timeline is an
+          additional way to browse the same training, not a replacement,
+          so switching to it and back never loses anything about how Week
+          already looks or behaves. Omitted entirely for coachView, which
+          has its own dedicated Timeline at /coaching/athletes/
+          [athleteId]/schedule. */}
+      {!coachView && (
+        <nav className="mt-6 flex items-center gap-1 rounded-control border border-black/10 p-0.5 dark:border-white/10" aria-label="Schedule view">
+          {(["week", "timeline"] as const).map((v) => (
+            <Link
+              key={v}
+              href={`?view=${v}`}
+              className={`rounded-control px-3 py-1.5 text-xs font-semibold capitalize ${
+                activeView === v
+                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                  : "text-zinc-600 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/10"
+              }`}
+            >
+              {v}
+            </Link>
+          ))}
+        </nav>
+      )}
+
+      {activeView === "timeline" && timelineInitialWeeks ? (
+        <div className="mt-8">
+          <PlanTimelineView
+            initialWeeks={timelineInitialWeeks}
+            centerWeek={weekStart}
+            today={today}
+            distanceBucket={bucket}
+          />
+        </div>
+      ) : planComplete ? (
         <Card padding="md" className="mt-10">
           <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
             This plan has run its course.{" "}
@@ -312,7 +366,7 @@ export async function PlanView({ userId, coachView = false }: PlanViewProps) {
               <p className="text-xs font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-300">
                 This week
               </p>
-              {assignedWorkouts.length > 0 && (
+              {weeklyLoadEntries.length > 0 && (
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
                   <span>Scheduled: {scheduledText}</span>
                   <span className="mx-1.5">·</span>

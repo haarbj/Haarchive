@@ -22,7 +22,7 @@ import { WeekCalendar } from "./week-calendar";
 import { DayView } from "./day-view";
 import { MonthView, type MonthWeekSummary } from "./month-view";
 import { PhaseView, type PhaseViewWeekInfo } from "./phase-view";
-import { TimelineView } from "./timeline-view";
+import { CoachTimelineView } from "./coach-timeline-view";
 import { loadTimelineWeeks } from "./timeline-actions";
 import { initialWeekWindow } from "./timeline-helpers";
 import type { ProgramOption } from "./assign-program-form";
@@ -918,7 +918,7 @@ async function TimelineViewSection({
 
   return (
     <div className="mt-4">
-      <TimelineView
+      <CoachTimelineView
         athleteId={athleteId}
         initialWeeks={initialWeeks}
         centerWeek={week}

@@ -8,6 +8,7 @@ export { addDays, diffDays, dayOfWeek } from "@/lib/coaching-engine/date-utils";
 export {
   adjustForHeat,
   compressWorkout,
+  coreDistanceOf,
   estimateWBGT,
   heatZoneFor,
   insertRecoveryDay,

@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-19",
+    headline: "Timeline view added to /plan -- athletes can now scroll their own schedule too",
+    detail:
+      "The continuous, scrollable Timeline that shipped on the coach's calendar is now available on an athlete's own training page, alongside the existing week view (a new Week/Timeline switcher, with Week still the default). It shows both self-created and coach-assigned workouts side by side, with the same sticky week headers, date-jump picker, and dense per-day figures as the coach side. Completing a workout from Timeline works exactly like it does from the week view, and the weekly mileage total now adds up self-created and coach-assigned workouts together, instead of only ever counting assigned ones.",
+  },
+  {
+    date: "2026-10-19",
     headline: "Fixed a duplicate-week glitch in the coaching calendar's Timeline view",
     detail:
       "Scrolling Timeline far enough in one direction, then back, could re-fetch and re-insert a week that was already loaded -- visible as a flash where a day row sat half-covered under the week above it. The infinite-scroll loader was computing \"what's the next week to fetch\" from a stale snapshot of the loaded range instead of the current one; it now always reads the live range, and the merge that adds newly-loaded weeks now also guarantees no week can appear twice regardless of how scrolling or the date picker got there.",

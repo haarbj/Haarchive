@@ -1,58 +1,58 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 
 import { addDays } from "@/lib/week";
-import { getDayTypeAccent, DAY_TYPE_BORDER_CLASSES, abbreviateDayLabel } from "@/lib/private-coaching/day-type-visuals";
-import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
-import { getPhaseForWeek, weekPositionInPhase, type TrainingPhase } from "@/lib/private-coaching/training-phases";
-import { useCalendarWorkoutEditor } from "./calendar-workout-editor";
-import { loadTimelineWeeks, type TimelineWeek } from "./timeline-actions";
-import { weekRangeLabel, nextWeeksToLoad, jumpWindowForDate, mergeTimelineWeeks, buildTimelineTileFigures } from "./timeline-helpers";
-import type { CalendarWorkout } from "./calendar-types";
-import type { ExtraPresetOption } from "./actions";
-import type { TemplateOption } from "./workout-form";
+import { DAY_TYPE_BORDER_CLASSES } from "@/lib/private-coaching/day-type-visuals";
+import { weekRangeLabel, nextWeeksToLoad, jumpWindowForDate, mergeTimelineWeeks, type TimelineWeekBlock, type TimelineEntryView } from "./timeline-helpers";
 
 const WEEKDAY_COUNT = 7;
 
-const STATUS_DOT: Record<CalendarWorkout["status"], string> = {
+const STATUS_DOT: Record<TimelineEntryView["statusTone"], string> = {
   draft: "bg-accent-warning",
   scheduled: "bg-zinc-400 dark:bg-zinc-500",
   completed: "bg-accent-success",
   missed: "bg-accent-error",
 };
 
-// Timeline View -- a continuous, scrollable presentation of the exact
-// same scheduled_workouts data Week/Day/Month/Phase already render (via
-// the shared fetchCalendarWorkouts, here called through timeline-
-// actions.ts since this component loads more weeks itself as the coach
-// scrolls, rather than the server component owning one bounded range up
-// front the way every other view does). Click-to-edit reuses
-// useCalendarWorkoutEditor -- the exact same hook Week View and Month
-// View mount -- so completing/editing a workout from here is the same
-// code path, not a parallel one; "works identically to Week View" is
-// true by construction, not by re-testing the same logic twice. The
-// actual date-window math and tile-figure formatting live in
-// timeline-helpers.ts as plain functions, unit-tested there -- this file
-// is just the stateful scroll/fetch/DOM wiring around them.
-export function TimelineView({
-  athleteId,
+// Timeline View -- a continuous, scrollable presentation of a training
+// schedule, shared between the coach route (/coaching/athletes/
+// [athleteId]/schedule, CalendarWorkout entries) and the athlete's own
+// /plan (a self-created-workout/coach-assigned-workout union, see
+// plan/timeline-entries.ts). Neither route forks this file: every
+// route-specific concern -- what an "entry" is, how to fetch more of
+// them, how a tile should look/behave when tapped -- comes in as props
+// (loadWeeks, normalizeEntry, entryKey, onAddDay, weekMeta, extraContent),
+// never hardcoded here. The actual date-window math lives in
+// timeline-helpers.ts, unit-tested there without a render harness.
+export function TimelineView<TEntry>({
   initialWeeks,
   centerWeek,
   today,
-  templates,
-  extraPresets,
-  phases,
+  loadWeeks,
+  entryKey,
+  normalizeEntry,
+  onAddDay,
+  weekMeta,
+  extraContent,
 }: {
-  athleteId: string;
-  initialWeeks: TimelineWeek[];
+  initialWeeks: TimelineWeekBlock<TEntry>[];
   centerWeek: string;
   today: string;
-  templates: TemplateOption[];
-  extraPresets: ExtraPresetOption[];
-  phases: TrainingPhase[];
+  /** Fetches more weeks (scroll-triggered or date-picker-triggered) -- the one piece of server access TimelineView itself needs, supplied by the caller so this file never knows which table(s) back a given route. */
+  loadWeeks: (weekStarts: string[]) => Promise<TimelineWeekBlock<TEntry>[]>;
+  entryKey: (entry: TEntry) => string;
+  /** Turns one route-specific entry into the single shared tile shape -- see TimelineEntryView's own comment in timeline-helpers.ts for why this is what actually guarantees identical tile rendering across routes. */
+  normalizeEntry: (entry: TEntry, date: string) => TimelineEntryView;
+  /** Coach-only: renders a "+ Add" affordance on each day when provided; omitted entirely (not just hidden) for the athlete route, which has no "assign a workout to yourself" flow. */
+  onAddDay?: (date: string) => void;
+  /** Optional per-week context line under the sticky header (the coach route's own phase/position text); omitted when not supplied. */
+  weekMeta?: (weekStart: string) => ReactNode;
+  /** Extra JSX to render once, after the scroll container -- the coach route's own edit/create modal. */
+  extraContent?: ReactNode;
 }) {
-  const [weeks, setWeeks] = useState<TimelineWeek[]>(initialWeeks);
+  const [weeks, setWeeks] = useState<TimelineWeekBlock<TEntry>[]>(initialWeeks);
   const [loadingTop, setLoadingTop] = useState(false);
   const [loadingBottom, setLoadingBottom] = useState(false);
   const [dateInput, setDateInput] = useState(centerWeek);
@@ -63,23 +63,26 @@ export function TimelineView({
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
   const weekRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  // The IntersectionObserver below is created once per athleteId (its
-  // effect deps are `[athleteId]`, not `[weeks]`, so it doesn't churn on
-  // every scroll-triggered load) and holds onto loadMoreAbove/
+  // The IntersectionObserver below is created once per loadWeeks identity
+  // (its effect deps are `[loadWeeks]`, not `[weeks]`, so it doesn't churn
+  // on every scroll-triggered load) and holds onto loadMoreAbove/
   // loadMoreBelow from whatever render it mounted on. Reading `weeks`/
   // `loadingTop`/`loadingBottom` as plain closed-over state there means
   // every later sentinel intersection would see that *first* render's
-  // values forever -- the actual bug behind the reported duplicate-key
-  // warning: a second intersection of the same sentinel re-ran
-  // nextWeeksToLoad from the *original* edge week every time, silently
-  // re-fetching (and re-appending) a window it had already loaded. Refs
-  // are mutable objects whose identity never changes across renders, so
-  // keeping weeksRef synced after each commit (the effect just below)
-  // lets the original, never-re-subscribed closures still read the
-  // current value when they actually run; loadingTopRef/loadingBottomRef
-  // are set directly inside loadMoreAbove/loadMoreBelow themselves (an
+  // values forever -- the duplicate-week bug this shape previously had: a
+  // second intersection of the same sentinel re-ran nextWeeksToLoad from
+  // the *original* edge week every time, silently re-fetching (and
+  // re-inserting) a window it had already loaded. Refs are mutable
+  // objects whose identity never changes across renders, so keeping
+  // weeksRef synced after each commit (the effect just below) lets the
+  // original, never-re-subscribed closures still read the current value
+  // when they actually run; loadingTopRef/loadingBottomRef are set
+  // directly inside loadMoreAbove/loadMoreBelow themselves (an
   // event-handler-like context, not render), which is safe without an
-  // effect.
+  // effect. mergeTimelineWeeks (every setWeeks call below) is the second,
+  // independent layer of protection: even if some future load path still
+  // computed a stale edge, it can no longer land two sections keyed by
+  // the same weekStart.
   const weeksRef = useRef(weeks);
   useEffect(() => {
     weeksRef.current = weeks;
@@ -87,18 +90,17 @@ export function TimelineView({
   const loadingTopRef = useRef(false);
   const loadingBottomRef = useRef(false);
 
-  const { openCreate, openEdit, editorModals } = useCalendarWorkoutEditor({ athleteId, templates, extraPresets });
-
-  // A save inside the editor modal calls router.refresh(), which re-runs
-  // the server component and hands this component a brand-new
-  // initialWeeks array -- collapsing back to that fresh initial window is
-  // the correct, honest thing to do here (it reflects the just-saved
-  // change immediately), the same way Week View's own re-render after a
-  // save just shows whatever the server now returns for that one week.
-  // Render-phase state adjustment (React's documented alternative to an
-  // effect for "reset state when this other state/prop changes") -- same
-  // pattern dashboard/weekly-checkin-card.tsx already uses, avoiding the
-  // extra effect-triggered render pass a useEffect version would add.
+  // A save inside the caller's own editor (coach route) or a completion
+  // submit (athlete route) triggers a server refresh that hands this
+  // component a brand-new initialWeeks array -- collapsing back to that
+  // fresh initial window is the correct, honest thing to do here (it
+  // reflects the just-saved change immediately), the same way Week View's
+  // own re-render after a save just shows whatever the server now returns
+  // for that one week. Render-phase state adjustment (React's documented
+  // alternative to an effect for "reset state when this other state/prop
+  // changes") -- same pattern dashboard/weekly-checkin-card.tsx already
+  // uses, avoiding the extra effect-triggered render pass a useEffect
+  // version would add.
   const [prevInitialWeeks, setPrevInitialWeeks] = useState(initialWeeks);
   if (initialWeeks !== prevInitialWeeks) {
     setPrevInitialWeeks(initialWeeks);
@@ -113,11 +115,11 @@ export function TimelineView({
     const container = containerRef.current;
     const prevScrollHeight = container?.scrollHeight ?? 0;
     const prevScrollTop = container?.scrollTop ?? 0;
-    const loaded = await loadTimelineWeeks(athleteId, toLoad);
+    const loaded = await loadWeeks(toLoad);
     setWeeks((current) => mergeTimelineWeeks([...loaded, ...current]));
     // Prepending content above the viewport shifts everything below it
     // down by exactly the new content's height -- restore scrollTop by
-    // that same delta on the next paint so the coach's own scroll
+    // that same delta on the next paint so the viewer's own scroll
     // position visually holds still instead of jumping.
     requestAnimationFrame(() => {
       if (!container) return;
@@ -133,7 +135,7 @@ export function TimelineView({
     loadingBottomRef.current = true;
     setLoadingBottom(true);
     const toLoad = nextWeeksToLoad(weeksRef.current[weeksRef.current.length - 1].weekStart, "after");
-    const loaded = await loadTimelineWeeks(athleteId, toLoad);
+    const loaded = await loadWeeks(toLoad);
     setWeeks((current) => mergeTimelineWeeks([...current, ...loaded]));
     loadingBottomRef.current = false;
     setLoadingBottom(false);
@@ -158,8 +160,8 @@ export function TimelineView({
     observer.observe(topSentinel);
     observer.observe(bottomSentinel);
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadMoreAbove/loadMoreBelow read the live edge week and loading flags via weeksRef/loadingTopRef/loadingBottomRef (see their declaration above), not closed-over state, so this observer is safe to create once per athleteId instead of re-subscribing (and churning the IntersectionObserver instance) on every scroll-triggered load.
-  }, [athleteId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadMoreAbove/loadMoreBelow read the live edge week and loading flags via weeksRef/loadingTopRef/loadingBottomRef (see their declaration above), not closed-over state, so this observer is safe to create once per loadWeeks identity instead of re-subscribing (and churning the IntersectionObserver instance) on every scroll-triggered load.
+  }, [loadWeeks]);
 
   // The date picker's jump target: fetch a fresh window centered on the
   // picked date's own week (the same shape the initial server-rendered
@@ -168,7 +170,7 @@ export function TimelineView({
   // exists to solve.
   async function jumpToDate(isoDate: string) {
     const { weekStart, weeks: toLoad } = jumpWindowForDate(isoDate);
-    const loaded = await loadTimelineWeeks(athleteId, toLoad);
+    const loaded = await loadWeeks(toLoad);
     setWeeks(mergeTimelineWeeks(loaded));
     setPendingScrollTarget(weekStart);
   }
@@ -213,8 +215,6 @@ export function TimelineView({
         {loadingTop ? <p className="py-2 text-center text-xs text-zinc-500 dark:text-zinc-400">Loading earlier weeks…</p> : null}
 
         {weeks.map((week) => {
-          const phase = getPhaseForWeek(phases, week.weekStart);
-          const position = phase ? weekPositionInPhase(phase, week.weekStart) : null;
           const days = Array.from({ length: WEEKDAY_COUNT }, (_, i) => addDays(week.weekStart, i));
 
           return (
@@ -234,18 +234,12 @@ export function TimelineView({
                   itself. */}
               <div className="sticky top-0 z-10 border-b border-black/10 bg-white/95 px-3 py-2 backdrop-blur dark:border-white/10 dark:bg-zinc-950/95">
                 <p className="text-sm font-semibold text-zinc-900 dark:text-white">{weekRangeLabel(week.weekStart)}</p>
-                {phase ? (
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {phase.phaseType}
-                    {phase.name ? ` — ${phase.name}` : ""}
-                    {position ? ` · Week ${position.week} of ${position.of}` : ""}
-                  </p>
-                ) : null}
+                {weekMeta ? <div className="text-xs text-zinc-500 dark:text-zinc-400">{weekMeta(week.weekStart)}</div> : null}
               </div>
 
               <div className="divide-y divide-black/5 dark:divide-white/5">
                 {days.map((date) => {
-                  const dayWorkouts = week.workoutsByDate[date] ?? [];
+                  const dayEntries = week.itemsByDate[date] ?? [];
                   const isToday = date === today;
                   return (
                     <div key={date} className={`px-3 py-2 ${isToday ? "bg-accent-tip/5" : ""}`}>
@@ -254,18 +248,20 @@ export function TimelineView({
                           {new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" })}
                           {isToday ? " · Today" : ""}
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => openCreate(date)}
-                          className="text-xs font-semibold text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200"
-                        >
-                          + Add
-                        </button>
+                        {onAddDay ? (
+                          <button
+                            type="button"
+                            onClick={() => onAddDay(date)}
+                            className="text-xs font-semibold text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200"
+                          >
+                            + Add
+                          </button>
+                        ) : null}
                       </div>
 
                       <div className="mt-1.5 space-y-1.5">
-                        {dayWorkouts.map((workout) => (
-                          <TimelineTile key={workout.id} workout={workout} onOpen={() => openEdit(date, workout)} />
+                        {dayEntries.map((entry) => (
+                          <TimelineTile key={entryKey(entry)} entry={normalizeEntry(entry, date)} />
                         ))}
                       </div>
                     </div>
@@ -280,7 +276,7 @@ export function TimelineView({
         <div ref={bottomSentinelRef} className="h-px" />
       </div>
 
-      {editorModals}
+      {extraContent}
     </div>
   );
 }
@@ -288,35 +284,62 @@ export function TimelineView({
 // Denser than every other view's tile on purpose (this view's whole
 // reason to exist): distance, duration, and pace/effort all render
 // inline, every time, rather than Month View's "pick whichever single
-// figure fits" compact chip or Week/Day's click-to-expand detail. Scoped
-// to this file only -- WorkoutCard (Week/Day) and Month View's own inline
-// row keep their existing density untouched. The actual figure text comes
-// from buildTimelineTileFigures (timeline-helpers.ts) -- this component
-// only lays it out.
-function TimelineTile({ workout, onOpen }: { workout: CalendarWorkout; onOpen: () => void }) {
-  const accent = getDayTypeAccent(workout.dayLabel);
-  const { distanceText, durationText, effortText } = buildTimelineTileFigures(workout);
-  const label = getWorkoutDisplayLabel(workout.dayLabel, workout.title);
-
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={`block w-full rounded-control border-l-2 bg-black/[0.02] px-2 py-1.5 text-left hover:bg-black/5 dark:bg-white/[0.03] dark:hover:bg-white/10 ${DAY_TYPE_BORDER_CLASSES[accent]}`}
-    >
+// figure fits" compact chip or Week/Day's click-to-expand detail. The
+// one shared tile for both routes -- see TimelineEntryView's own comment
+// for why normalizing into this shape (rather than letting each route
+// render its own tile JSX) is what keeps the two routes' tiles genuinely
+// identical instead of just similar-looking today.
+function TimelineTile({ entry }: { entry: TimelineEntryView }) {
+  const [expanded, setExpanded] = useState(false);
+  const figures = (
+    <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-zinc-600 dark:text-zinc-300">
+      {entry.distanceText ? <span>{entry.distanceText}</span> : null}
+      {entry.durationText ? <span>{entry.durationText}</span> : null}
+      {entry.effortText ? <span>{entry.effortText}</span> : null}
+      {!entry.distanceText && !entry.durationText && !entry.effortText ? (
+        <span className="text-zinc-400 dark:text-zinc-500">No targets set</span>
+      ) : null}
+    </div>
+  );
+  const inner = (
+    <>
       <div className="flex items-center gap-1.5">
-        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[workout.status]}`} aria-hidden />
+        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[entry.statusTone]}`} aria-hidden />
         <span className="truncate text-sm font-medium text-zinc-900 dark:text-white">
-          {workout.sessionSlot ? `${workout.sessionSlot} ` : ""}
-          {abbreviateDayLabel(label)}
+          {entry.sessionSlot ? `${entry.sessionSlot} ` : ""}
+          {entry.label}
         </span>
       </div>
-      <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-zinc-600 dark:text-zinc-300">
-        {distanceText ? <span>{distanceText}</span> : null}
-        {durationText ? <span>{durationText}</span> : null}
-        {effortText ? <span>{effortText}</span> : null}
-        {!distanceText && !durationText && !effortText ? <span className="text-zinc-400 dark:text-zinc-500">No targets set</span> : null}
-      </div>
-    </button>
+      {figures}
+    </>
+  );
+  const tileClass = `block w-full rounded-control border-l-2 bg-black/[0.02] px-2 py-1.5 text-left hover:bg-black/5 dark:bg-white/[0.03] dark:hover:bg-white/10 ${DAY_TYPE_BORDER_CLASSES[entry.accent]}`;
+
+  if (entry.kind === "link") {
+    return (
+      <Link href={entry.href} className={tileClass}>
+        {inner}
+      </Link>
+    );
+  }
+
+  if (entry.kind === "click") {
+    return (
+      <button type="button" onClick={entry.onClick} className={tileClass}>
+        {inner}
+      </button>
+    );
+  }
+
+  // "expand": toggles the caller-supplied content (e.g. a self-created
+  // workout's own existing WorkoutCard, complete form and all) open
+  // beneath the tile, reused as-is rather than rebuilt for this view.
+  return (
+    <div>
+      <button type="button" onClick={() => setExpanded((v) => !v)} className={tileClass} aria-expanded={expanded}>
+        {inner}
+      </button>
+      {expanded ? <div className="mt-1.5">{entry.content}</div> : null}
+    </div>
   );
 }

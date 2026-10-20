@@ -5,11 +5,9 @@ import { createClient } from "@/lib/db/server";
 import { weekDates } from "@/lib/week";
 import { fetchCalendarWorkouts } from "./calendar-data";
 import type { CalendarWorkout } from "./calendar-types";
+import type { TimelineWeekBlock } from "./timeline-helpers";
 
-export type TimelineWeek = {
-  weekStart: string;
-  workoutsByDate: Record<string, CalendarWorkout[]>;
-};
+export type TimelineWeek = TimelineWeekBlock<CalendarWorkout>;
 
 // Timeline View's own data loader -- called from the client as the coach
 // scrolls past the server-rendered initial window, or jumps via the date
@@ -34,6 +32,6 @@ export async function loadTimelineWeeks(athleteId: string, weekStarts: string[])
 
   return weekStarts.map((weekStart) => ({
     weekStart,
-    workoutsByDate: Object.fromEntries(weekDates(weekStart).map((d) => [d, workoutsByDate[d] ?? []])),
+    itemsByDate: Object.fromEntries(weekDates(weekStart).map((d) => [d, workoutsByDate[d] ?? []])),
   }));
 }
