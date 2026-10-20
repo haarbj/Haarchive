@@ -86,9 +86,13 @@ export function notificationHref(type: NotificationType, relatedEntityId: string
     // and relatedEntityId is their own user id -- not useful as a path
     // segment here since the coach-only /coaching/athletes/[athleteId]/
     // schedule route would just redirect them away (requireCoachOf-gated).
-    // /coaching/training is the athlete-facing equivalent, where the newly
-    // assigned phase actually shows.
-    return "/coaching/training";
+    // /coaching/your-plan is the athlete-facing payoff view built for
+    // exactly this moment -- goal race, program, paces, first week, and
+    // one first action, before the raw schedule. coaching/page.tsx's
+    // AthleteHomeSection already redirects here automatically the first
+    // time, but a notification click should land here directly too
+    // rather than depending on that redirect firing.
+    return "/coaching/your-plan";
   }
   if (type === "pain_reported" || type === "race_approaching") {
     // pain_reported is fired from two different places with two different
