@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Plan Realignment: a proposed way back in after missed training
+**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Adaptation cards: the plan quietly watches itself, and tells the coach what it sees
 
 Recent highlights:
+- Plan Realignment: a proposed way back in after missed training (Oct 20, 2026)
 - Roster became a real scanning dashboard (Oct 20, 2026)
 - Athlete RPE and notes now show up right on the schedule tile (Oct 20, 2026)
-- Planned vs completed, now visible on every workout tile and weekly rollup (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
