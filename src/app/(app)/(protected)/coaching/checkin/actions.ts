@@ -8,6 +8,7 @@ import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { createNotification } from "@/lib/notifications/create-notification";
 import { mostRecentCompletedMonday } from "@/lib/week";
+import { isViewingAsAthlete, VIEW_AS_REFUSAL } from "@/lib/private-coaching/view-as";
 
 // Writes to the same weekly_checkins table the self-serve dashboard card
 // already uses (extended with new columns in Phase 1, not duplicated --
@@ -43,6 +44,12 @@ export async function submitCoachingCheckin(
   const session = await getAppSession();
   if (!session) return { error: "Sign in first." };
 
+  const supabase = await createClient();
+  // View-as is presentation only -- a coach browsing an athlete's
+  // check-in form while in the mode can never submit it, regardless of
+  // whose row it would write to.
+  if (await isViewingAsAthlete(supabase, session.userId)) return { error: VIEW_AS_REFUSAL };
+
   const parsed = checkinSchema.safeParse({
     overallFeel: formData.get("overallFeel"),
     fatigue: formData.get("fatigue"),
@@ -58,7 +65,6 @@ export async function submitCoachingCheckin(
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check your answers." };
 
-  const supabase = await createClient();
   // Must match checkin/page.tsx's own computation exactly, or the form
   // would display one week while this writes a different one.
   const weekStart = mostRecentCompletedMonday(new Date());

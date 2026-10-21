@@ -129,6 +129,16 @@ type PlanViewProps = {
   coachView?: boolean;
   /** Week stays the default/fallback -- Timeline is opt-in via `?view=timeline`, and never offered at all to a coach viewing someone else's plan (coachView already has its own dedicated Timeline on /coaching/athletes/[athleteId]/schedule). */
   view?: "week" | "timeline";
+  /**
+   * A coach viewing as this athlete: distinct from `coachView` (which
+   * renders a deliberately SIMPLIFIED, always-read-only team-coaching
+   * summary -- ReadOnlyWorkoutRow instead of WorkoutCard). `readOnly`
+   * renders the exact same full athlete experience and only disables the
+   * inline completion form and the disruption-flag trigger. The server
+   * refuses the underlying actions regardless of this flag -- it only
+   * controls whether the UI offers a control that would just fail.
+   */
+  readOnly?: boolean;
 };
 
 // Shared between the self-serve /plan page (userId = the caller's own
@@ -138,7 +148,7 @@ type PlanViewProps = {
 // coach-athlete RLS migration. Every query here is explicitly scoped by
 // userId rather than left to RLS alone, since RLS for a coach session
 // permits reading multiple different athletes' rows, not just one.
-export async function PlanView({ userId, coachView = false, view = "week" }: PlanViewProps) {
+export async function PlanView({ userId, coachView = false, view = "week", readOnly = false }: PlanViewProps) {
   const activeView: "week" | "timeline" = !coachView && view === "timeline" ? "timeline" : "week";
   const supabase = await createClient();
 
@@ -338,7 +348,7 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
           disruption only ever notifies the coach (realign-panel.tsx, on
           their schedule page); nothing here changes this athlete's own
           plan or shows them a proposal. */}
-      {!coachView && (
+      {!coachView && !readOnly && (
         <div className="mt-4">
           <DisruptionFlagForm />
         </div>
@@ -459,6 +469,7 @@ export async function PlanView({ userId, coachView = false, view = "week" }: Pla
                         distanceBucket={bucket}
                         completion={completionByWorkoutId.get(workout.id) ?? null}
                         today={today}
+                        readOnly={readOnly}
                       />
                     ),
                   )

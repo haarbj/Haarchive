@@ -11,6 +11,8 @@ import { mostRecentMonday } from "@/lib/week";
 import type { WorkoutType } from "@/lib/coaching-engine";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
+import { resolveViewAsState } from "@/lib/private-coaching/view-as";
+import { ViewAsBanner } from "@/components/private-coaching/view-as-banner";
 import { loadCoachHomeData } from "./coach-home-data";
 import { loadAdaptationCardsForCoach } from "./adaptation-cards-data";
 import { CoachHomeAdaptationCards } from "./coach-home-adaptation-cards";
@@ -64,6 +66,31 @@ type UpcomingWorkout = {
 export default async function CoachingHomePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const session = await getAppSession();
   if (!session) return null;
+
+  // View-as takes priority over the dual-role toggle below -- a coach
+  // actively viewing as one of their athletes sees THAT athlete's home,
+  // full stop, regardless of whether they also happen to be a coached
+  // athlete themselves. resolveViewAsState re-validates the relationship
+  // on every request; an ended/invalid mode just falls back to the
+  // ordinary branches below, silently.
+  const supabase = await createClient();
+  const viewAs = session.isPrivateCoach ? await resolveViewAsState(supabase, session.userId) : null;
+  if (viewAs) {
+    const { data: athleteProfile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", viewAs.athleteId)
+      .maybeSingle<{ display_name: string }>();
+    return (
+      <Container variant="content">
+        <ViewAsBanner athleteName={athleteProfile?.display_name ?? "this athlete"} />
+        <Heading>My Coaching</Heading>
+        <div className="mt-6">
+          <AthleteHomeSection userId={viewAs.athleteId} />
+        </div>
+      </Container>
+    );
+  }
 
   const isDualRole = session.isPrivateCoach && session.isCoachedAthlete;
   const { view } = await searchParams;

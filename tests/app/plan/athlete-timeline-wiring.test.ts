@@ -102,8 +102,8 @@ describe("2. the athlete Timeline surfaces both assigned and self-created workou
 });
 
 describe("3. Week stays the default view; Timeline is additive, never offered to a coach viewing someone else's plan", () => {
-  it("plan/page.tsx reads ?view= and defaults to week when absent or unrecognized", () => {
-    expect(PLAN_PAGE_SOURCE).toMatch(/view = sp\.view === "timeline" \? "timeline" : "week"/);
+  it("plan/page.tsx reads ?view= and defaults to week when absent, unrecognized, or while a coach's view-as mode is active (Timeline's own loader can't be scoped to a target athlete yet)", () => {
+    expect(PLAN_PAGE_SOURCE).toMatch(/view = sp\.view === "timeline" && !viewAs \? "timeline" : "week"/);
   });
 
   it("plan-view.tsx forces Week for coachView regardless of the view prop -- Timeline is athlete-only", () => {

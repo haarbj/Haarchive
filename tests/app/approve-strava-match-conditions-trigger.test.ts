@@ -23,6 +23,11 @@ vi.mock("@/lib/notifications/create-notification", () => ({ createNotification: 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/server", () => ({ after: vi.fn((task: () => unknown) => task()) }));
 vi.mock("@/lib/private-coaching/completion-conditions-service", () => ({ analyzeCompletedWorkoutConditions: vi.fn() }));
+// Not under test here -- view-as mode is always inactive for this
+// scripted coach session; isViewingAsAthlete itself reads cookies() via
+// next/headers, which throws outside a real request scope the way this
+// test's own comment above already explains for next/server's after().
+vi.mock("@/lib/private-coaching/view-as", () => ({ isViewingAsAthlete: vi.fn().mockResolvedValue(false), VIEW_AS_REFUSAL: "Viewing as an athlete is read-only." }));
 
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";

@@ -18,6 +18,7 @@ import { loadCheckinPraiseCandidates } from "./checkin-praise-data";
 import { CheckinResponseComposer } from "./checkin-response-composer";
 import { loadPatternViewData } from "@/app/(app)/(protected)/plan/pattern-view-data";
 import { PatternViewPanel } from "@/components/private-coaching/pattern-view-panel";
+import { ViewAsButton } from "@/components/private-coaching/view-as-button";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -195,10 +196,15 @@ export default async function CoachingAthleteDetailPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Heading>{profile.display_name}</Heading>
       </div>
-      <div className="mt-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         <Button href={`/coaching/athletes/${athleteId}/schedule`} size="sm">
           View schedule
         </Button>
+        {/* Never shown on the coach's own self-coach row -- "view as
+            yourself" is meaningless, and enterViewAsAthlete refuses it too. */}
+        {coachAthleteRow && athleteId !== session.userId ? (
+          <ViewAsButton athleteId={athleteId} athleteFirstName={profile.display_name.split(" ")[0]} />
+        ) : null}
       </div>
 
       {!everPublished ? (

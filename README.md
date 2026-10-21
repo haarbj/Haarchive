@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Patterns: a 6-week trend view on the plan and the coach's athlete page
+**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Coaches can view as an athlete, read-only
 
 Recent highlights:
+- Patterns: a 6-week trend view on the plan and the coach's athlete page (Oct 20, 2026)
 - Specific-praise prompts when a coach reviews a check-in (Oct 20, 2026)
 - Weekly Load now reconciles per workout, not by netting totals (Oct 20, 2026)
-- Today's conditions guidance on the athlete's plan (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

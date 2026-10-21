@@ -4,8 +4,10 @@ import { redirect } from "next/navigation";
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
+import { resolveViewAsState } from "@/lib/private-coaching/view-as";
 import { loadPlanPayoffData } from "./data";
 import { PlanPayoffView } from "@/components/private-coaching/plan-payoff-view";
+import { ViewAsBanner } from "@/components/private-coaching/view-as-banner";
 import { DismissPayoffButton } from "./dismiss-payoff-button";
 import type { RaceResultRow } from "@/app/(app)/(protected)/settings/race-results-section";
 import { BackLink } from "@/components/ui/back-link";
@@ -27,33 +29,47 @@ export const metadata: Metadata = {
 // one place that decides what this view looks like.
 export default async function YourPlanPage() {
   const session = await getAppSession();
-  if (!session?.isCoachedAthlete) redirect("/coaching");
+  if (!session) redirect("/coaching");
 
   const supabase = await createClient();
-  const relationship = await getActiveCoachRelationship(supabase, session.userId);
+  // View-as lets a coach reach this exact real route for a target
+  // athlete, read-only -- same mechanism and same mode="coach-preview"
+  // the dedicated your-plan-preview route already uses, just reachable
+  // from the real URL the athlete themselves would see while the mode is
+  // active. Falls back to the ordinary self-view for a non-coach, or a
+  // coach with no (or an invalidated) view-as mode.
+  const viewAs = session.isPrivateCoach ? await resolveViewAsState(supabase, session.userId) : null;
+  if (!viewAs && !session.isCoachedAthlete) redirect("/coaching");
+
+  const effectiveAthleteId = viewAs?.athleteId ?? session.userId;
+  const relationship = await getActiveCoachRelationship(supabase, effectiveAthleteId);
   if (!relationship) redirect("/coaching");
 
   const today = new Date().toISOString().slice(0, 10);
-  const [data, { data: raceResultRows }] = await Promise.all([
-    loadPlanPayoffData(supabase, session.userId, relationship.coachId, today),
+  const [data, { data: raceResultRows }, { data: athleteProfile }] = await Promise.all([
+    loadPlanPayoffData(supabase, effectiveAthleteId, relationship.coachId, today),
     supabase
       .from("race_results")
       .select("id, race_name, race_date, distance_m, finish_time_s, course_type")
-      .eq("user_id", session.userId)
+      .eq("user_id", effectiveAthleteId)
       .order("race_date", { ascending: false })
       .returns<RaceResultRow[]>(),
+    viewAs
+      ? supabase.from("profiles").select("display_name").eq("id", effectiveAthleteId).maybeSingle<{ display_name: string }>()
+      : Promise.resolve({ data: null }),
   ]);
 
   return (
     <Container variant="dashboard">
       <BackLink href="/coaching">My Coaching</BackLink>
+      {viewAs ? <ViewAsBanner athleteName={athleteProfile?.display_name ?? "this athlete"} /> : null}
       <Heading>Your Plan</Heading>
       <div className="mt-6">
         <PlanPayoffView
           data={data}
-          mode="athlete"
+          mode={viewAs ? "coach-preview" : "athlete"}
           existingRaceResults={raceResultRows ?? []}
-          onDismiss={<DismissPayoffButton />}
+          onDismiss={viewAs ? undefined : <DismissPayoffButton />}
         />
       </div>
     </Container>

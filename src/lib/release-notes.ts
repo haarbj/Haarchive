@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Coaches can view as an athlete, read-only",
+    detail:
+      "A coach can switch into any of their athletes' real view from the roster or that athlete's detail page, and land on their actual home, plan, and Your Plan payoff exactly as the athlete sees them -- the fastest way to check \"is the published plan right\" without asking anyone to screenshot anything. A persistent banner names who's being viewed and that it's read-only, with one click back to the coach's own view. Nothing about this changes who's signed in: logging a completion, submitting a check-in, approving a Strava match, and sending a message all refuse at the server the moment the mode is active, regardless of the UI, and no notification or dismissal state is ever touched just by looking. Timeline view and the workout detail page aren't wired up yet -- Week view, Your Plan, and home are.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Patterns: a 6-week trend view on the plan and the coach's athlete page",
     detail:
       "A new Patterns section shows the last six weeks as a trend instead of one week at a time: scheduled vs. completed mileage, completion rate, long-run progression, key-session RPE against what was prescribed, and (when a check-in exists) the athlete's own weekly feel rating -- each with a plain rising/falling/steady word next to it, never a score or a color-coded verdict. The week still in progress is always labeled as such and never counted toward the trend, so a partial Tuesday never reads as a drop; weeks before the athlete's program began show as a visible gap rather than a fake zero. The same numbers render identically whether the coach or the athlete is looking at them, because both read from the same one calculation.",

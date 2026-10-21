@@ -6,6 +6,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { createNotification } from "@/lib/notifications/create-notification";
+import { isViewingAsAthlete, VIEW_AS_REFUSAL } from "@/lib/private-coaching/view-as";
 
 export type SendMessageState = { error?: string };
 
@@ -33,12 +34,14 @@ export async function sendCoachAthleteMessage(
   const session = await getAppSession();
   if (!session) return { error: "Sign in first." };
 
+  const supabase = await createClient();
+  if (await isViewingAsAthlete(supabase, session.userId)) return { error: VIEW_AS_REFUSAL };
+
   const body = String(formData.get("body") ?? "").trim();
   const imageEntry = formData.get("image");
   const imageFile = imageEntry instanceof File && imageEntry.size > 0 ? imageEntry : null;
   if (!body && !imageFile) return { error: "Write something or attach an image first." };
 
-  const supabase = await createClient();
   const { data: relationship } = await supabase
     .from("coach_athletes")
     .select("coach_id, athlete_id")

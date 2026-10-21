@@ -78,7 +78,10 @@ describe("coach preview renders the exact same component as the athlete's real v
 
   it("the preview is labeled mode=\"coach-preview\", distinguishing it from the real athlete view at the one place behavior can differ", () => {
     expect(PREVIEW_PAGE).toContain('mode="coach-preview"');
-    expect(YOUR_PLAN_PAGE).toContain('mode="athlete"');
+    // your-plan/page.tsx now also reaches "coach-preview" mode, but only
+    // while a coach's view-as mode is active against this exact route --
+    // its own default, for a real coached athlete, is still "athlete".
+    expect(YOUR_PLAN_PAGE).toMatch(/mode=\{viewAs \? "coach-preview" : "athlete"\}/);
   });
 });
 

@@ -13,6 +13,7 @@ import { MILE_METERS } from "@/lib/race-distances";
 import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { EFFORT_LEVEL_VALUES } from "@/lib/private-coaching/effort-levels";
 import { analyzeCompletedWorkoutConditions } from "@/lib/private-coaching/completion-conditions-service";
+import { isViewingAsAthlete, VIEW_AS_REFUSAL } from "@/lib/private-coaching/view-as";
 
 // Same string-input shape as the self-serve/team completion forms
 // (completeWorkoutSchema in lib/validation/plan.ts) -- entered as free
@@ -49,6 +50,7 @@ export type CompleteWorkoutState = { error?: string; success?: boolean };
 export async function completeScheduledWorkout(input: CompleteScheduledWorkoutInput): Promise<CompleteWorkoutState> {
   const session = await getAppSession();
   if (!session) return { error: "Sign in first." };
+  if (await isViewingAsAthlete(await createClient(), session.userId)) return { error: VIEW_AS_REFUSAL };
 
   const parsed = completeScheduledWorkoutSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -213,6 +215,8 @@ export async function approveStravaMatch(scheduledWorkoutId: string, pendingMatc
   if (!session) return { error: "Sign in first." };
 
   const supabase = await createClient();
+  if (await isViewingAsAthlete(supabase, session.userId)) return { error: VIEW_AS_REFUSAL };
+
   const { data: pending } = await supabase
     .from("strava_pending_matches")
     .select("id, strava_activity_id, activity_distance_m, activity_duration_s, activity_avg_hr, combined_activities")
@@ -314,6 +318,8 @@ export async function dismissStravaMatch(scheduledWorkoutId: string, pendingMatc
   if (!session) return { error: "Sign in first." };
 
   const supabase = await createClient();
+  if (await isViewingAsAthlete(supabase, session.userId)) return { error: VIEW_AS_REFUSAL };
+
   const { error } = await supabase
     .from("strava_pending_matches")
     .update({ dismissed_at: new Date().toISOString() })
@@ -331,6 +337,8 @@ export async function deleteWorkoutCompletion(scheduledWorkoutId: string): Promi
   if (!session) return { error: "Sign in first." };
 
   const supabase = await createClient();
+  if (await isViewingAsAthlete(supabase, session.userId)) return { error: VIEW_AS_REFUSAL };
+
   // .select() on the delete so a zero-row match is actually observable --
   // a plain .delete() that matches nothing returns no error either way, so
   // without this, the unconditional service-role write below would have

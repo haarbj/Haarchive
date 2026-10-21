@@ -71,7 +71,7 @@ describe("reuses the shared modules, doesn't duplicate their math", () => {
 describe("the page renders the new table in place, no separate dashboard route", () => {
   it("page.tsx calls loadRosterRows and renders RosterTable", () => {
     expect(ROSTER_PAGE).toContain("loadRosterRows(session.userId)");
-    expect(ROSTER_PAGE).toContain("<RosterTable rows={rosterRows} />");
+    expect(ROSTER_PAGE).toContain("<RosterTable rows={rosterRows} coachUserId={session.userId} />");
   });
 
   it("the empty-roster state still renders a plain invite prompt, not an error", () => {

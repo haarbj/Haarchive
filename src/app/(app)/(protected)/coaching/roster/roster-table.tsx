@@ -8,6 +8,7 @@ import { formatWeeksAwayLabel, weeksUntilGoalRace } from "@/lib/private-coaching
 import { formatDate, formatMiles, formatRelativeTime } from "@/lib/format";
 import { mostRecentMonday, todayInTimeZone } from "@/lib/week";
 import { RemoveAthleteButton } from "./remove-athlete-button";
+import { ViewAsButton } from "@/components/private-coaching/view-as-button";
 import { Badge } from "@/components/ui/badge";
 
 const SORT_OPTIONS: { key: RosterSortKey; label: string }[] = [
@@ -20,7 +21,7 @@ const SORT_OPTIONS: { key: RosterSortKey; label: string }[] = [
 // page already loaded in one batched pass (roster-data.ts); switching
 // the sort never re-fetches anything. See roster-row.ts's own comment
 // on why this reuses sortRosterRows rather than a page-local sort.
-export function RosterTable({ rows }: { rows: RosterRow[] }) {
+export function RosterTable({ rows, coachUserId }: { rows: RosterRow[]; coachUserId: string }) {
   const [sortKey, setSortKey] = useState<RosterSortKey>("attention");
   const sorted = sortRosterRows(rows, sortKey);
 
@@ -46,14 +47,14 @@ export function RosterTable({ rows }: { rows: RosterRow[] }) {
 
       <div className="mt-3 space-y-2">
         {sorted.map((row) => (
-          <RosterTableRow key={row.athleteId} row={row} />
+          <RosterTableRow key={row.athleteId} row={row} isSelf={row.athleteId === coachUserId} />
         ))}
       </div>
     </div>
   );
 }
 
-function RosterTableRow({ row }: { row: RosterRow }) {
+function RosterTableRow({ row, isSelf }: { row: RosterRow; isSelf: boolean }) {
   return (
     <div className="rounded-control border border-black/10 bg-white px-4 py-3 text-sm transition hover:border-black/20 dark:border-white/10 dark:bg-zinc-900 dark:hover:border-white/20">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -99,7 +100,11 @@ function RosterTableRow({ row }: { row: RosterRow }) {
         <RosterStat label="Next race">{row.nextRace ? formatNextRace(row.nextRace) : "—"}</RosterStat>
       </div>
 
-      <div className="mt-2 flex justify-end">
+      <div className="mt-2 flex justify-end gap-2">
+        {/* Never shown for the coach's own self-coach row -- "view as
+            yourself" is meaningless, and enterViewAsAthlete itself
+            refuses it too. */}
+        {!isSelf ? <ViewAsButton athleteId={row.athleteId} athleteFirstName={row.displayName.split(" ")[0]} /> : null}
         <RemoveAthleteButton coachAthleteId={row.coachAthleteId} athleteName={row.displayName} />
       </div>
     </div>

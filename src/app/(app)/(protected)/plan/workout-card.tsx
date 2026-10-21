@@ -60,9 +60,11 @@ type WorkoutCardProps = {
   completion: CompletionDetail | null;
   /** Today's date (viewer-local, YYYY-MM-DD) -- optional only for an existing call site that hasn't threaded it through yet; a workout never shows the Missed treatment without it, same as if it were still Scheduled. */
   today?: string;
+  /** Coach view-as mode: hides the completion form and undo control. The server refuses the underlying actions regardless -- this is only so the UI doesn't dangle a control that would just fail. */
+  readOnly?: boolean;
 };
 
-export function WorkoutCard({ workout, phase, distanceBucket, completion, today }: WorkoutCardProps) {
+export function WorkoutCard({ workout, phase, distanceBucket, completion, today, readOnly = false }: WorkoutCardProps) {
   const baseId = useId();
   const [state, formAction, isPending] = useActionState(completeWorkout, {});
 
@@ -144,13 +146,13 @@ export function WorkoutCard({ workout, phase, distanceBucket, completion, today 
           </Badge>
         )}
       </div>
-      {completion && (
+      {completion && !readOnly && (
         <div className="mt-2">
           <UndoWorkoutCompletionButton workoutId={workout.id} />
         </div>
       )}
 
-      {!completion && (
+      {!completion && !readOnly && (
         <form action={formAction} className="mt-4 flex flex-wrap items-end gap-3">
           <input type="hidden" name="workoutId" value={workout.id} />
           <div>

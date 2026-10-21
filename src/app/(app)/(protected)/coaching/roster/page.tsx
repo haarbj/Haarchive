@@ -137,7 +137,7 @@ export default async function CoachingRosterPage() {
         </p>
         {rosterRows.length > 0 ? (
           <div className="mt-3">
-            <RosterTable rows={rosterRows} />
+            <RosterTable rows={rosterRows} coachUserId={session.userId} />
           </div>
         ) : (
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">No athletes yet -- invite one above.</p>
