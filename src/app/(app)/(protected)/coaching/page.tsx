@@ -24,6 +24,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SeasonGoalCard } from "./season-goal-card";
 
 // A pure athlete (no coaching practice of their own) reading a bare
 // "Coaching" tab could plausibly read it as "people I coach" -- same
@@ -86,7 +87,7 @@ export default async function CoachingHomePage({ searchParams }: { searchParams:
         <ViewAsBanner athleteName={athleteProfile?.display_name ?? "this athlete"} />
         <Heading>My Coaching</Heading>
         <div className="mt-6">
-          <AthleteHomeSection userId={viewAs.athleteId} />
+          <AthleteHomeSection userId={viewAs.athleteId} readOnly />
         </div>
       </Container>
     );
@@ -322,7 +323,7 @@ async function CoachHomeSection({ userId }: { userId: string }) {
   );
 }
 
-async function AthleteHomeSection({ userId }: { userId: string }) {
+async function AthleteHomeSection({ userId, readOnly = false }: { userId: string; readOnly?: boolean }) {
   const supabase = await createClient();
 
   // The "Your Plan" payoff's one-time auto-show: redirect here only once,
@@ -368,7 +369,7 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
   const today = new Date().toISOString().slice(0, 10);
   const twoWeeksOut = addDays(today, 14);
   const thisWeekStart = mostRecentMonday(new Date(`${today}T00:00:00Z`));
-  const [{ data: upcoming }, { data: thisWeekPlan }] = await Promise.all([
+  const [{ data: upcoming }, { data: thisWeekPlan }, { data: athleteProfileRow }] = await Promise.all([
     supabase
       .from("scheduled_workouts")
       .select("id, scheduled_date, title, day_label, workout_type")
@@ -389,6 +390,10 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
       .eq("athlete_id", userId)
       .eq("week_start", thisWeekStart)
       .maybeSingle<{ notes: string | null }>(),
+    // The athlete's own season goal, in their own words -- see
+    // season-goal-card.tsx's own header for how this differs from the
+    // structured goal race above.
+    supabase.from("athlete_profiles").select("season_goal").eq("user_id", userId).maybeSingle<{ season_goal: string | null }>(),
   ]);
 
   const [todayWorkout, ...laterWorkouts] = upcoming ?? [];
@@ -428,6 +433,8 @@ async function AthleteHomeSection({ userId }: { userId: string }) {
       >
         Your plan overview
       </Link>
+
+      <SeasonGoalCard initialValue={athleteProfileRow?.season_goal ?? null} readOnly={readOnly} />
 
       {thisWeekPlan?.notes ? (
         <div className="mt-6">

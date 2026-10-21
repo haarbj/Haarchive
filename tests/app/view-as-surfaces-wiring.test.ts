@@ -32,7 +32,7 @@ const COACH_SCHEDULE_PAGE = readFileSync(
 
 describe("data identity: v1 surfaces render the view-as TARGET's id, never the coach's own", () => {
   it("home renders AthleteHomeSection with viewAs.athleteId when active, session.userId only otherwise", () => {
-    expect(HOME_PAGE).toContain("<AthleteHomeSection userId={viewAs.athleteId} />");
+    expect(HOME_PAGE).toContain("<AthleteHomeSection userId={viewAs.athleteId} readOnly />");
     expect(HOME_PAGE).toContain("<AthleteHomeSection userId={session.userId} />");
   });
 

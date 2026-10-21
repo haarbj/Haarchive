@@ -66,3 +66,15 @@ export const athleteProfileSchema = z.object({
 });
 
 export type AthleteProfileInput = z.infer<typeof athleteProfileSchema>;
+
+// A statement, not an essay -- long enough for "qualify for Boston and
+// get there healthy enough to enjoy it" plus real room to elaborate,
+// short enough that it still reads as one held idea rather than a
+// second training-background summary. Enforced here and by the
+// migration's own check constraint, so a client that somehow bypasses
+// this schema still can't write past it.
+export const SEASON_GOAL_MAX_LENGTH = 500;
+export const seasonGoalSchema = z
+  .string()
+  .trim()
+  .max(SEASON_GOAL_MAX_LENGTH, `Keep it to ${SEASON_GOAL_MAX_LENGTH} characters or fewer.`);

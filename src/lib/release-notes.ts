@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-20",
+    headline: "Athletes can say what the season actually means to them",
+    detail:
+      "A new season goal, in the athlete's own words, now sits near the top of their home page -- separate from the structured goal race (name, date, target time), which stays exactly a fact. An empty one shows a single open question, \"What would make this season a success for you?\", with a plain inline edit affordance; editing replaces the current statement outright, no history. The coach sees it verbatim on that athlete's detail page, clearly labeled as the athlete's own words, with no edit control anywhere -- this is voice, not data the coach manages.",
+  },
+  {
+    date: "2026-10-20",
     headline: "Coaches can view as an athlete, read-only",
     detail:
       "A coach can switch into any of their athletes' real view from the roster or that athlete's detail page, and land on their actual home, plan, and Your Plan payoff exactly as the athlete sees them -- the fastest way to check \"is the published plan right\" without asking anyone to screenshot anything. A persistent banner names who's being viewed and that it's read-only, with one click back to the coach's own view. Nothing about this changes who's signed in: logging a completion, submitting a check-in, approving a Strava match, and sending a message all refuse at the server the moment the mode is active, regardless of the UI, and no notification or dismissal state is ever touched just by looking. Timeline view and the workout detail page aren't wired up yet -- Week view, Your Plan, and home are.",

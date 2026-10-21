@@ -43,6 +43,7 @@ type AthleteProfile = {
   recent_training_detail: string | null;
   long_run_day: string | null;
   training_background_injury_history: string | null;
+  season_goal: string | null;
 };
 type Goal = { id: string; race_name: string; distance_m: number; goal_time_s: number | null; goal_date: string | null; status: string };
 type RaceResult = { id: string; race_name: string; race_date: string; distance_m: number; finish_time_s: number };
@@ -106,7 +107,7 @@ export default async function CoachingAthleteDetailPage({
       supabase
         .from("athlete_profiles")
         .select(
-          "birth_year, sex, weight_kg, height_cm, years_running, current_level, current_weekly_mileage, primary_event, running_days_per_week, training_facilities, elevation_m, recent_training_detail, long_run_day, training_background_injury_history",
+          "birth_year, sex, weight_kg, height_cm, years_running, current_level, current_weekly_mileage, primary_event, running_days_per_week, training_facilities, elevation_m, recent_training_detail, long_run_day, training_background_injury_history, season_goal",
         )
         .eq("user_id", athleteId)
         .maybeSingle<AthleteProfile>(),
@@ -372,6 +373,23 @@ export default async function CoachingAthleteDetailPage({
           <div className="mt-3">
             <EmptyState>No active goals set.</EmptyState>
           </div>
+        )}
+      </div>
+
+      {/* Adjacent to Active Goals in layout, deliberately separate in
+          both data and authorship: a goal race is a fact the coach sets
+          and tracks (name/date/target time); this is the athlete's own
+          voice, read-only here, no coach-facing write path anywhere in
+          this codebase. Visually distinct on purpose -- quoted, italic
+          prose rather than the Active Goals' structured card rows, so
+          "fact" and "voice" never read as the same kind of thing. */}
+      <div className="mt-8">
+        <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Season Goal</p>
+        <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">In {profile.display_name.split(" ")[0]}&rsquo;s own words</p>
+        {athleteProfile?.season_goal ? (
+          <p className="mt-2 text-lg leading-7 text-zinc-900 italic dark:text-white">&ldquo;{athleteProfile.season_goal}&rdquo;</p>
+        ) : (
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">No season goal set yet.</p>
         )}
       </div>
 
