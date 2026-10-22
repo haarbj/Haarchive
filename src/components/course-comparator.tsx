@@ -9,6 +9,7 @@ import { RouteImportPanel } from "@/components/route-import-panel";
 import { Button } from "@/components/ui/button";
 import { LabeledInput } from "@/components/ui/labeled-input";
 import { compareCourses, courseProfileFromAnalysis, courseProfileFromManualEntry, type CourseProfile } from "@/lib/course-comparator/compare";
+import { climbsForRace, getRaceById, MARATHON_RACES, type RaceRecord } from "@/lib/course-comparator/marathons";
 import { analyzeCourse, type CourseAnalysis } from "@/lib/marathon-pacing/course-analysis";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import type { CourseInput, RaceClimb } from "@/lib/race-pace-planner/pace-plan";
@@ -30,6 +31,13 @@ import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
 const STORAGE_KEY = "haarchive-course-comparator-state";
 const DEFAULT_CLIMB: RaceClimb = { atMile: 10, lengthMiles: 1, feet: 150, direction: "climb" };
 
+// "custom" and "gps" are the two fallback picker values; anything else is
+// a MARATHON_RACES id.
+const CUSTOM_PICKER_VALUE = "custom";
+const GPS_PICKER_VALUE = "gps";
+const DEFAULT_PICKER_A = "chicago";
+const DEFAULT_PICKER_B = "tucson";
+
 type CourseMode = "gps" | "manual";
 
 type ManualCourseState = {
@@ -46,6 +54,21 @@ const DEFAULT_MANUAL: ManualCourseState = {
   climbs: [],
 };
 
+/** The same shape a user filling out manual entry by hand would produce -- picking a race is just a faster way to reach it. Climbs are derived fresh from the race's own elevation profile, never stored pre-computed. */
+function manualStateFromRace(race: RaceRecord): ManualCourseState {
+  return {
+    courseDistanceMilesInput: String(race.distanceMi),
+    totalGainFtInput: String(Math.round(race.totalGainFt)),
+    totalLossFtInput: String(Math.round(race.totalLossFt)),
+    climbs: climbsForRace(race),
+  };
+}
+
+function initialManualForPicker(pickerValue: string): ManualCourseState {
+  const race = getRaceById(pickerValue);
+  return race ? manualStateFromRace(race) : DEFAULT_MANUAL;
+}
+
 type GpsSideState = {
   label: string | null;
   summary: RouteSummary | null;
@@ -59,8 +82,10 @@ type PersistedState = {
   goalDistanceMilesInput: string;
   labelAInput: string;
   labelBInput: string;
-  modeA: CourseMode;
-  modeB: CourseMode;
+  pickerA: string;
+  pickerB: string;
+  dirtyA: boolean;
+  dirtyB: boolean;
   manualA: ManualCourseState;
   manualB: ManualCourseState;
 };
@@ -90,22 +115,32 @@ function buildProfile(mode: CourseMode, manual: ManualCourseState, gps: GpsSideS
 // Planner's exact grade heuristic (pace-plan.ts's netGradeFtForMile/
 // gradeAdjustSecPerMile, the same 15ft/mi noise floor) rather than a new
 // model -- see compare.ts's own header comment. Each side independently
-// accepts a GPS route (GPX/TCX/FIT or Strava, elevation extracted
-// automatically) or manual entry (total gain/loss plus named climbs),
-// mirroring Race Pace Planner's own two input modes. No weather, wind, or
-// altitude adjustment here on purpose -- that's the Environmental
-// Performance Calculator's job, linked below rather than duplicated.
+// accepts a real race from the built-in database (marathons.ts, modeled
+// on FindMyMarathon's compare tool), a GPS route (GPX/TCX/FIT or Strava,
+// elevation extracted automatically), or manual entry (total gain/loss
+// plus named climbs) -- picking a race just fills the same manual-entry
+// fields a user could type by hand, so the engine below never knows the
+// difference. No weather, wind, or altitude adjustment here on purpose --
+// that's the Environmental Performance Calculator's job, linked below
+// rather than duplicated.
 export function CourseComparator() {
   const baseId = useId();
   const persisted = usePersistedJSON<PersistedState>(STORAGE_KEY);
 
   const [goalDistanceMilesInput, setGoalDistanceMilesInput] = usePersistedField(persisted?.goalDistanceMilesInput, "26.2");
-  const [labelAInput, setLabelAInput] = usePersistedField(persisted?.labelAInput, "Course A");
-  const [labelBInput, setLabelBInput] = usePersistedField(persisted?.labelBInput, "Course B");
-  const [modeA, setModeA] = usePersistedField<CourseMode>(persisted?.modeA, "manual");
-  const [modeB, setModeB] = usePersistedField<CourseMode>(persisted?.modeB, "manual");
-  const [manualA, setManualA] = usePersistedField<ManualCourseState>(persisted?.manualA, DEFAULT_MANUAL);
-  const [manualB, setManualB] = usePersistedField<ManualCourseState>(persisted?.manualB, DEFAULT_MANUAL);
+  const [labelAInput, setLabelAInput] = usePersistedField(persisted?.labelAInput, getRaceById(DEFAULT_PICKER_A)?.name ?? "Course A");
+  const [labelBInput, setLabelBInput] = usePersistedField(persisted?.labelBInput, getRaceById(DEFAULT_PICKER_B)?.name ?? "Course B");
+  const [pickerA, setPickerA] = usePersistedField(persisted?.pickerA, DEFAULT_PICKER_A);
+  const [pickerB, setPickerB] = usePersistedField(persisted?.pickerB, DEFAULT_PICKER_B);
+  const [dirtyA, setDirtyA] = usePersistedField(persisted?.dirtyA, false);
+  const [dirtyB, setDirtyB] = usePersistedField(persisted?.dirtyB, false);
+  const [manualA, setManualA] = usePersistedField<ManualCourseState>(persisted?.manualA, initialManualForPicker(DEFAULT_PICKER_A));
+  const [manualB, setManualB] = usePersistedField<ManualCourseState>(persisted?.manualB, initialManualForPicker(DEFAULT_PICKER_B));
+
+  const modeA: CourseMode = pickerA === GPS_PICKER_VALUE ? "gps" : "manual";
+  const modeB: CourseMode = pickerB === GPS_PICKER_VALUE ? "gps" : "manual";
+  const selectedRaceA = getRaceById(pickerA);
+  const selectedRaceB = getRaceById(pickerB);
 
   // GPS route state is deliberately not persisted, same precedent as the
   // Environmental Calculator and the Race Pace Planner -- re-importing a
@@ -120,8 +155,10 @@ export function CourseComparator() {
         goalDistanceMilesInput,
         labelAInput,
         labelBInput,
-        modeA,
-        modeB,
+        pickerA,
+        pickerB,
+        dirtyA,
+        dirtyB,
         manualA,
         manualB,
         ...patch,
@@ -132,9 +169,34 @@ export function CourseComparator() {
     }
   }
 
+  function handlePickerChangeFor(side: "A" | "B") {
+    const setPicker = side === "A" ? setPickerA : setPickerB;
+    const setDirty = side === "A" ? setDirtyA : setDirtyB;
+    const setManual = side === "A" ? setManualA : setManualB;
+    const setLabel = side === "A" ? setLabelAInput : setLabelBInput;
+    const pickerKey = side === "A" ? "pickerA" : "pickerB";
+    const dirtyKey = side === "A" ? "dirtyA" : "dirtyB";
+    const manualKey = side === "A" ? "manualA" : "manualB";
+    const labelKey = side === "A" ? "labelAInput" : "labelBInput";
+
+    return (value: string) => {
+      setPicker(value);
+      setDirty(false);
+      const race = getRaceById(value);
+      const nextManual = race ? manualStateFromRace(race) : DEFAULT_MANUAL;
+      setManual(nextManual);
+      const patch: Partial<PersistedState> = { [pickerKey]: value, [dirtyKey]: false, [manualKey]: nextManual };
+      if (race) {
+        setLabel(race.name);
+        patch[labelKey] = race.name;
+      }
+      persistState(patch);
+    };
+  }
+
   function handleRouteLoadedFor(side: "A" | "B") {
     const setGps = side === "A" ? setGpsA : setGpsB;
-    const setMode = side === "A" ? setModeA : setModeB;
+    const setPicker = side === "A" ? setPickerA : setPickerB;
     return (summary: RouteSummary, label: string, route: ParsedRoute) => {
       try {
         const analysis = analyzeCourse(route);
@@ -145,8 +207,8 @@ export function CourseComparator() {
         // side's own state is a completely separate hook, so it's
         // unaffected either way.
         setGps(EMPTY_GPS);
-        setMode("manual");
-        persistState({ [side === "A" ? "modeA" : "modeB"]: "manual" });
+        setPicker(CUSTOM_PICKER_VALUE);
+        persistState({ [side === "A" ? "pickerA" : "pickerB"]: CUSTOM_PICKER_VALUE });
         setGps({
           label: null,
           summary: null,
@@ -201,18 +263,27 @@ export function CourseComparator() {
           label={labelAInput}
           onLabelChange={(next) => {
             setLabelAInput(next);
-            persistState({ labelAInput: next });
+            if (selectedRaceA) {
+              setDirtyA(true);
+              persistState({ labelAInput: next, dirtyA: true });
+            } else {
+              persistState({ labelAInput: next });
+            }
           }}
-          mode={modeA}
-          onModeChange={(next) => {
-            setModeA(next);
-            persistState({ modeA: next });
-          }}
+          picker={pickerA}
+          onPickerChange={handlePickerChangeFor("A")}
+          selectedRace={selectedRaceA}
+          dirty={dirtyA}
           manual={manualA}
           onManualChange={(patch) => {
             const next = { ...manualA, ...patch };
             setManualA(next);
-            persistState({ manualA: next });
+            if (selectedRaceA) {
+              setDirtyA(true);
+              persistState({ manualA: next, dirtyA: true });
+            } else {
+              persistState({ manualA: next });
+            }
           }}
           gps={gpsA}
           onRouteLoaded={handleRouteLoadedFor("A")}
@@ -222,18 +293,27 @@ export function CourseComparator() {
           label={labelBInput}
           onLabelChange={(next) => {
             setLabelBInput(next);
-            persistState({ labelBInput: next });
+            if (selectedRaceB) {
+              setDirtyB(true);
+              persistState({ labelBInput: next, dirtyB: true });
+            } else {
+              persistState({ labelBInput: next });
+            }
           }}
-          mode={modeB}
-          onModeChange={(next) => {
-            setModeB(next);
-            persistState({ modeB: next });
-          }}
+          picker={pickerB}
+          onPickerChange={handlePickerChangeFor("B")}
+          selectedRace={selectedRaceB}
+          dirty={dirtyB}
           manual={manualB}
           onManualChange={(patch) => {
             const next = { ...manualB, ...patch };
             setManualB(next);
-            persistState({ manualB: next });
+            if (selectedRaceB) {
+              setDirtyB(true);
+              persistState({ manualB: next, dirtyB: true });
+            } else {
+              persistState({ manualB: next });
+            }
           }}
           gps={gpsB}
           onRouteLoaded={handleRouteLoadedFor("B")}
@@ -314,9 +394,11 @@ export function CourseComparator() {
               >
                 Environmental Performance Calculator
               </Link>
-              . In manual entry mode, this can&rsquo;t discover a hill you didn&rsquo;t name -- switch to GPS route
-              mode for that level of precision from an actual course file. Once you&rsquo;ve settled on a course,
-              the Race Pace Planner can build out the full mile-by-mile plan.
+              . Picking a race from the built-in database fills this same form from real published course data --
+              it&rsquo;s a starting point, not a guarantee the course hasn&rsquo;t changed since. In manual entry
+              mode, this can&rsquo;t discover a hill you didn&rsquo;t name -- switch to GPS route mode for that level
+              of precision from an actual course file. Once you&rsquo;ve settled on a course, the Race Pace Planner
+              can build out the full mile-by-mile plan.
             </p>
           </div>
         </details>
@@ -364,12 +446,41 @@ function CourseStatsPanel({ label, profile, colorClassName }: { label: string; p
   );
 }
 
+function ExtraRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-zinc-500 dark:text-zinc-400">{label}</dt>
+      <dd className="font-medium text-zinc-900 dark:text-white">{value}</dd>
+    </div>
+  );
+}
+
+/** The race's display-only extras -- shown only while the card still reflects the database race untouched (see the `dirty` label right below this block once that stops being true). An unsourced field renders as "--", never a guess. */
+function RaceExtrasPanel({ race }: { race: RaceRecord }) {
+  const dash = "--";
+  return (
+    <div className={`${statCardClass} mt-3`}>
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs sm:grid-cols-3">
+        <ExtraRow label="Course type" value={race.courseType ?? dash} />
+        <ExtraRow label="Surface" value={race.surface ?? dash} />
+        <ExtraRow label="Certified" value={race.certified == null ? dash : race.certified ? "Yes" : "No"} />
+        <ExtraRow label="Typical temps" value={race.avgLowF != null && race.avgHighF != null ? `${race.avgLowF}-${race.avgHighF}F` : dash} />
+        <ExtraRow label="Finishers" value={race.finishers ? `${race.finishers.count.toLocaleString()} (${race.finishers.year})` : dash} />
+        <ExtraRow label="BQ rate" value={race.bqPercent != null ? `${race.bqPercent}%` : dash} />
+      </dl>
+      <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400">{race.sourceNote}</p>
+    </div>
+  );
+}
+
 function CourseSidePanel({
   idPrefix,
   label,
   onLabelChange,
-  mode,
-  onModeChange,
+  picker,
+  onPickerChange,
+  selectedRace,
+  dirty,
   manual,
   onManualChange,
   gps,
@@ -378,13 +489,17 @@ function CourseSidePanel({
   idPrefix: string;
   label: string;
   onLabelChange: (next: string) => void;
-  mode: CourseMode;
-  onModeChange: (next: CourseMode) => void;
+  picker: string;
+  onPickerChange: (next: string) => void;
+  selectedRace: RaceRecord | null;
+  dirty: boolean;
   manual: ManualCourseState;
   onManualChange: (patch: Partial<ManualCourseState>) => void;
   gps: GpsSideState;
   onRouteLoaded: (summary: RouteSummary, label: string, route: ParsedRoute) => void;
 }) {
+  const mode: CourseMode = picker === GPS_PICKER_VALUE ? "gps" : "manual";
+
   function updateClimb(index: number, patch: Partial<RaceClimb>) {
     onManualChange({ climbs: manual.climbs.map((climb, i) => (i === index ? { ...climb, ...patch } : climb)) });
   }
@@ -397,6 +512,31 @@ function CourseSidePanel({
 
   return (
     <div>
+      <label htmlFor={`${idPrefix}-picker`} className={labelClass}>
+        Race
+      </label>
+      <select
+        id={`${idPrefix}-picker`}
+        value={picker}
+        onChange={(event) => onPickerChange(event.target.value)}
+        className={`w-full ${fieldClass}`}
+      >
+        <option value={CUSTOM_PICKER_VALUE}>Custom course (manual entry)</option>
+        <option value={GPS_PICKER_VALUE}>GPS route</option>
+        <optgroup label="Marathons">
+          {MARATHON_RACES.map((race) => (
+            <option key={race.id} value={race.id}>
+              {race.name} ({race.location})
+            </option>
+          ))}
+        </optgroup>
+      </select>
+
+      {selectedRace && !dirty ? <RaceExtrasPanel race={selectedRace} /> : null}
+      {selectedRace && dirty ? (
+        <p className="mt-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">Custom (based on {selectedRace.name})</p>
+      ) : null}
+
       <LabeledInput
         id={`${idPrefix}-label`}
         label="Course name"
@@ -404,16 +544,8 @@ function CourseSidePanel({
         value={label}
         onChange={(event) => onLabelChange(event.target.value)}
         autoComplete="off"
-        className="mb-2 w-full"
+        className="mt-3 mb-2 w-full"
       />
-      <div className="flex gap-2">
-        <button type="button" onClick={() => onModeChange("gps")} aria-pressed={mode === "gps"} className={segmentedButtonClass(mode === "gps")}>
-          GPS route
-        </button>
-        <button type="button" onClick={() => onModeChange("manual")} aria-pressed={mode === "manual"} className={segmentedButtonClass(mode === "manual")}>
-          Manual entry
-        </button>
-      </div>
 
       {gps.notice && <p className="mt-3 rounded-lg bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">{gps.notice}</p>}
 
@@ -463,6 +595,7 @@ function CourseSidePanel({
             <p className="mb-2 text-xs text-zinc-600 dark:text-zinc-300">
               Only the hills big enough to actually matter -- a net change of 15ft/mi or less is treated as noise.
               Flat assumed everywhere else.
+              {selectedRace ? " Derived automatically from the race's own elevation data; edit freely." : null}
             </p>
             <div className="space-y-3">
               {manual.climbs.map((climb, index) => (
