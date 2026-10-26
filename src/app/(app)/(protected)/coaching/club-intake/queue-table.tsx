@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 
 import { approveClubIntakeSubmission, setCoachAthleteTier, setPaidWaitlisted, type ClubIntakeQueueRow } from "./actions";
 import { CLUB_INTAKE_WTP_LABELS } from "@/lib/validation/club-intake";
+import { formatClock } from "@/lib/running-format";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,13 +20,6 @@ const STATUS_TONE = {
   waitlisted: "warning",
   redirected_not_ready: "error",
 } as const;
-
-function formatMinutes(seconds: number | null): string {
-  if (seconds == null) return "--";
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
@@ -90,8 +84,12 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
                 {row.currentWeeklyMileage} mi/week &middot; {row.yearsRunning} yr running &middot; {row.plansCompleted} plan(s) completed
               </p>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                Goal: {row.goalType === "time" ? `Time target (${formatMinutes(row.goalTimeS)})` : "Finish"}
-                {row.raceName ? ` · 5K reference: ${row.raceName} (${formatMinutes(row.finishTimeS)})` : row.plansTimeTrial ? " · Will use team time trial" : ""}
+                Goal: {row.goalType === "time" && row.goalTimeS != null ? `Time target (${formatClock(row.goalTimeS)})` : "Finish"}
+                {row.raceName && row.finishTimeS != null
+                  ? ` · 5K reference: ${row.raceName} (${formatClock(row.finishTimeS)})`
+                  : row.plansTimeTrial
+                    ? " · Will use team time trial"
+                    : ""}
               </p>
               {row.proposedFrameworkKey ? (
                 <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-white">
