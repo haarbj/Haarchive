@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 20, 2026](https://brodyhaar.com/release-notes)):** Athletes can say what the season actually means to them
+**Latest update ([Oct 26, 2026](https://brodyhaar.com/release-notes)):** Club intake: a free Club Plan tier, and an unlisted interest form behind it
 
 Recent highlights:
+- Athletes can say what the season actually means to them (Oct 20, 2026)
 - Coaches can view as an athlete, read-only (Oct 20, 2026)
 - Patterns: a 6-week trend view on the plan and the coach's athlete page (Oct 20, 2026)
-- Specific-praise prompts when a coach reviews a check-in (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

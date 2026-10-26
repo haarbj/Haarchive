@@ -44,11 +44,18 @@ export async function sendCoachAthleteMessage(
 
   const { data: relationship } = await supabase
     .from("coach_athletes")
-    .select("coach_id, athlete_id")
+    .select("coach_id, athlete_id, tier")
     .eq("id", coachAthleteId)
-    .maybeSingle<{ coach_id: string; athlete_id: string }>();
+    .maybeSingle<{ coach_id: string; athlete_id: string; tier: "free" | "paid" }>();
   if (!relationship || (relationship.coach_id !== session.userId && relationship.athlete_id !== session.userId)) {
     return { error: "That conversation isn't yours." };
+  }
+  // Free-tier barrier, the real enforcement point: the UI hides the
+  // composer for a free-tier relationship (see messages/page.tsx and
+  // [coachAthleteId]/page.tsx), but this is the write path itself, so it
+  // is checked here too rather than trusted to have been checked upstream.
+  if (relationship.tier === "free") {
+    return { error: "Messaging isn't included in the free Club Plan." };
   }
 
   let imagePath: string | null = null;

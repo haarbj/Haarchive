@@ -216,6 +216,9 @@ async function CoachHomeSection({ userId }: { userId: string }) {
         <Button href="/coaching/programs" variant="outline" size="sm">
           Programs
         </Button>
+        <Button href="/coaching/club-intake" variant="outline" size="sm">
+          Club Intake
+        </Button>
       </div>
 
       {/* Consent-based adaptation cards -- the proactive counterpart to

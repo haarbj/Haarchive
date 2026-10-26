@@ -20,7 +20,8 @@
     "generate:knowledge-checks": "tsx --env-file-if-exists=.env.local scripts/generate-knowledge-checks.ts",
     "seed:canyon-program": "tsx --env-file-if-exists=.env.local scripts/seed-canyon-program.ts",
     "seed:framework-programs": "tsx --env-file-if-exists=.env.local scripts/seed-framework-programs.ts",
-    "seed:fueling-fridays-1": "tsx --env-file-if-exists=.env.local scripts/seed-fueling-fridays-1.ts"
+    "seed:fueling-fridays-1": "tsx --env-file-if-exists=.env.local scripts/seed-fueling-fridays-1.ts",
+    "seed:club-intake-cycle": "tsx --env-file-if-exists=.env.local scripts/seed-club-intake-cycle.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.6",

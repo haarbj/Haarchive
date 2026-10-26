@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type RelationshipRow = { coach_id: string; athlete_id: string };
+type RelationshipRow = { coach_id: string; athlete_id: string; tier: "free" | "paid" };
 type Profile = { display_name: string; coach_display_name: string | null };
 type MessageRow = {
   id: string;
@@ -34,10 +34,14 @@ export default async function MessageThreadPage({ params }: { params: Promise<{ 
   // to relationships the caller is actually part of.
   const { data: relationship } = await supabase
     .from("coach_athletes")
-    .select("coach_id, athlete_id")
+    .select("coach_id, athlete_id, tier")
     .eq("id", coachAthleteId)
     .maybeSingle<RelationshipRow>();
   if (!relationship) notFound();
+  // Free-tier barrier, defense in depth: messaging is paid-only, so even
+  // a direct URL to a free-tier relationship's thread 404s rather than
+  // rendering a composer that shouldn't exist for it.
+  if (relationship.tier === "free") notFound();
 
   const viewerIsAthlete = session.userId === relationship.athlete_id;
   const otherUserId = viewerIsAthlete ? relationship.coach_id : relationship.athlete_id;

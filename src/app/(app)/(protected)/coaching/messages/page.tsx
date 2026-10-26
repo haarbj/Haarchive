@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type RelationshipRow = { id: string; athlete_id: string; coach_id: string };
+type RelationshipRow = { id: string; athlete_id: string; coach_id: string; tier: "free" | "paid" };
 type Profile = { id: string; display_name: string };
 type LastMessageRow = {
   coach_athlete_id: string;
@@ -43,12 +43,16 @@ export default async function MessagesIndexPage() {
   if (session.isCoachedAthlete) {
     const { data: relationship } = await supabase
       .from("coach_athletes")
-      .select("id, coach_id")
+      .select("id, coach_id, tier")
       .eq("athlete_id", session.userId)
       .eq("status", "active")
       .limit(1)
-      .maybeSingle<{ id: string; coach_id: string }>();
-    if (relationship) {
+      .maybeSingle<{ id: string; coach_id: string; tier: "free" | "paid" }>();
+    // Free-tier barrier: messaging is a paid-only feature (see the
+    // task's own "free-tier barrier" section) -- the composer is hidden,
+    // not discouraged, so a free-tier athlete gets no messaging entry
+    // point at all rather than a conversation with no way to send.
+    if (relationship && relationship.tier !== "free") {
       const { data: coachProfile } = await supabase
         .from("profiles")
         .select("display_name, coach_display_name")
@@ -64,14 +68,18 @@ export default async function MessagesIndexPage() {
   if (session.isPrivateCoach) {
     const isDualRole = !!ownCoachRelationship;
 
-    const { data: relationships } = await supabase
+    const { data: allRelationships } = await supabase
       .from("coach_athletes")
-      .select("id, athlete_id, coach_id")
+      .select("id, athlete_id, coach_id, tier")
       .eq("coach_id", session.userId)
       .eq("status", "active")
       .returns<RelationshipRow[]>();
+    // Free-tier athletes never appear in the coach's inbox either -- the
+    // relationship exists (so the coach's roster/schedule tools see
+    // them), but messaging is a paid-only surface.
+    const relationships = (allRelationships ?? []).filter((r) => r.tier !== "free");
 
-    const athleteIds = (relationships ?? []).map((r) => r.athlete_id);
+    const athleteIds = relationships.map((r) => r.athlete_id);
     const { data: profiles } = athleteIds.length
       ? await supabase.from("profiles").select("id, display_name").in("id", athleteIds).returns<Profile[]>()
       : { data: [] as Profile[] };

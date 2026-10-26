@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-26",
+    headline: "Club intake: a free Club Plan tier, and an unlisted interest form behind it",
+    detail:
+      "Coaching now has a real free tier alongside paid 1-on-1: a framework matched to mileage, experience, and goal, plus the full education layer, no messaging or plan adjustments. The Vanderbilt Run Club's Nashville 2027 cycle is the first to use it, through a single unlisted form link (account and verified email required, no public listing) that lands in a batch approval queue showing each athlete's proposed framework and any flags. Approving unlocks the existing assign-program flow for that athlete; nothing generates a plan automatically.",
+  },
+  {
     date: "2026-10-20",
     headline: "Athletes can say what the season actually means to them",
     detail:

@@ -40,4 +40,14 @@ export type NotificationType =
   // days/weeks it created -- that RPC writes scheduled_workouts rows
   // directly rather than through saveScheduledWorkout, so nothing else
   // notifies the athlete that a program landed on their calendar at all.
-  | "program_assigned";
+  | "program_assigned"
+  // Club intake (see club-intake/actions.ts): club_intake_submitted goes
+  // to admins per submission (name, proposed framework, flags) and as the
+  // daily digest; club_intake_queued is the athlete-facing "you're in the
+  // queue" confirmation; club_intake_interest_1on1 is the automated "yes"
+  // reply for 1-on-1 interest. No separate approval notification exists --
+  // "plan assigned" is already program_assigned above, fired later when a
+  // coach actually generates the plan, not at queue-approval time.
+  | "club_intake_submitted"
+  | "club_intake_queued"
+  | "club_intake_interest_1on1";
