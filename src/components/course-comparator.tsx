@@ -28,7 +28,21 @@ import {
 } from "@/lib/tool-styles";
 import { usePersistedField, usePersistedJSON } from "@/lib/use-persisted-field";
 
-const STORAGE_KEY = "haarchive-course-comparator-state";
+// Bumped to -v2 when the race picker shipped: PersistedState's shape
+// changed (pickerA/pickerB/dirtyA/dirtyB are new; manualA/manualB/
+// labelAInput/labelBInput used to default to a blank course and now
+// default to the picker's own race-filled values). A returning visitor
+// with an OLD blob under the unversioned key would otherwise have their
+// stale blank manualA/manualB/labelAInput/labelBInput silently win over
+// the new race-based defaults via usePersistedField's own
+// `persistedValue ?? defaultValue` fallback -- pickerA/pickerB (absent
+// from the old shape) would correctly default to Chicago/Tucson while
+// everything else stayed blank, which is exactly the "picker shows a
+// race but the form stays empty" bug this version bump fixes. Bump this
+// suffix again the next time this state's own shape changes in a way
+// that would make an old value silently wrong rather than simply
+// missing.
+const STORAGE_KEY = "haarchive-course-comparator-state-v2";
 const DEFAULT_CLIMB: RaceClimb = { atMile: 10, lengthMiles: 1, feet: 150, direction: "climb" };
 
 // "custom" and "gps" are the two fallback picker values; anything else is

@@ -24,6 +24,23 @@ describe("default view: Chicago vs Tucson, filled immediately", () => {
     expect(COMPARATOR).toContain("initialManualForPicker(DEFAULT_PICKER_A)");
     expect(COMPARATOR).toContain("initialManualForPicker(DEFAULT_PICKER_B)");
   });
+
+  // Regression test for the actual shipped bug: a returning visitor's
+  // OLD localStorage blob (saved under the pre-race-picker key, with the
+  // old blank-course shape) silently won the `persistedValue ??
+  // defaultValue` fallback over the new race-filled defaults -- the
+  // picker showed Chicago/Tucson selected (pickerA/pickerB didn't exist
+  // in the old shape, so THOSE correctly defaulted) while every other
+  // field (manualA/manualB/labelAInput/labelBInput, which DID exist in
+  // the old shape) stayed blank. Reproduced live via Playwright against
+  // a real dev server with a seeded old-shaped blob under the literal
+  // pre-fix key below, confirmed broken before this version bump and
+  // fixed after. This exact literal string must never be the live
+  // storage key again.
+  it("the storage key was bumped past the pre-race-picker version, so old incompatible blobs can never shadow the new race-filled defaults", () => {
+    expect(COMPARATOR).not.toContain('const STORAGE_KEY = "haarchive-course-comparator-state";');
+    expect(COMPARATOR).toMatch(/const STORAGE_KEY = "haarchive-course-comparator-state-v\d+";/);
+  });
 });
 
 describe("picking a race fills the existing manual-entry fields, never a new engine input", () => {
