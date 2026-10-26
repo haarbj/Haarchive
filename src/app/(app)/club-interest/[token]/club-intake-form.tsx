@@ -200,9 +200,9 @@ export function ClubIntakeForm({ token }: { token: string }) {
           </p>
 
           <p>
-            Discount code for race registration: <span className="font-semibold text-zinc-900 dark:text-white">Katrinaruns</span>{" "}
-            ($15 off any Rock &lsquo;n&rsquo; Roll race registration). Unverified for 2027, try it at checkout, zero
-            downside if it doesn&rsquo;t take.
+            Group discount: We&rsquo;re working on a Rock &lsquo;n&rsquo; Roll group discount for the team (10% off
+            for groups of 25 or more). Not confirmed yet, details to come once it is. Your submission helps us get
+            an accurate headcount, which is what sets the discount tier.
           </p>
 
           {interested1on1 ? (
