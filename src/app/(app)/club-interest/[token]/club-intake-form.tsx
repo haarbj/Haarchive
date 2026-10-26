@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 
 import { submitClubIntake } from "./actions";
 import { CLUB_INTAKE_WTP_LABELS } from "@/lib/validation/club-intake";
+import { parseTimeToSeconds } from "@/lib/running-format";
 import { fieldClass, labelClass } from "@/lib/form-styles";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
@@ -16,6 +17,10 @@ export function ClubIntakeForm({ token }: { token: string }) {
   const [state, formAction, isPending] = useActionState(submitClubIntake.bind(null, token), {});
   const [goalType, setGoalType] = useState<"finish" | "time">("finish");
   const [interested1on1, setInterested1on1] = useState(false);
+  const [finishTimeInput, setFinishTimeInput] = useState("");
+  const [goalTimeInput, setGoalTimeInput] = useState("");
+  const finishTimeS = parseTimeToSeconds(finishTimeInput);
+  const goalTimeS = parseTimeToSeconds(goalTimeInput);
 
   if (state.success) {
     return (
@@ -65,7 +70,17 @@ export function ClubIntakeForm({ token }: { token: string }) {
           <div className="grid gap-3 sm:grid-cols-3">
             <input name="raceName" placeholder="Race name" className={fieldClass} />
             <input name="raceDate" type="date" className={fieldClass} />
-            <input name="finishTimeS" type="number" min="0" placeholder="Finish time (seconds)" className={fieldClass} />
+            <input
+              type="text"
+              placeholder="Finish time (mm:ss)"
+              value={finishTimeInput}
+              onChange={(e) => setFinishTimeInput(e.target.value)}
+              className={fieldClass}
+            />
+            <input type="hidden" name="finishTimeS" value={finishTimeS ?? ""} />
+            {finishTimeInput.trim() && finishTimeS == null ? (
+              <p className="col-span-full text-sm text-red-700 dark:text-red-400">Enter the time as mm:ss, e.g. 21:30.</p>
+            ) : null}
           </div>
           <label className={checkboxRow}>
             <input type="checkbox" name="plansTimeTrial" className="mt-0.5" />
@@ -114,13 +129,19 @@ export function ClubIntakeForm({ token }: { token: string }) {
           </label>
         </div>
         {goalType === "time" ? (
-          <input
-            name="goalTimeS"
-            type="number"
-            min="0"
-            placeholder="Goal time (seconds)"
-            className={`mt-3 w-full ${fieldClass}`}
-          />
+          <>
+            <input
+              type="text"
+              placeholder="Goal time (h:mm:ss)"
+              value={goalTimeInput}
+              onChange={(e) => setGoalTimeInput(e.target.value)}
+              className={`mt-3 w-full ${fieldClass}`}
+            />
+            <input type="hidden" name="goalTimeS" value={goalTimeS ?? ""} />
+            {goalTimeInput.trim() && goalTimeS == null ? (
+              <p className="mt-1 text-sm text-red-700 dark:text-red-400">Enter the time as h:mm:ss, e.g. 3:45:00.</p>
+            ) : null}
+          </>
         ) : null}
       </section>
 

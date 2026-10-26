@@ -3,13 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import { approveClubIntakeSubmission, waitlistClubIntakeSubmission, setCoachAthleteTier, type ClubIntakeQueueRow } from "./actions";
+import { approveClubIntakeSubmission, setCoachAthleteTier, setPaidWaitlisted, type ClubIntakeQueueRow } from "./actions";
 import { CLUB_INTAKE_WTP_LABELS } from "@/lib/validation/club-intake";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
 
+// "waitlisted" stays in the type (an old enum value this app no longer
+// writes -- see the paid-waitlist migration) but still needs a tone in
+// case a row from before that change is ever read.
 const STATUS_TONE = {
   pending: "neutral",
   approved: "success",
@@ -103,39 +106,52 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
               ) : null}
             </div>
 
-            {/* The readiness gate and the auto-match proposal are both
-                advisory, same as every other proposal in this platform
-                (see club-intake.ts's own header comment) -- not meeting
-                the mileage line routes a submission to
+            {/* Step 1: free Club Plan approval. The readiness gate is
+                advisory (see club-intake.ts's own header comment) -- not
+                meeting the mileage line routes a submission to
                 redirected_not_ready by default, but the coach still has
-                final say and can approve or waitlist it anyway. Only
-                "approved" is a settled state past this point. */}
+                final say. Everyone gets manually approved or not for
+                free; there is no "waitlist" at this step. */}
             {row.status !== "approved" ? (
-              <div className="flex gap-2">
-                <Button size="sm" disabled={pendingId === row.id} onClick={() => handle(row.id, approveClubIntakeSubmission)}>
-                  Approve
-                </Button>
-                {row.status !== "waitlisted" ? (
-                  <Button size="sm" variant="outline" disabled={pendingId === row.id} onClick={() => handle(row.id, waitlistClubIntakeSubmission)}>
-                    Waitlist
-                  </Button>
-                ) : null}
-              </div>
+              <Button size="sm" disabled={pendingId === row.id} onClick={() => handle(row.id, approveClubIntakeSubmission)}>
+                Approve for free Club Plan
+              </Button>
             ) : null}
-            {row.status === "approved" && row.coachAthleteId ? (
-              <div className="flex items-center gap-2">
-                <Badge tone={row.tier === "paid" ? "success" : "neutral"}>{row.tier === "paid" ? "Paid 1-on-1" : "Free Club Plan"}</Badge>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={pendingId === row.id}
-                  onClick={() =>
-                    handle(row.id, () => setCoachAthleteTier(row.coachAthleteId!, row.tier === "paid" ? "free" : "paid"))
-                  }
-                >
-                  {row.tier === "paid" ? "Move to free" : "Mark as paid 1-on-1"}
-                </Button>
+
+            {/* Step 2: paid 1-on-1, a separate decision that only applies
+                once free-approved AND the athlete expressed interest.
+                Reversible both directions, and happens "a while later"
+                once price/capacity are set -- nothing here is meant to
+                be decided the same day as step 1. */}
+            {row.status === "approved" && row.coachAthleteId && row.interested1on1 ? (
+              <div className="flex flex-col items-end gap-2">
+                <Badge tone={row.tier === "paid" ? "success" : row.paidWaitlisted ? "warning" : "neutral"}>
+                  {row.tier === "paid" ? "Paid 1-on-1" : row.paidWaitlisted ? "Waitlisted for paid" : "Free (interested in paid)"}
+                </Badge>
+                <div className="flex gap-2">
+                  {row.tier === "paid" ? (
+                    <Button size="sm" variant="outline" disabled={pendingId === row.id} onClick={() => handle(row.id, () => setCoachAthleteTier(row.coachAthleteId!, "free"))}>
+                      Move to free
+                    </Button>
+                  ) : (
+                    <>
+                      <Button size="sm" disabled={pendingId === row.id} onClick={() => handle(row.id, () => setCoachAthleteTier(row.coachAthleteId!, "paid"))}>
+                        Select for paid
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={pendingId === row.id}
+                        onClick={() => handle(row.id, () => setPaidWaitlisted(row.coachAthleteId!, !row.paidWaitlisted))}
+                      >
+                        {row.paidWaitlisted ? "Remove from waitlist" : "Waitlist for paid"}
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
+            ) : row.status === "approved" && row.coachAthleteId ? (
+              <Badge tone="neutral">Free Club Plan</Badge>
             ) : null}
           </div>
           {expandedId === row.id ? (

@@ -9,6 +9,11 @@ export type ClubIntakeQueueRow = {
   id: string;
   athleteId: string;
   athleteName: string;
+  // "waitlisted" is a legacy status value from a prior design -- the app
+  // no longer writes it (see the paid-waitlist migration's own comment).
+  // A submission is only ever pending/approved/redirected_not_ready now;
+  // paid-coaching waitlisting lives on coach_athletes.paid_waitlisted
+  // instead, as a separate decision that happens after free approval.
   status: "pending" | "approved" | "waitlisted" | "redirected_not_ready";
   currentWeeklyMileage: number;
   yearsRunning: number;
@@ -29,6 +34,7 @@ export type ClubIntakeQueueRow = {
   createdAt: string;
   coachAthleteId: string | null;
   tier: "free" | "paid" | null;
+  paidWaitlisted: boolean;
 };
 
 export type ClubIntakeCycleSummary = { id: string; label: string; raceName: string; raceDate: string; deadlineAt: string; isClosed: boolean };
@@ -89,11 +95,11 @@ export async function loadClubIntakeQueue(cycleId: string): Promise<ClubIntakeQu
 
   const { data: relationships } = await admin
     .from("coach_athletes")
-    .select("id, athlete_id, tier")
+    .select("id, athlete_id, tier, paid_waitlisted")
     .eq("coach_id", session.userId)
     .in("athlete_id", athleteIds)
     .eq("status", "active")
-    .returns<{ id: string; athlete_id: string; tier: "free" | "paid" }[]>();
+    .returns<{ id: string; athlete_id: string; tier: "free" | "paid"; paid_waitlisted: boolean }[]>();
   const relationshipByAthlete = new Map((relationships ?? []).map((r) => [r.athlete_id, r]));
 
   return submissions.map((s) => ({
@@ -120,6 +126,7 @@ export async function loadClubIntakeQueue(cycleId: string): Promise<ClubIntakeQu
     createdAt: s.created_at,
     coachAthleteId: relationshipByAthlete.get(s.athlete_id)?.id ?? null,
     tier: relationshipByAthlete.get(s.athlete_id)?.tier ?? null,
+    paidWaitlisted: relationshipByAthlete.get(s.athlete_id)?.paid_waitlisted ?? false,
   }));
 }
 
@@ -247,29 +254,43 @@ export async function approveClubIntakeSubmission(submissionId: string): Promise
   return {};
 }
 
-export async function waitlistClubIntakeSubmission(submissionId: string): Promise<ReviewActionState> {
+/**
+ * The paid-coaching decision, separate from free-plan approval above and
+ * only meaningful once a coach_athletes relationship already exists
+ * (tier starts 'free' for every approved submission; this is what moves
+ * it to 'paid', or marks/clears a waitlisted-for-paid holding state in
+ * between). Reversible either direction -- waitlisting someone isn't a
+ * dead end, and neither is paid selection, since capacity/price can
+ * still change the decision later.
+ */
+export async function setCoachAthleteTier(coachAthleteId: string, tier: "free" | "paid"): Promise<ReviewActionState> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
   const admin = createServiceRoleClient();
+  // Selecting someone for paid clears any paid-waitlist flag -- the two
+  // are mutually exclusive states in the queue UI (see queue-table.tsx).
   const { error } = await admin
-    .from("club_intake_submissions")
-    .update({ status: "waitlisted", reviewed_at: new Date().toISOString(), reviewed_by: session.userId })
-    .eq("id", submissionId);
+    .from("coach_athletes")
+    .update({ tier, ...(tier === "paid" ? { paid_waitlisted: false } : {}) })
+    .eq("id", coachAthleteId)
+    .eq("coach_id", session.userId);
   if (error) return { error: error.message };
+  revalidatePath("/coaching/roster");
   revalidatePath("/coaching/club-intake");
   return {};
 }
 
-export async function setCoachAthleteTier(coachAthleteId: string, tier: "free" | "paid"): Promise<ReviewActionState> {
+export async function setPaidWaitlisted(coachAthleteId: string, waitlisted: boolean): Promise<ReviewActionState> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
   const admin = createServiceRoleClient();
   const { error } = await admin
     .from("coach_athletes")
-    .update({ tier })
+    .update({ paid_waitlisted: waitlisted })
     .eq("id", coachAthleteId)
-    .eq("coach_id", session.userId);
+    .eq("coach_id", session.userId)
+    .eq("tier", "free");
   if (error) return { error: error.message };
-  revalidatePath("/coaching/roster");
+  revalidatePath("/coaching/club-intake");
   return {};
 }

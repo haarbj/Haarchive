@@ -1,0 +1,29 @@
+-- Corrects a real model mismatch from the first club-intake pass:
+-- club_intake_submissions.status's 'waitlisted' value was being used as a
+-- dead-end alternative to free-plan approval ("not approved, not
+-- rejected, just... waitlisted"), with no way back. That was wrong. The
+-- actual two-step decision this product needs is:
+--
+--   1. Free Club Plan: every submission gets manually approved or not --
+--      club_intake_submissions.status stays 'pending' / 'approved' /
+--      'redirected_not_ready' for this (see the Oct 26 override fix --
+--      the coach can approve past a 'redirected_not_ready' flag too).
+--      'waitlisted' is no longer written here; the existing enum value
+--      stays defined (Postgres enums can't cleanly drop a value, and this
+--      is additive-only) but is dead going forward.
+--
+--   2. Paid 1-on-1: a SEPARATE decision that only applies once an athlete
+--      is already free-approved (a real coach_athletes row exists) AND
+--      expressed interest -- waitlisted-for-paid vs. selected-for-paid,
+--      reversible either direction, happening "a while later" once price
+--      is set. This is a property of the coaching relationship, not the
+--      intake submission.
+--
+-- paid_waitlisted is purely a tracking flag for that second decision --
+-- it has NO effect on the free/paid barrier, which stays keyed on `tier`
+-- alone (see coach_athletes.tier's own migration). An athlete can be
+-- tier='free' with paid_waitlisted=true (waitlisted, not yet selected) or
+-- tier='free' with paid_waitlisted=false (free, not yet decided either
+-- way) -- both get identical free-tier access; the flag only changes what
+-- the coach's own queue UI offers next, never a barrier check.
+alter table public.coach_athletes add column paid_waitlisted boolean not null default false;
