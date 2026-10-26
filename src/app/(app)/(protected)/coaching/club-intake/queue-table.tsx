@@ -23,10 +23,15 @@ function formatMinutes(seconds: number | null): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+}
+
 export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   // revalidatePath (in the server actions) only invalidates the ROUTER
@@ -56,7 +61,14 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-semibold text-zinc-900 dark:text-white">{row.athleteName}</p>
+                <button
+                  type="button"
+                  className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/20 dark:hover:decoration-white"
+                  aria-expanded={expandedId === row.id}
+                  onClick={() => setExpandedId((current) => (current === row.id ? null : row.id))}
+                >
+                  {row.athleteName}
+                </button>
                 <Badge tone={STATUS_TONE[row.status]}>{row.status.replace(/_/g, " ")}</Badge>
                 {row.readinessFail ? <Badge tone="error">Below readiness line</Badge> : null}
                 {row.injuryHistory ? <Badge tone="warning">Injury/illness history</Badge> : null}
@@ -104,6 +116,14 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
               </div>
             ) : null}
           </div>
+          {expandedId === row.id ? (
+            <div className="mt-4 space-y-1 border-t border-black/10 pt-4 text-sm text-zinc-600 dark:border-white/10 dark:text-zinc-300">
+              <p>Submitted: {formatDateTime(row.createdAt)}</p>
+              {row.raceDate ? <p>Race date: {row.raceDate}</p> : null}
+              <p>School email: {row.schoolEmail ?? "not provided"}</p>
+              {row.interested1on1 ? <p>Coaching agreement: all four boxes checked (required to express 1-on-1 interest).</p> : null}
+            </div>
+          ) : null}
           {errors[row.id] ? <FormError className="mt-3">{errors[row.id]}</FormError> : null}
         </Card>
       ))}
