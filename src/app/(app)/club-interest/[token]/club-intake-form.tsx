@@ -39,7 +39,7 @@ export function ClubIntakeForm({ token }: { token: string }) {
             Running regularly now. The 6-week base phase (from Nov 9) is designed to build you up, no hard mileage
             gate. Most athletes will peak around 40-50 mpw.
           </li>
-          <li>Available to run 7 days a week through the buildup.</li>
+          <li>Available to run 5-7 days a week through the buildup.</li>
           <li>
             A current fitness reference, a recent race works, or run the team 5K time trial Chloe&rsquo;s hosting
             near the end of base (mid-December) to set your paces going into the general phase.
