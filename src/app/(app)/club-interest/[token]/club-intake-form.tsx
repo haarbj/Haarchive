@@ -41,8 +41,8 @@ export function ClubIntakeForm({ token }: { token: string }) {
           </li>
           <li>Available to run 5-7 days a week through the buildup.</li>
           <li>
-            A current fitness reference, a recent race works, or run the team 5K time trial Chloe&rsquo;s hosting
-            near the end of base (mid-December) to set your paces going into the general phase.
+            A current fitness reference (a recent race works) or run the team 5K time trial Run Club is hosting near
+            the end of base (date TBD) to set your paces going into the general phase.
           </li>
           <li>For paid 1-on-1 only: willingness to log workouts and communicate weekly. The feedback loop needs data; no logs, no coaching.</li>
         </ul>
@@ -58,8 +58,8 @@ export function ClubIntakeForm({ token }: { token: string }) {
       <section>
         <h2 className={labelClass}>Recent 5K race result or team time trial</h2>
         <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-300">
-          A current fitness reference works best. No recent 5K? Check the box to use Chloe&rsquo;s team 5K time
-          trial near the end of base instead.
+          A current fitness reference works best. No recent 5K? Check the box to use Run Club&rsquo;s team 5K time
+          trial near the end of base instead (date TBD).
         </p>
         <div className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-3">
