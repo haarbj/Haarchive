@@ -153,7 +153,12 @@ export async function submitClubIntake(
     proposed_peak_mileage: null,
   };
 
-  if (readiness.ready) {
+  // Computed regardless of readiness -- the readiness gate and this
+  // recommendation are both advisory (see club-intake.ts's own header
+  // comment), and the coach can approve a below-the-line submission
+  // anyway. A proposed framework on that row gives them something to
+  // start from rather than nothing.
+  {
     const rec = recommendClubFramework({
       currentWeeklyMileage: data.currentWeeklyMileage,
       yearsRunning: data.yearsRunning,
@@ -200,7 +205,7 @@ export async function submitClubIntake(
   } else {
     await notifyAdmins({
       type: "club_intake_submitted",
-      content: `Club intake: ${session.email ?? "an athlete"} submitted below the readiness line (${data.currentWeeklyMileage} mi/week) -- routed to base-building, no plan proposed.`,
+      content: `Club intake: ${session.email ?? "an athlete"} submitted below the readiness line (${data.currentWeeklyMileage} mi/week) -- routed to base-building, but still approvable (proposed ${row.proposed_framework_key}).`,
       relatedEntityId: session.userId,
     });
   }

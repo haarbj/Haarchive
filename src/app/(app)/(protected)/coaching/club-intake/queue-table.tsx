@@ -103,14 +103,23 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
               ) : null}
             </div>
 
-            {row.status === "pending" ? (
+            {/* The readiness gate and the auto-match proposal are both
+                advisory, same as every other proposal in this platform
+                (see club-intake.ts's own header comment) -- not meeting
+                the mileage line routes a submission to
+                redirected_not_ready by default, but the coach still has
+                final say and can approve or waitlist it anyway. Only
+                "approved" is a settled state past this point. */}
+            {row.status !== "approved" ? (
               <div className="flex gap-2">
                 <Button size="sm" disabled={pendingId === row.id} onClick={() => handle(row.id, approveClubIntakeSubmission)}>
                   Approve
                 </Button>
-                <Button size="sm" variant="outline" disabled={pendingId === row.id} onClick={() => handle(row.id, waitlistClubIntakeSubmission)}>
-                  Waitlist
-                </Button>
+                {row.status !== "waitlisted" ? (
+                  <Button size="sm" variant="outline" disabled={pendingId === row.id} onClick={() => handle(row.id, waitlistClubIntakeSubmission)}>
+                    Waitlist
+                  </Button>
+                ) : null}
               </div>
             ) : null}
             {row.status === "approved" && row.coachAthleteId ? (
