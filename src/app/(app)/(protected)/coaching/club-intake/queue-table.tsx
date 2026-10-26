@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { approveClubIntakeSubmission, waitlistClubIntakeSubmission, setCoachAthleteTier, type ClubIntakeQueueRow } from "./actions";
+import { CLUB_INTAKE_WTP_LABELS } from "@/lib/validation/club-intake";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,11 +64,19 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/20 dark:hover:decoration-white"
+                  className="flex items-center gap-1 font-semibold text-zinc-900 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-white dark:decoration-white/20 dark:hover:decoration-white"
                   aria-expanded={expandedId === row.id}
                   onClick={() => setExpandedId((current) => (current === row.id ? null : row.id))}
                 >
                   {row.athleteName}
+                  <svg
+                    className={`h-3.5 w-3.5 transition-transform ${expandedId === row.id ? "rotate-180" : ""}`}
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </button>
                 <Badge tone={STATUS_TONE[row.status]}>{row.status.replace(/_/g, " ")}</Badge>
                 {row.readinessFail ? <Badge tone="error">Below readiness line</Badge> : null}
@@ -87,7 +96,11 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
                 </p>
               ) : null}
               {row.injuryHistory ? <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">Injury notes: {row.injuryHistory}</p> : null}
-              {row.wtpBracket ? <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">WTP bracket: {row.wtpBracket}</p> : null}
+              {row.wtpBracket ? (
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  Willingness to pay: {CLUB_INTAKE_WTP_LABELS[row.wtpBracket as keyof typeof CLUB_INTAKE_WTP_LABELS] ?? row.wtpBracket}
+                </p>
+              ) : null}
             </div>
 
             {row.status === "pending" ? (
@@ -118,10 +131,14 @@ export function QueueTable({ rows }: { rows: ClubIntakeQueueRow[] }) {
           </div>
           {expandedId === row.id ? (
             <div className="mt-4 space-y-1 border-t border-black/10 pt-4 text-sm text-zinc-600 dark:border-white/10 dark:text-zinc-300">
+              <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Full response</p>
               <p>Submitted: {formatDateTime(row.createdAt)}</p>
-              {row.raceDate ? <p>Race date: {row.raceDate}</p> : null}
+              <p>Race date: {row.raceDate ?? "not provided"}</p>
               <p>School email: {row.schoolEmail ?? "not provided"}</p>
-              {row.interested1on1 ? <p>Coaching agreement: all four boxes checked (required to express 1-on-1 interest).</p> : null}
+              <p>
+                Coaching agreement:{" "}
+                {row.interested1on1 ? "all four boxes checked (required to express 1-on-1 interest)." : "not applicable (no 1-on-1 interest)."}
+              </p>
             </div>
           ) : null}
           {errors[row.id] ? <FormError className="mt-3">{errors[row.id]}</FormError> : null}
