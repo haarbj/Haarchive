@@ -12,6 +12,7 @@ import {
 } from "@/lib/coaching-engine";
 import { createClient } from "@/lib/db/server";
 import { formatDate } from "@/lib/format";
+import { mostRecentMonday } from "@/lib/week";
 import { todayForViewer } from "@/lib/viewer-timezone";
 import { getActiveCoachRelationship } from "@/lib/private-coaching/athlete-coach";
 import { publishedAssignedWorkoutsThisWeek, weeklyLoadEntriesFromAssignedWorkouts } from "@/lib/private-coaching/assigned-week-workouts";
@@ -204,7 +205,69 @@ export async function PlanView({ userId, coachView = false, view = "week", readO
         </p>
       );
     }
-    redirect("/plan/new");
+
+    // A privately-coached athlete (self-coach or a real coach) has no
+    // self-generated training_plans row by design -- their schedule lives
+    // entirely in scheduled_workouts, assigned by their coach. Redirecting
+    // them to /plan/new (self-serve generation) was wrong twice over: it
+    // steered them toward creating a plan that collides with their
+    // coach's own assignments (now blocked at plan/new/page.tsx), and it
+    // meant they could never reach this page at all to see those
+    // assignments -- the exact reason Weekly Load read 0.0/0.0 and no
+    // workout ever rendered here for this audience. Render the
+    // coach-assigned view directly instead of bouncing them away; a
+    // genuinely uncoached, plan-less self-serve user (no relationship at
+    // all) still redirects to /plan/new exactly as before.
+    const relationship = await getActiveCoachRelationship(supabase, userId);
+    if (!relationship) redirect("/plan/new");
+
+    const today = await todayForViewer();
+    const weekStart = mostRecentMonday(new Date(`${today}T00:00:00Z`));
+    const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    const workoutsByDate = await fetchCalendarWorkouts(supabase, userId, relationship.coachId, weekDates, today);
+    const assignedWorkouts = publishedAssignedWorkoutsThisWeek(workoutsByDate);
+    const weeklyLoad = computeWeeklyLoad(weeklyLoadEntriesFromAssignedWorkouts(assignedWorkouts), null, today);
+    const { scheduledText, completedText, remainingText, unscheduledText, scheduledDurationText, completedDurationText } = formatWeeklyLoadText(
+      weeklyLoad,
+      "miles",
+      null,
+    );
+
+    return (
+      <>
+        <Heading>This week</Heading>
+        <div className="mt-8">
+          {assignedWorkouts.length > 0 && (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              <span>
+                Scheduled: {scheduledText}
+                {scheduledDurationText ? ` / ${scheduledDurationText}` : ""}
+              </span>
+              <span className="mx-1.5">·</span>
+              <span>
+                Completed: {completedText}
+                {completedDurationText ? ` / ${completedDurationText}` : ""}
+              </span>
+              <span className="mx-1.5">·</span>
+              <span>Remaining: {remainingText}</span>
+              {unscheduledText ? (
+                <>
+                  <span className="mx-1.5">·</span>
+                  <span>Unscheduled: {unscheduledText}</span>
+                </>
+              ) : null}
+            </p>
+          )}
+          <div className="mt-3 space-y-3">
+            {assignedWorkouts.length > 0 ? (
+              assignedWorkouts.map((workout) => <AssignedWorkoutRow key={workout.id} workout={workout} />)
+            ) : (
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">No workouts scheduled this week.</p>
+            )}
+          </div>
+        </div>
+      </>
+    );
   }
 
   const { data: mesocycles } = await supabase

@@ -12,13 +12,18 @@ export const metadata: Metadata = {
 };
 
 export default async function NewPlanPage() {
-  // Team-connected athletes get their schedule from their coach, not
-  // self-generated -- this route is fully blocked for them, not just
-  // hidden, since generating one here would collide with their coach's
-  // group plan (and there's nothing for it to attach to: no season/group
-  // context to associate it with).
+  // Team-connected or privately-coached athletes get their schedule from
+  // their coach, not self-generated -- this route is fully blocked for
+  // them, not just hidden, since generating one here would collide with
+  // their coach's own assignments (and there's nothing for it to attach
+  // to: no season/group context to associate it with). isCoachedAthlete
+  // covers both a real private coach and self-coaching (coach_athletes
+  // with coach_id = athlete_id) -- plan/layout.tsx had to open its own
+  // isAthlete-only gate to let a privately-coached, non-team athlete
+  // reach /plan at all (see its own comment), which made this route's
+  // own team-only check an equally stale gap for the same population.
   const session = await getAppSession();
-  if (session?.athleteTeamId) redirect("/plan");
+  if (session?.athleteTeamId || session?.isCoachedAthlete) redirect("/plan");
 
   const supabase = await createClient();
 

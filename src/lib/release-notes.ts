@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-27",
+    headline: "Fixed: privately-coached athletes couldn't reach their own schedule",
+    detail:
+      "A fix shipped Oct 19 corrected which coach a privately-coached athlete's page resolves when they'd self-coached before accepting a real invite, and taught the weekly schedule page to render coach-assigned workouts. But that schedule page (/plan) was still gated behind a team-membership check left over from before private coaching existed, so an athlete who wasn't also on a team never reached it at all -- redirected away before that logic ever ran. Opened the gate for a privately-coached athlete, and taught the page's own no-self-generated-plan path to show their coach-assigned workouts and weekly mileage instead of bouncing them toward generating a conflicting plan of their own.",
+  },
+  {
     date: "2026-10-26",
     headline: "Club intake: a free Club Plan tier, and an unlisted interest form behind it",
     detail:
