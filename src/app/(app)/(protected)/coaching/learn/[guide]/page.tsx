@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { getAppSession } from "@/lib/auth/session";
+import { createClient } from "@/lib/db/server";
+import { getAthleteMostRecentRace } from "@/lib/private-coaching/pace-reference";
 import { ATHLETE_GUIDES, getAthleteGuide } from "@/lib/private-coaching/athlete-education";
 import { ContentBlocks } from "@/components/content-blocks";
 import { BackLink } from "@/components/ui/back-link";
@@ -30,7 +32,13 @@ export default async function AthleteGuidePage({ params }: { params: Promise<{ g
   if (!session.isCoachedAthlete && !session.isPrivateCoach) redirect("/coaching");
 
   const { guide: slug } = await params;
-  const guide = getAthleteGuide(slug);
+  // Only the "workout-types" guide's own worked examples read this -- a
+  // coach with no coaching practice of their own (isCoachedAthlete false)
+  // gets null here, same as an athlete with no race on file yet, and
+  // getAthleteGuide/resolveGlossaryExample both already handle that case
+  // honestly (structure shown, no fabricated splits).
+  const race = session.isCoachedAthlete ? await getAthleteMostRecentRace(await createClient(), session.userId) : null;
+  const guide = getAthleteGuide(slug, race);
   if (!guide) notFound();
 
   const others = ATHLETE_GUIDES.filter((g) => g.slug !== guide.slug);

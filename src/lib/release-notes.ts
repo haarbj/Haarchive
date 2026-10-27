@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-27",
+    headline: "Worked examples with real splits for progression-run workouts, and a dangling line removed",
+    detail:
+      "A workout detail page's \"No structured steps -- see the notes above\" line used to render for any typed workout with no steps at all, even when there were no notes above to see either -- it now only appears when there's something real to point at. Separately, the two workout types that progress pace within a single continuous session (the Kenyan-style progression run and the stepwise long fast run) now show a worked example -- the session's own structure plus sample splits computed from the viewing athlete's own most recent race, the same way every other named pace on this platform resolves. With no race on file yet, the structure still shows, by pace-zone name only, never a fabricated number. The same example appears on the workout detail page and the full workout-types glossary, which now also links directly to the matching entry instead of just the general list.",
+  },
+  {
+    date: "2026-10-27",
     headline: "Fixed: the on-ramps to an athlete's own schedule, and a coach dropped out of view-as on /plan",
     detail:
       "Two of the paths into an athlete's weekly schedule led nowhere useful: the \"Take me to my schedule\" button on Your Plan sent an athlete to the coaching home instead of their own schedule, and the Coaching page had no direct link to it at all. Both now go to /plan. Separately, a coach viewing as one of their athletes who navigated to /plan was redirected straight to their own dashboard with no banner and no explanation -- view-as mode was silently dropped, because /plan's own access gate checked only the coach's own session, never whether they were actively viewing as someone else. The coach now stays in view-as and sees the athlete's real plan.",

@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 27, 2026](https://brodyhaar.com/release-notes)):** Fixed: the on-ramps to an athlete's own schedule, and a coach dropped out of view-as on /plan
+**Latest update ([Oct 27, 2026](https://brodyhaar.com/release-notes)):** Worked examples with real splits for progression-run workouts, and a dangling line removed
 
 Recent highlights:
+- Fixed: the on-ramps to an athlete's own schedule, and a coach dropped out of view-as on /plan (Oct 27, 2026)
 - Week notes now reach the athlete, and framework edits reach everyone already assigned (Oct 27, 2026)
 - Fixed: privately-coached athletes couldn't reach their own schedule (Oct 27, 2026)
-- Club intake: a free Club Plan tier, and an unlisted interest form behind it (Oct 26, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

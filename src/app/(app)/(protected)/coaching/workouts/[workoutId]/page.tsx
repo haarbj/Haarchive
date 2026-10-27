@@ -17,7 +17,8 @@ import { getWorkoutDisplayLabel, effectiveWorkoutVolume, computeWorkoutStatus } 
 import { formatDistanceRange, formatDurationRange } from "@/lib/private-coaching/workout-distance";
 import { compareCompletionToPlan, describeRpe, formatDistanceDelta, formatDurationDelta, formatRpeDisplay } from "@/lib/private-coaching/completion-comparison";
 import { isBareXt } from "@/lib/private-coaching/day-type-visuals";
-import { getWorkoutGlossaryEntry } from "@/lib/private-coaching/workout-glossary";
+import { getWorkoutGlossaryEntry, resolveGlossaryExample } from "@/lib/private-coaching/workout-glossary";
+import { headingId } from "@/lib/heading-id";
 import { PhaseExplainer } from "@/components/private-coaching/phase-explainer";
 import { effortLevelLabel } from "@/lib/private-coaching/effort-levels";
 import {
@@ -608,8 +609,10 @@ export default async function WorkoutDetailPage({
               {step.instructions ? <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{step.instructions}</p> : null}
             </Card>
           ))
-        ) : (
+        ) : workout.notes_from_coach ? (
           <p className="text-sm text-zinc-600 dark:text-zinc-300">No structured steps -- see the notes above.</p>
+        ) : (
+          <p className="text-sm text-zinc-600 dark:text-zinc-300">No structured steps for this workout.</p>
         )}
       </div>
 
@@ -632,6 +635,43 @@ export default async function WorkoutDetailPage({
               <span className="font-semibold text-zinc-600 dark:text-zinc-300">What it builds: </span>
               {glossaryEntry.whatItBuilds}
             </p>
+            {glossaryEntry.example ? (
+              (() => {
+                // mostRecentRace is always the WORKOUT's own athlete's
+                // race (fetched above via workout.athlete_id), never the
+                // viewer's -- correct for both a coach reading this
+                // athlete's workout and the athlete reading their own.
+                const resolved = resolveGlossaryExample(glossaryEntry.example, mostRecentRace);
+                return (
+                  <div className="mt-4 rounded-control border border-black/10 p-3 dark:border-white/10">
+                    <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:text-zinc-400">Example</p>
+                    <p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">{resolved.structure}</p>
+                    <ul className="mt-2 space-y-1">
+                      {resolved.segments.map((segment) => (
+                        <li key={segment.label} className="text-sm text-zinc-600 dark:text-zinc-300">
+                          <span className="font-semibold text-zinc-900 dark:text-white">{segment.label}:</span> {segment.text}
+                        </li>
+                      ))}
+                    </ul>
+                    {!resolved.hasRace ? (
+                      <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+                        {viewerIsAthlete ? (
+                          <>
+                            No race on file yet, so these are the pace zones by name only, not numbers.{" "}
+                            <Link href="/settings" className="underline decoration-black/20 underline-offset-2 hover:decoration-black dark:decoration-white/20 dark:hover:decoration-white">
+                              Add a recent race result
+                            </Link>{" "}
+                            to see your own splits here.
+                          </>
+                        ) : (
+                          "No race on file for this athlete yet, so these are the pace zones by name only, not numbers."
+                        )}
+                      </p>
+                    ) : null}
+                  </div>
+                );
+              })()
+            ) : null}
             {glossaryEntry.coachAssignOnly ? (
               <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
                 An advanced session your coach assigns deliberately, not one to add on your own.
@@ -645,10 +685,10 @@ export default async function WorkoutDetailPage({
               <PhaseExplainer phaseType={phaseForWorkout.phase_type} explainer={phaseForWorkout.explainer} />
             ) : null}
             <Link
-              href="/coaching/learn/workout-types"
+              href={`/coaching/learn/workout-types#${headingId(glossaryEntry.name)}`}
               className="mt-4 inline-block text-xs font-semibold text-zinc-500 underline decoration-black/20 underline-offset-2 hover:decoration-black dark:text-zinc-400 dark:decoration-white/20 dark:hover:decoration-white"
             >
-              All workout types
+              Read more about {glossaryEntry.name} in the full glossary
             </Link>
           </Card>
         </div>

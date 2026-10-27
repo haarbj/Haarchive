@@ -17,7 +17,8 @@
 // CLAUDE.md §7 on the generic-template pattern).
 
 import type { ContentBlock } from "@/lib/sections";
-import { WORKOUT_GLOSSARY, GLOSSARY_PHASE_LABELS, GLOSSARY_PHASE_ORDER } from "./workout-glossary";
+import { WORKOUT_GLOSSARY, GLOSSARY_PHASE_LABELS, GLOSSARY_PHASE_ORDER, resolveGlossaryExample } from "./workout-glossary";
+import type { AthleteMostRecentRace } from "./pace-reference";
 import { EFFORT_LEVELS } from "./effort-levels";
 import { CRASH_COURSE_EFFORT_GUIDE } from "./onboarding";
 
@@ -338,8 +339,13 @@ const FUELING_AND_HYDRATION: ContentBlock[] = [
 // The glossary rendered as a browsable page, grouped by the phase each
 // session belongs to. Built from WORKOUT_GLOSSARY rather than hand-written
 // prose so a new or edited entry shows up here and on the workout detail
-// page from one edit, never two.
-function buildWorkoutTypesContent(): ContentBlock[] {
+// page from one edit, never two. `race` is the viewing athlete's own most
+// recent race (null for a coach with no athlete context of their own, or
+// an athlete with none on file yet) -- getAthleteGuide passes it through
+// per request, since a worked example's splits depend on who's looking,
+// unlike every other guide here, which is why this is a function call and
+// not a plain static ContentBlock[] constant.
+function buildWorkoutTypesContent(race: AthleteMostRecentRace | null): ContentBlock[] {
   const blocks: ContentBlock[] = [
     {
       type: "paragraph",
@@ -364,6 +370,19 @@ function buildWorkoutTypesContent(): ContentBlock[] {
           : entry.whatItBuilds,
         collapsed: false,
       });
+      if (entry.example) {
+        const resolved = resolveGlossaryExample(entry.example, race);
+        blocks.push({
+          type: "callout",
+          variant: "tip",
+          title: "Example",
+          text: resolved.hasRace
+            ? resolved.structure
+            : `${resolved.structure} No race on file yet, so these are the pace zones by name only, not numbers -- add a recent race result in Settings to see your own splits here.`,
+          items: resolved.segments.map((segment) => `${segment.label}: ${segment.text}`),
+          collapsed: false,
+        });
+      }
     }
   }
 
@@ -397,10 +416,23 @@ export const ATHLETE_GUIDES: AthleteGuide[] = [
     title: "Workout types",
     eyebrow: "Reference",
     summary: "Every kind of session you get assigned, what it targets, and how to execute it.",
-    content: buildWorkoutTypesContent(),
+    // Never actually rendered -- getAthleteGuide always rebuilds this
+    // one's content per request (buildWorkoutTypesContent needs the
+    // viewing athlete's own race to resolve a worked example's splits,
+    // which a module-level constant can't know). Kept here only so this
+    // guide still has a real slug/title/summary for the "others" list
+    // other guide pages render.
+    content: [],
   },
 ];
 
-export function getAthleteGuide(slug: string): AthleteGuide | null {
-  return ATHLETE_GUIDES.find((guide) => guide.slug === slug) ?? null;
+// `race` personalizes the "workout-types" guide's worked-example splits to
+// the viewing athlete's own most recent race (see buildWorkoutTypesContent's
+// own comment) -- every other guide ignores it, since none of them have a
+// per-viewer worked example.
+export function getAthleteGuide(slug: string, race: AthleteMostRecentRace | null = null): AthleteGuide | null {
+  const guide = ATHLETE_GUIDES.find((g) => g.slug === slug);
+  if (!guide) return null;
+  if (slug === "workout-types") return { ...guide, content: buildWorkoutTypesContent(race) };
+  return guide;
 }

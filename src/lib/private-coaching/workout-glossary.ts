@@ -25,10 +25,26 @@
 // basis and a percentage window alongside its labels, and the
 // pace-conditioned rules are evaluated before the bare-label ones.
 
-import type { PaceReferenceKey } from "./pace-reference";
+import { type PaceReferenceKey, type AthleteMostRecentRace, resolvePaceReference, formatResolvedPaceText, PACE_REFERENCE_LABELS } from "./pace-reference";
 import { splitDayLabel } from "./day-type-visuals";
 
 export type GlossaryPhase = "general" | "supportive" | "specific" | "advanced" | "any";
+
+// One segment of a worked example -- a plain-language label ("First
+// third") paired with the named pace reference it targets. Resolved live
+// against the viewing athlete's own most recent race (resolveGlossaryExample
+// below), the exact same mechanism every other named-pace display in this
+// codebase already uses (pace-reference.ts's own header comment) -- never
+// a second, fabricated number.
+export type GlossaryExampleSegment = { label: string; reference: PaceReferenceKey };
+
+export type WorkoutGlossaryExample = {
+  // One or two sentences describing the shape of the session -- never a
+  // fixed distance or mile marker, since the glossary entry itself has no
+  // concept of one assigned workout's actual length.
+  structure: string;
+  segments: GlossaryExampleSegment[];
+};
 
 export type WorkoutGlossaryEntry = {
   id: string;
@@ -37,6 +53,11 @@ export type WorkoutGlossaryEntry = {
   whatItIs: string;
   // What it targets and how to run it well.
   howToExecute: string;
+  // A concrete worked example -- structure plus sample splits -- for
+  // entries where "what it is" alone leaves an athlete with no sense of
+  // what the session actually looks like (progression-type sessions
+  // first; see this file's own header for which entries have one).
+  example?: WorkoutGlossaryExample;
   // Which of the four components of marathon fitness it builds, and the
   // physiology underneath that. Every entry has one, so an athlete can
   // always connect today's session to the thing it's for.
@@ -94,6 +115,15 @@ export const WORKOUT_GLOSSARY: WorkoutGlossaryEntry[] = [
       "Start slower than feels necessary and resist checking the watch. You want to finish exhilarated, not exhausted. Progressing too eagerly and having to slow down later is a normal part of learning these, and the learning is part of the point: this is the session that teaches you what your own pacing feels like from the inside.",
     whatItBuilds:
       "Economy as a skill, plus oxidative capacity across a wide band of paces. A single progression run touches most of the intensity ladder in one continuous effort.",
+    example: {
+      structure:
+        "Divide the run into three roughly equal thirds, each a notch faster than the last -- one continuous progression, not three separate reps with a break between them.",
+      segments: [
+        { label: "First third", reference: "easy" },
+        { label: "Middle third", reference: "steady" },
+        { label: "Final third", reference: "tempo" },
+      ],
+    },
   },
   {
     id: "strides",
@@ -206,6 +236,14 @@ export const WORKOUT_GLOSSARY: WorkoutGlossaryEntry[] = [
       "Run the early steps at the prescribed pace rather than ahead of it, and earn the last step. The structure is also a hedge: if your marathon fitness estimate is optimistic, you find out in the middle of the session with room to adjust instead of blowing up in the first 20 minutes.",
     whatItBuilds:
       "The same resilience the flat version builds, with extra emphasis on running well on tired legs, which is the specific skill the last hour of a marathon demands.",
+    example: {
+      structure:
+        "Split the fast portion into two roughly equal halves, stepping up once partway through -- the second half is the harder one, not a repeat of the first.",
+      segments: [
+        { label: "First half", reference: "steady" },
+        { label: "Second half", reference: "tempo" },
+      ],
+    },
   },
   {
     id: "alternating-km-105",
@@ -421,6 +459,40 @@ export function getWorkoutGlossaryEntry(
     if (ruleMatches(rule, label, pace ?? null)) return getGlossaryEntryById(rule.entryId);
   }
   return null;
+}
+
+export type ResolvedGlossaryExample = {
+  structure: string;
+  // One line per segment, always present and always safe to render --
+  // "First third: 7:45–8:05/mi (Easy Pace)" when a race is on file,
+  // "First third: Easy Pace" (no number) when it is not. Never a
+  // fabricated pace presented as the athlete's own.
+  segments: { label: string; text: string }[];
+  hasRace: boolean;
+};
+
+// The one place a glossary example's segments turn into real (or
+// honestly absent) paces -- resolvePaceReference/formatResolvedPaceText
+// are the same functions every other named-pace display in this codebase
+// already uses (pace-reference.ts's own header comment), so this can
+// never drift from what the rest of the app calls "Easy Pace" for the
+// same athlete. `race` is the VIEWING athlete's own most recent race --
+// for a coach reading a specific athlete's workout that's the workout's
+// own athlete_id, never the coach's; for the general glossary page it's
+// the signed-in athlete's own, or null for a coach with no athlete
+// context of their own.
+export function resolveGlossaryExample(example: WorkoutGlossaryExample, race: AthleteMostRecentRace | null): ResolvedGlossaryExample {
+  return {
+    structure: example.structure,
+    segments: example.segments.map((segment) => {
+      const resolved = resolvePaceReference(segment.reference, race);
+      const text = race
+        ? formatResolvedPaceText(resolved, PACE_REFERENCE_LABELS[segment.reference])
+        : PACE_REFERENCE_LABELS[segment.reference];
+      return { label: segment.label, text };
+    }),
+    hasRace: race != null,
+  };
 }
 
 export const GLOSSARY_PHASE_LABELS: Record<GlossaryPhase, string> = {

@@ -13,11 +13,18 @@ describe("ATHLETE_GUIDES", () => {
   });
 
   it("gives every guide real content and real headings", () => {
-    for (const guide of ATHLETE_GUIDES) {
-      expect(guide.title.length).toBeGreaterThan(0);
-      expect(guide.summary.length).toBeGreaterThan(20);
-      expect(guide.content.length).toBeGreaterThan(5);
-      expect(guide.content.some((block) => block.type === "heading")).toBe(true);
+    // Through getAthleteGuide, not the static ATHLETE_GUIDES array
+    // directly -- "workout-types" carries a placeholder content: [] in
+    // the static array on purpose (its real content depends on the
+    // viewing athlete's own race, so it's only ever built per request;
+    // see getAthleteGuide's own comment).
+    for (const { slug } of ATHLETE_GUIDES) {
+      const guide = getAthleteGuide(slug);
+      expect(guide).not.toBeNull();
+      expect(guide!.title.length).toBeGreaterThan(0);
+      expect(guide!.summary.length).toBeGreaterThan(20);
+      expect(guide!.content.length).toBeGreaterThan(5);
+      expect(guide!.content.some((block) => block.type === "heading")).toBe(true);
     }
   });
 

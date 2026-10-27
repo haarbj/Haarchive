@@ -2,9 +2,12 @@ import { describe, it, expect } from "vitest";
 
 import {
   getWorkoutGlossaryEntry,
+  getGlossaryEntryById,
+  resolveGlossaryExample,
   WORKOUT_GLOSSARY,
   GLOSSARY_PHASE_ORDER,
 } from "@/lib/private-coaching/workout-glossary";
+import type { AthleteMostRecentRace } from "@/lib/private-coaching/pace-reference";
 
 describe("getWorkoutGlossaryEntry", () => {
   it("resolves a bare label with no pace context", () => {
@@ -97,5 +100,58 @@ describe("WORKOUT_GLOSSARY", () => {
       expect(entry.whatItBuilds.length).toBeGreaterThan(40);
       expect(GLOSSARY_PHASE_ORDER).toContain(entry.phase);
     }
+  });
+
+  // The two within-session pace-progression entries inventoried for this
+  // fix -- anyone adding a third should give it an example too.
+  it("gives both progression-type entries a worked example", () => {
+    expect(getGlossaryEntryById("progression-run")?.example).toBeDefined();
+    expect(getGlossaryEntryById("long-fast-stepwise")?.example).toBeDefined();
+  });
+});
+
+describe("resolveGlossaryExample", () => {
+  const entry = getGlossaryEntryById("progression-run")!;
+  const example = entry.example!;
+
+  it("shows the structure and each segment's pace zone by name, with no fabricated numbers, when no race is on file", () => {
+    const resolved = resolveGlossaryExample(example, null);
+    expect(resolved.hasRace).toBe(false);
+    expect(resolved.structure).toBe(example.structure);
+    expect(resolved.segments).toEqual([
+      { label: "First third", text: "Easy Pace" },
+      { label: "Middle third", text: "Steady Pace" },
+      { label: "Final third", text: "Tempo Pace" },
+    ]);
+    // Never a pace-looking string ("X:XX/mi") when there's no race to
+    // compute one from.
+    for (const segment of resolved.segments) {
+      expect(segment.text).not.toMatch(/\d+:\d{2}/);
+    }
+  });
+
+  it("computes real per-mile splits from the viewing athlete's own race when one is on file", () => {
+    const race: AthleteMostRecentRace = {
+      id: "r1",
+      raceName: "QA Test 10K",
+      raceDate: "2026-09-01",
+      distanceM: 10000,
+      finishTimeS: 2400,
+    };
+    const resolved = resolveGlossaryExample(example, race);
+    expect(resolved.hasRace).toBe(true);
+    expect(resolved.segments).toHaveLength(3);
+    for (const segment of resolved.segments) {
+      expect(segment.text).toMatch(/\d+:\d{2}(–\d+:\d{2})?\/mi \(.+\)/);
+    }
+    // Each segment should be faster than the one before it -- the whole
+    // point of a progression.
+    const paceToSeconds = (text: string) => {
+      const [min, sec] = text.split(/[–/]/)[0].split(":").map(Number);
+      return min * 60 + sec;
+    };
+    const paces = resolved.segments.map((s) => paceToSeconds(s.text));
+    expect(paces[0]).toBeGreaterThan(paces[1]);
+    expect(paces[1]).toBeGreaterThan(paces[2]);
   });
 });
