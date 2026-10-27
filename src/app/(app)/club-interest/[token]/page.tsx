@@ -105,7 +105,17 @@ export default async function ClubInterestPage({ params }: { params: Promise<{ t
       <Heading variant="compact">{cycle.label}</Heading>
       <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
         {cycle.raceName}, {new Date(`${cycle.raceDate}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}.
-        Interest is due {new Date(cycle.deadlineAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}.
+        Interest is due{" "}
+        {new Date(cycle.deadlineAt).toLocaleString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          timeZone: "America/Chicago",
+          timeZoneName: "short",
+        })}
+        .
       </p>
       <div className="mt-8">
         <ClubIntakeForm token={token} />
