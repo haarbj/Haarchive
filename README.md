@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 27, 2026](https://brodyhaar.com/release-notes)):** Fixed: privately-coached athletes couldn't reach their own schedule
+**Latest update ([Oct 27, 2026](https://brodyhaar.com/release-notes)):** Week notes now reach the athlete, and framework edits reach everyone already assigned
 
 Recent highlights:
+- Fixed: privately-coached athletes couldn't reach their own schedule (Oct 27, 2026)
 - Club intake: a free Club Plan tier, and an unlisted interest form behind it (Oct 26, 2026)
 - Athletes can say what the season actually means to them (Oct 20, 2026)
-- Coaches can view as an athlete, read-only (Oct 20, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

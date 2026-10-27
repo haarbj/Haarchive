@@ -46,6 +46,8 @@ export type PlanPayoffData = {
 
   weekStart: string;
   weekWorkouts: CalendarWorkout[];
+  /** training_week_plans.notes for weekStart -- the same coach-authored note Week View's own WeekPlanEditor shows under its heading. */
+  weekNotes: string | null;
 
   firstAction: PlanPayoffFirstAction;
 
@@ -237,7 +239,10 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
   });
 
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  const workoutsByDate = await fetchCalendarWorkouts(supabase, athleteId, coachId, weekDates, today);
+  const [workoutsByDate, { data: weekPlanRow }] = await Promise.all([
+    fetchCalendarWorkouts(supabase, athleteId, coachId, weekDates, today),
+    supabase.from("training_week_plans").select("notes").eq("athlete_id", athleteId).eq("week_start", weekStart).maybeSingle<{ notes: string | null }>(),
+  ]);
   const allWeekWorkouts = weekDates.flatMap((d) => workoutsByDate[d] ?? []);
   // Explicit filter, not a reliance on RLS -- the coach-preview route
   // queries with the coach's own session (which sees drafts too), so
@@ -270,6 +275,7 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
     programPublished,
     weekStart,
     weekWorkouts,
+    weekNotes: weekPlanRow?.notes ?? null,
     firstAction,
     intakeGaps,
   };

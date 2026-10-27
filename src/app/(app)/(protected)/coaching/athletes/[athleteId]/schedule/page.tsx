@@ -397,6 +397,7 @@ export default async function AthleteSchedulePage({
           phases={phases}
           templates={templates}
           extraPresets={extraPresets}
+          supabase={supabase}
         />
       ) : null}
     </Container>
@@ -905,6 +906,7 @@ async function TimelineViewSection({
   phases,
   templates,
   extraPresets,
+  supabase,
 }: {
   athleteId: string;
   week: string;
@@ -912,6 +914,7 @@ async function TimelineViewSection({
   phases: TrainingPhase[];
   templates: TemplateOption[];
   extraPresets: ExtraPresetOption[];
+  supabase: Awaited<ReturnType<typeof createClient>>;
 }) {
   // ~2 weeks behind, ~4 weeks ahead of the reference week on first render
   // (initialWeekWindow, timeline-helpers.ts) -- TimelineView itself loads
@@ -919,7 +922,21 @@ async function TimelineViewSection({
   // actions.ts's own loadTimelineWeeks (the same fetchCalendarWorkouts
   // every other view's own section above already calls, just invoked
   // from the client for the weeks beyond this initial window).
-  const initialWeeks = await loadTimelineWeeks(athleteId, initialWeekWindow(week));
+  const [initialWeeks, { data: weekPlanRows }] = await Promise.all([
+    loadTimelineWeeks(athleteId, initialWeekWindow(week)),
+    // Unbounded by date range, same as `phases` above (this page's own
+    // "fetch exactly what the view needs" rule applies to the current
+    // week's own range, not to a cheap whole-athlete list like this one)
+    // -- weekMeta has to resolve a note for any week the coach might
+    // scroll to, not just the initial window.
+    supabase
+      .from("training_week_plans")
+      .select("week_start, notes")
+      .eq("athlete_id", athleteId)
+      .not("notes", "is", null)
+      .returns<{ week_start: string; notes: string }[]>(),
+  ]);
+  const notesByWeek = Object.fromEntries((weekPlanRows ?? []).map((r) => [r.week_start, r.notes]));
 
   return (
     <div className="mt-4">
@@ -931,6 +948,7 @@ async function TimelineViewSection({
         templates={templates}
         extraPresets={extraPresets}
         phases={phases}
+        notesByWeek={notesByWeek}
       />
     </div>
   );

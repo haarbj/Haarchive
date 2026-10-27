@@ -194,6 +194,7 @@ function FirstWeekSection({ data }: { data: PlanPayoffData }) {
   return (
     <section>
       <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Your first week</p>
+      {data.weekNotes ? <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-300">{data.weekNotes}</p> : null}
       {data.weekWorkouts.length === 0 ? (
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Nothing&rsquo;s published for this week yet.</p>
       ) : (

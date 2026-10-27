@@ -301,9 +301,27 @@ export function MonthView({
                   <Link href={`?view=week&week=${weekStart}`} className="block hover:underline">
                     <p className="truncate text-xs font-semibold text-zinc-900 dark:text-white">{summary?.title ?? "—"}</p>
                     {summary ? (
-                      <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-300">
-                        {formatCompactTargetVolume(summary.targetVolumeMin, summary.targetVolumeMax, summary.targetVolumeUnit) ?? "No target set"}
-                      </p>
+                      <>
+                        {summary.targetVolumeMin != null ? (
+                          <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-300">
+                            {formatCompactTargetVolume(summary.targetVolumeMin, summary.targetVolumeMax, summary.targetVolumeUnit)}
+                          </p>
+                        ) : summary.rawNotes ? null : (
+                          <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-300">No target set</p>
+                        )}
+                        {/* A week with a note always shows it here, even
+                            alongside a target volume -- the one thing this
+                            column must never do is say "No target set" for
+                            a week that has a note instead (that was the
+                            actual contradiction being fixed). Truncated to
+                            one line, same as the title above; the full text
+                            is still one click away via WeekPlanQuickEditModal. */}
+                        {summary.rawNotes ? (
+                          <p className="mt-0.5 truncate text-[10px] text-zinc-500 dark:text-zinc-400" title={summary.rawNotes}>
+                            {summary.rawNotes}
+                          </p>
+                        ) : null}
+                      </>
                     ) : null}
                     {summary?.weeksAwayLabel ? (
                       <p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">{summary.weeksAwayLabel}</p>

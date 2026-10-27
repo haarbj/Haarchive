@@ -1,0 +1,21 @@
+-- Framework-level week notes (program_phase_weeks.notes) were snapshotted
+-- into training_week_plans.notes once, at assignment/resync time
+-- (20261016030000/040000) -- real for a newly-assigned athlete, but a
+-- framework edit afterward never reached anyone already assigned before
+-- that edit: the only refresh mechanism was a coach manually re-running
+-- resync_program_phase_generation for one phase at a time, which also
+-- wipes and regenerates that phase's whole scheduled_workouts range, far
+-- more than a note edit should require.
+--
+-- This column lets saveProgramPhaseWeekLabel (programs/actions.ts) push a
+-- framework week-notes edit straight into every already-assigned athlete's
+-- training_week_plans row for that (phase_definition_id, week_number),
+-- without a full resync, while never clobbering a note a coach has
+-- deliberately written for one specific athlete via WeekPlanEditor/
+-- WeekPlanQuickEditModal (schedule/actions.ts's saveWeekPlan sets this
+-- true on every direct save). Defaults false, so assign_program_
+-- generation/resync_program_phase_generation's own inserts (system-copied
+-- from the framework, never a direct per-athlete edit) need no change at
+-- all -- they already get the right value for free.
+alter table public.training_week_plans
+  add column notes_is_custom boolean not null default false;

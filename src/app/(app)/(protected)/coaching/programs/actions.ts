@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getAppSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/db/server";
+import { addDays } from "@/lib/week";
 import type { StepInput } from "@/lib/private-coaching/steps";
 import { stepInputToIntensityTargets, intensityTargetsToStepRow } from "@/lib/private-coaching/intensity-target";
 import type { WorkoutExtraInput } from "@/lib/private-coaching/extras";
@@ -497,8 +498,14 @@ export type ProgramPhaseWeekLabelInput = {
   label: string | null;
   // A genuinely longer week-level narrative note (the week's own coaching
   // commentary/purpose, distinct from any one day's prescription) --
-  // authoring/reference content only, never generated into an athlete's
-  // schedule (unlike label). See the program_phase_weeks_notes migration.
+  // authoring/reference content that also flows into every already-
+  // assigned athlete's own training_week_plans.notes for this
+  // (phaseDefinitionId, weekNumber), both at assignment time
+  // (assign_program_generation/resync_program_phase_generation) and, via
+  // this action's own backfill below, on every later edit here too --
+  // unlike label, which still only ever reaches an athlete at assignment
+  // time. See the program_phase_weeks_notes and training_week_plans_
+  // notes/notes_custom migrations.
   notes: string | null;
 };
 
@@ -522,6 +529,7 @@ export async function saveProgramPhaseWeekLabel(input: ProgramPhaseWeekLabelInpu
       .eq("phase_definition_id", input.phaseDefinitionId)
       .eq("week_number", input.weekNumber);
     if (error) return { error: error.message };
+    await propagateWeekNotesToAssignedAthletes(supabase, session.userId, input.phaseDefinitionId, input.weekNumber, null);
     revalidatePath(`/coaching/programs/${input.programId}/phases/${input.phaseDefinitionId}`);
     return {};
   }
@@ -538,6 +546,66 @@ export async function saveProgramPhaseWeekLabel(input: ProgramPhaseWeekLabelInpu
   );
   if (error) return { error: error.message };
 
+  await propagateWeekNotesToAssignedAthletes(supabase, session.userId, input.phaseDefinitionId, input.weekNumber, notes);
+
   revalidatePath(`/coaching/programs/${input.programId}/phases/${input.phaseDefinitionId}`);
   return {};
+}
+
+type AssignedPhaseRow = { athlete_id: string; start_date: string; end_date: string };
+
+// Pushes a framework week-note edit straight into every already-assigned
+// athlete's training_week_plans.notes for this (phaseDefinitionId,
+// weekNumber) -- the "assignment snapshot" from assign_program_generation/
+// resync_program_phase_generation otherwise only ever reflects the
+// framework note as it stood at assignment time (see this file's own
+// ProgramPhaseWeekLabelInput.notes comment). Skips any athlete week a
+// coach has deliberately customized directly (WeekPlanEditor/
+// WeekPlanQuickEditModal, schedule/actions.ts's saveWeekPlan, which sets
+// notes_is_custom) -- a framework-wide edit must never silently clobber
+// that. A week whose computed date falls outside the athlete's own phase
+// range (the phase was assigned with fewer weeks than this program
+// definition has) is skipped, same bound program-generation.ts's own
+// emptyWeeks check uses at generation time.
+async function propagateWeekNotesToAssignedAthletes(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  coachId: string,
+  phaseDefinitionId: string,
+  weekNumber: number,
+  notes: string | null,
+): Promise<void> {
+  const { data: phaseRows } = await supabase
+    .from("training_phases")
+    .select("athlete_id, start_date, end_date")
+    .eq("coach_id", coachId)
+    .eq("source_program_phase_definition_id", phaseDefinitionId)
+    .returns<AssignedPhaseRow[]>();
+
+  for (const phase of phaseRows ?? []) {
+    const weekStart = addDays(phase.start_date, (weekNumber - 1) * 7);
+    if (weekStart > phase.end_date) continue;
+
+    const { data: existing } = await supabase
+      .from("training_week_plans")
+      .select("notes_is_custom")
+      .eq("athlete_id", phase.athlete_id)
+      .eq("week_start", weekStart)
+      .maybeSingle<{ notes_is_custom: boolean }>();
+
+    if (existing) {
+      if (existing.notes_is_custom) continue;
+      await supabase
+        .from("training_week_plans")
+        .update({ notes, updated_at: new Date().toISOString() })
+        .eq("athlete_id", phase.athlete_id)
+        .eq("week_start", weekStart);
+    } else if (notes) {
+      await supabase.from("training_week_plans").insert({
+        athlete_id: phase.athlete_id,
+        coach_id: coachId,
+        week_start: weekStart,
+        notes,
+      });
+    }
+  }
 }

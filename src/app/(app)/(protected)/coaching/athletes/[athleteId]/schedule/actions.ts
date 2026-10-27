@@ -848,6 +848,11 @@ export async function saveWeekPlan(input: WeekPlanInput): Promise<{ error?: stri
       target_volume_max: input.targetVolumeMax,
       target_volume_unit: input.targetVolumeUnit,
       notes: input.notes,
+      // A direct per-athlete edit through this editor always wins over a
+      // later framework (program_phase_weeks) note edit -- see
+      // saveProgramPhaseWeekLabel's own backfill and the notes_is_custom
+      // migration comment.
+      notes_is_custom: true,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "athlete_id,week_start" },

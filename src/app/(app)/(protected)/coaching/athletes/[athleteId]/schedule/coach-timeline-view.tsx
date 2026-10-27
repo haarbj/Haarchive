@@ -28,6 +28,7 @@ export function CoachTimelineView({
   templates,
   extraPresets,
   phases,
+  notesByWeek,
 }: {
   athleteId: string;
   initialWeeks: TimelineWeek[];
@@ -36,6 +37,8 @@ export function CoachTimelineView({
   templates: TemplateOption[];
   extraPresets: ExtraPresetOption[];
   phases: TrainingPhase[];
+  /** training_week_plans.notes, keyed by week_start -- the same field Week View's own WeekPlanEditor already shows under its heading, shown here under the sticky header the same way. */
+  notesByWeek: Record<string, string>;
 }) {
   const { openCreate, openEdit, editorModals } = useCalendarWorkoutEditor({ athleteId, templates, extraPresets });
 
@@ -60,13 +63,19 @@ export function CoachTimelineView({
 
   function weekMeta(weekStart: string) {
     const phase = getPhaseForWeek(phases, weekStart);
-    if (!phase) return null;
-    const position = weekPositionInPhase(phase, weekStart);
+    const position = phase ? weekPositionInPhase(phase, weekStart) : null;
+    const notes = notesByWeek[weekStart];
+    if (!phase && !notes) return null;
     return (
       <>
-        {phase.phaseType}
-        {phase.name ? ` — ${phase.name}` : ""}
-        {position ? ` · Week ${position.week} of ${position.of}` : ""}
+        {phase ? (
+          <>
+            {phase.phaseType}
+            {phase.name ? ` — ${phase.name}` : ""}
+            {position ? ` · Week ${position.week} of ${position.of}` : ""}
+          </>
+        ) : null}
+        {notes ? <p className="mt-0.5 text-zinc-600 dark:text-zinc-300">{notes}</p> : null}
       </>
     );
   }

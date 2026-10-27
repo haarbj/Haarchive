@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-27",
+    headline: "Week notes now reach the athlete, and framework edits reach everyone already assigned",
+    detail:
+      "A coach's week-level note -- written either on one athlete's own schedule, or once on a Program week for every future assignee -- used to render in exactly one place: the coach's own Week View. It's now visible on the athlete's Your Plan page and the coach's Timeline and Month views too, and Month's WEEK column no longer says \"No target set\" for a week that has a note instead. A Program's own week note also used to be frozen at assignment time, so editing it later never reached an athlete already assigned -- it now propagates to every one of them automatically, without a full resync, while never overwriting a note a coach has written for one specific athlete directly.",
+  },
+  {
+    date: "2026-10-27",
     headline: "Fixed: privately-coached athletes couldn't reach their own schedule",
     detail:
       "A fix shipped Oct 19 corrected which coach a privately-coached athlete's page resolves when they'd self-coached before accepting a real invite, and taught the weekly schedule page to render coach-assigned workouts. But that schedule page (/plan) was still gated behind a team-membership check left over from before private coaching existed, so an athlete who wasn't also on a team never reached it at all -- redirected away before that logic ever ran. Opened the gate for a privately-coached athlete, and taught the page's own no-self-generated-plan path to show their coach-assigned workouts and weekly mileage instead of bouncing them toward generating a conflicting plan of their own.",
