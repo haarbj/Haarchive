@@ -9,11 +9,12 @@
 // completed.
 
 import type { createClient } from "@/lib/db/server";
+import { predictRaceTime } from "@/lib/coaching-engine";
 import { computeProgramPaceTarget, type ProgramAthleteReferenceInputs } from "@/lib/private-coaching/program-generation";
-import { PACE_REFERENCE_LABELS, type PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
+import { PACE_REFERENCE_LABELS, type PaceReferenceKey, type AthleteMostRecentRace } from "@/lib/private-coaching/pace-reference";
 import { MILE_METERS, metersFor } from "@/lib/race-distances";
 import { formatClock } from "@/lib/running-format";
-import { formatDateSafe } from "@/lib/format";
+import { formatDateSafe, formatDate } from "@/lib/format";
 
 export type AthleteFitnessEstimate = { referenceKey: PaceReferenceKey; estimatedTimeS: number; updatedAt: string };
 
@@ -86,4 +87,27 @@ export function resolvePacePercent(
   const updatedText = formatDateSafe(estimate.updatedAt);
   const sourceLabel = `${percentText} ${PACE_REFERENCE_LABELS[basis]} (est. ${formatClock(estimate.estimatedTimeS)}${updatedText ? `, updated ${updatedText}` : ""})`;
   return { minSPerMi: Math.round(resolved.min), maxSPerMi: Math.round(resolved.max), sourceLabel };
+}
+
+export type FitnessEstimateSuggestion = { timeS: number; sourceLabel: string };
+
+// "Recompute" for a self-reported fitness estimate: not a new multiplier
+// of its own, but the exact same race-equivalent projection
+// (predictRaceTime, Pete Riegel's endurance equation, T2 = T1 x
+// (D2/D1)^1.06) that resolvePaceReference already uses everywhere else a
+// race-derived pace is shown on this platform -- so a 5K or marathon
+// suggestion offered here can never drift from what the rest of the app
+// would call that same athlete's predicted time. Returns one suggestion
+// per race-equivalent key only (5k/marathon), and only when a race is on
+// file; the athlete still has to apply it (never auto-written), the same
+// "offer, don't overwrite" pattern athlete-pace-zone-table.tsx's own
+// applySuggestion already uses for a predicted reference pace.
+export function suggestFitnessEstimateFromRace(
+  key: "5k" | "marathon",
+  race: AthleteMostRecentRace | null,
+): FitnessEstimateSuggestion | null {
+  if (!race) return null;
+  const targetMeters = metersFor(key);
+  const timeS = Math.round(predictRaceTime(race.distanceM, race.finishTimeS, targetMeters));
+  return { timeS, sourceLabel: `${race.raceName} · ${formatDate(race.raceDate)}` };
 }

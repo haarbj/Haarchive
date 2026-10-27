@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { mentionsPossibleIllness } from "@/lib/private-coaching/setbacks";
 import { evaluateIntakeGaps } from "@/lib/private-coaching/intake-gaps";
+import { getAthleteFitnessEstimates } from "@/lib/private-coaching/fitness-estimates";
 import { IllnessPanel } from "./illness-panel";
 import { PostSeasonReviewSection } from "./post-season-review-section";
 import { loadCheckinPraiseCandidates } from "./checkin-praise-data";
@@ -100,7 +101,7 @@ export default async function CoachingAthleteDetailPage({
     { data: raceResults },
     { data: injuries },
     { data: everPublished },
-    { data: fitnessEstimateRows },
+    fitnessEstimates,
     { data: coachAthleteRow },
   ] = await Promise.all([
       supabase.from("profiles").select("id, display_name").eq("id", athleteId).maybeSingle<Profile>(),
@@ -136,14 +137,13 @@ export default async function CoachingAthleteDetailPage({
       // /coaching/page.tsx) -- the coach-side mirror of that state, not a
       // second, independently-derived one.
       supabase.from("scheduled_workouts").select("id").eq("athlete_id", athleteId).not("published_at", "is", null).limit(1).maybeSingle(),
-      // Only ever used for the intake gap-check's hasFitnessAnchor signal
-      // below -- raceResults above already covers the "race result"
-      // half of that test.
-      supabase
-        .from("athlete_fitness_estimates")
-        .select("reference_key")
-        .eq("athlete_id", athleteId)
-        .returns<{ reference_key: string }[]>(),
+      // The athlete's own self-reported estimate -- same function
+      // AthleteHomeSection/your-plan's own loader already use, never a
+      // second resolution path. Used both for the intake gap-check's
+      // hasFitnessAnchor signal and, now, the real Fitness Estimate
+      // summary below (previously this query only selected reference_key
+      // for an existence check, never the actual value).
+      getAthleteFitnessEstimates(supabase, athleteId),
       // Needed to send a response to this check-in through the existing
       // coach<->athlete message thread (sendCoachAthleteMessage) -- not a
       // new storage path for the check-in itself.
@@ -182,7 +182,7 @@ export default async function CoachingAthleteDetailPage({
 
   const intakeGaps = evaluateIntakeGaps({
     hasGoalRace: (goals ?? []).some((g) => g.goal_date != null),
-    hasFitnessAnchor: (raceResults ?? []).length > 0 || (fitnessEstimateRows ?? []).length > 0,
+    hasFitnessAnchor: (raceResults ?? []).length > 0 || Object.keys(fitnessEstimates).length > 0,
     trainingFacilities: athleteProfile?.training_facilities ?? null,
     homeAltitudeM: athleteProfile?.elevation_m ?? null,
     recentTrainingDetail: athleteProfile?.recent_training_detail ?? null,
@@ -414,6 +414,36 @@ export default async function CoachingAthleteDetailPage({
             <EmptyState>No race results logged yet.</EmptyState>
           </div>
         )}
+      </div>
+
+      {/* Read-only -- this athlete owns their own estimate (see
+          fitness-estimates.ts's own header comment and estimate-review-
+          panel.tsx's "athletes own their own" rule). Links to the exact
+          same "Your current fitness estimate" block on the athlete's own
+          Your Paces, previewable here via your-plan-preview, so the
+          coach's view and the athlete's view point at one home instead of
+          the coach having no path to it at all. */}
+      <div className="mt-8">
+        <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Fitness Estimate</p>
+        {(["5k", "marathon"] as const).some((key) => fitnessEstimates[key]) ? (
+          <dl className="mt-3 grid grid-cols-2 gap-4 text-sm sm:max-w-xs">
+            {(["5k", "marathon"] as const).map((key) =>
+              fitnessEstimates[key] ? (
+                <div key={key}>
+                  <dt className="text-xs text-zinc-500 dark:text-zinc-400">{key === "5k" ? "5K" : "Marathon"}</dt>
+                  <dd className="text-zinc-900 dark:text-white">{secondsToClock(fitnessEstimates[key]!.estimatedTimeS)}</dd>
+                </div>
+              ) : null,
+            )}
+          </dl>
+        ) : (
+          <div className="mt-3">
+            <EmptyState>No fitness estimate on file yet.</EmptyState>
+          </div>
+        )}
+        <Button href={`/coaching/athletes/${athleteId}/your-plan-preview#your-paces`} size="sm" variant="outline" className="mt-3">
+          View on Your Paces
+        </Button>
       </div>
 
       {/* Intake gap-check (see intake-gaps.ts) -- informational only,

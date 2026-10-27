@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-27",
+    headline: "Your current fitness estimate now has a real home on Your Paces",
+    detail:
+      "Your own 5K and marathon fitness estimate -- the number some of your coach's workouts resolve a percent-of-pace prescription against -- used to be settable only from Settings, with no way to see it, change it, or recompute it from Your Paces, and no way for your coach to check it without going to look at your settings directly. It's now the first thing shown on Your Paces, with the same update/clear controls Settings already had, plus a one-click \"recompute from your most recent race\" using the same projection the rest of the platform already uses for a race-derived pace. Your coach's own view of you now shows the real number too, linking straight to this same block instead of nothing. With no estimate and no race on file, the block says so honestly rather than showing a number that isn't real.",
+  },
+  {
+    date: "2026-10-27",
     headline: "Worked examples with real splits for progression-run workouts, and a dangling line removed",
     detail:
       "A workout detail page's \"No structured steps -- see the notes above\" line used to render for any typed workout with no steps at all, even when there were no notes above to see either -- it now only appears when there's something real to point at. Separately, the two workout types that progress pace within a single continuous session (the Kenyan-style progression run and the stepwise long fast run) now show a worked example -- the session's own structure plus sample splits computed from the viewing athlete's own most recent race, the same way every other named pace on this platform resolves. With no race on file yet, the structure still shows, by pace-zone name only, never a fabricated number. The same example appears on the workout detail page and the full workout-types glossary, which now also links directly to the matching entry instead of just the general list.",

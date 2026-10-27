@@ -9,6 +9,7 @@ import { getWorkoutDisplayLabel } from "@/lib/private-coaching/workout-status";
 import { buildTimelineTileFigures } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-helpers";
 import { TimelineTile } from "@/app/(app)/(protected)/coaching/athletes/[athleteId]/schedule/timeline-view";
 import { RaceResultsSection, type RaceResultRow } from "@/app/(app)/(protected)/settings/race-results-section";
+import { FitnessEstimatesSection } from "@/app/(app)/(protected)/settings/fitness-estimates-section";
 import { Button } from "@/components/ui/button";
 import { AddGoalRaceForm } from "./add-goal-race-form";
 
@@ -149,9 +150,30 @@ function PaceSection({
   existingRaceResults: RaceResultRow[];
 }) {
   return (
-    <section>
+    <section id="your-paces">
       <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Your paces</p>
 
+      {/* "Your current fitness estimate": the raw self-reported number
+          itself, always visible here regardless of whether this week's
+          workouts happen to reference it -- distinct from the pace-rows
+          list below, which only ever shows a reference THIS WEEK's
+          workouts actually use (see buildPaceRowsFromWorkouts's own
+          comment). FitnessEstimatesSection is the exact same component
+          Settings uses, so editing it here and editing it there are the
+          same code path, not two. readOnly in coach-preview mode -- a
+          coach can see it, never edit it on the athlete's behalf. */}
+      <div className="mt-3">
+        <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">Your current fitness estimate</p>
+        <div className="mt-2">
+          <FitnessEstimatesSection
+            estimates={data.fitnessEstimateRows}
+            suggestions={data.fitnessEstimateSuggestions}
+            readOnly={isPreview}
+          />
+        </div>
+      </div>
+
+      <div className="mt-6">
       {!data.hasFitnessAnchor ? (
         <>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
@@ -186,6 +208,7 @@ function PaceSection({
           This week&rsquo;s workouts don&rsquo;t prescribe a named pace -- check your schedule for exact targets.
         </p>
       )}
+      </div>
     </section>
   );
 }

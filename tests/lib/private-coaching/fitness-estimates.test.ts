@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { resolvePacePercent, type AthleteFitnessEstimate } from "@/lib/private-coaching/fitness-estimates";
-import type { PaceReferenceKey } from "@/lib/private-coaching/pace-reference";
+import { resolvePacePercent, suggestFitnessEstimateFromRace, type AthleteFitnessEstimate } from "@/lib/private-coaching/fitness-estimates";
+import type { PaceReferenceKey, AthleteMostRecentRace } from "@/lib/private-coaching/pace-reference";
+import { predictRaceTime } from "@/lib/coaching-engine";
+import { metersFor } from "@/lib/race-distances";
 
 function estimate(referenceKey: PaceReferenceKey, estimatedTimeS: number, updatedAt = "2026-09-01"): AthleteFitnessEstimate {
   return { referenceKey, estimatedTimeS, updatedAt };
@@ -77,5 +79,37 @@ describe("resolvePacePercent", () => {
     const result = resolvePacePercent("5k", 90, 92, estimates);
     expect(result!.sourceLabel).not.toContain("Invalid Date");
     expect(result!.sourceLabel).not.toContain("updated");
+  });
+});
+
+describe("suggestFitnessEstimateFromRace", () => {
+  const race: AthleteMostRecentRace = {
+    id: "r1",
+    raceName: "QA Test Half",
+    raceDate: "2026-09-01",
+    distanceM: 21097.5,
+    finishTimeS: 4800, // 1:20:00
+  };
+
+  it("returns null when no race is on file -- never a fabricated number", () => {
+    expect(suggestFitnessEstimateFromRace("marathon", null)).toBeNull();
+  });
+
+  it("predicts the marathon time via the exact same Riegel projection resolvePaceReference already uses, never a second formula", () => {
+    const suggestion = suggestFitnessEstimateFromRace("marathon", race);
+    expect(suggestion).not.toBeNull();
+    const expected = Math.round(predictRaceTime(race.distanceM, race.finishTimeS, metersFor("marathon")));
+    expect(suggestion!.timeS).toBe(expected);
+    // The real-world case this scope's own deep-dive cited: a 1:20:00 half
+    // implies roughly a 2.08x marathon time (Riegel's 1.06 exponent on a
+    // ~2x distance ratio) -- confirms the suggestion lands in that
+    // neighborhood, not some unrelated number.
+    expect(suggestion!.timeS).toBeGreaterThan(9900); // > 2:45:00
+    expect(suggestion!.timeS).toBeLessThan(10500); // < 2:55:00
+  });
+
+  it("names the source race in its label, never presenting the number as if it came from nowhere", () => {
+    const suggestion = suggestFitnessEstimateFromRace("5k", race);
+    expect(suggestion!.sourceLabel).toContain("QA Test Half");
   });
 });

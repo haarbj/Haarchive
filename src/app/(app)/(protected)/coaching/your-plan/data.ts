@@ -2,7 +2,8 @@ import type { createClient } from "@/lib/db/server";
 import { mostRecentMonday, addDays } from "@/lib/week";
 import { getAthleteGoalRace, type AthleteGoalRace } from "@/lib/private-coaching/goal-race";
 import { getAthleteMostRecentRace } from "@/lib/private-coaching/pace-reference";
-import { getAthleteFitnessEstimates } from "@/lib/private-coaching/fitness-estimates";
+import { getAthleteFitnessEstimates, suggestFitnessEstimateFromRace, type FitnessEstimateSuggestion } from "@/lib/private-coaching/fitness-estimates";
+import type { FitnessEstimateRow } from "@/app/(app)/(protected)/settings/fitness-estimates-section";
 import { getPhaseForWeek, type TrainingPhase } from "@/lib/private-coaching/training-phases";
 import { phaseStripPurpose, pickFirstAction, PACE_BAND_WHY, type PlanPayoffFirstAction } from "@/lib/private-coaching/plan-payoff";
 import { evaluateIntakeGaps, type IntakeGapEvaluation } from "@/lib/private-coaching/intake-gaps";
@@ -40,6 +41,11 @@ export type PlanPayoffData = {
   /** Null means neither a race result nor a fitness estimate exists at all -- the inline race-result remedy renders in place of a table. */
   paceRows: PlanPayoffPaceRow[] | null;
   hasFitnessAnchor: boolean;
+
+  /** The athlete's own self-reported 5K/marathon estimates (athlete_fitness_estimates), for the "Your current fitness estimate" block -- distinct from paceRows, which only ever shows a reference THIS WEEK's workouts actually use. */
+  fitnessEstimateRows: FitnessEstimateRow[];
+  /** "Recompute from your race" offers, resolved the same way resolvePaceReference already is -- empty when no race is on file. */
+  fitnessEstimateSuggestions: Partial<Record<"5k" | "marathon", FitnessEstimateSuggestion>>;
 
   /** Null phases + null program distinguishes "no program assigned at all" (shouldn't normally reach this view) from "assigned, but not yet published" (weekWorkouts empty because every workout in the program's own range is still a draft). */
   programPublished: boolean;
@@ -227,6 +233,18 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
   ]);
   const hasFitnessAnchor = race != null || Object.keys(fitnessEstimates).length > 0;
 
+  const fitnessEstimateRows: FitnessEstimateRow[] = (["5k", "marathon"] as const)
+    .filter((key) => fitnessEstimates[key])
+    .map((key) => {
+      const estimate = fitnessEstimates[key]!;
+      return { referenceKey: key, estimatedTimeS: estimate.estimatedTimeS, updatedAt: estimate.updatedAt };
+    });
+  const fitnessEstimateSuggestions: PlanPayoffData["fitnessEstimateSuggestions"] = {};
+  for (const key of ["5k", "marathon"] as const) {
+    const suggestion = suggestFitnessEstimateFromRace(key, race);
+    if (suggestion) fitnessEstimateSuggestions[key] = suggestion;
+  }
+
   const intakeGaps = evaluateIntakeGaps({
     hasGoalRace: goalRace != null,
     hasFitnessAnchor,
@@ -272,6 +290,8 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
     phaseStrip,
     paceRows,
     hasFitnessAnchor,
+    fitnessEstimateRows,
+    fitnessEstimateSuggestions,
     programPublished,
     weekStart,
     weekWorkouts,

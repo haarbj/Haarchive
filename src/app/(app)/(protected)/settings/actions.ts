@@ -609,6 +609,10 @@ export async function updateFitnessEstimate(
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
+  // Also reachable from Your Paces now (coaching/your-plan's own
+  // PaceSection) -- FitnessEstimatesSection is the one shared component,
+  // so both call sites need their own route revalidated on a save.
+  revalidatePath("/coaching/your-plan");
   return { success: true };
 }
 
@@ -619,6 +623,7 @@ export async function deleteFitnessEstimate(referenceKey: "5k" | "marathon"): Pr
   if (!userId) return;
 
   await supabase.from("athlete_fitness_estimates").delete().eq("athlete_id", userId).eq("reference_key", referenceKey);
+  revalidatePath("/coaching/your-plan");
 
   revalidatePath("/settings");
 }
