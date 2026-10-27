@@ -25,8 +25,14 @@ const NEW_PAGE = readFileSync(join(ROOT, "src/app/(app)/(protected)/plan/new/pag
 const PLAN_VIEW = readFileSync(join(ROOT, "src/app/(app)/(protected)/plan/plan-view.tsx"), "utf8");
 
 describe("plan/layout.tsx admits a privately-coached athlete, not just a team-based one", () => {
-  it("checks isCoachedAthlete alongside isAthlete before redirecting to /dashboard", () => {
-    expect(LAYOUT).toMatch(/!session\?\.isAthlete\s*&&\s*!session\?\.isCoachedAthlete/);
+  // Restructured by the schedule-on-ramps fix (scope 2) from a single
+  // negative condition into an early-return/fallback-redirect shape, to
+  // make room for the view-as admission below -- same guarantee, isAthlete
+  // OR isCoachedAthlete reaches the page, expressed differently. See
+  // schedule-onramps-wiring.test.ts for the view-as coverage this
+  // restructure exists for.
+  it("admits isAthlete or isCoachedAthlete directly, before any redirect", () => {
+    expect(LAYOUT).toContain("if (session?.isAthlete || session?.isCoachedAthlete) return children;");
   });
 });
 

@@ -484,6 +484,15 @@ async function AthleteHomeSection({ userId, readOnly = false }: { userId: string
       ) : null}
 
       <div className="mt-8 flex flex-wrap gap-3">
+        {/* The direct week-view on-ramp this section was missing --
+            "Your plan overview" above links to the payoff/summary page,
+            and "My training" links to the phase roadmap, but neither is
+            the actual weekly schedule (workouts + Weekly Load). /plan
+            already resolves correctly for every athlete class (self-
+            coached, privately-coached, uncoached) -- see plan/layout.tsx. */}
+        <Button href="/plan" variant="outline">
+          My schedule
+        </Button>
         <Button href="/coaching/training" variant="outline">
           My training
         </Button>

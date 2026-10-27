@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-27",
+    headline: "Fixed: the on-ramps to an athlete's own schedule, and a coach dropped out of view-as on /plan",
+    detail:
+      "Two of the paths into an athlete's weekly schedule led nowhere useful: the \"Take me to my schedule\" button on Your Plan sent an athlete to the coaching home instead of their own schedule, and the Coaching page had no direct link to it at all. Both now go to /plan. Separately, a coach viewing as one of their athletes who navigated to /plan was redirected straight to their own dashboard with no banner and no explanation -- view-as mode was silently dropped, because /plan's own access gate checked only the coach's own session, never whether they were actively viewing as someone else. The coach now stays in view-as and sees the athlete's real plan.",
+  },
+  {
+    date: "2026-10-27",
     headline: "Week notes now reach the athlete, and framework edits reach everyone already assigned",
     detail:
       "A coach's week-level note -- written either on one athlete's own schedule, or once on a Program week for every future assignee -- used to render in exactly one place: the coach's own Week View. It's now visible on the athlete's Your Plan page and the coach's Timeline and Month views too, and Month's WEEK column no longer says \"No target set\" for a week that has a note instead. A Program's own week note also used to be frozen at assignment time, so editing it later never reached an athlete already assigned -- it now propagates to every one of them automatically, without a full resync, while never overwriting a note a coach has written for one specific athlete directly.",
