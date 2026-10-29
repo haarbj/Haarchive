@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-29",
+    headline: "Fixed: typing \"Stepwise Long Fast Run\" as a day label didn't auto-resolve to its explanation",
+    detail:
+      "Every other workout type resolves its \"why this workout\" explanation automatically from the label a coach types on the schedule -- the stepwise long fast run never did, and was only reachable by browsing the full workout-types glossary directly. Typing \"Stepwise Long Fast Run\" (or just \"Stepwise\") now resolves to the same explanation and worked example browsing already reached, on both the coach's and athlete's view of the workout.",
+  },
+  {
+    date: "2026-10-29",
     headline: "Fixed: Your Plan's program card could say \"no training phases\" while a real one was scheduled",
     detail:
       "The card only ever showed phases generated from a formal Program template -- a phase a coach added directly (the \"+ Add phase\" form, never tied to a Program) had nowhere to render at all, so an athlete with a real, scheduled phase could still see \"No training phases are set up yet.\" It now shows every current or upcoming phase regardless of where it came from, tagging one that hasn't started yet as Upcoming with its start date rather than hiding it. The honest empty state still shows, but only when there's genuinely nothing scheduled.",

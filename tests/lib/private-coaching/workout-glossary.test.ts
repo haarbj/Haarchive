@@ -22,6 +22,11 @@ describe("getWorkoutGlossaryEntry", () => {
     expect(getWorkoutGlossaryEntry("Long Run (trails)")?.id).toBe("long-easy");
   });
 
+  it("resolves the stepwise long fast run by its own label, not the percent-based long-fast rules", () => {
+    expect(getWorkoutGlossaryEntry("Stepwise Long Fast Run")?.id).toBe("long-fast-stepwise");
+    expect(getWorkoutGlossaryEntry("Stepwise")?.id).toBe("long-fast-stepwise");
+  });
+
   // The whole reason pace context exists: one label, four different
   // sessions across the phase progression.
   it("disambiguates the same Intervals label by pace basis and percentage", () => {
