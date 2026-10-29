@@ -3,8 +3,8 @@
 // this, the tab just goes blank until the RSC resolves. Shaped to match the
 // common dashboard page shell (max-w-dashboard, py-16, h1 + paragraph + a
 // couple of cards) so real content doesn't visibly jump when it replaces
-// the skeleton. A raw section, not <Container>, because the skeleton wants
-// animate-pulse instead of Container's baked-in animate-fade-in.
+// the skeleton. A raw section, not <Container>, because the skeleton needs
+// animate-pulse instead of Container's own padding/width classes.
 export function PageSkeleton() {
   return (
     <section className="mx-auto w-full max-w-dashboard animate-pulse px-6 py-16">

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Newsreader } from "next/font/google";
 
 import { SiteFooter } from "@/components/site-footer";
@@ -43,6 +43,25 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: ["/opengraph-image.png"],
   },
+};
+
+// viewport-fit=cover lets the page paint edge-to-edge under the notch/
+// Dynamic Island instead of letterboxing there (mobile-native skill) --
+// nothing currently reads env(safe-area-inset-*) to pad content back out,
+// since no fixed bottom bar/sheet sits in that zone today, but the meta
+// tag itself is the baseline every page needs before that matters. Each
+// color scheme gets its own theme-color matching the real background at
+// the top of the page (bg-stone-50 light, zinc-950 dark -- see <body>
+// above) so the mobile status bar/browser chrome matches instead of
+// defaulting to one scheme's color in the other.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
 };
 
 export default function RootLayout({

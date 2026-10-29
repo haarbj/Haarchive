@@ -3,8 +3,8 @@ import type { ElementType, ReactNode } from "react";
 // The single change point for "how wide should this kind of page be" -- see
 // src/design/layout.ts and the --container-* tokens in globals.css for the
 // actual numbers. `chrome` (header/footer) isn't a variant here on purpose:
-// it's a flex nav row with different padding and no fade-in, not a page
-// shell, so it applies `max-w-chrome` directly instead.
+// it's a flex nav row with different padding, not a page shell, so it
+// applies `max-w-chrome` directly instead.
 //
 // Five variants, each tied to a distinct kind of page rather than a
 // per-page guess:
@@ -47,7 +47,12 @@ type ContainerProps = {
 };
 
 export function Container({ variant, children, className, as: Tag = "section" }: ContainerProps) {
-  const classes = ["mx-auto", "w-full", VARIANT_CLASSES[variant], "px-6", "py-16", "animate-fade-in"];
+  // No entrance animation here on purpose -- this wraps every page/category/
+  // tool shell sitewide, so it plays on every navigation (100+ times/day for
+  // a regular visitor). remove-animations' gate gives route-level fades no
+  // purpose at that frequency; see page-skeleton.tsx's own note, which
+  // referenced this class before it was removed.
+  const classes = ["mx-auto", "w-full", VARIANT_CLASSES[variant], "px-6", "py-16"];
   if (className) classes.push(className);
 
   return <Tag className={classes.join(" ")}>{children}</Tag>;

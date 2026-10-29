@@ -65,8 +65,8 @@ export default async function MyArticlesPage() {
       <div className="mt-8 space-y-3">
         {articles && articles.length > 0 ? (
           articles.map((article) => (
-            <Link key={article.id} href={`/contribute/articles/${article.id}`} className="group block">
-              <Card padding="md" className="flex items-center justify-between transition group-hover:-translate-y-0.5 group-hover:shadow-card-hover">
+            <Link key={article.id} href={`/contribute/articles/${article.id}`} className="group block transition active:scale-[0.98]">
+              <Card padding="md" className="flex items-center justify-between transition group-hover:border-black/20 dark:group-hover:border-white/20">
                 <div>
                   <p className="font-semibold text-zinc-900 dark:text-white">{article.title}</p>
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">

@@ -20,8 +20,13 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
   lg: "px-5 py-2.5 text-sm",
 };
 
+// active:scale-[0.97] -- press feedback on the ~119 call sites of this
+// component, confirming the interface heard the tap/click the instant it
+// lands (on :active, not waiting for release). Subtle on purpose (0.97,
+// not lower) and already covered by the existing bare `transition` utility,
+// which includes `transform` by default.
 const BASE =
-  "inline-flex items-center justify-center gap-1.5 rounded-pill font-semibold transition disabled:opacity-60 outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 dark:focus-visible:ring-white dark:focus-visible:ring-offset-zinc-950";
+  "inline-flex items-center justify-center gap-1.5 rounded-pill font-semibold transition active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100 outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 dark:focus-visible:ring-white dark:focus-visible:ring-offset-zinc-950";
 
 type CommonProps = {
   variant?: ButtonVariant;

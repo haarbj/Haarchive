@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 27, 2026](https://brodyhaar.com/release-notes)):** Your current fitness estimate now has a real home on Your Paces
+**Latest update ([Oct 29, 2026](https://brodyhaar.com/release-notes)):** A sitewide motion and mobile-feel pass
 
 Recent highlights:
+- Your current fitness estimate now has a real home on Your Paces (Oct 27, 2026)
 - Worked examples with real splits for progression-run workouts, and a dangling line removed (Oct 27, 2026)
 - Fixed: the on-ramps to an athlete's own schedule, and a coach dropped out of view-as on /plan (Oct 27, 2026)
-- Week notes now reach the athlete, and framework edits reach everyone already assigned (Oct 27, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

@@ -44,10 +44,10 @@ export default async function AssignedQuestionsPage() {
         <div className="mt-3 space-y-2">
           {toAnswer.length > 0 ? (
             toAnswer.map((q) => (
-              <Link key={q.id} href={`/contribute/questions/${q.id}`} className="group block">
+              <Link key={q.id} href={`/contribute/questions/${q.id}`} className="group block transition active:scale-[0.98]">
                 <Card
                   padding="md"
-                  className="transition group-hover:-translate-y-0.5 group-hover:shadow-card-hover"
+                  className="transition group-hover:border-black/20 dark:group-hover:border-white/20"
                 >
                   <p className="font-semibold text-zinc-900 dark:text-white">{q.title}</p>
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
@@ -69,10 +69,10 @@ export default async function AssignedQuestionsPage() {
         <div className="mt-3 space-y-2">
           {toReview.length > 0 ? (
             toReview.map((q) => (
-              <Link key={q.id} href={`/contribute/questions/${q.id}`} className="group block">
+              <Link key={q.id} href={`/contribute/questions/${q.id}`} className="group block transition active:scale-[0.98]">
                 <Card
                   padding="md"
-                  className="transition group-hover:-translate-y-0.5 group-hover:shadow-card-hover"
+                  className="transition group-hover:border-black/20 dark:group-hover:border-white/20"
                 >
                   <p className="font-semibold text-zinc-900 dark:text-white">{q.title}</p>
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">

@@ -57,7 +57,7 @@ export function SavedTopicsSection({ topics: initialTopics }: { topics: SavedTop
       {topics.map((topic) => (
         <div
           key={topic.bookmarkId}
-          className="group relative rounded-card border border-black/10 bg-white p-4 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover dark:border-white/10 dark:bg-zinc-900"
+          className="group relative rounded-card border border-black/10 bg-white p-4 shadow-card transition hover:border-black/20 dark:border-white/10 dark:bg-zinc-900 dark:hover:border-white/20"
         >
           <Link href={`/${topic.topicSlug}`} className="block">
             {topic.categoryTitle ? (

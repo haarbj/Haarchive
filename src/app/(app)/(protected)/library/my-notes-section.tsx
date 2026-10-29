@@ -113,7 +113,7 @@ export function MyNotesSection({ notes }: MyNotesSectionProps) {
                   <Link
                     key={note.id}
                     href={`/${note.contentSlug}?note=${note.id}`}
-                    className="block rounded-card border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-card-hover dark:border-white/10 dark:bg-zinc-900"
+                    className="block rounded-card border border-black/10 bg-white p-4 transition hover:border-black/20 active:scale-[0.97] dark:border-white/10 dark:bg-zinc-900 dark:hover:border-white/20"
                   >
                     {note.selectedText ? (
                       <blockquote className="border-l-2 border-zinc-900/15 pl-3 text-sm text-zinc-500 italic dark:border-white/20 dark:text-zinc-400">

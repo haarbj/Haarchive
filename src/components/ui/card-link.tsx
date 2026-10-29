@@ -19,13 +19,18 @@ type CardLinkProps = {
 };
 
 // Card's interactive twin -- the ~28 instances of the card recipe that are
-// actually link wrappers (category tiles, essay index, chapter nav) get
-// the hover lift + shadow-card-hover transition Card itself doesn't need.
+// actually link wrappers (category tiles, essay index, chapter nav). Hover
+// is a border-color shift only (no lift, no shadow growth): these grids are
+// browsed at "tens of times a day" frequency, and a lift+shadow on every
+// card swept past reads as busier than the hairline-border language the
+// rest of the site uses for emphasis (see CLAUDE.md's card-edge
+// convention). `active:scale-[0.97]` gives the same press feedback a
+// button gets, since the whole card is one tap target.
 export function CardLink({ href, children, padding = "md", className, target }: CardLinkProps) {
   const classes = [
     "group block",
     PADDING_CLASSES[padding],
-    "border border-black/10 bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover dark:border-white/10 dark:bg-zinc-900",
+    "border border-black/10 bg-white shadow-card transition hover:border-black/20 active:scale-[0.97] dark:border-white/10 dark:bg-zinc-900 dark:hover:border-white/20",
     className ?? "",
   ]
     .filter(Boolean)

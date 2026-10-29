@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-29",
+    headline: "A sitewide motion and mobile-feel pass",
+    detail:
+      "Every page used to fade and slide in on load -- harmless once, but it played on every single navigation, sitewide, forever. That's gone. Card hovers across the library, tools, and contributor pages traded a lift-and-shadow for a quieter border-color shift, and buttons, cards, and tool toggles now give a subtle press response the instant you tap or click them, instead of only reacting on release. On phones, taps no longer flash gray, the status bar now matches the page's light or dark background, and the page can paint under the notch. Nothing about what any page says or does changed -- this is motion and feel only.",
+  },
+  {
     date: "2026-10-27",
     headline: "Your current fitness estimate now has a real home on Your Paces",
     detail:

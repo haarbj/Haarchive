@@ -38,9 +38,12 @@ export const detailsBodyClass =
 
 // A small, borderless two/three-way choice -- "pace vs. effort mode",
 // "lbs vs. kg" -- as opposed to fieldClass's boxed <select>, for choices
-// better shown as a segmented row of buttons.
+// better shown as a segmented row of buttons. active:scale-[0.97] gives
+// press feedback the instant a tap/click lands, matching ui/button.tsx's
+// own convention -- a toggle switched many times per tool session should
+// feel just as responsive as a real <Button>.
 export const segmentedButtonClass = (active: boolean) =>
-  `flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+  `flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition active:scale-[0.97] ${
     active
       ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
       : "border-black/10 bg-white text-zinc-700 hover:bg-black/5 dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-white/10"

@@ -202,15 +202,33 @@ body {
 
 /* Native anchor-jump smooth scrolling for table-of-contents links --
    scroll-mt-24 on headings (see [slug]/page.tsx) keeps the sticky header
-   from covering the target. */
+   from covering the target. -webkit-tap-highlight-color kills the gray/
+   blue flash iOS Safari and Android Chrome paint over any tapped element
+   with a click handler -- the loudest "this is a website, not an app"
+   tell on mobile (mobile-native skill). Every button/link below already
+   has its own :hover, :active, or focus-visible state, so removing the
+   browser's highlight doesn't leave taps without feedback. */
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* Buttons and button-like controls (not plain content links, which stay
+   selectable/shareable on long-press): touch-action: manipulation skips
+   the ~300ms double-tap-zoom wait so taps register immediately, and
+   user-select: none stops a long-press from selecting the label text
+   instead of activating the control (mobile-native skill). */
+button,
+[role="button"] {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @keyframes fade-in {

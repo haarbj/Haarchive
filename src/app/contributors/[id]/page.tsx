@@ -121,7 +121,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ id
               <Link
                 key={article.slug}
                 href={`/${article.slug}`}
-                className="block rounded-lg border border-black/10 px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-card-hover dark:border-white/10"
+                className="block rounded-lg border border-black/10 px-4 py-3 transition hover:border-black/20 active:scale-[0.98] dark:border-white/10 dark:hover:border-white/20"
               >
                 <p className="font-semibold text-zinc-900 dark:text-white">{article.title}</p>
                 {article.subtitle ? (
