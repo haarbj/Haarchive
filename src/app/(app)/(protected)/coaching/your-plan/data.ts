@@ -18,6 +18,9 @@ export type PlanPayoffPhaseStripItem = {
   phaseType: string;
   name: string | null;
   isCurrent: boolean;
+  /** Hasn't started yet as of `today` -- rendered as "Upcoming · starts <date>" rather than the "Current" tag. Mutually exclusive with isCurrent. */
+  isUpcoming: boolean;
+  startDate: string;
   purpose: string | null;
 };
 
@@ -47,7 +50,7 @@ export type PlanPayoffData = {
   /** "Recompute from your race" offers, resolved the same way resolvePaceReference already is -- empty when no race is on file. */
   fitnessEstimateSuggestions: Partial<Record<"5k" | "marathon", FitnessEstimateSuggestion>>;
 
-  /** Null phases + null program distinguishes "no program assigned at all" (shouldn't normally reach this view) from "assigned, but not yet published" (weekWorkouts empty because every workout in the program's own range is still a draft). */
+  /** Only meaningful when `program` is set (a Program-sourced phase is live) -- distinguishes "assigned, but not yet published" (weekWorkouts empty because every workout in the program's own range is still a draft) from everything else. A freehand (non-Program) phase has no "unpublished" state, so this stays true whenever `program` is null -- see phaseStrip for what actually governs the empty state now. */
   programPublished: boolean;
 
   weekStart: string;
@@ -136,6 +139,31 @@ export function buildPaceRowsFromWorkouts(workouts: CalendarWorkout[]): PlanPayo
   return [...rows.values()];
 }
 
+// The "Your program" card's own phase set: every phase not yet fully
+// over as of `today` (its end date hasn't passed), active or still to
+// come -- Program-sourced or freehand, it doesn't matter here (only the
+// "<program name> · N weeks" heading itself cares about that
+// distinction; see loadPlanPayoffData's own comment). A fully completed
+// phase with nothing current or upcoming has no place on this small
+// home-page card (the full history lives on /coaching/training's
+// roadmap), but a phase that simply hasn't started yet must never be
+// treated as if it didn't exist -- that exact confusion was the
+// athlete-side deep-dive's Finding 4: a real, scheduled-but-not-started
+// phase rendering as "no training phases are set up yet."
+export function buildPhaseStrip(phases: TrainingPhase[], currentPhase: TrainingPhase | null, today: string): PlanPayoffPhaseStripItem[] {
+  return phases
+    .filter((p) => p.endDate >= today)
+    .map((p) => ({
+      id: p.id,
+      phaseType: p.phaseType,
+      name: p.name,
+      isCurrent: currentPhase?.id === p.id,
+      isUpcoming: currentPhase?.id !== p.id && p.startDate > today,
+      startDate: p.startDate,
+      purpose: p.explainer?.trim() ? null : phaseStripPurpose(p.phaseType),
+    }));
+}
+
 type PhaseRow = {
   id: string;
   athlete_id: string;
@@ -194,11 +222,16 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
   // phase belongs to, or (before/after any phase's own range -- e.g. the
   // payoff is opened a day before the plan technically starts) the most
   // recently started phase's program. Phases with no sourceProgramId at
-  // all (a coach-authored, freehand phase, never generated from a
-  // Program) are real and supported elsewhere (training page), but carry
-  // no "program" to show here -- programPhases stays empty and the
-  // program/phase-strip section below renders nothing rather than a
-  // fabricated name.
+  // all (a coach-authored, freehand phase, added directly via "+ Add
+  // phase" on the schedule page rather than generated from a Program
+  // template) have no branded program name to show -- programPhases
+  // stays empty and `program` stays null for them. That used to also
+  // empty out phaseStrip and trip the "no training phases" message even
+  // though a real, scheduled phase existed (the athlete-side deep-dive's
+  // Finding 4) -- phaseStrip is now built from every current-or-upcoming
+  // phase below, Program-sourced or not, so a freehand phase still shows
+  // up on the card; only the "<program name> · N weeks" heading itself
+  // stays conditional on a real Program.
   const programId =
     currentPhase?.sourceProgramId ?? [...phases].sort((a, b) => b.startDate.localeCompare(a.startDate))[0]?.sourceProgramId ?? null;
   const programPhases = programId ? phases.filter((p) => p.sourceProgramId === programId) : [];
@@ -214,13 +247,7 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
     }
   }
 
-  const phaseStrip: PlanPayoffPhaseStripItem[] = programPhases.map((p) => ({
-    id: p.id,
-    phaseType: p.phaseType,
-    name: p.name,
-    isCurrent: currentPhase?.id === p.id,
-    purpose: p.explainer?.trim() ? null : phaseStripPurpose(p.phaseType),
-  }));
+  const phaseStrip = buildPhaseStrip(phases, currentPhase, today);
 
   const [race, fitnessEstimates, { data: intakeProfileRow }] = await Promise.all([
     getAthleteMostRecentRace(supabase, athleteId),

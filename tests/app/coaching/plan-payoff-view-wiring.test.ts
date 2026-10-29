@@ -36,11 +36,20 @@ describe("every missing-data state has an inline remedy, never a dead end", () =
     expect(body).toMatch(/hasn.+t published this week/);
   });
 
-  it("no program/phases at all: shows a plain explanation, not a blank section", () => {
+  it("no phases scheduled at all: shows a plain explanation, not a blank section -- and the empty state is keyed off phaseStrip, not the Program-only `program` field, so a freehand (non-Program) phase doesn't trip it", () => {
     const start = VIEW.indexOf("function ProgramSection");
     const body = VIEW.slice(start, VIEW.indexOf("\nfunction ", start + 1));
-    expect(body).toContain("!data.program");
-    expect(body).not.toMatch(/if \(!data\.program\) \{\s*return null/);
+    expect(body).toContain("data.phaseStrip.length === 0");
+    expect(body).not.toContain("if (!data.program)");
+    expect(body).not.toMatch(/if \(data\.phaseStrip\.length === 0\) \{\s*return null/);
+  });
+
+  it("a scheduled-but-not-yet-started phase renders an Upcoming tag with its start date, not the Current tag", () => {
+    const start = VIEW.indexOf("function ProgramSection");
+    const body = VIEW.slice(start, VIEW.indexOf("\nfunction ", start + 1));
+    expect(body).toContain("phase.isUpcoming");
+    expect(body).toMatch(/Upcoming/);
+    expect(body).toContain("formatDate(phase.startDate)");
   });
 
   it("no published workouts this week: shows a plain explanation, never an empty grid with nothing said", () => {

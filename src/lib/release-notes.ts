@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-29",
+    headline: "Fixed: Your Plan's program card could say \"no training phases\" while a real one was scheduled",
+    detail:
+      "The card only ever showed phases generated from a formal Program template -- a phase a coach added directly (the \"+ Add phase\" form, never tied to a Program) had nowhere to render at all, so an athlete with a real, scheduled phase could still see \"No training phases are set up yet.\" It now shows every current or upcoming phase regardless of where it came from, tagging one that hasn't started yet as Upcoming with its start date rather than hiding it. The honest empty state still shows, but only when there's genuinely nothing scheduled.",
+  },
+  {
     date: "2026-10-27",
     headline: "Your current fitness estimate now has a real home on Your Paces",
     detail:
