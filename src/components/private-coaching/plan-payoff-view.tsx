@@ -94,12 +94,12 @@ function GoalRaceHeader({ data, isPreview }: { data: PlanPayoffData; isPreview: 
 }
 
 function ProgramSection({ data }: { data: PlanPayoffData }) {
-  if (!data.program) {
+  if (data.phaseStrip.length === 0) {
     return (
       <section>
         <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Your program</p>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-          No training phases are set up yet -- once your coach assigns a program, it shows up here.
+          No training phases are set up yet -- once your coach schedules one, it shows up here.
         </p>
       </section>
     );
@@ -108,17 +108,19 @@ function ProgramSection({ data }: { data: PlanPayoffData }) {
   return (
     <section>
       <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Your program</p>
-      <h3 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-white">
-        {data.program.name} · {data.program.totalWeeks} week{data.program.totalWeeks === 1 ? "" : "s"}
-      </h3>
+      {data.program ? (
+        <h3 className="mt-2 text-lg font-semibold text-zinc-900 dark:text-white">
+          {data.program.name} · {data.program.totalWeeks} week{data.program.totalWeeks === 1 ? "" : "s"}
+        </h3>
+      ) : null}
 
-      {!data.programPublished ? (
+      {data.program && !data.programPublished ? (
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
           Your coach has set up this program, but hasn&rsquo;t published this week&rsquo;s workouts yet -- check back soon.
         </p>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className={`flex flex-wrap gap-2 ${data.program ? "mt-3" : "mt-2"}`}>
         {data.phaseStrip.map((phase) => (
           <Link
             key={phase.id}
@@ -131,6 +133,11 @@ function ProgramSection({ data }: { data: PlanPayoffData }) {
               {phase.phaseType}
               {phase.name ? ` — ${phase.name}` : ""}
               {phase.isCurrent ? <span className="ml-1.5 text-xs font-semibold text-accent-navy">Current</span> : null}
+              {phase.isUpcoming ? (
+                <span className="ml-1.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                  Upcoming · starts {formatDate(phase.startDate)}
+                </span>
+              ) : null}
             </p>
             {phase.purpose ? <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">{phase.purpose}</p> : null}
           </Link>

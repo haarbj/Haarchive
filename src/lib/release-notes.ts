@@ -58,6 +58,18 @@ export const releaseNotes: ReleaseNote[] = [
       "Every page used to fade and slide in on load -- harmless once, but it played on every single navigation, sitewide, forever. That's gone. Card hovers across the library, tools, and contributor pages traded a lift-and-shadow for a quieter border-color shift, and buttons, cards, and tool toggles now give a subtle press response the instant you tap or click them, instead of only reacting on release. On phones, taps no longer flash gray, the status bar now matches the page's light or dark background, and the page can paint under the notch. Nothing about what any page says or does changed -- this is motion and feel only.",
   },
   {
+    date: "2026-10-29",
+    headline: "Fixed: typing \"Stepwise Long Fast Run\" as a day label didn't auto-resolve to its explanation",
+    detail:
+      "Every other workout type resolves its \"why this workout\" explanation automatically from the label a coach types on the schedule -- the stepwise long fast run never did, and was only reachable by browsing the full workout-types glossary directly. Typing \"Stepwise Long Fast Run\" (or just \"Stepwise\") now resolves to the same explanation and worked example browsing already reached, on both the coach's and athlete's view of the workout.",
+  },
+  {
+    date: "2026-10-29",
+    headline: "Fixed: Your Plan's program card could say \"no training phases\" while a real one was scheduled",
+    detail:
+      "The card only ever showed phases generated from a formal Program template -- a phase a coach added directly (the \"+ Add phase\" form, never tied to a Program) had nowhere to render at all, so an athlete with a real, scheduled phase could still see \"No training phases are set up yet.\" It now shows every current or upcoming phase regardless of where it came from, tagging one that hasn't started yet as Upcoming with its start date rather than hiding it. The honest empty state still shows, but only when there's genuinely nothing scheduled.",
+  },
+  {
     date: "2026-10-27",
     headline: "Your current fitness estimate now has a real home on Your Paces",
     detail:

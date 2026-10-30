@@ -422,6 +422,7 @@ const MATCH_RULES: MatchRule[] = [
   { entryId: "special-block", labels: ["special block"] },
   { entryId: "depletion-workout", labels: ["depletion", "depletion run", "depletion workout"] },
   { entryId: "hill-sprints", labels: ["hill sprints", "hill sprint"] },
+  { entryId: "long-fast-stepwise", labels: ["stepwise long fast run", "stepwise"] },
 ];
 
 // The one percentage a rule is tested against: the midpoint of a range,
