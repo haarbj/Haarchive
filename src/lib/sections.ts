@@ -133,7 +133,11 @@ export type ContentBlock =
         | "pacing-template"
         | "supercompensation-explorer"
         | "capillary-densification"
-        | "deflection-point";
+        | "deflection-point"
+        | "double-threshold-split"
+        | "polarized-poles"
+        | "interval-bouts"
+        | "radcliffe-longitudinal";
     };
 
 export type Section = {
@@ -819,6 +823,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The \"polarized\" model isn't training spread evenly across every effort level. It's concentrated at two distinct poles, roughly 65% and 90% of VO₂max, with comparatively little time spent in between. That middle ground sits right around the lactate threshold, and Seiler's research flags it as a kind of gravitational trap: threshold-paced running feels productive and sustainable enough that it's easy to drift there by default, even though it accumulates fatigue faster than low-intensity work while building fitness no faster than genuinely hard intervals (Seiler, \"Training Intensity Distribution for Endurance Performance,\" Vienna 2017).",
       },
+      { type: "figure", figureId: "polarized-poles" },
       { type: "heading", text: "Polarized Isn't the Only Split With Evidence Behind It" },
       {
         type: "paragraph",
@@ -839,6 +844,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A series of studies out of Seiler's lab compared interval sessions matched for perceived \"maximal session effort\" but built from different work-bout lengths: four sets of 16, 8, or 4 minutes. All three felt like giving everything, but they weren't physiologically equal: the 4-minute intervals produced nearly triple the blood lactate of the 16-minute version (12.7 vs. 4.7 mmol/L) and pushed 61% of sessions to a peak RPE of 19–20, compared to just 8% for the longer intervals. Counterintuitively, the longer, lower-intensity intervals produced equal or greater fitness gains: more accumulated work at 90% of max heart rate beat less accumulated work nearer to max. The practical read: work-bout duration and total accumulated interval time are the real levers on intensity, and going slightly longer and slightly easier on intervals often buys more fitness for less damage (Seiler & Sylta, International Journal of Sports Physiology and Performance, 2017).",
       },
+      { type: "figure", figureId: "interval-bouts" },
       {
         type: "callout",
         variant: "tip",
@@ -850,6 +856,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A 2024 study out of NTNU (Kjøsen Talsnes et al., Frontiers in Physiology) ran the most direct head-to-head test yet of double threshold training's central claim. Fourteen well-trained endurance athletes (average VO2 max 69.2 ml/kg/min) each completed two protocols on separate occasions: a single session of 6x10-minute intervals, and the identical total volume split into two sessions of 3x10 minutes, 6.5 hours apart. In the single long session, heart rate and lactate both climbed over the course of the workout, classic cardiac drift, ending about 2.8% higher in heart rate and 0.41 mmol/L higher in lactate in the second half than the first, with perceived effort climbing from 13.4 to 14.8 on the Borg scale as the session wore on. In the split protocol, the pattern reversed: the evening session showed lower heart rate and lower lactate than the morning one, effort stayed flat across both sessions, and the athletes reported less next-day muscle soreness and lower resting heart rate than after the single long session, despite covering the identical total workload. It's a real, controlled data point for the muscular-cost mechanism described in The Muscular Limiter in Exercise Physiology: the same total dose of threshold work, at a measurably lower physiological and perceptual cost, simply by splitting it across a long enough gap.",
       },
+      { type: "figure", figureId: "double-threshold-split" },
       { type: "heading", text: "Applying This: Building Your Own Intensity-Distribution Week", level: 3 },
       {
         type: "paragraph",
@@ -941,6 +948,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A 12-year physiological case study of Paula Radcliffe, tested repeatedly through the training that produced her 2:15:25 marathon world record, shows the same pattern playing out longitudinally in a single athlete rather than across several. Her VO2 max held essentially flat, around 70 ml/kg/min, from 1992 to 2003: the ceiling simply didn't move much over more than a decade of elite training. What moved instead was fractional utilization: the percentage of that ceiling she could actually sustain at her second lactate threshold. Her threshold pace over that span shifted from roughly 14–15 km/h up to 17.5–18.5 km/h, and running economy improved by close to 15%, with the oxygen cost of running at a fixed 16 km/h dropping from about 205 to about 175 ml/kg/km (Jones, \"The Physiology of the World Record Holder for the Women's Marathon,\" International Journal of Sports Science & Coaching, 2006). Two athletes with identical VO2 max, in other words, can be separated entirely by which of them can hold a faster pace at a given percentage of it, the same conclusion the Prefontaine/Shorter/Clayton comparison reaches from a different angle, here traced inside one runner's own progression instead of across several.",
       },
+      { type: "figure", figureId: "radcliffe-longitudinal" },
       {
         type: "paragraph",
         text: "The clearest single data point that a high VO2 max guarantees nothing on its own: in 2012, an 18-year-old Norwegian cyclist named Oskar Svendsen recorded 97.5 ml/kg/min in testing, still the highest value ever reliably measured, surpassing the longtime record held by cross-country ski legend Bjørn Dæhlie (96, 8 Olympic golds). Svendsen won a junior world time-trial title weeks later, then had an unremarkable professional career and retired at 20. As journalist Alex Hutchinson put it: \"VO2 max is important, but it's not destiny\" (Hutchinson, Endure, 2018).",

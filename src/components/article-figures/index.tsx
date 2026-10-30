@@ -15,6 +15,10 @@ import { PacingTemplateDiagram } from "@/components/article-figures/pacing-templ
 import { SupercompensationExplorer } from "@/components/article-figures/supercompensation-explorer";
 import { CapillaryDensificationDiagram } from "@/components/article-figures/capillary-densification-diagram";
 import { DeflectionPointDiagram } from "@/components/article-figures/deflection-point-diagram";
+import { DoubleThresholdSplitDiagram } from "@/components/article-figures/double-threshold-split-diagram";
+import { PolarizedPolesDiagram } from "@/components/article-figures/polarized-poles-diagram";
+import { IntervalBoutsDiagram } from "@/components/article-figures/interval-bouts-diagram";
+import { RadcliffeLongitudinalDiagram } from "@/components/article-figures/radcliffe-longitudinal-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -39,6 +43,10 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "supercompensation-explorer": SupercompensationExplorer,
   "capillary-densification": CapillaryDensificationDiagram,
   "deflection-point": DeflectionPointDiagram,
+  "double-threshold-split": DoubleThresholdSplitDiagram,
+  "polarized-poles": PolarizedPolesDiagram,
+  "interval-bouts": IntervalBoutsDiagram,
+  "radcliffe-longitudinal": RadcliffeLongitudinalDiagram,
 };
 
 type ArticleFigureProps = {

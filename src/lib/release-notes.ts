@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Four more animated diagrams, on the Research Library page",
+    detail:
+      "Polarized training's two intensity poles, the gap between a 4-minute and a 16-minute interval at matched effort, the cost difference between one long threshold session and the same volume split in two, and Paula Radcliffe's decade of a flat VO2 max against a rising threshold pace -- all now sweep into view as you scroll to them, with a Replay control and a reduced-motion fallback that shows the finished diagram immediately. Every number comes straight from this page's own cited studies; two of the diagrams (the drifted training week, the split-session improvements without a stated number) label what's illustrative rather than measured.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Exercise Physiology's lactate threshold explanation gets its first animated diagram",
     detail:
       "The page already argued that the first lactate threshold is a change in slope, not a sudden switch; a static chart could only show one state at a time, which risked implying the opposite. A new diagram sweeps the curve into view once, revealing both threshold proxy ranges as it passes through them, then stays settled until you hit Replay. It respects reduced motion by showing the finished diagram immediately with no animation at all.",
