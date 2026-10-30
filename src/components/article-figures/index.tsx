@@ -26,6 +26,9 @@ import { RacePaceCurveDiagram } from "@/components/article-figures/race-pace-cur
 import { RaceTimeDistributionDiagram } from "@/components/article-figures/race-time-distribution-diagram";
 import { ThreePredictionModelsDiagram } from "@/components/article-figures/three-prediction-models-diagram";
 import { PredictionErrorWideningDiagram } from "@/components/article-figures/prediction-error-widening-diagram";
+import { FuelingWindowDiagram } from "@/components/article-figures/fueling-window-diagram";
+import { CarbCeilingDiagram } from "@/components/article-figures/carb-ceiling-diagram";
+import { GutTrainingProgressionDiagram } from "@/components/article-figures/gut-training-progression-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -61,6 +64,9 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "race-time-distribution": RaceTimeDistributionDiagram,
   "three-prediction-models": ThreePredictionModelsDiagram,
   "prediction-error-widening": PredictionErrorWideningDiagram,
+  "fueling-window": FuelingWindowDiagram,
+  "carb-ceiling": CarbCeilingDiagram,
+  "gut-training-progression": GutTrainingProgressionDiagram,
 };
 
 type ArticleFigureProps = {

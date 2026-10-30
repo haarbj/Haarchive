@@ -144,7 +144,10 @@ export type ContentBlock =
         | "race-pace-curve"
         | "race-time-distribution"
         | "three-prediction-models"
-        | "prediction-error-widening";
+        | "prediction-error-widening"
+        | "fueling-window"
+        | "carb-ceiling"
+        | "gut-training-progression";
     };
 
 export type Section = {
@@ -1590,6 +1593,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Carbohydrate needs during exercise scale mostly with duration, intensity, and gut tolerance, not with how a session feels. As a starting point: under an hour, most runners need little or none; 60–120 minutes calls for roughly 30–60 grams an hour; 2–3 hours moves that up to roughly 60–90 grams an hour; and efforts past 3 hours can use 90 grams an hour or more once the gut is trained, with elite and highly gut-trained athletes pushing past 100–120 grams. Classic sports-nutrition guidance set 30–60 g/h as the ceiling for exercise lasting 1–2.5 hours and up to 90 g/h for longer events using multiple carbohydrate types together (Jeukendrup, 2014). The best target isn't a fixed number so much as the highest amount a given athlete can absorb and use consistently without GI distress (Cao et al., 2025 review). For many runners, simply moving from 30 g/h toward 60–90 g/h is already a large upgrade: see Gut Training Is a Real, Trainable Skill below for how to get there without wrecking a long run in the process.",
       },
+      { type: "figure", figureId: "fueling-window" },
       { type: "heading", text: "The 90–120 g/h Era", level: 3 },
       {
         type: "paragraph",
@@ -1616,6 +1620,7 @@ export const sections: Section[] = [
         title: "Before Your Next Long Run",
         text: "Pick one specific number to test, not a vague intention to \"fuel better.\" If you're currently taking 30 g/h, plan for 40–45 g/h on your next long run and see how your gut handles it. That's a real, checkable experiment: \"eat more during long runs\" isn't.",
       },
+      { type: "figure", figureId: "gut-training-progression" },
       { type: "heading", text: "Small and Frequent Beats One Big Dose: The Carbohydrate Drip", level: 3 },
       {
         type: "paragraph",
@@ -1657,6 +1662,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The exact ratio matters most once carbohydrate intake is already high. For most runners well under that ceiling, total carbs, gut training, drink concentration, and timing matter just as much as the specific glucose-to-fructose split.",
       },
+      { type: "figure", figureId: "carb-ceiling" },
       { type: "heading", text: "Concentration and Timing Matter as Much as the Total", level: 3 },
       {
         type: "paragraph",

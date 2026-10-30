@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Four animated figures on Nutrition & Fueling",
+    detail:
+      "A fueling-window timeline shows why little or no carbohydrate is needed in the first 60 minutes of a run, then why a 60-to-120-minute session calls for roughly 30-60 g/h, met with two 20-25g gels spaced the page's own real 30-minute cadence apart. A toggle-driven figure compares glucose-only fueling against 1:1 and 2:1 glucose-to-fructose ratios at 40 g/h and 90 g/h, showing all three deliver equally below the glucose-only transporter's roughly 60-66 g/h ceiling, and only the combined ratios can clear it. A third figure steps a gut-training progression across six key long runs, from a 30 g/h baseline through the page's own 40-45 g/h next test toward the 60-90 g/h range it cites for a 2-3 hour effort. A caffeine-timing figure was planned but skipped: the page gives an effective dose range (3-6 mg/kg) with no timing guidance to visualize honestly. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this batch.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Three animated diagrams on What One Race Result Can (and Can't) Tell You",
     detail:
       "A bell-curve distribution shows why an 18:00 5K's roughly 6:08/mile average threshold pace is close to a 50/50 proposition for any one runner, with this site's conservative 10th-percentile safe estimate marked on the slow tail. A second figure fans one race result out through Riegel's power law, this site's statistical model, and the independently reverse-engineered Tinman curve, showing a point-vs-range contrast rather than any specific computed number. A third, toggle-driven figure widens the statistical model's own range as the gap between a known result and a target distance grows, while flagging that Riegel has no published accuracy figure here at all and Tinman's real validation was never measured against distance gap in the first place. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this batch.",
