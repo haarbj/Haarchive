@@ -147,7 +147,11 @@ export type ContentBlock =
         | "prediction-error-widening"
         | "fueling-window"
         | "carb-ceiling"
-        | "gut-training-progression";
+        | "gut-training-progression"
+        | "diverging-recovery-clocks"
+        | "soreness-vs-tone"
+        | "sleep-injury-risk"
+        | "overtraining-cluster";
     };
 
 export type Section = {
@@ -3695,6 +3699,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The practical tools for bringing tone back down overlap with what's already recommended for soreness (easy jogging, sleep, time) but a couple are more specifically aimed at tone itself. Cross-friction massage, applied across the direction of the muscle fibers rather than along them, has some pilot evidence behind it as a tone-lowering technique specifically, distinct from the general relaxation effect of a normal massage. And the same easy run that helps clear soreness in Jog Through Soreness, Don't Wait It Out above is doing double duty: it's also one of the more reliable ways to bring elevated tone back down before the next hard session. The two mechanisms are different, but the same low-key habit (an easy jog the day after) happens to address both.",
       },
+      { type: "figure", figureId: "soreness-vs-tone" },
       { type: "heading", text: "Three Common Injuries and Their First Response" },
       {
         type: "list",
@@ -3736,6 +3741,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "One guest also cited sleep-specific injury-risk figures worth flagging as suggestive rather than precisely established, since they weren't tied to a specific study in the discussion itself: runners sleeping under seven hours a night were said to carry roughly 1.7 times the injury risk of well-rested runners, with consistently good sleep cutting injury risk by as much as 61%. Treat the exact multipliers loosely, but the direction fits everything else on this page: sleep is recovery infrastructure, not a luxury layered on top of training.",
       },
+      { type: "figure", figureId: "sleep-injury-risk" },
       { type: "heading", text: "Clinical Somatics: A Different Lineage for Loosening Tight Muscles" },
       {
         type: "paragraph",
@@ -3792,6 +3798,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The structural fix is the same one this page keeps returning to: alternate hard and easy rather than stacking hard on hard, and make the easy days genuinely easy rather than moderately hard. A simple weekly pattern (hard, easy, hard, hard, easy, or just hard, easy, repeated) gives the body the buffer it needs between real stress sessions; two hard days in a row, or a long run and a fast track session inside the same 48 hours, is the pattern that shows up again and again in overtraining case histories. The single most useful diagnostic tool is boring but reliable: a consistent easy run over the same familiar loop, at the same easy heart rate, checked periodically against how it used to feel. When that easy pace starts requiring a noticeably higher heart rate or perceived effort than it used to, that's the signal to back off before a harder session forces the issue (Livingstone, Healthy Intelligent Training). See Tolerance for Suffering Is a Trainable Skill in Sports Psychology for the flip side of this: mental toughness is genuinely trainable, but treating every hard day as one more test of it is exactly the mindset overtraining hides behind.",
       },
+      { type: "figure", figureId: "overtraining-cluster" },
       { type: "heading", text: "In Multi-Day Racing, Sleep Deprivation Is the Real Danger, Not Muscle Failure" },
       {
         type: "paragraph",
@@ -3825,6 +3832,7 @@ export const sections: Section[] = [
         variant: "research",
         text: "Fixing low energy availability doesn't fix everything on the same clock. Energy status itself can start recovering within days to weeks of increased intake or reduced training load; menstrual function typically takes months to normalize even after energy status improves; bone mineral density can lag years behind both, meaning an athlete can feel and perform better long before the skeleton has actually caught up (2014 Female Athlete Triad Coalition consensus statement). That mismatch is exactly why a fast return to full training after a short break from RED-S symptoms is often premature: feeling recovered and being recovered aren't the same timeline.",
       },
+      { type: "figure", figureId: "diverging-recovery-clocks" },
       {
         type: "callout",
         variant: "takeaway",

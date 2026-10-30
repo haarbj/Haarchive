@@ -29,6 +29,10 @@ import { PredictionErrorWideningDiagram } from "@/components/article-figures/pre
 import { FuelingWindowDiagram } from "@/components/article-figures/fueling-window-diagram";
 import { CarbCeilingDiagram } from "@/components/article-figures/carb-ceiling-diagram";
 import { GutTrainingProgressionDiagram } from "@/components/article-figures/gut-training-progression-diagram";
+import { DivergingRecoveryClocksDiagram } from "@/components/article-figures/diverging-recovery-clocks-diagram";
+import { SorenessVsToneDiagram } from "@/components/article-figures/soreness-vs-tone-diagram";
+import { SleepInjuryRiskDiagram } from "@/components/article-figures/sleep-injury-risk-diagram";
+import { OvertrainingClusterDiagram } from "@/components/article-figures/overtraining-cluster-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -67,6 +71,10 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "fueling-window": FuelingWindowDiagram,
   "carb-ceiling": CarbCeilingDiagram,
   "gut-training-progression": GutTrainingProgressionDiagram,
+  "diverging-recovery-clocks": DivergingRecoveryClocksDiagram,
+  "soreness-vs-tone": SorenessVsToneDiagram,
+  "sleep-injury-risk": SleepInjuryRiskDiagram,
+  "overtraining-cluster": OvertrainingClusterDiagram,
 };
 
 type ArticleFigureProps = {

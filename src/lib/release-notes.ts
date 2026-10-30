@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Four animated figures on Recovery",
+    detail:
+      "A diverging-clocks figure shows energy status, menstrual function, and bone mineral density recovering on three genuinely different timelines (days-to-weeks, months, and years), each bar growing at its own real speed rather than just ending at a different length. A soreness-vs-tone figure contrasts DOMS's smooth, multi-day hill against muscle tone's jagged, hour-scale swings, and shows the page's own easy-jog-the-day-after recommendation visibly bending the tone curve down. A sleep-and-injury-risk figure carries the page's own caveat into the artwork itself (faded, dashed-outline bars) so the 1.7x and up-to-61% figures read as suggestive direction, not precise point estimates. A two-panel figure pairs the five-symptom overtraining checklist with the page's own same-loop, same-effort heart-rate diagnostic. Same sweep/stagger, Replay, and reduced-motion pattern as the rest of this series.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Four animated figures on Nutrition & Fueling",
     detail:
       "A fueling-window timeline shows why little or no carbohydrate is needed in the first 60 minutes of a run, then why a 60-to-120-minute session calls for roughly 30-60 g/h, met with two 20-25g gels spaced the page's own real 30-minute cadence apart. A toggle-driven figure compares glucose-only fueling against 1:1 and 2:1 glucose-to-fructose ratios at 40 g/h and 90 g/h, showing all three deliver equally below the glucose-only transporter's roughly 60-66 g/h ceiling, and only the combined ratios can clear it. A third figure steps a gut-training progression across six key long runs, from a 30 g/h baseline through the page's own 40-45 g/h next test toward the 60-90 g/h range it cites for a 2-3 hour effort. A caffeine-timing figure was planned but skipped: the page gives an effective dose range (3-6 mg/kg) with no timing guidance to visualize honestly. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this batch.",
