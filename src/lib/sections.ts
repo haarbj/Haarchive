@@ -137,7 +137,11 @@ export type ContentBlock =
         | "double-threshold-split"
         | "polarized-poles"
         | "interval-bouts"
-        | "radcliffe-longitudinal";
+        | "radcliffe-longitudinal"
+        | "heart-rate-lag"
+        | "cardiac-drift"
+        | "dfa-alpha1-crossing"
+        | "race-pace-curve";
     };
 
 export type Section = {
@@ -1016,6 +1020,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The advantage over a fixed heart-rate zone isn't just convenience. HRV is a more direct read on physiological demand than heart rate alone, it can be estimated continuously during a session rather than requiring a separate lab or field test, and it isn't thrown off by the same things that throw off a fixed heart-rate number: cardiac drift, heat, sleep debt, and the general day-to-day physiological noise a static zone can't account for all shift the raw heart-rate-to-effort relationship, but a DFA-alpha1-based threshold estimate adjusts with the athlete in real time instead of silently going stale. It's also transferable across aerobic modalities (running, cycling, cross-country skiing) in a way a running-specific pace zone isn't. The practical cost is real, though: the calculation needs a chest strap (not a wrist-based optical sensor) and dedicated software to compute in real time, so it's a tool for an athlete who wants to go deeper, not a replacement for the talk test or a threshold time trial as a starting point.",
       },
+      { type: "figure", figureId: "dfa-alpha1-crossing" },
       { type: "heading", text: "How Many Zones Do You Actually Need?" },
       {
         type: "paragraph",
@@ -1050,6 +1055,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Once threshold pace is known, race paces at other distances aren't a mystery: they sit at a fairly consistent percentage above it across well-trained athletes, since threshold pace is itself sustainable for roughly 50–60 minutes regardless of ability level. A well-trained runner's race pace runs close to 95% of threshold for the marathon, 99% for the half marathon, 101% for 15K, 104% for 10K, 109% for 5K, 113% for 3K, 119% for 2000m, 122% for 1500m, and 133% for 800m (Janssen, Training Lactate Pulse-Rate, 1987, cited in Livingstone, Healthy Intelligent Training). The pattern is worth internalizing rather than memorizing exactly: the jump from marathon to half is small, the jump from 5K to 3K and below gets steep fast, and that steepening is the acidosis curve described in Steady State and Oxygen Debt above: each further percentage point above threshold costs disproportionately more, not proportionately more.",
       },
+      { type: "figure", figureId: "race-pace-curve" },
       {
         type: "paragraph",
         text: "The same relationship works from the other direction: it's a rough check on a goal race pace before committing hard training to it. An athlete whose honest current threshold pace is 6:30/mile has no business targeting a marathon pace of 6:00/mile (92% of threshold, faster than what threshold-based percentages support): the gap says the aerobic base needs to grow first, not that the marathon-pace session needs to get harder. See Two DIY Ways to Find Your Threshold above for how to establish the anchor number this table runs off of. For turning a percentage like this into an actual workout pace, see the",
@@ -1086,6 +1092,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Distinct from the short-effort lag described below, cardiac drift shows up on longer, steady efforts: heart rate climbs gradually over the course of a sustained session even though pace hasn't changed, driven mainly by reduced stroke volume from mild dehydration and rising core temperature, plus a growing contribution from fatiguing fast-twitch fibers as the effort continues. A rising heart rate at a fixed pace late in a long threshold session isn't necessarily a bad sign. It's an expected physiological response to sustained load, and one specific comparison of a single long threshold session against the same volume split into two shorter same-day sessions found meaningfully less of it in the split version (see One Long Threshold Session vs. Two Shorter Ones in Research Library). Drift is worth tracking over time the same way an easy-run heart rate is: a given session drifting noticeably more than it used to at the same pace is a useful, boring, reliable signal that something (heat, fatigue, dehydration) is off that day.",
       },
+      { type: "figure", figureId: "cardiac-drift" },
       { type: "heading", text: "Why Heart Rate Misleads on Short, Hard Efforts" },
       {
         type: "callout",
@@ -1093,6 +1100,7 @@ export const sections: Section[] = [
         title: "The lag mechanism, and how it decides which metric governs each zone",
         text: "Heart rate takes a minute or more to catch up to a sudden jump in effort: a lag that barely matters on a 20-minute tempo run but actively misleads on a interval as short as 30–90 seconds, where the effort is already finishing before the heart rate has caught up to reflect it. That's the real mechanism behind the zone rule already covered in Five Training Zones, Anchored to One Number in Workout Library: heart rate governs low-intensity running well because effort there is steady and lag has time to settle, pace takes over once intervals get short and hard because it responds instantly, and on hills specifically even pace breaks down: a given heart rate represents the same physiological intensity whether the ground goes up, down, or flat, so perceived effort becomes the only metric left that stays honest. Across every zone, perceived effort gets the final say when the other two disagree, precisely because it's the only one of the three that's actually measuring how the body is doing rather than a proxy for it.",
       },
+      { type: "figure", figureId: "heart-rate-lag" },
       { type: "heading", text: "Critical Power: A Sharper Ceiling Than Lactate Threshold" },
       {
         type: "paragraph",

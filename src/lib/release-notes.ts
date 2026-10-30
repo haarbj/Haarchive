@@ -53,9 +53,21 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Four more animated diagrams, on the Data & Analytics page",
+    detail:
+      "Heart rate's lag behind a sudden jump in effort, cardiac drift over a 30-minute time trial (and why the protocol averages only the final 10 minutes), DFA-alpha1's heart rate variability threshold crossing against a fixed heart-rate zone that can't see it go stale, and race pace as a percentage of threshold pace across nine distances from the marathon down to 800m -- all sweep or toggle into view the same way the rest of this batch does, with a Replay control and a reduced-motion fallback. The race-pace figure plots the page's own cited table (Janssen, 1987) directly; the other three label their curve shapes illustrative where the page gives a range or a mechanism rather than a plottable number.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Four more animated diagrams, on the Research Library page",
     detail:
       "Polarized training's two intensity poles, the gap between a 4-minute and a 16-minute interval at matched effort, the cost difference between one long threshold session and the same volume split in two, and Paula Radcliffe's decade of a flat VO2 max against a rising threshold pace -- all now sweep into view as you scroll to them, with a Replay control and a reduced-motion fallback that shows the finished diagram immediately. Every number comes straight from this page's own cited studies; two of the diagrams (the drifted training week, the split-session improvements without a stated number) label what's illustrative rather than measured.",
+  },
+  {
+    date: "2026-10-30",
+    headline: "Ten more animated diagrams, across Exercise Physiology and The Aerobic Base",
+    detail:
+      "Exercise Physiology picked up seven: the oxygen delivery pipeline, the lactate shuttle, size-principle muscle-fiber recruitment (slider-driven, with two reversal toggles), oxygen debt accumulation (the page's own 70kg/16:00/4.31L worked example), breathing-rhythm patterns, the fat/carb crossover point, and the pacing-template mismatch. The Aerobic Base picked up three more: the supercompensation rebound curve, capillary densification, and the deflection-point shift. Same pattern as the pilot diagram throughout -- sweep or toggle into view once scrolled to, a Replay control, and a reduced-motion fallback that shows the finished figure immediately. Every number traces to the page's own cited sources; a few diagrams (breathing rhythm's 1-1 ratio, the crossover shift, the pacing-template mismatch, supercompensation's curve shape) label themselves illustrative rather than inventing a figure the page itself doesn't state.",
   },
   {
     date: "2026-10-30",

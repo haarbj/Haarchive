@@ -19,6 +19,10 @@ import { DoubleThresholdSplitDiagram } from "@/components/article-figures/double
 import { PolarizedPolesDiagram } from "@/components/article-figures/polarized-poles-diagram";
 import { IntervalBoutsDiagram } from "@/components/article-figures/interval-bouts-diagram";
 import { RadcliffeLongitudinalDiagram } from "@/components/article-figures/radcliffe-longitudinal-diagram";
+import { HeartRateLagDiagram } from "@/components/article-figures/heart-rate-lag-diagram";
+import { CardiacDriftDiagram } from "@/components/article-figures/cardiac-drift-diagram";
+import { DfaAlpha1Diagram } from "@/components/article-figures/dfa-alpha1-diagram";
+import { RacePaceCurveDiagram } from "@/components/article-figures/race-pace-curve-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -47,6 +51,10 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "polarized-poles": PolarizedPolesDiagram,
   "interval-bouts": IntervalBoutsDiagram,
   "radcliffe-longitudinal": RadcliffeLongitudinalDiagram,
+  "heart-rate-lag": HeartRateLagDiagram,
+  "cardiac-drift": CardiacDriftDiagram,
+  "dfa-alpha1-crossing": DfaAlpha1Diagram,
+  "race-pace-curve": RacePaceCurveDiagram,
 };
 
 type ArticleFigureProps = {

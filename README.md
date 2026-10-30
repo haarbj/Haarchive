@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Four more animated diagrams, on the Research Library page
+**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Four more animated diagrams, on the Data & Analytics page
 
 Recent highlights:
+- Four more animated diagrams, on the Research Library page (Oct 30, 2026)
+- Ten more animated diagrams, across Exercise Physiology and The Aerobic Base (Oct 30, 2026)
 - Exercise Physiology's lactate threshold explanation gets its first animated diagram (Oct 30, 2026)
-- A sitewide motion and mobile-feel pass (Oct 29, 2026)
-- The Pace Zone Table now reads your own fitness estimate (Oct 29, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
