@@ -123,7 +123,14 @@ export type ContentBlock =
         | "boston-marathon-fueling"
         | "gastric-emptying-explorer"
         | "carbohydrate-transport-diagram"
-        | "intensity-domains-diagram";
+        | "intensity-domains-diagram"
+        | "oxygen-delivery-pipeline"
+        | "lactate-shuttle"
+        | "size-principle-explorer"
+        | "oxygen-debt"
+        | "breathing-rhythm-explorer"
+        | "crossover-point"
+        | "pacing-template";
     };
 
 export type Section = {
@@ -357,6 +364,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Every explanation on this page assumes a physical pipeline connecting outside air to a working muscle fiber, worth naming directly once. Oxygen enters through the lungs and binds to hemoglobin in the blood; the heart pumps that oxygenated blood out through the arteries; the arteries branch down into capillaries fine enough to run alongside individual muscle fibers; oxygen diffuses out of the capillary wall and into the fiber; and inside the fiber, the mitochondria are where it actually gets used, combined with fuel to produce ATP. The return trip runs in reverse: carbon dioxide, the waste product of that process, diffuses back into the capillaries, rides the blood to the heart and lungs, and gets exhaled. Nearly every adaptation aerobic training produces, more capillaries, more mitochondria, a larger stroke volume, is an upgrade to one specific stage of this same pipeline, not a vague overall fitness gain (see 60,000 Miles of Plumbing in The Aerobic Base for what those specific upgrades look like).",
       },
+      { type: "figure", figureId: "oxygen-delivery-pipeline" },
       { type: "heading", text: "What Lactate Actually Is (and Isn't)", level: 3 },
       {
         type: "paragraph",
@@ -374,6 +382,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Roughly 75% of the lactate produced during marathon-effort running gets oxidized directly by other tissues rather than accumulating, including a substantial amount burned by the heart itself as fuel. Inside a single muscle, the same shuttle lets fast-twitch, glycolytic fibers effectively borrow the oxidative capacity of neighboring slow-twitch fibers: the fast-twitch fiber keeps doing what it's built for, rapid, powerful contraction, while handing off the lactate it generates to a neighbor better equipped to burn it. Muscle glycogen adds one more wrinkle worth knowing: unlike the liver, muscle tissue lacks the enzyme (glucose-6-phosphatase) needed to convert stored glycogen back into glucose it can export into the bloodstream. A muscle's glycogen store is usable only by that muscle; it can't lend fuel to a neighboring, more depleted one the way it can lend lactate.",
       },
+      { type: "figure", figureId: "lactate-shuttle" },
       {
         type: "paragraph",
         text: "That also explains why a single blood lactate reading can be misleading on its own: it reflects the balance between how much lactate is being produced and how much is being cleared, not production by itself. Identical production and reuptake rates would leave a blood lactate reading unchanged even if total lactate turnover, and the glycolytic reliance behind it, had actually risen substantially.",
@@ -411,11 +420,13 @@ export const sections: Section[] = [
         title: "The math behind the corrected 4-liter ceiling",
         text: "Arthur Lydiard's training writing put the ceiling on tolerable oxygen debt at 15–18 liters, the physiology understanding of his era. Exercise physiologist Peter Snell (Lydiard's own Olympic 800m/1500m champion, later a career research scientist) revisited the number decades later and put the real ceiling closer to 4 liters. Worked through with real numbers: a 70kg runner covering 5,000m in 16 minutes needs 4.31 liters of oxygen; at a Steady State of 3.5 L/min, he's accumulating debt at 0.81 L/min and can hold that pace for only about 5 minutes before hitting the ceiling. Raise that Steady State to 4.06 L/min through aerobic training, and the debt rate drops to 0.25 L/min, enough to sustain the same pace for the full 16 minutes. The specific numbers changed; the underlying logic didn't: a higher aerobic ceiling is what lets a given pace be held longer, not a higher tolerance for suffering through the debt.",
       },
+      { type: "figure", figureId: "oxygen-debt" },
       { type: "heading", text: "Breathing Rhythm as a Real-Time Pacing Signal", level: 3 },
       {
         type: "paragraph",
         text: "Breathing discomfort under hard effort is driven by rising carbon dioxide, not falling oxygen: exercise produces CO2 faster than it can be cleared, and it's that buildup, not an oxygen shortfall, that triggers the urge to breathe harder (the same reason breath-holding underwater becomes urgent long before actual oxygen deprivation is a real risk). Coach Jack Daniels ties breathing rate to stride cadence through a simple ratio system, naming each pattern by its steps-per-inhale to steps-per-exhale count: 4-4, 3-3, 2-2, 1-1. Counterintuitively, faster and shallower beats slower and deeper up to a point: worked through with real numbers at a 180 steps/minute cadence, a 4-4 rhythm moves roughly 90 liters of air a minute, a 3-3 rhythm about 105, and a 2-2 rhythm about 135, because breathing faster raises total ventilation more than the smaller per-breath volume costs, at least until a 1-1 rhythm, where breath size drops so much that a fixed, wasted \"dead space\" volume in each breath starts eating a proportionally larger share of it. In lab testing, Daniels found roughly 86 percent of elite runners automatically settle into 2-2 as their default up through near-maximal effort, shifting to a faster rhythm only in the closing stretch of a hard effort (Daniels, Daniels' Running Formula).",
       },
+      { type: "figure", figureId: "breathing-rhythm-explorer" },
       {
         type: "callout",
         variant: "tip",
@@ -430,6 +441,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "There's a real biochemical reason the shift toward carbohydrate happens at higher intensity in the first place, separate from glycogen availability: carbohydrate produces roughly 7% more ATP per liter of oxygen consumed than fat does. Since oxygen delivery, not fuel availability, is what actually caps how hard you can run, that efficiency gap means carbohydrate is the cheaper fuel precisely when oxygen is the binding constraint, which is exactly the situation at higher intensities. This is why the crossover happens even in a well-fed, glycogen-replete athlete: it isn't the body running low on fat, it's the body choosing the fuel that buys more energy per breath as breathing itself becomes the limiting resource.",
       },
+      { type: "figure", figureId: "crossover-point" },
       { type: "heading", text: "What a Diet Does to Peak Fat-Burning Rate", level: 3 },
       {
         type: "paragraph",
@@ -511,6 +523,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "There are two reliable ways to force the nervous system to recruit the biggest fibers early instead of last. The first is a sudden eccentric stretch immediately followed by a concentric contraction, a plyometric action, which is exactly what happens on every stride of hill bounding: the leg lands and lengthens under load, then has to reverse and drive off the ground almost instantly. The second is loading a muscle with something genuinely heavy, above roughly 85% of a one-rep maximum, which recruits the largest motor units first simply because nothing smaller can move the weight (see The Size Principle Applies in the Weight Room Too in Strength Training for Runners). This is the real mechanism behind Lydiard's three hill exercises in the Workout Library: steep hill running, hill bounding, and hill springing weren't arbitrary variety, they were three different ways of hitting fibers a season of aerobic base-building never reaches on its own (Nardone, Romano & Schieppati, Journal of Physiology, 1989; Livingstone, Healthy Intelligent Training).",
       },
+      { type: "figure", figureId: "size-principle-explorer" },
       { type: "heading", text: "VO2 Max Is Two Adaptations Sharing One Name" },
       {
         type: "paragraph",
@@ -653,6 +666,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Framed as a debate, Noakes and Marcora sound like they're arguing about whether a runner's limits are physical or mental. Followed far enough, both models land in the same place: effort, not any single physiological variable measured in a lab, is what most directly governs how long an effort can continue, and training works by lowering the effort cost of a given pace as much as it works by raising a physiological ceiling. Tucker's own account of how pacing actually happens moment to moment reconciles the two views mechanically: a runner continuously compares the effort a given point in the race actually feels like against an internally learned template of how hard it's supposed to feel at that point. Feel roughly on-template and pace holds; feel meaningfully harder than the template predicts (even nowhere near true maximal effort) and the urge to slow down arrives immediately. A miscalibrated template, not a physical wall, is why a race can fall apart in the middle and then, mysteriously, finish with a fast last lap: effort finally catches back down to what the template expected (see Self-Talk, Trained Rather Than Improvised and Pain Tolerance Is Trainable, Pain Threshold Isn't in Sports Psychology for how this plays out in actual training).",
       },
+      { type: "figure", figureId: "pacing-template" },
       {
         type: "paragraph",
         text: "One practical implication either model supports: mental fatigue and physical fatigue draw from the same pool. A randomized trial pairing physical training with deliberately fatiguing cognitive tasks (dubbed \"brain endurance training\") found cyclists who did both improved time-to-exhaustion by 126% over 12 weeks, against 42% for physical training alone (Staiano & Marcora, Medicine & Science in Sports & Exercise, 2015). The short version: physical fitness sets where the wall is. Effort, trainable in its own right and independent of the legs, determines how close to it you're actually willing to get.",

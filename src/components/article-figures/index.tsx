@@ -5,6 +5,13 @@ import { BostonMarathonFuelingCard } from "@/components/article-figures/boston-m
 import { GastricEmptyingExplorer } from "@/components/article-figures/gastric-emptying-explorer";
 import { CarbohydrateTransportDiagram } from "@/components/article-figures/carbohydrate-transport-diagram";
 import { IntensityDomainsDiagram } from "@/components/article-figures/intensity-domains-diagram";
+import { OxygenDeliveryPipelineDiagram } from "@/components/article-figures/oxygen-delivery-pipeline-diagram";
+import { LactateShuttleDiagram } from "@/components/article-figures/lactate-shuttle-diagram";
+import { SizePrincipleExplorer } from "@/components/article-figures/size-principle-explorer";
+import { OxygenDebtDiagram } from "@/components/article-figures/oxygen-debt-diagram";
+import { BreathingRhythmExplorer } from "@/components/article-figures/breathing-rhythm-explorer";
+import { CrossoverPointDiagram } from "@/components/article-figures/crossover-point-diagram";
+import { PacingTemplateDiagram } from "@/components/article-figures/pacing-template-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -19,6 +26,13 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "gastric-emptying-explorer": GastricEmptyingExplorer,
   "carbohydrate-transport-diagram": CarbohydrateTransportDiagram,
   "intensity-domains-diagram": IntensityDomainsDiagram,
+  "oxygen-delivery-pipeline": OxygenDeliveryPipelineDiagram,
+  "lactate-shuttle": LactateShuttleDiagram,
+  "size-principle-explorer": SizePrincipleExplorer,
+  "oxygen-debt": OxygenDebtDiagram,
+  "breathing-rhythm-explorer": BreathingRhythmExplorer,
+  "crossover-point": CrossoverPointDiagram,
+  "pacing-template": PacingTemplateDiagram,
 };
 
 type ArticleFigureProps = {
