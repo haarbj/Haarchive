@@ -4,6 +4,7 @@ import type { ContentBlock } from "@/lib/sections";
 import { BostonMarathonFuelingCard } from "@/components/article-figures/boston-marathon-fueling-card";
 import { GastricEmptyingExplorer } from "@/components/article-figures/gastric-emptying-explorer";
 import { CarbohydrateTransportDiagram } from "@/components/article-figures/carbohydrate-transport-diagram";
+import { IntensityDomainsDiagram } from "@/components/article-figures/intensity-domains-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -17,6 +18,7 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "boston-marathon-fueling": BostonMarathonFuelingCard,
   "gastric-emptying-explorer": GastricEmptyingExplorer,
   "carbohydrate-transport-diagram": CarbohydrateTransportDiagram,
+  "intensity-domains-diagram": IntensityDomainsDiagram,
 };
 
 type ArticleFigureProps = {

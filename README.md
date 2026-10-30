@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 29, 2026](https://brodyhaar.com/release-notes)):** A sitewide motion and mobile-feel pass
+**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Exercise Physiology's lactate threshold explanation gets its first animated diagram
 
 Recent highlights:
+- A sitewide motion and mobile-feel pass (Oct 29, 2026)
 - Fixed: typing "Stepwise Long Fast Run" as a day label didn't auto-resolve to its explanation (Oct 29, 2026)
 - Fixed: Your Plan's program card could say "no training phases" while a real one was scheduled (Oct 29, 2026)
-- Your current fitness estimate now has a real home on Your Paces (Oct 27, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

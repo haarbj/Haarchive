@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-10-30",
+    headline: "Exercise Physiology's lactate threshold explanation gets its first animated diagram",
+    detail:
+      "The page already argued that the first lactate threshold is a change in slope, not a sudden switch; a static chart could only show one state at a time, which risked implying the opposite. A new diagram sweeps the curve into view once, revealing both threshold proxy ranges as it passes through them, then stays settled until you hit Replay. It respects reduced motion by showing the finished diagram immediately with no animation at all.",
+  },
+  {
     date: "2026-10-29",
     headline: "A sitewide motion and mobile-feel pass",
     detail:

@@ -119,7 +119,11 @@ export type ContentBlock =
   // the article editor.
   | {
       type: "figure";
-      figureId: "boston-marathon-fueling" | "gastric-emptying-explorer" | "carbohydrate-transport-diagram";
+      figureId:
+        | "boston-marathon-fueling"
+        | "gastric-emptying-explorer"
+        | "carbohydrate-transport-diagram"
+        | "intensity-domains-diagram";
     };
 
 export type Section = {
@@ -476,6 +480,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Worth being precise about one common misconception: the first lactate threshold isn't a discrete switch that flips from purely aerobic to partly anaerobic metabolism. Lactate production and lactate removal both rise continuously with intensity well before that threshold and keep rising after it; the threshold just marks the point where production starts outpacing removal by enough to show up as a change in slope on a lactate curve, not a change in what's actually happening biologically.",
       },
+      { type: "figure", figureId: "intensity-domains-diagram" },
       {
         type: "paragraph",
         text: "Because these domain boundaries are physiologically real but not directly visible in daily training, several proxies stand in for them, and they aren't equally reliable. Percent of VO2 max, the most commonly cited anchor in general fitness literature, has a real flaw: the two thresholds above occur at meaningfully different percentages of VO2 max from one runner to the next, so a fixed percentage doesn't land on the same physiological domain for everyone. Percent of heart rate reserve (0% at resting heart rate, 100% at max heart rate) tracks percent of VO2 max meaningfully more accurately than percent of max heart rate does, since it accounts for resting heart rate rather than ignoring it. Pace-based ranges anchored to recent 5K performance are tighter and better correlated with the two thresholds than VO2 max-based ranges are: roughly 64–93% of 5K pace for the first, and roughly 90–100% of 5K pace for the second (Davis, Marathon Excellence for Everyone). For turning either proxy into an actual training number, see the",
