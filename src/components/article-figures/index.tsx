@@ -12,6 +12,9 @@ import { OxygenDebtDiagram } from "@/components/article-figures/oxygen-debt-diag
 import { BreathingRhythmExplorer } from "@/components/article-figures/breathing-rhythm-explorer";
 import { CrossoverPointDiagram } from "@/components/article-figures/crossover-point-diagram";
 import { PacingTemplateDiagram } from "@/components/article-figures/pacing-template-diagram";
+import { SupercompensationExplorer } from "@/components/article-figures/supercompensation-explorer";
+import { CapillaryDensificationDiagram } from "@/components/article-figures/capillary-densification-diagram";
+import { DeflectionPointDiagram } from "@/components/article-figures/deflection-point-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -33,6 +36,9 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "breathing-rhythm-explorer": BreathingRhythmExplorer,
   "crossover-point": CrossoverPointDiagram,
   "pacing-template": PacingTemplateDiagram,
+  "supercompensation-explorer": SupercompensationExplorer,
+  "capillary-densification": CapillaryDensificationDiagram,
+  "deflection-point": DeflectionPointDiagram,
 };
 
 type ArticleFigureProps = {

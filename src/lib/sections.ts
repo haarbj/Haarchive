@@ -130,7 +130,10 @@ export type ContentBlock =
         | "oxygen-debt"
         | "breathing-rhythm-explorer"
         | "crossover-point"
-        | "pacing-template";
+        | "pacing-template"
+        | "supercompensation-explorer"
+        | "capillary-densification"
+        | "deflection-point";
     };
 
 export type Section = {
@@ -721,6 +724,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Every workout is a stress that temporarily makes you less fit, not more. Fatigue shows up first, and fitness only rebounds during the recovery that follows, often landing slightly above where you started. That's super-compensation, and it's the whole mechanism behind why training works. Push too hard or rest too little and the curve never gets the chance to rebound: training success = moderate stress + adequate rest. See Consistency & Daily Practice in Mental Performance for the psychology of actually sustaining this day after day, once the physiology of it makes sense.",
       },
+      { type: "figure", figureId: "supercompensation-explorer" },
       { type: "heading", text: "Why Miles in the Bank Actually Works" },
       {
         type: "paragraph",
@@ -748,11 +752,13 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "One comparative study Lydiard cites puts a real number on the capillary-building payoff: Swedish runners averaged four to five capillaries per muscle cell in their quadriceps, while Kenyan runners averaged seven to eight, nearly double the delivery network in the exact muscles doing the work. The Kenyan runners also carried a higher concentration of the enzymes that break down fat, including citrate synthase, the enzyme that supplies muscle with energy aerobically. Genetics plays some role in a gap like that, but both adaptations (capillary density and fat-oxidizing enzyme concentration) are exactly the ones built by sustained aerobic volume, not inherited outright (Lydiard, Running to the Top).",
       },
+      { type: "figure", figureId: "capillary-densification" },
       { type: "heading", text: "What a Trained Heart Does Differently" },
       {
         type: "paragraph",
         text: "Consistent aerobic training measurably enlarges the heart, increases stroke volume (blood pumped per beat), and lowers resting heart rate, meaning the same amount of blood moves with less effort. The net effect shows up as a rightward shift in the \"deflection point,\" the exercise intensity at which blood acidity starts climbing sharply: after training, a pace that used to tip a runner into that acid spike no longer does, because the same absolute output now costs a smaller fraction of total capacity.",
       },
+      { type: "figure", figureId: "deflection-point" },
       { type: "heading", text: "Training the Fat-Burning Ceiling" },
       {
         type: "paragraph",
