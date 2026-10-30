@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Two animated figures on Training Across the Menstrual Cycle",
+    detail:
+      "A toggle-driven figure sets Stacy Sims' two-phase model's own proposed follicular/luteal attributes (heat tolerance, carbohydrate use, muscle breakdown, plasma volume) against what a 2020 systematic review and meta-analysis actually found: two nearly fully overlapping performance distributions, since the measured effect was at most trivial to small and inconsistent across studies. The model's own cited case, Radcliffe's 2002 Chicago Marathon world record, is labeled explicitly as that, not proof. A second figure compares the roughly 30-minute post-exercise refueling window research suggests in women against a window that can extend past an hour in men, with the commonly cited 4:1 carbohydrate-to-protein recovery ratio shown underneath. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this series.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Four animated figures on Recovery",
     detail:
       "A diverging-clocks figure shows energy status, menstrual function, and bone mineral density recovering on three genuinely different timelines (days-to-weeks, months, and years), each bar growing at its own real speed rather than just ending at a different length. A soreness-vs-tone figure contrasts DOMS's smooth, multi-day hill against muscle tone's jagged, hour-scale swings, and shows the page's own easy-jog-the-day-after recommendation visibly bending the tone curve down. A sleep-and-injury-risk figure carries the page's own caveat into the artwork itself (faded, dashed-outline bars) so the 1.7x and up-to-61% figures read as suggestive direction, not precise point estimates. A two-panel figure pairs the five-symptom overtraining checklist with the page's own same-loop, same-effort heart-rate diagnostic. Same sweep/stagger, Replay, and reduced-motion pattern as the rest of this series.",

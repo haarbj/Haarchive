@@ -151,7 +151,9 @@ export type ContentBlock =
         | "diverging-recovery-clocks"
         | "soreness-vs-tone"
         | "sleep-injury-risk"
-        | "overtraining-cluster";
+        | "overtraining-cluster"
+        | "cycle-framework-vs-evidence"
+        | "refueling-window-comparison";
     };
 
 export type Section = {
@@ -3866,6 +3868,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "Exercise physiologist Stacy Sims popularized a phase-based framework for training around the menstrual cycle in her book Roar: the roughly two-week follicular phase (from the first day of a period until ovulation), when estrogen and progesterone are both low, versus the roughly two-week luteal phase after ovulation, when both hormones rise. Her proposed pattern: better heat tolerance, easier carbohydrate use, and less muscle breakdown in the follicular phase, versus a harder time dissipating heat, higher core temperature, greater sodium loss, and faster muscle breakdown in the luteal phase, plus a temporary drop in blood plasma volume, which reduces the blood's oxygen-carrying capacity to working muscle. The headline case cited for the model is Paula Radcliffe's 2002 Chicago Marathon world record, run while menstruating, in the low-hormone phase the framework identifies as advantageous (Sims, Roar, 2016).",
       },
+      { type: "figure", figureId: "cycle-framework-vs-evidence" },
       {
         type: "callout",
         variant: "research",
@@ -3876,6 +3879,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "A few of the underlying physiological findings are worth knowing regardless of how strictly you apply them. Recovery-window research suggests women may have a narrower post-exercise refueling window than men (roughly 30 minutes before the body shifts back toward fat storage, versus a window that can extend past an hour in men) making prompt carbohydrate-plus-protein refueling after a hard session a bigger practical lever for a female athlete than for a male one; a 4:1 carbohydrate-to-protein recovery ratio is the commonly cited starting point, adjusted up in protein if that shift proves relevant to you personally (Sims, Roar, 2016). During perimenopause and menopause, declining estrogen and progesterone measurably impair fructose metabolism and raise insulin resistance, which can make standard high-fructose sports drinks and gels harder to tolerate: shifting toward whole-food carbohydrate sources (fruit, starchy vegetables) is a reasonable adjustment to test if race-day GI distress starts appearing that wasn't there before.",
       },
+      { type: "figure", figureId: "refueling-window-comparison" },
       {
         type: "paragraph",
         text: "One point is not in dispute: a missing period (amenorrhea) is not a sign of fitness, and it is not something to induce or tolerate in pursuit of a lighter, faster-looking body. It's a core diagnostic marker of Relative Energy Deficiency in Sport (RED-S) in Recovery: see that section for the full framework and recovery timeline. Any coach or athlete treating a lost period as a convenient side effect of hard training, rather than a signal to investigate energy availability, has the causation backwards.",

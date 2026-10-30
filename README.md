@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Four animated figures on Recovery
+**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Two animated figures on Training Across the Menstrual Cycle
 
 Recent highlights:
+- Four animated figures on Recovery (Oct 30, 2026)
 - Four animated figures on Nutrition & Fueling (Oct 30, 2026)
 - Three animated diagrams on What One Race Result Can (and Can't) Tell You (Oct 30, 2026)
-- Four more animated diagrams, on the Data & Analytics page (Oct 30, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

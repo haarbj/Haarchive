@@ -33,6 +33,8 @@ import { DivergingRecoveryClocksDiagram } from "@/components/article-figures/div
 import { SorenessVsToneDiagram } from "@/components/article-figures/soreness-vs-tone-diagram";
 import { SleepInjuryRiskDiagram } from "@/components/article-figures/sleep-injury-risk-diagram";
 import { OvertrainingClusterDiagram } from "@/components/article-figures/overtraining-cluster-diagram";
+import { CycleFrameworkVsEvidenceDiagram } from "@/components/article-figures/cycle-framework-vs-evidence-diagram";
+import { RefuelingWindowComparisonDiagram } from "@/components/article-figures/refueling-window-comparison-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -75,6 +77,8 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "soreness-vs-tone": SorenessVsToneDiagram,
   "sleep-injury-risk": SleepInjuryRiskDiagram,
   "overtraining-cluster": OvertrainingClusterDiagram,
+  "cycle-framework-vs-evidence": CycleFrameworkVsEvidenceDiagram,
+  "refueling-window-comparison": RefuelingWindowComparisonDiagram,
 };
 
 type ArticleFigureProps = {
