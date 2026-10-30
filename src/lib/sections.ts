@@ -141,7 +141,10 @@ export type ContentBlock =
         | "heart-rate-lag"
         | "cardiac-drift"
         | "dfa-alpha1-crossing"
-        | "race-pace-curve";
+        | "race-pace-curve"
+        | "race-time-distribution"
+        | "three-prediction-models"
+        | "prediction-error-widening";
     };
 
 export type Section = {
@@ -1200,11 +1203,13 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "None of the three is scientifically superior to the others. They're genuinely different approaches (a formula fit to world-record outliers, a statistical model fit to a large ordinary population, an independently reverse-engineered curve from one coach's own tool) built to answer a related but not identical question, and there's no reason to expect three independent approaches to converge on the same number every time.",
       },
+      { type: "figure", figureId: "three-prediction-models" },
       { type: "heading", text: "Same Race Time, Different Runner" },
       {
         type: "paragraph",
         text: "Consider an 18:00 5K runner. The average threshold pace among runners at that exact performance level is roughly 6:08/mile, but at that pace, any individual 18:00 5K runner has close to a 50/50 chance of actually being at or under threshold, not reliably under it. The reason isn't measurement error: it's that an 18:00 5K can be run by a more aerobically-oriented runner or a more anaerobically-oriented one, and those two runners genuinely have different real threshold paces despite an identical result on the clock. That's why this site's statistical model defaults to a safe estimate (roughly the 10th percentile of the threshold-speed distribution) rather than the average: a number slow enough that most runners at that performance level are genuinely below threshold at it, not just typically.",
       },
+      { type: "figure", figureId: "race-time-distribution" },
       {
         type: "paragraph",
         text: "There's a real physiological reason two runners can hit the same result through different routes. VO2 max itself is really two separable adaptations sharing one name: a pure aerobic contribution built by low-intensity volume over years, and a separate anaerobic-chemistry contribution built specifically by time spent at 95-100% of VO2 max pace. Two runners can arrive at a similar race result with a different balance of the two, which is a plausible part of why the same finish time doesn't imply the same threshold pace, alongside training history, event specificity, and everything else a single race result can't distinguish.",
@@ -1220,6 +1225,7 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "The Riegel formula and the statistical threshold model don't have an equivalent published accuracy figure on this site. That's not an oversight to smooth over: Riegel's formula was fit once to world records and has never been validated here against a large population of ordinary runners' actual outcomes, and the statistical model's own accuracy is better expressed by the width of its percentile range than by a single error number. A model can be precise on its own terms, exactly reproducing the relationship it was built from, while still being limited by how much any one race result can tell it about the runner who ran it. Those are two different kinds of uncertainty, and only the first one shows up as a clean error statistic.",
       },
+      { type: "figure", figureId: "prediction-error-widening" },
       { type: "heading", text: "What a Prediction Can't See" },
       {
         type: "paragraph",

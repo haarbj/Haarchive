@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Three animated diagrams on What One Race Result Can (and Can't) Tell You",
+    detail:
+      "A bell-curve distribution shows why an 18:00 5K's roughly 6:08/mile average threshold pace is close to a 50/50 proposition for any one runner, with this site's conservative 10th-percentile safe estimate marked on the slow tail. A second figure fans one race result out through Riegel's power law, this site's statistical model, and the independently reverse-engineered Tinman curve, showing a point-vs-range contrast rather than any specific computed number. A third, toggle-driven figure widens the statistical model's own range as the gap between a known result and a target distance grows, while flagging that Riegel has no published accuracy figure here at all and Tinman's real validation was never measured against distance gap in the first place. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this batch.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Four more animated diagrams, on the Data & Analytics page",
     detail:
       "Heart rate's lag behind a sudden jump in effort, cardiac drift over a 30-minute time trial (and why the protocol averages only the final 10 minutes), DFA-alpha1's heart rate variability threshold crossing against a fixed heart-rate zone that can't see it go stale, and race pace as a percentage of threshold pace across nine distances from the marathon down to 800m -- all sweep or toggle into view the same way the rest of this batch does, with a Replay control and a reduced-motion fallback. The race-pace figure plots the page's own cited table (Janssen, 1987) directly; the other three label their curve shapes illustrative where the page gives a range or a mechanism rather than a plottable number.",

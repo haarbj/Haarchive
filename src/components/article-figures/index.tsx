@@ -23,6 +23,9 @@ import { HeartRateLagDiagram } from "@/components/article-figures/heart-rate-lag
 import { CardiacDriftDiagram } from "@/components/article-figures/cardiac-drift-diagram";
 import { DfaAlpha1Diagram } from "@/components/article-figures/dfa-alpha1-diagram";
 import { RacePaceCurveDiagram } from "@/components/article-figures/race-pace-curve-diagram";
+import { RaceTimeDistributionDiagram } from "@/components/article-figures/race-time-distribution-diagram";
+import { ThreePredictionModelsDiagram } from "@/components/article-figures/three-prediction-models-diagram";
+import { PredictionErrorWideningDiagram } from "@/components/article-figures/prediction-error-widening-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -55,6 +58,9 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "cardiac-drift": CardiacDriftDiagram,
   "dfa-alpha1-crossing": DfaAlpha1Diagram,
   "race-pace-curve": RacePaceCurveDiagram,
+  "race-time-distribution": RaceTimeDistributionDiagram,
+  "three-prediction-models": ThreePredictionModelsDiagram,
+  "prediction-error-widening": PredictionErrorWideningDiagram,
 };
 
 type ArticleFigureProps = {
