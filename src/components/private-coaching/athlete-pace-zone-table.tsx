@@ -124,8 +124,13 @@ export type SuggestedReferencePace = {
   basis: ReferenceBasis;
   /** Formatted mm:ss, in miles. */
   paceText: string;
-  /** e.g. "Peachtree 10K · Jul 4, 2026" */
+  /** e.g. "Peachtree 10K · Jul 4, 2026", or "your fitness estimate (updated ...)" */
   sourceLabel: string;
+  /** "estimate" is the athlete's own stated number for this basis, not a
+   * cross-distance prediction -- changes the button's verb so it never
+   * says "predicted" about a number nobody predicted. Defaults to "race"
+   * for existing callers that only ever passed race-derived suggestions. */
+  kind?: "estimate" | "race";
 };
 
 type PersistedState = {
@@ -328,7 +333,8 @@ export function AthletePaceZoneTable({ suggestions }: { suggestions: SuggestedRe
                 onClick={() => applySuggestion(matchingSuggestion)}
                 className="mt-1.5 text-xs font-semibold text-zinc-700 underline decoration-black/30 underline-offset-2 hover:decoration-black dark:text-zinc-200 dark:decoration-white/30 dark:hover:decoration-white"
               >
-                Use your predicted {BASIS_LABEL[basis].toLowerCase()} from {matchingSuggestion.sourceLabel} (
+                Use {matchingSuggestion.kind === "estimate" ? "" : "your predicted "}
+                {BASIS_LABEL[basis].toLowerCase()} from {matchingSuggestion.sourceLabel} (
                 {matchingSuggestion.paceText}/mi)
               </button>
             )}

@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-29",
+    headline: "The Pace Zone Table now reads your own fitness estimate",
+    detail:
+      "The Pace Zone Table always let you type in a reference pace by hand, but it never knew about your own fitness estimate -- it could only suggest a pace predicted from your most recent race. It now suggests your current fitness estimate first when one is on file, with a direct link to update or recompute it without leaving for Settings, falling back to the race prediction only when no estimate exists yet. Nothing about who can see this table changed -- it's still limited to the athletes it was always meant for.",
+  },
+  {
+    date: "2026-10-29",
     headline: "Fixed: typing \"Stepwise Long Fast Run\" as a day label didn't auto-resolve to its explanation",
     detail:
       "Every other workout type resolves its \"why this workout\" explanation automatically from the label a coach types on the schedule -- the stepwise long fast run never did, and was only reachable by browsing the full workout-types glossary directly. Typing \"Stepwise Long Fast Run\" (or just \"Stepwise\") now resolves to the same explanation and worked example browsing already reached, on both the coach's and athlete's view of the workout.",
