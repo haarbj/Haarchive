@@ -153,7 +153,9 @@ export type ContentBlock =
         | "sleep-injury-risk"
         | "overtraining-cluster"
         | "cycle-framework-vs-evidence"
-        | "refueling-window-comparison";
+        | "refueling-window-comparison"
+        | "heart-rate-myth-vs-talk-test"
+        | "vena-cava-compression";
     };
 
 export type Section = {
@@ -3914,6 +3916,7 @@ export const sections: Section[] = [
         title: "A common myth, and what actually matters",
         text: "\"Keep your heart rate under 140 bpm\" was widely repeated pregnancy advice for years and isn't well supported as a hard ceiling: the more relevant concern is sustained time near the top of your effort range, which can bring on dizziness from temporarily reduced blood flow, not a specific number. A More Precise Way to Find Your Zones: The Talk Test in How to Start Running is a more useful guide than a fixed heart-rate cap through pregnancy.",
       },
+      { type: "figure", figureId: "heart-rate-myth-vs-talk-test" },
       {
         type: "list",
         items: [
@@ -3924,6 +3927,7 @@ export const sections: Section[] = [
           "A C-section is major abdominal surgery through the rectus and transverse abdominis muscles: rushing a return to running before that tissue has actually healed undermines core strength for months afterward, regardless of how routine the procedure has become.",
         ],
       },
+      { type: "figure", figureId: "vena-cava-compression" },
       {
         type: "paragraph",
         text: "Standard postpartum clearance to return to exercise is a 6-week checkup, though the right timeline still depends on the individual delivery and how it went. A few postpartum realities are worth naming plainly, because they're common but rarely discussed openly: urinary leakage while running postpartum is frequent, but it is not something to accept as a permanent cost of having given birth: pelvic-floor physical therapy resolves it in most cases, whether the birth was 6 weeks or 6 years ago. Diastasis recti, a separation of the abdominal muscles, is very common in pregnancy and, somewhat counterintuitively, shows up more, not less, in women who were very fit beforehand, since a strong rectus resists stretching until it separates outright rather than gradually giving way; it's addressed through targeted core rehab restoring functional strength, not through cosmetic exercises alone. A prolapse (descent of the bladder or vaginal wall) is a more serious, distinct red flag from ordinary postpartum discomfort, usually treatable through pelvic-floor physical therapy rather than surgery, but it's a reason to see a specialist promptly, not to push through. The common thread across all of it: \"getting your body back\" is the wrong frame. A postpartum runner's pelvis and core have a new baseline, not a full return to a prior one, and training from that new baseline, rather than measuring against the old one, is what actually works.",

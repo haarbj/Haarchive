@@ -35,6 +35,8 @@ import { SleepInjuryRiskDiagram } from "@/components/article-figures/sleep-injur
 import { OvertrainingClusterDiagram } from "@/components/article-figures/overtraining-cluster-diagram";
 import { CycleFrameworkVsEvidenceDiagram } from "@/components/article-figures/cycle-framework-vs-evidence-diagram";
 import { RefuelingWindowComparisonDiagram } from "@/components/article-figures/refueling-window-comparison-diagram";
+import { HeartRateMythVsTalkTestDiagram } from "@/components/article-figures/heart-rate-myth-vs-talk-test-diagram";
+import { VenaCavaCompressionDiagram } from "@/components/article-figures/vena-cava-compression-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -79,6 +81,8 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "overtraining-cluster": OvertrainingClusterDiagram,
   "cycle-framework-vs-evidence": CycleFrameworkVsEvidenceDiagram,
   "refueling-window-comparison": RefuelingWindowComparisonDiagram,
+  "heart-rate-myth-vs-talk-test": HeartRateMythVsTalkTestDiagram,
+  "vena-cava-compression": VenaCavaCompressionDiagram,
 };
 
 type ArticleFigureProps = {

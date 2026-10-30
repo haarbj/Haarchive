@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Two animated figures on Pregnancy and Postpartum Running",
+    detail:
+      "A toggle-driven figure sets the widely repeated \"keep your heart rate under 140 bpm\" advice against what actually matters: a single fixed number applied the same way to every runner, versus an effort-based talk test that tracks the real concern, sustained time near the top of your effort range bringing on dizziness from temporarily reduced blood flow. A second figure schematizes vena cava compression after roughly 15-16 weeks, showing the vessel narrowing when a growing uterus presses on it while lying flat on the back, and staying open once that position is swapped for side-lying or standing. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this series.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Two animated figures on Training Across the Menstrual Cycle",
     detail:
       "A toggle-driven figure sets Stacy Sims' two-phase model's own proposed follicular/luteal attributes (heat tolerance, carbohydrate use, muscle breakdown, plasma volume) against what a 2020 systematic review and meta-analysis actually found: two nearly fully overlapping performance distributions, since the measured effect was at most trivial to small and inconsistent across studies. The model's own cited case, Radcliffe's 2002 Chicago Marathon world record, is labeled explicitly as that, not proof. A second figure compares the roughly 30-minute post-exercise refueling window research suggests in women against a window that can extend past an hour in men, with the commonly cited 4:1 carbohydrate-to-protein recovery ratio shown underneath. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this series.",
