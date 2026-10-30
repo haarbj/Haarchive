@@ -123,11 +123,23 @@ export function FuelingWindowDiagram() {
             {/* Timeline track */}
             <line x1={PAD_LEFT} y1={TRACK_Y} x2={PAD_LEFT + PLOT_WIDTH} y2={TRACK_Y} strokeWidth="1" className="stroke-zinc-300 dark:stroke-zinc-700" />
 
-            {/* Start / 60 / end ticks */}
+            {/* The last tick (120 min) sits at xScale(DURATION_MAX), the
+                plot's own right edge -- center-anchoring its label there put
+                its right half past the viewBox's right edge (PAD_RIGHT is
+                only 16px, less than half the label's own ~44px width), and
+                SVG's default overflow:hidden clipped it (confirmed via
+                Playwright getBBox at both 390px and 1280px). Right-anchoring
+                just that one tick inside the viewBox's right edge fixes it
+                without moving the tick mark or any other label. */}
             {[0, 60, 90, 120].map((t) => (
               <g key={t}>
                 <line x1={xScale(t)} y1={TRACK_Y - 5} x2={xScale(t)} y2={TRACK_Y + 5} strokeWidth="1" className="stroke-zinc-300 dark:stroke-zinc-700" />
-                <text x={xScale(t)} y={TRACK_Y + 24} textAnchor="middle" className="fill-zinc-500 text-[12px] dark:fill-zinc-400">
+                <text
+                  x={t === DURATION_MAX ? CHART_WIDTH - 4 : xScale(t)}
+                  y={TRACK_Y + 24}
+                  textAnchor={t === DURATION_MAX ? "end" : "middle"}
+                  className="fill-zinc-500 text-[12px] dark:fill-zinc-400"
+                >
                   {t} min
                 </text>
               </g>

@@ -15,8 +15,18 @@ const DEST_X = 560;
 // The four destinations named directly in "What Lactate Actually Is (and
 // Isn't)": "sometimes to a neighboring, more oxidative muscle fiber,
 // sometimes through the bloodstream to the heart, liver, or kidneys."
-const DESTINATIONS = [
-  { label: "Neighboring slow-twitch fiber", y: 50 },
+// `lines` wraps a destination's label onto two stacked lines instead of
+// one -- added for the first destination only: at a single line, "Neighboring
+// slow-twitch fiber" measures ~168px starting from x=580 inside a 680-wide
+// viewBox, so its right edge landed ~67px past the viewBox and SVG's
+// default overflow:hidden clipped it (confirmed via Playwright getBBox at
+// both 390px and 1280px -- the overflow is baked into the viewBox's own
+// coordinate space, not the responsive container, so it's identical at
+// either width). Splitting after "Neighboring" keeps both lines
+// (measured at ~69px and ~95px) well inside the viewBox without touching
+// its dimensions, the wording, or the other three single-line labels.
+const DESTINATIONS: { label: string; y: number; lines?: [string, string] }[] = [
+  { label: "Neighboring slow-twitch fiber", y: 50, lines: ["Neighboring", "slow-twitch fiber"] },
   { label: "Heart", y: 110 },
   { label: "Liver", y: 170 },
   { label: "Kidneys", y: 230 },
@@ -113,9 +123,20 @@ export function LactateShuttleDiagram() {
             {DESTINATIONS.map((d) => (
               <g key={d.label}>
                 <circle cx={DEST_X} cy={d.y} r="12" className="fill-zinc-950 stroke-zinc-400 dark:stroke-zinc-600" strokeWidth="1.5" />
-                <text x={DEST_X + 20} y={d.y + 4} textAnchor="start" className="fill-zinc-300 text-[12px] dark:fill-zinc-200">
-                  {d.label}
-                </text>
+                {d.lines ? (
+                  <>
+                    <text x={DEST_X + 20} y={d.y - 2} textAnchor="start" className="fill-zinc-300 text-[12px] dark:fill-zinc-200">
+                      {d.lines[0]}
+                    </text>
+                    <text x={DEST_X + 20} y={d.y + 12} textAnchor="start" className="fill-zinc-300 text-[12px] dark:fill-zinc-200">
+                      {d.lines[1]}
+                    </text>
+                  </>
+                ) : (
+                  <text x={DEST_X + 20} y={d.y + 4} textAnchor="start" className="fill-zinc-300 text-[12px] dark:fill-zinc-200">
+                    {d.label}
+                  </text>
+                )}
               </g>
             ))}
 

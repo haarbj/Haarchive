@@ -141,10 +141,23 @@ export function CardiacDriftDiagram() {
 
             <line x1={PAD_LEFT} y1={PAD_TOP} x2={PAD_LEFT} y2={PAD_TOP + PLOT_HEIGHT} strokeWidth="1" className="stroke-zinc-300 dark:stroke-zinc-700" />
             <line x1={PAD_LEFT} y1={PAD_TOP + PLOT_HEIGHT} x2={PAD_LEFT + PLOT_WIDTH} y2={PAD_TOP + PLOT_HEIGHT} strokeWidth="1" className="stroke-zinc-300 dark:stroke-zinc-700" />
+            {/* The last tick (30min) sits at xScale(TIME_MAX), the plot's
+                own right edge -- center-anchoring its label there put its
+                right half past the viewBox's right edge (PAD_RIGHT is only
+                12px, less than half the label's own ~35.5px width), and
+                SVG's default overflow:hidden clipped it (confirmed via
+                Playwright getBBox at both 390px and 1280px). Right-anchoring
+                just that one tick inside the viewBox's right edge fixes it
+                without moving the tick mark or any other label. */}
             {[0, 10, 20, 30].map((t) => (
               <g key={t}>
                 <line x1={xScale(t)} y1={PAD_TOP + PLOT_HEIGHT} x2={xScale(t)} y2={PAD_TOP + PLOT_HEIGHT + 5} strokeWidth="1" className="stroke-zinc-300 dark:stroke-zinc-700" />
-                <text x={xScale(t)} y={PAD_TOP + PLOT_HEIGHT + 17} textAnchor="middle" className="fill-zinc-500 text-[12px] dark:fill-zinc-400">
+                <text
+                  x={t === TIME_MAX ? CHART_WIDTH - 4 : xScale(t)}
+                  y={PAD_TOP + PLOT_HEIGHT + 17}
+                  textAnchor={t === TIME_MAX ? "end" : "middle"}
+                  className="fill-zinc-500 text-[12px] dark:fill-zinc-400"
+                >
                   {t}min
                 </text>
               </g>

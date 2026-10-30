@@ -31,10 +31,26 @@ const NODE_R = 14;
 // capillaries, more mitochondria, a larger stroke volume") pinned to the
 // stage each one upgrades -- stroke volume is the heart's pumping
 // capacity, so it anchors to Heart, not Arteries.
-const ADAPTATIONS: { stage: string; text: string }[] = [
+// `anchor`/`dx`/`dy` let one label's position be nudged independently of
+// its stage node -- added for Mitochondria only: centered on its own
+// stage node (x=680, 40px from the viewBox's right edge at 720), "more
+// mitochondria" measures ~125px wide, so a centered anchor put its right
+// edge ~22px past the viewBox and SVG's default overflow:hidden clipped
+// it (confirmed via Playwright getBBox at both 390px and 1280px widths --
+// the same amount either width, since the overflow lives in the SVG's
+// own coordinate space, not the responsive container). Right-anchoring it
+// just inside the viewBox's own right edge fixes the clip, but on its own
+// that shift runs it straight into "more capillaries" (the two labels
+// already overlapped by ~25px even before this fix -- the clipped-off
+// portion of "more mitochondria" had been silently hiding that overlap).
+// Dropping Mitochondria's label to a second row (below the CO2 return
+// line and its own caption, which only spans the chart's center) clears
+// both the Capillaries row and the CO2 line/caption without moving any
+// node, the viewBox, or the other two labels.
+const ADAPTATIONS: { stage: string; text: string; anchor?: "start" | "middle" | "end"; dx?: number; dy?: number }[] = [
   { stage: "Heart", text: "larger stroke volume" },
   { stage: "Capillaries", text: "more capillaries" },
-  { stage: "Mitochondria", text: "more mitochondria" },
+  { stage: "Mitochondria", text: "more mitochondria", anchor: "end", dx: 36, dy: 34 },
 ];
 
 const SWEEP_DURATION_MS = 1100;
@@ -136,9 +152,9 @@ export function OxygenDeliveryPipelineDiagram() {
               return (
                 <text
                   key={a.stage}
-                  x={stage.x}
-                  y={NODE_Y + 24}
-                  textAnchor="middle"
+                  x={stage.x + (a.dx ?? 0)}
+                  y={NODE_Y + 24 + (a.dy ?? 0)}
+                  textAnchor={a.anchor ?? "middle"}
                   className="fill-[var(--accent-tip)] text-[10.5px] font-semibold tracking-wide uppercase"
                 >
                   {a.text}
