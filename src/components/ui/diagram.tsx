@@ -52,7 +52,21 @@ export function Diagram({ children, alt, aspect = "video", label, className = ""
     <div
       role="img"
       aria-label={alt}
-      className={`relative flex items-center justify-center overflow-hidden rounded-card bg-zinc-950 p-4 ${aspectClass} ${className}`}
+      // `[&_svg]:h-full [&_svg]:w-full` forces every descendant <svg> to
+      // fill this box's own padded content area exactly, overriding a
+      // child figure's own `h-auto w-full` (the about-page supercompensation
+      // diagram already does this directly, via `h-full w-full` on its own
+      // <svg> -- this generalizes that same correct pattern at the shared
+      // level instead of relying on every figure file getting it right).
+      // With no `preserveAspectRatio` set, the SVG's default "meet"
+      // behavior then scales the viewBox to fit *within* that box exactly
+      // (no clipping), rather than `h-auto` computing a height from the
+      // viewBox's own intrinsic ratio that can exceed this box's actual
+      // height once `aspect="wide"`'s fixed 21:9 ratio and this padding are
+      // combined at a narrow (phone) width -- see this component's git
+      // history/commit message for the full root-cause writeup of the
+      // mobile axis-label cropping this was fixing.
+      className={`relative flex items-center justify-center overflow-hidden rounded-card bg-zinc-950 p-4 [&_svg]:h-full [&_svg]:w-full ${aspectClass} ${className}`}
     >
       {children}
     </div>
