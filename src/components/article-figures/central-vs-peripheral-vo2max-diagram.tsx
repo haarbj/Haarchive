@@ -63,7 +63,8 @@ function PanelEntrance({ animate, children }: { animate: boolean; children: Reac
     el.style.transform = "scale(0.98)";
     el.getBoundingClientRect(); // force a reflow before the transition below starts
     requestAnimationFrame(() => {
-      el.style.transition = "opacity 200ms ease-out, transform 200ms ease-out";
+      el.style.transition =
+        "opacity 200ms cubic-bezier(0.23, 1, 0.32, 1), transform 200ms cubic-bezier(0.23, 1, 0.32, 1)";
       el.style.opacity = "1";
       el.style.transform = "scale(1)";
     });

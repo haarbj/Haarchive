@@ -26,7 +26,7 @@ export function BreathingRhythmExplorer() {
   const [reducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
-  const transitionClass = reducedMotion ? "" : "transition-transform duration-200 ease-out";
+  const transitionClass = reducedMotion ? "" : "transition-[transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]";
   const active = RHYTHMS.find((r) => r.id === selected)!;
 
   return (

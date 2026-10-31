@@ -49,7 +49,7 @@ export function SizePrincipleExplorer() {
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
 
-  const transitionClass = reducedMotion ? "" : "transition-opacity duration-200 ease-out";
+  const transitionClass = reducedMotion ? "" : "transition-[opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]";
 
   return (
     <div className="rounded-xl border border-black/10 bg-white p-4 sm:p-5 dark:border-white/10 dark:bg-zinc-900">
