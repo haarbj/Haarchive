@@ -384,7 +384,7 @@ export const sections: Section[] = [
       "First-principles explanations of VO₂ max, threshold, fatigue, adaptation, and biomechanics.",
     topics: ["Energy systems", "Muscle fibers", "Recovery biology"],
     category: "physiology",
-    lastUpdated: "2026-09-04",
+    lastUpdated: "2026-10-31",
     content: [
       { type: "heading", text: "The Energy Systems" },
       { type: "heading", text: "The Oxygen Delivery Pipeline", level: 3 },
@@ -743,6 +743,7 @@ export const sections: Section[] = [
       "Why aerobic fitness is the foundation of endurance performance and long-term progression.",
     topics: ["Mileage progression", "Easy running", "Durability"],
     category: "physiology",
+    lastUpdated: "2026-10-31",
     content: [
       { type: "heading", text: "The Adaptation Curve" },
       {
@@ -816,7 +817,7 @@ export const sections: Section[] = [
       "Summaries of books, papers, and historical methods that shaped distance running knowledge.",
     topics: ["Scientific papers", "Coaching texts", "Emerging research"],
     category: "physiology",
-    lastUpdated: "2026-09-04",
+    lastUpdated: "2026-10-31",
     content: [
       {
         type: "heading",
@@ -1016,7 +1017,7 @@ export const sections: Section[] = [
       "Use heart rate, pace, and training data to support sound coaching judgment.",
     topics: ["Training zones", "Race analytics", "Technology with context"],
     category: "physiology",
-    lastUpdated: "2026-09-04",
+    lastUpdated: "2026-10-31",
     content: [
       { type: "heading", text: "Three Layers of Measurement" },
       {
@@ -1179,7 +1180,7 @@ export const sections: Section[] = [
       "A single race time is one observed outcome, and every prediction tool built from it necessarily assumes more about you than that number actually contains. What that means for how much to trust a predicted pace.",
     topics: ["Where the prediction models come from", "Why identical race times can mean different runners", "What a single input can't see"],
     category: "physiology",
-    lastUpdated: "2026-08-06",
+    lastUpdated: "2026-10-31",
     content: [
       { type: "heading", text: "One Number, Many Assumptions" },
       {
@@ -1573,7 +1574,7 @@ export const sections: Section[] = [
       "Carbohydrate, hydration, electrolyte, and micronutrient strategy for training and racing, grounded in modern sports-nutrition evidence rather than folklore.",
     topics: ["Carbohydrate strategy", "Hydration & electrolytes", "Legal performance aids"],
     category: "physiology",
-    lastUpdated: "2026-09-04",
+    lastUpdated: "2026-10-31",
     content: [
       { type: "heading", text: "Whole Food Most of the Time, Fast Fuel When It Matters" },
       {
@@ -3648,7 +3649,7 @@ export const sections: Section[] = [
       "Sustainable performance through cross-training, strength, mobility, and injury prevention.",
     topics: ["Sleep and stress", "Strength & mobility", "Injury prevention"],
     category: "physiology",
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-10-31",
     content: [
       { type: "heading", text: "Cross-Training That Actually Carries Over" },
       {
@@ -3867,7 +3868,7 @@ export const sections: Section[] = [
       "How training and fueling interact with the menstrual cycle -- what the research actually supports, and where popular phase-based frameworks have outrun the evidence.",
     topics: ["Phase-based training frameworks", "What the evidence actually shows", "Fueling and recovery-window adjustments"],
     category: "physiology",
-    lastUpdated: "2026-08-06",
+    lastUpdated: "2026-10-31",
     content: [
       {
         type: "paragraph",
@@ -3907,7 +3908,7 @@ export const sections: Section[] = [
       "Real physiological and safety considerations for training through pregnancy and returning to running postpartum, from vena cava compression to pelvic-floor recovery.",
     topics: ["Training through pregnancy", "Postpartum return to running", "Real physiological considerations"],
     category: "physiology",
-    lastUpdated: "2026-08-06",
+    lastUpdated: "2026-10-31",
     content: [
       {
         type: "paragraph",
@@ -3952,7 +3953,7 @@ export const sections: Section[] = [
       "Why VO2 max decline with age is driven more by muscle loss than heart function, and what that means for recovery spacing and strength training as a masters runner.",
     topics: ["Why VO2 max declines with age", "Recovery spacing by decade", "The case for starting strength work early"],
     category: "physiology",
-    lastUpdated: "2026-08-06",
+    lastUpdated: "2026-10-31",
     content: [
       {
         type: "paragraph",
