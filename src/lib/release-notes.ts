@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-10-30",
+    headline: "Three animated figures on Training Through the Decades",
+    detail:
+      "A toggle-driven figure separates what actually drives age-related VO2 max decline: central factors like max heart rate and stroke volume, which hold up comparatively well, versus peripheral factors (shrinking muscle mass and oxygen extraction), which drive most of the loss, then switches to the strength-training lever itself, fast-twitch fiber loss largely irreversible once it happens, slow-twitch fiber loss meaningfully offset by resistance training. A second figure shows recovery spacing between hard efforts widening with age for the identical relative-effort workout: roughly 1-2 days in a runner's 20s, 2-3 days by the 40s, and 4-5 days by the 50s, using exactly the page's own named ranges. A third figure, built around Peter Attia's Centenarian Decathlon (Outlive, 2023), toggles between the lifespan-versus-health-span distinction and the three concrete physical tasks (carrying groceries, getting up off the floor, hiking with grandchildren) the reserve is built for. This closes out the 36-figure animation pass across all ten Physiology-domain pages. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this series.",
+  },
+  {
+    date: "2026-10-30",
     headline: "Two animated figures on Pregnancy and Postpartum Running",
     detail:
       "A toggle-driven figure sets the widely repeated \"keep your heart rate under 140 bpm\" advice against what actually matters: a single fixed number applied the same way to every runner, versus an effort-based talk test that tracks the real concern, sustained time near the top of your effort range bringing on dizziness from temporarily reduced blood flow. A second figure schematizes vena cava compression after roughly 15-16 weeks, showing the vessel narrowing when a growing uterus presses on it while lying flat on the back, and staying open once that position is swapped for side-lying or standing. Same sweep/toggle, Replay, and reduced-motion pattern as the rest of this series.",

@@ -37,6 +37,9 @@ import { CycleFrameworkVsEvidenceDiagram } from "@/components/article-figures/cy
 import { RefuelingWindowComparisonDiagram } from "@/components/article-figures/refueling-window-comparison-diagram";
 import { HeartRateMythVsTalkTestDiagram } from "@/components/article-figures/heart-rate-myth-vs-talk-test-diagram";
 import { VenaCavaCompressionDiagram } from "@/components/article-figures/vena-cava-compression-diagram";
+import { CentralVsPeripheralVo2MaxDiagram } from "@/components/article-figures/central-vs-peripheral-vo2max-diagram";
+import { RecoverySpacingByDecadeDiagram } from "@/components/article-figures/recovery-spacing-by-decade-diagram";
+import { CentenarianDecathlonDiagram } from "@/components/article-figures/centenarian-decathlon-diagram";
 
 type FigureBlock = Extract<ContentBlock, { type: "figure" }>;
 export type ArticleFigureId = FigureBlock["figureId"];
@@ -83,6 +86,9 @@ const articleFigures: Record<ArticleFigureId, ComponentType> = {
   "refueling-window-comparison": RefuelingWindowComparisonDiagram,
   "heart-rate-myth-vs-talk-test": HeartRateMythVsTalkTestDiagram,
   "vena-cava-compression": VenaCavaCompressionDiagram,
+  "central-vs-peripheral-vo2max": CentralVsPeripheralVo2MaxDiagram,
+  "recovery-spacing-by-decade": RecoverySpacingByDecadeDiagram,
+  "centenarian-decathlon": CentenarianDecathlonDiagram,
 };
 
 type ArticleFigureProps = {

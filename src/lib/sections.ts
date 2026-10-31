@@ -155,7 +155,10 @@ export type ContentBlock =
         | "cycle-framework-vs-evidence"
         | "refueling-window-comparison"
         | "heart-rate-myth-vs-talk-test"
-        | "vena-cava-compression";
+        | "vena-cava-compression"
+        | "central-vs-peripheral-vo2max"
+        | "recovery-spacing-by-decade"
+        | "centenarian-decathlon";
     };
 
 export type Section = {
@@ -3955,10 +3958,12 @@ export const sections: Section[] = [
         type: "paragraph",
         text: "VO2 max reliably declines with age, but the mechanism matters for what to do about it. The decline is driven more by peripheral factors (shrinking muscle mass reducing how much oxygen the muscle can actually extract and use) than by central factors like heart rate; maximum heart rate does drop gradually, but stroke volume (how much blood the heart pumps per beat) holds up fairly well into a runner's 50s and 60s with continued training. That distinction matters because it points to the fix: strength training that preserves muscle mass offsets more of the age-related VO2 max decline than any amount of extra aerobic volume can on its own. Fast-twitch muscle fiber loss with age is largely irreversible once it happens, while slow-twitch fiber loss can be meaningfully offset by resistance training, which is the practical case for starting serious strength work in your 30s, before the losses begin, rather than waiting until an aging-related slowdown is already underway.",
       },
+      { type: "figure", figureId: "central-vs-peripheral-vo2max" },
       {
         type: "paragraph",
         text: "Physician and longevity researcher Peter Attia frames this as training now for a specific \"Centenarian Decathlon\": the concrete physical tasks (carrying groceries, getting up off the floor, hiking with grandchildren) you'll want to still be able to do at 80 or 90, which requires building a strength and mobility reserve decades before you'll need to draw on it, not waiting until decline is already visible (Attia, Outlive, 2023). Attia also draws a distinction worth carrying into training decisions broadly, lifespan (years alive) versus health span (years of those spent with full physical function): a masters runner optimizing purely for more racing years without attention to strength and mobility risks winning on the first measure while losing ground on the second.",
       },
+      { type: "figure", figureId: "centenarian-decathlon" },
       {
         type: "list",
         items: [
@@ -3968,6 +3973,7 @@ export const sections: Section[] = [
           "Training principles don't change with age (the same hard/easy structure, the same volume-before-intensity sequencing); only the specific numbers (recovery days, peak mileage, pace targets) need to be recalibrated for a body that adapts and recovers more slowly than it used to.",
         ],
       },
+      { type: "figure", figureId: "recovery-spacing-by-decade" },
       {
         type: "callout",
         variant: "takeaway",

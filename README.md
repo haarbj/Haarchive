@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Two animated figures on Pregnancy and Postpartum Running
+**Latest update ([Oct 30, 2026](https://brodyhaar.com/release-notes)):** Three animated figures on Training Through the Decades
 
 Recent highlights:
+- Two animated figures on Pregnancy and Postpartum Running (Oct 30, 2026)
 - Two animated figures on Training Across the Menstrual Cycle (Oct 30, 2026)
 - Four animated figures on Recovery (Oct 30, 2026)
-- Four animated figures on Nutrition & Fueling (Oct 30, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 
