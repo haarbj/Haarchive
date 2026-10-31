@@ -215,27 +215,37 @@ export function HeartRateMythVsTalkTestDiagram() {
 
       {/* The dizziness mechanism, made visible as the causal chain the page
           itself states, not a new claim: sustained time near the top of
-          effort → temporarily reduced blood flow → dizziness. */}
+          effort → temporarily reduced blood flow → dizziness.
+          Panel moved down from y=178 to y=190 (and its internal text
+          offsets shifted by the same +12): at y=178 the panel's top edge
+          and "The real mechanism" heading overlapped the endpoint labels
+          directly above it ("Can talk easily" / "Can barely talk", drawn
+          at y=182 just below the effort bar), confirmed via Playwright
+          bounding-box overlap on both labels. y=190 clears both labels
+          (their glyphs end well above the panel's new top edge) while the
+          panel's new bottom edge (272) still sits inside the viewBox
+          (CHART_HEIGHT=290) with the same ~8px margin to its own last
+          line of text as before the shift. */}
       <g>
-        <rect x={64} y={178} width={512} height={82} rx="6" fill="none" strokeWidth="1" strokeDasharray="3 3" className="stroke-zinc-300 dark:stroke-zinc-700" />
-        <text x={76} y={198} className="fill-zinc-500 text-[9.5px] font-semibold tracking-wide uppercase dark:fill-zinc-400">
+        <rect x={64} y={190} width={512} height={82} rx="6" fill="none" strokeWidth="1" strokeDasharray="3 3" className="stroke-zinc-300 dark:stroke-zinc-700" />
+        <text x={76} y={210} className="fill-zinc-500 text-[9.5px] font-semibold tracking-wide uppercase dark:fill-zinc-400">
           The real mechanism
         </text>
         <g className="fill-zinc-600 text-[11px] font-semibold dark:fill-zinc-200">
-          <text x={76} y={216}>
+          <text x={76} y={228}>
             Sustained time near top of range
           </text>
-          <text x={312} y={216} className="fill-zinc-400 dark:fill-zinc-500">
+          <text x={312} y={228} className="fill-zinc-400 dark:fill-zinc-500">
             &rarr;
           </text>
-          <text x={330} y={216}>
+          <text x={330} y={228}>
             Temporarily reduced blood flow
           </text>
         </g>
-        <text x={76} y={234} className="fill-[var(--accent-warning)] text-[11px] font-semibold">
+        <text x={76} y={246} className="fill-[var(--accent-warning)] text-[11px] font-semibold">
           &rarr; Dizziness risk
         </text>
-        <text x={76} y={252} className="fill-zinc-500 text-[10px] dark:fill-zinc-400">
+        <text x={76} y={264} className="fill-zinc-500 text-[10px] dark:fill-zinc-400">
           Not a specific heart-rate number &mdash; use the Talk Test to guide effort instead.
         </text>
       </g>

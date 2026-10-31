@@ -15,14 +15,28 @@ const CHART_HEIGHT = 260;
 // capillaries -> muscle fiber -> mitochondria. "Air" is added as the
 // obvious entry point the page's own first sentence implies ("Oxygen
 // enters through the lungs"); every other stage name is the page's own.
-const STAGES = [
+// `anchor`/`dx` let one stage's own node label be nudged independently of
+// its node -- added for Mitochondria only: centered on its own node
+// (x=680, 40px from the viewBox's right edge at 720), "Mitochondria" (the
+// node label itself, never touched by the prior round of label fixes,
+// which only right-anchored the ADAPTATIONS text below) measured close
+// enough to its own centered half-width that its right edge sat within
+// ~1px of the viewBox's own right edge at every width tested (390-1920px
+// -- confirmed via Playwright getBoundingClientRect, not getBBox, since
+// the margin lives in the SVG's own coordinate space and scales
+// proportionally with the responsive container, not a fixed px amount).
+// That's well inside a real rendering engine's rounding/hinting error
+// bar, so right-anchoring it with real clearance instead of relying on a
+// ~1px centered margin is the fix, matching the same right-anchor
+// technique already used below for "more mitochondria".
+const STAGES: { label: string; x: number; anchor?: "start" | "middle" | "end"; dx?: number }[] = [
   { label: "Air", x: 50 },
   { label: "Lungs", x: 150 },
   { label: "Hemoglobin", x: 250 },
   { label: "Heart", x: 360 },
   { label: "Arteries", x: 470 },
   { label: "Capillaries", x: 580 },
-  { label: "Mitochondria", x: 680 },
+  { label: "Mitochondria", x: 680, anchor: "end", dx: 20 },
 ];
 const NODE_Y = 90;
 const NODE_R = 14;
@@ -47,10 +61,16 @@ const NODE_R = 14;
 // line and its own caption, which only spans the chart's center) clears
 // both the Capillaries row and the CO2 line/caption without moving any
 // node, the viewBox, or the other two labels.
+// dx was widened from 36 to 20 (more leftward) in the same pass as the
+// node-label fix above: the original 36 left only ~4px of clearance to
+// the viewBox's right edge, too thin by the same margin-of-error
+// reasoning as that fix, and the new value keeps this label's right edge
+// aligned under the node label's own new right edge (both now end at
+// x=700) rather than picking an unrelated number.
 const ADAPTATIONS: { stage: string; text: string; anchor?: "start" | "middle" | "end"; dx?: number; dy?: number }[] = [
   { stage: "Heart", text: "larger stroke volume" },
   { stage: "Capillaries", text: "more capillaries" },
-  { stage: "Mitochondria", text: "more mitochondria", anchor: "end", dx: 36, dy: 34 },
+  { stage: "Mitochondria", text: "more mitochondria", anchor: "end", dx: 20, dy: 34 },
 ];
 
 const SWEEP_DURATION_MS = 1100;
@@ -140,7 +160,12 @@ export function OxygenDeliveryPipelineDiagram() {
             {STAGES.map((s) => (
               <g key={s.label}>
                 <circle cx={s.x} cy={NODE_Y} r={NODE_R} className="fill-zinc-950 stroke-[var(--accent-tip)]" strokeWidth="2" />
-                <text x={s.x} y={NODE_Y - NODE_R - 8} textAnchor="middle" className="fill-zinc-300 text-[12px] font-semibold dark:fill-zinc-200">
+                <text
+                  x={s.x + (s.dx ?? 0)}
+                  y={NODE_Y - NODE_R - 8}
+                  textAnchor={s.anchor ?? "middle"}
+                  className="fill-zinc-300 text-[12px] font-semibold dark:fill-zinc-200"
+                >
                   {s.label}
                 </text>
               </g>
