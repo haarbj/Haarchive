@@ -70,7 +70,7 @@ export function SponsorNote() {
           (object-contain/max-w-full below are only the safety net for
           the breakpoints where the reservation is still slightly
           generous, never the primary sizing mechanism). */}
-      <div className="flex w-60 shrink-0 justify-center sm:w-56 sm:justify-end lg:w-52 xl:w-[188px]">
+      <div className="flex w-60 shrink-0 justify-center sm:w-56 sm:justify-end lg:w-[204px] xl:w-[183px]">
         <Image
           src="/sponsors/cru-optics-traverse-brody.jpg"
           alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
