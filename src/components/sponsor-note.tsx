@@ -62,7 +62,7 @@ export function SponsorNote() {
           static reservation here, the text column's height is stable, so
           measuring it once and applying that as the image's height has
           nothing left to feed back into. */}
-      <div className="w-60 shrink-0 sm:w-56">
+      <div className="flex w-60 shrink-0 justify-center sm:w-56 sm:justify-end">
         <Image
           src="/sponsors/cru-optics-traverse-brody.jpg"
           alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
