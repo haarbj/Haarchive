@@ -52,6 +52,12 @@ export type ReleaseNote = {
 
 export const releaseNotes: ReleaseNote[] = [
   {
+    date: "2026-11-01",
+    headline: "First sponsor note: CRÜ Optics",
+    detail:
+      "A clearly labeled sponsor note now appears below the main content on every calculator page and on the Practice/Physiology essays where outdoor running conditions are genuinely part of the subject (marathon training, trail running, recovery, nutrition, and similar). It's scoped deliberately narrower than the whole site: Psychology, Philosophy, and the Library stay completely clean, since a product pitch has no real connection to those pages and this site's editorial content doesn't sell.",
+  },
+  {
     date: "2026-10-30",
     headline: "Three animated figures on Training Through the Decades",
     detail:

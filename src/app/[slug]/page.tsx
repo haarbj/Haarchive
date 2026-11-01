@@ -50,6 +50,8 @@ import { ArticleHero } from "@/components/article-hero";
 import { ArticleLayout } from "@/components/article-layout";
 import { CATEGORY_VISUALS } from "@/lib/category-visuals";
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER, TOOL_VISUALS, TOOLS_GUIDE_SLUG } from "@/lib/tool-visuals";
+import { SPONSOR_NOTE_SLUGS } from "@/lib/sponsor-note-slugs";
+import { SponsorNote } from "@/components/sponsor-note";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -694,6 +696,12 @@ export default async function SectionPage({ params, searchParams }: SectionPageP
             </ul>
           </Card>
         )}
+
+        {SPONSOR_NOTE_SLUGS.has(section.slug) ? (
+          <div className="mt-16 border-t border-black/10 pt-10 dark:border-white/10">
+            <SponsorNote />
+          </div>
+        ) : null}
       </Container>
     );
   }
