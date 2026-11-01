@@ -20,6 +20,11 @@ const dayA = { id: "00000000-0000-4000-8000-0000000073a1", programId: programA.i
 const stepA = { id: "00000000-0000-4000-8000-0000000074a1", dayId: dayA.id };
 const extraA = { id: "00000000-0000-4000-8000-0000000075a1", dayId: dayA.id };
 const weekLabelA = { id: "00000000-0000-4000-8000-0000000076a1", programId: programA.id, phaseDefId: phaseDefA.id };
+// A real training_phases row linking Athlete A to Program A via
+// source_program_id -- the only thing training_programs_select_athlete
+// (20261101010000) and training_program_names key off. Athlete B has no
+// such link to Program A, so stays the "unlinked athlete" negative case.
+const linkedPhaseA = { id: "00000000-0000-4000-8000-0000000077a1", programId: programA.id, athleteId: IDS.athleteA };
 
 beforeAll(async () => {
   await withCommittedServiceRole(async (c) => {
@@ -57,10 +62,16 @@ beforeAll(async () => {
       `insert into public.program_phase_weeks (id, program_id, phase_definition_id, week_number, label) values ($1, $2, $3, 1, 'Week 1')`,
       [weekLabelA.id, weekLabelA.programId, weekLabelA.phaseDefId],
     );
+    await c.query(
+      `insert into public.training_phases (id, athlete_id, coach_id, phase_type, start_date, end_date, source_program_id)
+       values ($1, $2, $3, 'Base', current_date, current_date + 13, $4)`,
+      [linkedPhaseA.id, linkedPhaseA.athleteId, programA.coachId, linkedPhaseA.programId],
+    );
   });
 });
 
 afterAll(async () => {
+  await withCommittedServiceRole((c) => c.query("delete from public.training_phases where id = $1", [linkedPhaseA.id]));
   await withCommittedServiceRole((c) => c.query("delete from public.training_programs where id = $1", [programA.id]));
   await closePool();
 });
@@ -191,6 +202,50 @@ describe("program_days / program_day_steps / program_day_extras / program_phase_
       c.query("select id from public.program_days where id = $1", [dayA.id]).then((r) => r.rows),
     );
     expect(rows).toHaveLength(0);
+  });
+});
+
+// training_programs_select_athlete / training_program_names
+// (20261101010000): the narrow exception to "Programs are never
+// athlete-visible" above -- an athlete can read just the id/name of a
+// Program one of their OWN phases is linked to via source_program_id,
+// nothing else. linkedPhaseA (Athlete A, Program A) is the only such
+// link anywhere in this file's fixtures.
+describe("training_programs_select_athlete / training_program_names RLS", () => {
+  it("Athlete A (linked via their own phase) can read Program A's name through the view", async () => {
+    const rows = await asUser(IDS.athleteA, (c) =>
+      c.query("select id, name from public.training_program_names where id = $1", [programA.id]).then((r) => r.rows),
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0].name).toBe("Program A");
+  });
+
+  it("Athlete A still cannot read Program A through the base table directly -- the view is the only athlete-facing path", async () => {
+    const rows = await asUser(IDS.athleteA, (c) =>
+      c.query("select id from public.training_programs where id = $1", [programA.id]).then((r) => r.rows),
+    );
+    expect(rows).toHaveLength(0);
+  });
+
+  it("Athlete B (no phase linking them to Program A) cannot read Program A's name through the view either", async () => {
+    const rows = await asUser(IDS.athleteB, (c) =>
+      c.query("select id, name from public.training_program_names where id = $1", [programA.id]).then((r) => r.rows),
+    );
+    expect(rows).toHaveLength(0);
+  });
+
+  it("The view exposes only id/name -- no other training_programs column is selectable through it", async () => {
+    await expect(
+      asUser(IDS.athleteA, (c) => c.query("select coach_id from public.training_program_names where id = $1", [programA.id])),
+    ).rejects.toThrow(/column .*coach_id.* does not exist/i);
+  });
+
+  it("Coach A (the owning coach, via the pre-existing coach policy) can still read Program A's name through the view", async () => {
+    const rows = await asUser(IDS.coachA, (c) =>
+      c.query("select id, name from public.training_program_names where id = $1", [programA.id]).then((r) => r.rows),
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0].name).toBe("Program A");
   });
 });
 

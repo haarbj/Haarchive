@@ -238,7 +238,18 @@ export async function loadPlanPayoffData(supabase: Supabase, athleteId: string, 
 
   let program: PlanPayoffData["program"] = null;
   if (programId && programPhases.length > 0) {
-    const { data: programRow } = await supabase.from("training_programs").select("name").eq("id", programId).maybeSingle<{ name: string }>();
+    // training_program_names, not the training_programs base table --
+    // training_programs_all_own is coach-only by design, so an athlete's
+    // own session reading the base table directly always returns nothing.
+    // This view's own RLS-respecting training_programs_select_athlete
+    // policy (and its own narrow id/name-only column list) is what lets
+    // this resolve for the athlete's own session too, not just the
+    // coach's preview (see 20261101010000's own header comment).
+    const { data: programRow } = await supabase
+      .from("training_program_names")
+      .select("name")
+      .eq("id", programId)
+      .maybeSingle<{ name: string }>();
     if (programRow) {
       const earliestStart = programPhases.reduce((min, p) => (p.startDate < min ? p.startDate : min), programPhases[0].startDate);
       const latestEnd = programPhases.reduce((max, p) => (p.endDate > max ? p.endDate : max), programPhases[0].endDate);
