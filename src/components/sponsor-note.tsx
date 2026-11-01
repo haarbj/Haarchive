@@ -61,8 +61,16 @@ export function SponsorNote() {
           image height ballooned to 2000+px at one breakpoint). With a
           static reservation here, the text column's height is stable, so
           measuring it once and applying that as the image's height has
-          nothing left to feed back into. */}
-      <div className="flex w-60 shrink-0 justify-center sm:w-56 sm:justify-end">
+          nothing left to feed back into.
+          The per-breakpoint values (sm/lg/xl) are tuned to sit close to
+          this component's own fixed copy's actual wrapped-text-driven
+          image width at each breakpoint (empirically measured), not just
+          one generic value -- a reservation much wider than the image's
+          real rendered width is what reads as oversized left padding
+          (object-contain/max-w-full below are only the safety net for
+          the breakpoints where the reservation is still slightly
+          generous, never the primary sizing mechanism). */}
+      <div className="flex w-60 shrink-0 justify-center sm:w-56 sm:justify-end lg:w-52 xl:w-[188px]">
         <Image
           src="/sponsors/cru-optics-traverse-brody.jpg"
           alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
