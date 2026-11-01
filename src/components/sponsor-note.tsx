@@ -74,9 +74,10 @@ export function SponsorNote() {
   return (
     // A quiet, compact card -- a small fixed-size thumbnail next to the
     // text, never a large feature image. flex-row at every width (not
-    // stacked on mobile) so the thumbnail stays small and the card's
-    // height is always set by the text column, not the photo.
-    <Card padding="md" className="flex flex-row items-start gap-4 sm:gap-6">
+    // stacked on mobile), vertically centered so there's no void under a
+    // shorter thumbnail, and capped well under the article's own reading
+    // width so the card doesn't stretch out with a large empty right side.
+    <Card padding="md" className="flex max-w-3xl flex-row items-center gap-4 sm:gap-6">
       <div className="w-20 shrink-0 sm:w-36">
         <ImageSlot
           src="/sponsors/cru-optics-traverse-brody.jpg"
@@ -84,11 +85,15 @@ export function SponsorNote() {
           aspect="square"
           alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
           label="Close-up selfie of Brody wearing the CRÜ Optics Traverse sunglasses on a run (source file: IMG_5071.JPG)."
-          // Portrait source (2316x3088) cropped to the square slot -- biased
-          // toward the top so the sunglasses/cap stay in frame instead of
-          // object-cover's default center crop pulling in more of the torso.
-          objectPosition="50% 12%"
-          className="rounded-control"
+          // Portrait source (2316x3088): object-cover on a square box always
+          // shows the full image width, so horizontal position can't crop
+          // the flask out (it's directly below/right of the face in the
+          // source photo, too close vertically to separate from the glasses
+          // at 1x). A uniform scale (no distortion) zooms into the
+          // cap/sunglasses region specifically so the flask drops mostly
+          // out of frame instead of sharing equal billing with the glasses.
+          objectPosition="50% 0%"
+          className="rounded-control [&_img]:origin-[27%_24%] [&_img]:scale-[1.8]"
           sizes="144px"
         />
       </div>
