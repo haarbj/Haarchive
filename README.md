@@ -9,12 +9,12 @@ It's also home to ["The Onus to Quit,"](https://brodyhaar.com/articles) an essay
 <!-- RELEASE_STATUS:START -->
 ### Current status
 
-**Latest update ([Nov 1, 2026](https://brodyhaar.com/release-notes)):** First sponsor note: CRÜ Optics
+**Latest update ([Nov 1, 2026](https://brodyhaar.com/release-notes)):** Fixed: an athlete's own Program name was missing from their Your Plan page
 
 Recent highlights:
+- First sponsor note: CRÜ Optics (Nov 1, 2026)
 - Three animated figures on Training Through the Decades (Oct 30, 2026)
 - Two animated figures on Pregnancy and Postpartum Running (Oct 30, 2026)
-- Two animated figures on Training Across the Menstrual Cycle (Oct 30, 2026)
 
 Full history: [brodyhaar.com/release-notes](https://brodyhaar.com/release-notes)
 

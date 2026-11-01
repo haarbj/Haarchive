@@ -53,6 +53,12 @@ export type ReleaseNote = {
 export const releaseNotes: ReleaseNote[] = [
   {
     date: "2026-11-01",
+    headline: "Fixed: an athlete's own Program name was missing from their Your Plan page",
+    detail:
+      "A Program-assigned phase always rendered correctly on an athlete's Your Plan page, but the branded program name above it (\"Base Build · 6 weeks\", for example) only ever showed up on the coach's own preview of that page, never the athlete's own -- a narrow database permissions gap specific to that one heading. An athlete can now read the name of a Program one of their own phases is actually linked to; nothing else about the coach's broader program library opens up.",
+  },
+  {
+    date: "2026-11-01",
     headline: "First sponsor note: CRÜ Optics",
     detail:
       "A clearly labeled sponsor note now appears below the main content on every calculator page and on the Practice/Physiology essays where outdoor running conditions are genuinely part of the subject (marathon training, trail running, recovery, nutrition, and similar). It's scoped deliberately narrower than the whole site: Psychology, Philosophy, and the Library stay completely clean, since a product pitch has no real connection to those pages and this site's editorial content doesn't sell.",
