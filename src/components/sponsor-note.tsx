@@ -72,8 +72,12 @@ function CopyCodeButton() {
 // SPONSOR_NOTE_SLUGS (sponsor-note-slugs.ts), not by this component.
 export function SponsorNote() {
   return (
-    <Card padding="lg" className="flex flex-col gap-6 sm:flex-row sm:items-start">
-      <div className="w-full shrink-0 sm:w-40">
+    // A quiet, compact card -- a small fixed-size thumbnail next to the
+    // text, never a large feature image. flex-row at every width (not
+    // stacked on mobile) so the thumbnail stays small and the card's
+    // height is always set by the text column, not the photo.
+    <Card padding="md" className="flex flex-row items-start gap-4 sm:gap-6">
+      <div className="w-20 shrink-0 sm:w-36">
         <ImageSlot
           src="/sponsors/cru-optics-traverse-brody.jpg"
           kind="photo"
@@ -85,9 +89,10 @@ export function SponsorNote() {
           // object-cover's default center crop pulling in more of the torso.
           objectPosition="50% 12%"
           className="rounded-control"
+          sizes="144px"
         />
       </div>
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <Badge tone="neutral">SPONSORED</Badge>
         <p className="mt-3 text-base leading-7 text-zinc-700 dark:text-zinc-300">
           I&rsquo;ve always been known for wearing sunglasses during my runs and races. That started in
@@ -100,7 +105,7 @@ export function SponsorNote() {
         <CopyCodeButton />
         <div className="mt-4">
           <a
-            href="https://cruoptics.com"
+            href="https://www.cruoptics.com/products/traverse-sunglasses?variant=44639210602584"
             target="_blank"
             rel="noopener noreferrer sponsored"
             className={`font-semibold text-zinc-900 dark:text-white ${textLinkClass}`}
