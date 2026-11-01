@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,26 +19,61 @@ const SHOP_URL =
 // style. Which pages render this is decided entirely by SPONSOR_NOTE_SLUGS
 // (sponsor-note-slugs.ts), not by this component.
 export function SponsorNote() {
+  const textRef = useRef<HTMLDivElement>(null);
+  const [textHeight, setTextHeight] = useState<number | null>(null);
+
+  // CSS alone can't reliably do "match a sibling's height, derive width from
+  // the photo's own aspect ratio": a flex item with align-items: stretch
+  // resolves its cross size (height) only *after* its main size (width) is
+  // already determined via flex-basis, so the width never gets re-derived
+  // from the stretched height -- confirmed empirically (a prior version
+  // rendered 220x326, a 0.675 ratio, next to the photo's real 0.75,
+  // visibly stretched). Measuring the text column's real height and
+  // applying it as a plain pixel height is unambiguous: with height a
+  // concrete px value (not a percentage or a flex computation) and width
+  // left unset, the browser derives width purely from the image's own
+  // aspect-ratio, every time.
+  useLayoutEffect(() => {
+    const el = textRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) setTextHeight(entry.contentRect.height);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    // A quiet, compact card. On mobile the (uncropped) photo stacks above
-    // the text at a fixed, moderate width. From sm: up it sits beside the
-    // text with items-stretch (set explicitly, not just relying on the
-    // flex default) so the image's rendered height matches the text
-    // column's height, with its width following automatically from the
-    // photo's own aspect ratio -- never cropped, never distorted.
-    <Card
-      padding="md"
-      className="flex max-w-3xl flex-col items-center gap-4 sm:flex-row sm:items-stretch sm:gap-6"
-    >
-      <Image
-        src="/sponsors/cru-optics-traverse-brody.jpg"
-        alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
-        width={2316}
-        height={3088}
-        sizes="(min-width: 640px) 220px, 240px"
-        className="h-auto w-60 shrink-0 rounded-control sm:h-auto sm:w-auto"
-      />
-      <div className="min-w-0 flex-1">
+    // A quiet card spanning the full content column (no max-width cap). On
+    // mobile the (uncropped) photo stacks above the text at a fixed,
+    // moderate width; from sm: up it sits beside the text at the measured
+    // text-column height (see textHeight above), width following
+    // automatically from the photo's own aspect ratio -- never cropped,
+    // never distorted, never both axes set at once.
+    <Card padding="md" className="flex w-full flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
+      {/* Fixed-width reservation (static per breakpoint, never derived from
+          the image's own rendered size) -- this is what keeps the text
+          column's own width, and therefore its wrapped height, independent
+          of the image. Deriving the image's height from the *live* text
+          column while the text column's width also depended on the
+          image's *live* width created a real feedback loop (confirmed:
+          image height ballooned to 2000+px at one breakpoint). With a
+          static reservation here, the text column's height is stable, so
+          measuring it once and applying that as the image's height has
+          nothing left to feed back into. */}
+      <div className="w-60 shrink-0 sm:w-56">
+        <Image
+          src="/sponsors/cru-optics-traverse-brody.jpg"
+          alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
+          width={2316}
+          height={3088}
+          sizes="224px"
+          className="h-auto max-w-full rounded-control object-contain max-sm:!h-auto max-sm:!w-60 sm:w-auto"
+          style={textHeight ? { height: textHeight, width: "auto" } : undefined}
+        />
+      </div>
+      <div ref={textRef} className="min-w-0 flex-1">
         <Badge tone="neutral">SPONSORED</Badge>
         <p className="mt-3 text-base leading-7 text-zinc-700 dark:text-zinc-300">
           I&rsquo;ve always been known for wearing sunglasses during my runs and races. It started
