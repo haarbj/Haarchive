@@ -1,123 +1,59 @@
-"use client";
-
-import { useState } from "react";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ImageSlot } from "@/components/ui/image-slot";
-import { textLinkClass } from "@/components/ui/text-link";
 
 // Trailing "!" is part of the code itself, not punctuation -- never drop it.
+// It's also literally part of the discount-link path below (Shopify-style
+// /discount/<code> URL), not just the fallback copy.
 const SPONSOR_CODE = "Cardemore123!";
-
-// Same async-clipboard-first, textarea/execCommand-fallback pattern as
-// environmental-calculator.tsx's CopyLinkButton -- there's no shared
-// clipboard component yet, so this mirrors that one rather than inventing
-// a third approach.
-function fallbackCopy(text: string, onSuccess: () => void) {
-  if (typeof document === "undefined") return;
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-  try {
-    document.execCommand("copy");
-    onSuccess();
-  } catch {
-    // Nothing more to fall back to -- the code is still visible to copy by hand.
-  } finally {
-    document.body.removeChild(textarea);
-  }
-}
-
-function CopyCodeButton() {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    const showConfirmation = () => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    };
-    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-      navigator.clipboard
-        .writeText(SPONSOR_CODE)
-        .then(showConfirmation)
-        .catch(() => fallbackCopy(SPONSOR_CODE, showConfirmation));
-    } else {
-      fallbackCopy(SPONSOR_CODE, showConfirmation);
-    }
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      aria-label={`Copy discount code ${SPONSOR_CODE}`}
-      className="mt-3 inline-flex items-center gap-2 rounded-control border border-black/10 bg-zinc-50 px-3 py-1.5 font-mono text-sm font-semibold text-zinc-900 transition hover:border-black/20 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white dark:focus:ring-white dark:hover:border-white/20"
-    >
-      {SPONSOR_CODE}
-      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-        {copied ? "Copied" : "Copy"}
-      </span>
-    </button>
-  );
-}
+const SHOP_URL =
+  "https://www.cruoptics.com/discount/Cardemore123!?redirect=/products/traverse-sunglasses?variant=44639210602584";
 
 // A clearly-labeled sponsor note, not a banner ad -- reuses the site's own
-// Card/Badge/ImageSlot/textLinkClass primitives (CLAUDE.md §7) instead of
-// inventing a new ad style. Which pages render this is decided entirely by
-// SPONSOR_NOTE_SLUGS (sponsor-note-slugs.ts), not by this component.
+// Card/Badge/Button primitives (CLAUDE.md §7) instead of inventing a new ad
+// style. Which pages render this is decided entirely by SPONSOR_NOTE_SLUGS
+// (sponsor-note-slugs.ts), not by this component.
 export function SponsorNote() {
   return (
-    // A quiet, compact card -- a small fixed-size thumbnail next to the
-    // text, never a large feature image. flex-row at every width (not
-    // stacked on mobile), vertically centered so there's no void under a
-    // shorter thumbnail, and capped well under the article's own reading
-    // width so the card doesn't stretch out with a large empty right side.
-    <Card padding="md" className="flex max-w-3xl flex-row items-center gap-4 sm:gap-6">
-      <div className="w-20 shrink-0 sm:w-36">
-        <ImageSlot
-          src="/sponsors/cru-optics-traverse-brody.jpg"
-          kind="photo"
-          aspect="square"
-          alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
-          label="Close-up selfie of Brody wearing the CRÜ Optics Traverse sunglasses on a run (source file: IMG_5071.JPG)."
-          // Portrait source (2316x3088): object-cover on a square box always
-          // shows the full image width, so horizontal position can't crop
-          // the flask out (it's directly below/right of the face in the
-          // source photo, too close vertically to separate from the glasses
-          // at 1x). A uniform scale (no distortion) zooms into the
-          // cap/sunglasses region specifically so the flask drops mostly
-          // out of frame instead of sharing equal billing with the glasses.
-          objectPosition="50% 0%"
-          className="rounded-control [&_img]:origin-[27%_24%] [&_img]:scale-[1.8]"
-          sizes="144px"
-        />
-      </div>
+    // A quiet, compact card. On mobile the (uncropped) photo stacks above
+    // the text at a fixed, moderate width. From sm: up it sits beside the
+    // text with items-stretch (set explicitly, not just relying on the
+    // flex default) so the image's rendered height matches the text
+    // column's height, with its width following automatically from the
+    // photo's own aspect ratio -- never cropped, never distorted.
+    <Card
+      padding="md"
+      className="flex max-w-3xl flex-col items-center gap-4 sm:flex-row sm:items-stretch sm:gap-6"
+    >
+      <Image
+        src="/sponsors/cru-optics-traverse-brody.jpg"
+        alt="Brody wearing CRÜ Optics Traverse sunglasses on a run."
+        width={2316}
+        height={3088}
+        sizes="(min-width: 640px) 220px, 240px"
+        className="h-auto w-60 shrink-0 rounded-control sm:h-auto sm:w-auto"
+      />
       <div className="min-w-0 flex-1">
         <Badge tone="neutral">SPONSORED</Badge>
         <p className="mt-3 text-base leading-7 text-zinc-700 dark:text-zinc-300">
-          I&rsquo;ve always been known for wearing sunglasses during my runs and races. That started in
-          high school. These days I wear CRÜ Optics&rsquo; Traverse on every run, even in the rain.
-          They&rsquo;re the best running sunglasses I&rsquo;ve owned, and they look great too.
+          I&rsquo;ve always been known for wearing sunglasses during my runs and races. It started
+          when I began running, and at this point, I rarely run without them.
         </p>
         <p className="mt-3 text-base leading-7 text-zinc-700 dark:text-zinc-300">
-          Take 15% off at checkout with code {SPONSOR_CODE}
+          These days, I wear the CRÜ Optics Traverse on just about every run, even in the rain.
+          They&rsquo;re easily the best running sunglasses I&rsquo;ve owned: lightweight, comfortable,
+          adjustable, stay put, and honestly look great too.
         </p>
-        <CopyCodeButton />
         <div className="mt-4">
-          <a
-            href="https://www.cruoptics.com/products/traverse-sunglasses?variant=44639210602584"
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className={`font-semibold text-zinc-900 dark:text-white ${textLinkClass}`}
-          >
+          <Button href={SHOP_URL} variant="outline">
             Shop CRÜ
-          </a>
+          </Button>
         </div>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          15% off applies automatically, or enter code {SPONSOR_CODE} at checkout.
+        </p>
       </div>
     </Card>
   );
