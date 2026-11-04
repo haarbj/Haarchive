@@ -60,26 +60,25 @@ const TYPE_OPTIONS: { key: TypeKey; label: string }[] = [
 async function loadUsers(): Promise<UserRow[]> {
   const admin = createServiceRoleClient();
 
-  const [users, { data: memberships }, { data: permissionRows }, { data: learningEventRows }, { data: savedCalcRows }] =
-    await Promise.all([
-      loadAllUsersWithDetails(),
-      admin
-        .from("team_memberships")
-        .select("user_id, role")
-        .eq("team_id", BRONCOS_TEAM_ID)
-        .returns<{ user_id: string; role: string }[]>(),
-      admin
-        .from("user_permissions")
-        .select("user_id, permission")
-        .returns<{ user_id: string; permission: string }[]>(),
-      // Single aggregate query per metric (not per-user): only the user_id
-      // column, counted in memory below. learning_events already covers
-      // tool_used/note_taken/knowledge_check_answered/content_viewed/etc.
-      // in one table, so this one count is a reasonable proxy for overall
-      // engagement without a query per event type.
-      admin.from("learning_events").select("user_id").returns<{ user_id: string }[]>(),
-      admin.from("saved_calculations").select("user_id").returns<{ user_id: string }[]>(),
-    ]);
+  const [users, { data: memberships }, { data: permissionRows }, { data: engagementRows }] = await Promise.all([
+    loadAllUsersWithDetails(),
+    admin
+      .from("team_memberships")
+      .select("user_id, role")
+      .eq("team_id", BRONCOS_TEAM_ID)
+      .returns<{ user_id: string; role: string }[]>(),
+    admin
+      .from("user_permissions")
+      .select("user_id, permission")
+      .returns<{ user_id: string; permission: string }[]>(),
+    // Per-user counts computed in the database (user_engagement_counts
+    // view, 20261103010000) via GROUP BY, instead of fetching every
+    // learning_events/saved_calculations row and counting in JS.
+    admin
+      .from("user_engagement_counts")
+      .select("user_id, learning_event_count, saved_calculation_count")
+      .returns<{ user_id: string; learning_event_count: number; saved_calculation_count: number }[]>(),
+  ]);
 
   // Only one team exists in the whole app (see BRONCOS_TEAM_ID's own
   // comment elsewhere) -- so ANY membership row for it, regardless of
@@ -97,13 +96,7 @@ async function loadUsers(): Promise<UserRow[]> {
     (permissionRows ?? []).filter((p) => p.permission === "private_coach").map((p) => p.user_id),
   );
 
-  const countByUser = (rows: { user_id: string }[] | null) => {
-    const counts = new Map<string, number>();
-    for (const row of rows ?? []) counts.set(row.user_id, (counts.get(row.user_id) ?? 0) + 1);
-    return counts;
-  };
-  const learningEventCounts = countByUser(learningEventRows);
-  const savedCalcCounts = countByUser(savedCalcRows);
+  const engagementByUser = new Map((engagementRows ?? []).map((r) => [r.user_id, r]));
 
   return users.map((u) => ({
     ...u,
@@ -113,8 +106,8 @@ async function loadUsers(): Promise<UserRow[]> {
     privateCoach: privateCoachIds.has(u.id),
     isAdmin: isAdminEmail(u.email),
     status: approvedIds.has(u.id) ? "active" : "pending",
-    learningEventCount: learningEventCounts.get(u.id) ?? 0,
-    savedCalculationCount: savedCalcCounts.get(u.id) ?? 0,
+    learningEventCount: engagementByUser.get(u.id)?.learning_event_count ?? 0,
+    savedCalculationCount: engagementByUser.get(u.id)?.saved_calculation_count ?? 0,
   }));
 }
 
