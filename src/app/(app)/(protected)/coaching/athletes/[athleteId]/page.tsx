@@ -201,6 +201,9 @@ export default async function CoachingAthleteDetailPage({
         <Button href={`/coaching/athletes/${athleteId}/schedule`} size="sm">
           View schedule
         </Button>
+        <Button href={`/coaching/athletes/${athleteId}/base-phase`} size="sm" variant="outline">
+          Base phase generator
+        </Button>
         {/* Never shown on the coach's own self-coach row -- "view as
             yourself" is meaningless, and enterViewAsAthlete refuses it too. */}
         {coachAthleteRow && athleteId !== session.userId ? (
