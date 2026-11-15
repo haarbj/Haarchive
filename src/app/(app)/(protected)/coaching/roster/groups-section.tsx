@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState, useTransition, useActionState } from "react";
+import Link from "next/link";
 
 import { addGroupMember, createGroup, deleteGroup, removeGroupMember, renameGroup } from "./groups-actions";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -20,10 +21,11 @@ export type TrainingGroup = {
 
 // Groups organize a coach's own roster by ability/focus (see
 // 20261013010000_private_coaching_training_groups.sql's own header
-// comment) -- program assignment per group is a later, separate change,
-// not implied here. Lives on /coaching/roster rather than its own
-// top-level section: a group only ever makes sense in terms of athletes
-// already on this roster.
+// comment). Program assignment per group (the "Assign program" link on
+// each row below) was the deferred step 1 comment there once pointed to --
+// see assign-program/ in this directory. Lives on /coaching/roster rather
+// than its own top-level section: a group only ever makes sense in terms
+// of athletes already on this roster.
 export function GroupsSection({ groups, rosterAthletes }: { groups: TrainingGroup[]; rosterAthletes: RosterAthlete[] }) {
   const nameById = new Map(rosterAthletes.map((a) => [a.id, a.name]));
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -41,7 +43,7 @@ export function GroupsSection({ groups, rosterAthletes }: { groups: TrainingGrou
     <div className="mt-10">
       <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">Groups</p>
       <p className="mt-2 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
-        Organize your roster by ability or focus. A program can eventually be assigned to a whole group at once.
+        Organize your roster by ability or focus. A program can be assigned to a whole group at once.
       </p>
 
       <div className="mt-4">
@@ -159,6 +161,12 @@ function GroupRow({
         </button>
 
         <div className="flex shrink-0 items-center gap-3 text-xs">
+          <Link
+            href={`/coaching/roster/groups/${group.id}/assign-program`}
+            className="font-semibold text-zinc-500 underline underline-offset-2 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+          >
+            Assign program
+          </Link>
           {!isRenaming && (
             <button
               type="button"
