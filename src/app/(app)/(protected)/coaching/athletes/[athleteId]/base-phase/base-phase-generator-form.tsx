@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { addBasePhaseToSchedule, previewBasePhase, type BasePhaseDefaults } from "./actions";
+import {
+  addBasePhaseToSchedule,
+  loadPlanFirstWeek,
+  previewBasePhase,
+  type BasePhaseDefaults,
+} from "./actions";
 import {
   DEFAULT_RESTART_STEP_MILES,
   DEFAULT_WORKOUT_DAYS_PER_WEEK,
@@ -58,29 +63,44 @@ function weeksBetween(fromIso: string, toIso: string): number {
 
 type EditableWeek = BasePhaseWeek;
 
-// The coach-facing wizard for base-phase-generator.ts: describe the plan's
-// own first workout week (its total mileage and day structure), preview a
-// suggested week-by-week base template built backwards from it using the
-// coach's percentage method, adjust anything before confirming, then add it
-// to the schedule. Nothing is auto-applied -- see that module's own header
-// for what's reused from the Training Load Planner vs newly built here.
+// The coach-facing wizard for base-phase-generator.ts. Most inputs are
+// derived automatically (the plan's own first workout week once a program
+// is picked; the athlete's current mileage/frequency from real completed-
+// workout history; a suggested athlete type from their running history) --
+// the coach confirms and adjusts rather than typing from scratch. The one
+// genuine decision left is timing (the plan's start date or weeks
+// available), defaulted from an already-scheduled upcoming phase when one
+// exists. See base-phase-generator.ts's own header for what's reused from
+// the Training Load Planner vs newly built here.
 export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: string; defaults: BasePhaseDefaults }) {
   const [startingWeeklyMiles, setStartingWeeklyMiles] = useState(
     defaults.startingWeeklyMiles != null ? String(defaults.startingWeeklyMiles) : "",
   );
+
+  const [programId, setProgramId] = useState(defaults.programs[0]?.id ?? "");
+  const program = defaults.programs.find((p) => p.id === programId) ?? null;
+  const [variantId, setVariantId] = useState(program?.variants[0]?.id ?? "");
+  const [volumeVariantId, setVolumeVariantId] = useState(program?.volumeVariants[0]?.id ?? "");
   const [targetTotalMiles, setTargetTotalMiles] = useState("");
   const [targetDaysPerWeek, setTargetDaysPerWeek] = useState(String(MAX_DAYS_PER_WEEK));
-  const [workoutDaysPerWeek, setWorkoutDaysPerWeek] = useState(String(DEFAULT_WORKOUT_DAYS_PER_WEEK));
-  const [timingMode, setTimingMode] = useState<"weeksAvailable" | "planStartDate">("planStartDate");
+  const [planWeekError, setPlanWeekError] = useState<string | null>(null);
+
+  const [timingMode, setTimingMode] = useState<"weeksAvailable" | "planStartDate">(
+    defaults.suggestedPlanStartDate ? "planStartDate" : "weeksAvailable",
+  );
   const todayMonday = mostRecentMonday(new Date());
   const [weeksAvailableInput, setWeeksAvailableInput] = useState("6");
-  const [planStartDateInput, setPlanStartDateInput] = useState("");
-  const [athleteType, setAthleteType] = useState<BasePhaseAthleteType>("restarting");
+  const [planStartDateInput, setPlanStartDateInput] = useState(defaults.suggestedPlanStartDate ?? "");
+  const [athleteType, setAthleteType] = useState<BasePhaseAthleteType>(defaults.suggestedAthleteType);
   const [restartStepMiles, setRestartStepMiles] = useState(String(DEFAULT_RESTART_STEP_MILES));
   const [currentDaysPerWeek, setCurrentDaysPerWeek] = useState(
-    defaults.currentDaysPerWeek != null ? String(defaults.currentDaysPerWeek) : String(MIN_DAYS_PER_WEEK),
+    defaults.currentDaysPerWeek != null
+      ? String(Math.max(MIN_DAYS_PER_WEEK, Math.min(MAX_DAYS_PER_WEEK, defaults.currentDaysPerWeek)))
+      : String(MIN_DAYS_PER_WEEK),
   );
-  const [longestRunInput, setLongestRunInput] = useState("");
+  const [longestRunInput, setLongestRunInput] = useState(
+    defaults.longestRunInLast30DaysMiles != null ? String(defaults.longestRunInLast30DaysMiles) : "",
+  );
 
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -90,6 +110,38 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
   const [editableWeeks, setEditableWeeks] = useState<EditableWeek[]>([]);
   const [resolvedPlanStartDate, setResolvedPlanStartDate] = useState<string>("");
   const [addResult, setAddResult] = useState<{ daysCreated: number } | null>(null);
+
+  // Pulls the selected plan's own first workout week (total mileage + day
+  // count) the moment a program/variant/volume-variant is chosen -- the
+  // coach never types these, only reviews them (see loadPlanFirstWeek's own
+  // header for why it's a total + day count, not a literal day-by-day
+  // mileage template).
+  useEffect(() => {
+    if (!variantId) return;
+    let cancelled = false;
+    loadPlanFirstWeek(variantId, volumeVariantId || null).then((result) => {
+      if (cancelled) return;
+      if (result.error || !result.week) {
+        setPlanWeekError(result.error ?? "Couldn't read this plan's first week.");
+        return;
+      }
+      setPlanWeekError(null);
+      setTargetTotalMiles(String(result.week.totalMiles));
+      setTargetDaysPerWeek(String(result.week.daysPerWeek));
+      setPlan(null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [variantId, volumeVariantId]);
+
+  function updateProgram(nextProgramId: string) {
+    setProgramId(nextProgramId);
+    const nextProgram = defaults.programs.find((p) => p.id === nextProgramId) ?? null;
+    setVariantId(nextProgram?.variants[0]?.id ?? "");
+    setVolumeVariantId(nextProgram?.volumeVariants[0]?.id ?? "");
+    setPlan(null);
+  }
 
   function resolveWeeksAndStart(): { weeksAvailable: number; planStartDate: string } {
     if (timingMode === "planStartDate" && planStartDateInput) {
@@ -104,19 +156,21 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     const starting = Number(startingWeeklyMiles);
     const target = Number(targetTotalMiles);
     if (!Number.isFinite(starting) || starting < 0) return setError("Enter a starting weekly mileage.");
-    if (!Number.isFinite(target) || target <= 0) return setError("Enter the plan's first workout week's total mileage.");
+    if (!Number.isFinite(target) || target <= 0) return setError("Pick a plan so its first workout week can be read.");
     const { weeksAvailable, planStartDate } = resolveWeeksAndStart();
     if (timingMode === "planStartDate" && !planStartDateInput) return setError("Pick the plan's start date.");
 
     const targetDays = Math.max(MIN_DAYS_PER_WEEK, Math.min(MAX_DAYS_PER_WEEK, Math.round(Number(targetDaysPerWeek) || MAX_DAYS_PER_WEEK)));
     const currentDays = Math.max(MIN_DAYS_PER_WEEK, Math.min(MAX_DAYS_PER_WEEK, Math.round(Number(currentDaysPerWeek) || MIN_DAYS_PER_WEEK)));
-    const workoutDays = Math.max(1, Math.min(targetDays - 1, Math.round(Number(workoutDaysPerWeek) || DEFAULT_WORKOUT_DAYS_PER_WEEK)));
     const longestRun = longestRunInput.trim() ? Number(longestRunInput) : null;
 
     setIsPending(true);
     const result = await previewBasePhase(athleteId, {
       startingWeeklyMiles: starting,
-      targetWeek: { totalMiles: target, daysPerWeek: targetDays, workoutDaysPerWeek: workoutDays },
+      // Always exactly 2 -- the general phase always has 2 workout days,
+      // per the task's own "always 2, derived from the plan" rule (not a
+      // per-program step-detection heuristic, which would be fragile).
+      targetWeek: { totalMiles: target, daysPerWeek: targetDays, workoutDaysPerWeek: DEFAULT_WORKOUT_DAYS_PER_WEEK },
       weeksAvailable,
       athleteType,
       currentDaysPerWeek: currentDays,
@@ -207,64 +261,110 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     );
   }
 
+  if (defaults.programs.length === 0) {
+    return (
+      <div className="space-y-3 rounded-control border border-black/10 p-3 dark:border-white/10">
+        <p className="text-sm text-zinc-600 dark:text-zinc-300">
+          You don&rsquo;t have any programs yet -- build one in your Programs library first.
+        </p>
+        <Button href="/coaching/programs" size="sm">
+          Go to Programs
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4 rounded-control border border-black/10 p-3 dark:border-white/10">
-      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
-        <label className="block">
-          <span className={labelClass}>Starting weekly mileage</span>
-          <input
-            value={startingWeeklyMiles}
-            onChange={(e) => {
-              setStartingWeeklyMiles(e.target.value);
-              setPlan(null);
-            }}
-            className={fieldClass}
-          />
-        </label>
-        <label className="block">
-          <span className={labelClass}>Plan&rsquo;s first workout week -- total miles</span>
-          <input
-            value={targetTotalMiles}
-            onChange={(e) => {
-              setTargetTotalMiles(e.target.value);
-              setPlan(null);
-            }}
-            className={fieldClass}
-          />
-        </label>
-      </div>
+      <div>
+        <p className={labelClass}>Plan to build toward</p>
+        <div className="mt-1.5 grid grid-cols-1 gap-3 xs:grid-cols-3">
+          <label className="block">
+            <span className={labelClass}>Program</span>
+            <select value={programId} onChange={(e) => updateProgram(e.target.value)} className={fieldClass}>
+              {defaults.programs.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Plan length</span>
+            <select
+              value={variantId}
+              onChange={(e) => {
+                setVariantId(e.target.value);
+                setPlan(null);
+              }}
+              className={fieldClass}
+            >
+              {(program?.variants ?? []).map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {program && program.volumeVariants.length > 0 ? (
+            <label className="block">
+              <span className={labelClass}>Peak weekly volume</span>
+              <select
+                value={volumeVariantId}
+                onChange={(e) => {
+                  setVolumeVariantId(e.target.value);
+                  setPlan(null);
+                }}
+                className={fieldClass}
+              >
+                {program.volumeVariants.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+        </div>
 
-      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
-        <label className="block">
-          <span className={labelClass}>That week&rsquo;s day count (Sunday always off)</span>
-          <input
-            type="number"
-            min={MIN_DAYS_PER_WEEK}
-            max={MAX_DAYS_PER_WEEK}
-            value={targetDaysPerWeek}
-            onChange={(e) => {
-              setTargetDaysPerWeek(e.target.value);
-              setPlan(null);
-            }}
-            className={fieldClass}
-          />
-        </label>
-        <label className="block">
-          <span className={labelClass}>Workout days in the plan&rsquo;s general phase</span>
-          <input
-            type="number"
-            min={1}
-            value={workoutDaysPerWeek}
-            onChange={(e) => {
-              setWorkoutDaysPerWeek(e.target.value);
-              setPlan(null);
-            }}
-            className={fieldClass}
-          />
-          <span className="mt-1.5 block text-xs text-zinc-500 dark:text-zinc-400">
-            Sets how many medium-long runs the base phase builds toward -- two workouts means two MLRs.
-          </span>
-        </label>
+        <div className="mt-3 rounded-control border border-black/10 p-3 text-sm dark:border-white/10">
+          {planWeekError ? (
+            <FormError>{planWeekError}</FormError>
+          ) : (
+            <p className="text-zinc-700 dark:text-zinc-300">
+              First workout week: <span className="font-medium text-zinc-900 dark:text-white">{targetTotalMiles || "--"} mi</span> over{" "}
+              <span className="font-medium text-zinc-900 dark:text-white">{targetDaysPerWeek || "--"} days</span>, 2 of them MLRs/workouts.
+              Read automatically from the plan -- adjust below if this isn&rsquo;t quite right.
+            </p>
+          )}
+          <div className="mt-2 grid grid-cols-1 gap-3 xs:grid-cols-2">
+            <label className="block">
+              <span className={labelClass}>Total miles (editable)</span>
+              <input
+                value={targetTotalMiles}
+                onChange={(e) => {
+                  setTargetTotalMiles(e.target.value);
+                  setPlan(null);
+                }}
+                className={fieldClass}
+              />
+            </label>
+            <label className="block">
+              <span className={labelClass}>Day count (editable, {MIN_DAYS_PER_WEEK}-{MAX_DAYS_PER_WEEK})</span>
+              <input
+                type="number"
+                min={MIN_DAYS_PER_WEEK}
+                max={MAX_DAYS_PER_WEEK}
+                value={targetDaysPerWeek}
+                onChange={(e) => {
+                  setTargetDaysPerWeek(e.target.value);
+                  setPlan(null);
+                }}
+                className={fieldClass}
+              />
+            </label>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -302,7 +402,7 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
         <div className="mt-2 grid grid-cols-1 gap-3 xs:grid-cols-2">
           {timingMode === "planStartDate" ? (
             <label className="block">
-              <span className={labelClass}>Plan start date</span>
+              <span className={labelClass}>Plan start date{defaults.suggestedPlanStartDate ? " (from their upcoming schedule)" : ""}</span>
               <input
                 type="date"
                 value={planStartDateInput}
@@ -332,8 +432,40 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
         </div>
       </div>
 
+      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
+        <label className="block">
+          <span className={labelClass}>
+            Starting weekly mileage{defaults.startingWeeklyMilesFromHistory ? " (from recent training)" : defaults.startingWeeklyMiles != null ? " (self-reported)" : ""}
+          </span>
+          <input
+            value={startingWeeklyMiles}
+            onChange={(e) => {
+              setStartingWeeklyMiles(e.target.value);
+              setPlan(null);
+            }}
+            className={fieldClass}
+          />
+        </label>
+        <label className="block">
+          <span className={labelClass}>
+            Current days/week{defaults.currentDaysPerWeekFromHistory ? " (from recent training)" : defaults.currentDaysPerWeek != null ? " (self-reported)" : ""}
+          </span>
+          <input
+            type="number"
+            min={MIN_DAYS_PER_WEEK}
+            max={MAX_DAYS_PER_WEEK}
+            value={currentDaysPerWeek}
+            onChange={(e) => {
+              setCurrentDaysPerWeek(e.target.value);
+              setPlan(null);
+            }}
+            className={fieldClass}
+          />
+        </label>
+      </div>
+
       <div>
-        <p className={labelClass}>Athlete type</p>
+        <p className={labelClass}>Athlete type{defaults.hasInjuryHistory ? "" : " (suggested from their running history)"}</p>
         <div className="mt-1.5 space-y-2">
           <label className="flex items-start gap-2 rounded-control border border-black/10 p-2 text-sm text-zinc-700 dark:border-white/10 dark:text-zinc-300">
             <input
@@ -383,33 +515,19 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
         ) : null}
       </div>
 
-      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
-        <label className="block">
-          <span className={labelClass}>Current days/week ({MIN_DAYS_PER_WEEK}-{MAX_DAYS_PER_WEEK})</span>
-          <input
-            type="number"
-            min={MIN_DAYS_PER_WEEK}
-            max={MAX_DAYS_PER_WEEK}
-            value={currentDaysPerWeek}
-            onChange={(e) => {
-              setCurrentDaysPerWeek(e.target.value);
-              setPlan(null);
-            }}
-            className={fieldClass}
-          />
-        </label>
-        <label className="block">
-          <span className={labelClass}>Longest run, last 30 days (mi, optional)</span>
-          <input
-            value={longestRunInput}
-            onChange={(e) => {
-              setLongestRunInput(e.target.value);
-              setPlan(null);
-            }}
-            className={fieldClass}
-          />
-        </label>
-      </div>
+      <label className="block max-w-xs">
+        <span className={labelClass}>
+          Longest run, last 30 days (mi){defaults.longestRunInLast30DaysMiles != null ? " (from recent training)" : ", optional"}
+        </span>
+        <input
+          value={longestRunInput}
+          onChange={(e) => {
+            setLongestRunInput(e.target.value);
+            setPlan(null);
+          }}
+          className={fieldClass}
+        />
+      </label>
 
       {error && <FormError>{error}</FormError>}
 

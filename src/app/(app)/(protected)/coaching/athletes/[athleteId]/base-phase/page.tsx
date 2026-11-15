@@ -33,9 +33,13 @@ export default async function BasePhaseGeneratorPage({ params }: { params: Promi
     <Container variant="content">
       <BackLink href={`/coaching/athletes/${athleteId}`}>{loaded.defaults.athleteName}</BackLink>
       <Heading>Base phase generator</Heading>
+      {/* A single template-literal string, not athleteName interpolated
+          inline among separate JSX text nodes -- guarantees the exact
+          string (including the space before "from") regardless of how the
+          source happens to wrap, after a raw "{id}from" rendering was
+          reported from a prior version of this sentence. */}
       <p className="mt-4 max-w-xl text-sm text-zinc-600 dark:text-zinc-300">
-        Builds {loaded.defaults.athleteName} from their current weekly mileage up to a plan&rsquo;s starting mileage,
-        week by week. Review and adjust everything before anything is added to their schedule.
+        {`Builds ${loaded.defaults.athleteName} from their current weekly mileage up to a plan's starting mileage, week by week. Review and adjust everything before anything is added to their schedule.`}
       </p>
       <div className="mt-8">
         <BasePhaseGeneratorForm athleteId={athleteId} defaults={loaded.defaults} />
