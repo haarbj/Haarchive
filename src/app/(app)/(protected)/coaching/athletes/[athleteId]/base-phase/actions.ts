@@ -103,14 +103,21 @@ export async function previewBasePhase(
     return { blockedForInjuryHistory: true, injuryHistoryText: athleteProfile?.training_background_injury_history ?? null };
   }
 
-  if (input.startingWeeklyMiles < 0 || input.targetWeeklyMiles <= 0 || input.weeksAvailable < 1) {
-    return { error: "Enter a starting mileage, a target mileage above zero, and at least one week." };
+  if (input.startingWeeklyMiles < 0 || input.targetWeek.totalMiles <= 0 || input.weeksAvailable < 1) {
+    return { error: "Enter a starting mileage, the plan's first workout week mileage, and at least one week." };
   }
 
   return { plan: generateBasePhasePlan(input) };
 }
 
 export type AddBasePhaseResult = { error?: string; daysCreated?: number };
+
+export type AddBasePhaseWeek = {
+  weekNumber: number;
+  longRunMiles: number;
+  mlrMiles: number[];
+  easyMiles: number[];
+};
 
 // Writes the confirmed, coach-edited template to the athlete's schedule,
 // counting backward from the plan's own start date so the base phase's
@@ -120,10 +127,30 @@ export type AddBasePhaseResult = { error?: string; daysCreated?: number };
 // lands as an unpublished draft (publish: false) exactly like every other
 // coach-authored schedule entry, for the coach to review and publish from
 // the normal calendar.
+//
+// Sunday is always off (per the generator's own percentage template), so
+// the long run lands on Saturday instead of this platform's usual Sunday
+// convention for authored Programs -- a base phase isn't one of those
+// seeded frameworks. MLRs land on weekdays mirroring the plan's own
+// workout-day placement loosely (spread through the week rather than
+// bunched), easy days fill whatever's left, and the specific days that go
+// unused as frequency drops below 6 are a reasonable default (the task
+// only pins down Sunday-always-off and Thursday-off-at-5-days).
+const DAY_OFFSETS_BY_COUNT: Record<number, { long: number; mlr: number[]; easy: number[] }> = {
+  // Offsets from Monday (0=Mon ... 6=Sun). Saturday (5) is always the long
+  // run; Tue/Fri are always the MLRs, so dropping easy days to go from 6
+  // down to 3 only ever removes Mon/Wed/Thu in that order -- the spec's own
+  // "Thursday also off at 5 days" falls out of this directly.
+  6: { long: 5, mlr: [1, 4], easy: [0, 2, 3] }, // Tue/Fri MLR; Mon/Wed/Thu easy; Sun off
+  5: { long: 5, mlr: [1, 4], easy: [0, 2] }, // drop Thu easy -- Thu+Sun off, matching the spec exactly
+  4: { long: 5, mlr: [1, 4], easy: [2] }, // drop Mon easy too -- Mon/Thu/Sun off
+  3: { long: 5, mlr: [1, 4], easy: [] }, // Tue/Fri MLR, Sat long -- "two MLRs plus one long run, no easy days"
+};
+
 export async function addBasePhaseToSchedule(
   athleteId: string,
   planStartDate: string,
-  weeks: { weekNumber: number; totalMiles: number; daysPerWeek: number; longRunMiles: number }[],
+  weeks: AddBasePhaseWeek[],
 ): Promise<AddBasePhaseResult> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
@@ -153,16 +180,17 @@ export async function addBasePhaseToSchedule(
     const week = weeks[i];
     const weeksFromLast = weeks.length - 1 - i;
     const weekMonday = addDaysUtc(lastBaseWeekMonday, -7 * weeksFromLast);
-    const longRunDate = addDaysUtc(weekMonday, 6); // Sunday, matching this platform's seeded-framework convention
+    const daysPerWeek = 1 + week.mlrMiles.length + week.easyMiles.length;
+    const offsets = DAY_OFFSETS_BY_COUNT[daysPerWeek] ?? DAY_OFFSETS_BY_COUNT[6];
 
-    const result = await saveScheduledWorkout({
+    const longResult = await saveScheduledWorkout({
       athleteId,
-      scheduledDate: isoDate(longRunDate),
+      scheduledDate: isoDate(addDaysUtc(weekMonday, offsets.long)),
       workoutType: "long",
       dayLabel: "Long run",
       sessionSlot: null,
       extras: [],
-      notesFromCoach: `Base phase week ${week.weekNumber} of ${weeks.length}.`,
+      notesFromCoach: `Base phase week ${week.weekNumber} of ${weeks.length} -- easy pace, this is a base-building long run, not a workout.`,
       plannedDistanceM: milesToMeters(week.longRunMiles),
       plannedDistanceMaxM: null,
       plannedDurationS: null,
@@ -181,54 +209,74 @@ export async function addBasePhaseToSchedule(
       steps: [],
       publish: false,
     });
-    if (result.error) return { error: result.error };
+    if (longResult.error) return { error: longResult.error };
     daysCreated += 1;
 
-    const remainingDays = Math.max(0, week.daysPerWeek - 1);
-    const remainingMiles = Math.max(0, week.totalMiles - week.longRunMiles);
-    if (remainingDays > 0) {
-      // Tue-Sat, skipping Monday as a rest day by this platform's own
-      // seeded-framework convention -- up to 5 easy days, which covers
-      // every daysPerWeek this generator will ever propose (max 6 total
-      // including the Sunday long run).
-      const easyDayOffsets = [1, 2, 3, 4, 5].slice(0, remainingDays);
-      const perDay = Math.floor((remainingMiles / remainingDays) * 10) / 10;
-      let assigned = 0;
-      for (let d = 0; d < easyDayOffsets.length; d++) {
-        const isLast = d === easyDayOffsets.length - 1;
-        const distanceMiles = isLast ? Math.round((remainingMiles - assigned) * 10) / 10 : perDay;
-        assigned += distanceMiles;
-        const date = addDaysUtc(weekMonday, easyDayOffsets[d]);
+    // MLRs: the days that become workout days once the real plan starts --
+    // longer easy runs here, never a workout, per the generator's own
+    // design (base-phase-generator.ts's module header).
+    for (let m = 0; m < week.mlrMiles.length; m++) {
+      const offset = offsets.mlr[m] ?? offsets.mlr[offsets.mlr.length - 1];
+      const result = await saveScheduledWorkout({
+        athleteId,
+        scheduledDate: isoDate(addDaysUtc(weekMonday, offset)),
+        workoutType: "easy",
+        dayLabel: "Medium-long run",
+        sessionSlot: null,
+        extras: [],
+        notesFromCoach: `Base phase week ${week.weekNumber} of ${weeks.length} -- this is one of the days that becomes a workout once the plan starts; easy pace for now.`,
+        plannedDistanceM: milesToMeters(week.mlrMiles[m]),
+        plannedDistanceMaxM: null,
+        plannedDurationS: null,
+        plannedDurationMaxS: null,
+        plannedPaceSPerMi: null,
+        plannedPaceMaxSPerMi: null,
+        plannedPaceReference: null,
+        plannedPacePercentBasis: null,
+        plannedPacePercentMin: null,
+        plannedPacePercentMax: null,
+        plannedVolumePercent: null,
+        plannedHrBpm: null,
+        plannedHrMaxBpm: null,
+        plannedRpe: null,
+        plannedRpeMax: null,
+        steps: [],
+        publish: false,
+      });
+      if (result.error) return { error: result.error };
+      daysCreated += 1;
+    }
 
-        const easyResult = await saveScheduledWorkout({
-          athleteId,
-          scheduledDate: isoDate(date),
-          workoutType: "easy",
-          dayLabel: "Easy run",
-          sessionSlot: null,
-          extras: [],
-          notesFromCoach: `Base phase week ${week.weekNumber} of ${weeks.length}.`,
-          plannedDistanceM: milesToMeters(distanceMiles),
-          plannedDistanceMaxM: null,
-          plannedDurationS: null,
-          plannedDurationMaxS: null,
-          plannedPaceSPerMi: null,
-          plannedPaceMaxSPerMi: null,
-          plannedPaceReference: null,
-          plannedPacePercentBasis: null,
-          plannedPacePercentMin: null,
-          plannedPacePercentMax: null,
-          plannedVolumePercent: null,
-          plannedHrBpm: null,
-          plannedHrMaxBpm: null,
-          plannedRpe: null,
-          plannedRpeMax: null,
-          steps: [],
-          publish: false,
-        });
-        if (easyResult.error) return { error: easyResult.error };
-        daysCreated += 1;
-      }
+    for (let e = 0; e < week.easyMiles.length; e++) {
+      const offset = offsets.easy[e] ?? offsets.easy[offsets.easy.length - 1];
+      const result = await saveScheduledWorkout({
+        athleteId,
+        scheduledDate: isoDate(addDaysUtc(weekMonday, offset)),
+        workoutType: "easy",
+        dayLabel: "Easy run",
+        sessionSlot: null,
+        extras: [],
+        notesFromCoach: `Base phase week ${week.weekNumber} of ${weeks.length}.`,
+        plannedDistanceM: milesToMeters(week.easyMiles[e]),
+        plannedDistanceMaxM: null,
+        plannedDurationS: null,
+        plannedDurationMaxS: null,
+        plannedPaceSPerMi: null,
+        plannedPaceMaxSPerMi: null,
+        plannedPaceReference: null,
+        plannedPacePercentBasis: null,
+        plannedPacePercentMin: null,
+        plannedPacePercentMax: null,
+        plannedVolumePercent: null,
+        plannedHrBpm: null,
+        plannedHrMaxBpm: null,
+        plannedRpe: null,
+        plannedRpeMax: null,
+        steps: [],
+        publish: false,
+      });
+      if (result.error) return { error: result.error };
+      daysCreated += 1;
     }
   }
 
