@@ -59,7 +59,11 @@ type ProgramRow = { id: string; name: string };
 type VariantRow = { id: string; program_id: string; name: string };
 type VolumeVariantRow = { id: string; program_id: string; name: string; position: number };
 
-async function loadProgramOptionsForBasePhase(supabase: Awaited<ReturnType<typeof createClient>>): Promise<BasePhaseProgramOption[]> {
+// Exported for reuse by the group base-phase route (roster/groups/[groupId]/base-phase/)
+// -- a plain program listing with no athlete dependency, same reuse
+// discipline as loadGroupMembersForAssign in the group program-assign
+// feature.
+export async function loadProgramOptionsForBasePhase(supabase: Awaited<ReturnType<typeof createClient>>): Promise<BasePhaseProgramOption[]> {
   const { data: programRows } = await supabase.from("training_programs").select("id, name").order("name").returns<ProgramRow[]>();
   const programIds = (programRows ?? []).map((p) => p.id);
   if (programIds.length === 0) return [];
@@ -348,14 +352,83 @@ export type AddBasePhaseWeek = {
   easyMiles: number[];
 };
 
-// Writes the confirmed, coach-edited template to the athlete's schedule,
-// counting backward from the plan's own start date so the base phase's
-// last week ends the day before the plan's first day. Every day is created
-// via the same saveScheduledWorkout() the single-athlete schedule editor
-// and program assignment already use -- no parallel insert path -- so it
-// lands as an unpublished draft (publish: false) exactly like every other
-// coach-authored schedule entry, for the coach to review and publish from
-// the normal calendar.
+// Anchor choice for where the base phase lands on the calendar, matching
+// the assign-program wizard's own anchor pattern (start date vs target
+// event date -- see assign-program-form.tsx). "endingWeek": the coach picks
+// the date the real plan starts; the base is laid out backward so its last
+// week ends the Sunday before. "startingWeek": the coach picks the date the
+// base itself begins; it's laid out forward from there. Before this anchor
+// existed, the generator only supported the endingWeek behavior.
+export type BasePhaseAnchor = { kind: "endingWeek"; planStartDate: string } | { kind: "startingWeek"; baseStartDate: string };
+
+export type BasePhaseDateRange = { startDate: string; endDate: string };
+
+function resolveBasePhaseDateRange(anchor: BasePhaseAnchor, weekCount: number): BasePhaseDateRange {
+  if (anchor.kind === "endingWeek") {
+    const planStartMonday = mostRecentMondayUtc(new Date(`${anchor.planStartDate}T00:00:00Z`));
+    const lastWeekMonday = addDaysUtc(planStartMonday, -7);
+    const firstWeekMonday = addDaysUtc(lastWeekMonday, -7 * (weekCount - 1));
+    return { startDate: isoDate(firstWeekMonday), endDate: isoDate(addDaysUtc(lastWeekMonday, 6)) };
+  }
+  const firstWeekMonday = mostRecentMondayUtc(new Date(`${anchor.baseStartDate}T00:00:00Z`));
+  const lastWeekMonday = addDaysUtc(firstWeekMonday, 7 * (weekCount - 1));
+  return { startDate: isoDate(firstWeekMonday), endDate: isoDate(addDaysUtc(lastWeekMonday, 6)) };
+}
+
+export type BasePhaseConflict = { phaseType: string; name: string | null; startDate: string; endDate: string };
+
+// Resolves the calendar range for a given anchor/week-count and checks it
+// against this athlete's existing training_phases -- same overlap-pre-check
+// pattern savePhase() already uses (schedule/actions.ts), surfaced here so
+// both the single-athlete form and the group assign flow can show a
+// conflict before anything is written.
+export async function checkBasePhaseSchedule(
+  athleteId: string,
+  anchor: BasePhaseAnchor,
+  weekCount: number,
+): Promise<{ error?: string; range?: BasePhaseDateRange; conflict?: BasePhaseConflict | null }> {
+  const session = await getAppSession();
+  if (!session?.isPrivateCoach) return { error: "Not authorized." };
+  if (weekCount < 1) return { error: "No weeks to schedule." };
+
+  const supabase = await createClient();
+  const { data: relationship } = await supabase
+    .from("coach_athletes")
+    .select("id")
+    .eq("coach_id", session.userId)
+    .eq("athlete_id", athleteId)
+    .eq("status", "active")
+    .limit(1)
+    .maybeSingle();
+  if (!relationship) return { error: "You don't coach this athlete." };
+
+  const range = resolveBasePhaseDateRange(anchor, weekCount);
+  const { data: overlapping } = await supabase
+    .from("training_phases")
+    .select("phase_type, name, start_date, end_date")
+    .eq("athlete_id", athleteId)
+    .lte("start_date", range.endDate)
+    .gte("end_date", range.startDate)
+    .maybeSingle<{ phase_type: string; name: string | null; start_date: string; end_date: string }>();
+
+  return {
+    range,
+    conflict: overlapping
+      ? { phaseType: overlapping.phase_type, name: overlapping.name, startDate: overlapping.start_date, endDate: overlapping.end_date }
+      : null,
+  };
+}
+
+// Writes the confirmed, coach-edited template to the athlete's schedule:
+// one training_phases row labeled "Base" spanning the whole range (so it
+// shows up grouped and labeled in Phase View exactly like General/
+// Supportive/Specific -- "Base" is already a suggested phase type with its
+// own accent color in training-phases.ts, so no changes were needed there),
+// then each day via the same saveScheduledWorkout() the single-athlete
+// schedule editor and program assignment already use -- no parallel insert
+// path -- so it lands as an unpublished draft (publish: false) exactly like
+// every other coach-authored schedule entry, for the coach to review and
+// publish from the normal calendar.
 //
 // Sunday is always off (per the generator's own percentage template), so
 // the long run lands on Saturday instead of this platform's usual Sunday
@@ -378,8 +451,9 @@ const DAY_OFFSETS_BY_COUNT: Record<number, { long: number; mlr: number[]; easy: 
 
 export async function addBasePhaseToSchedule(
   athleteId: string,
-  planStartDate: string,
+  anchor: BasePhaseAnchor,
   weeks: AddBasePhaseWeek[],
+  clearOverlapping = false,
 ): Promise<AddBasePhaseResult> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
@@ -396,15 +470,49 @@ export async function addBasePhaseToSchedule(
     .maybeSingle();
   if (!relationship) return { error: "You don't coach this athlete." };
 
-  const planStart = new Date(`${planStartDate}T00:00:00Z`);
-  const planStartMonday = mostRecentMondayUtc(planStart);
-  const lastBaseWeekMonday = addDaysUtc(planStartMonday, -7);
+  const range = resolveBasePhaseDateRange(anchor, weeks.length);
+  const firstWeekMonday = new Date(`${range.startDate}T00:00:00Z`);
+
+  // Re-checked here rather than trusting the caller's earlier preview
+  // snapshot -- the athlete's calendar can change between that preview and
+  // this submit, same "never trust the client" discipline as every other
+  // assignment flow on this platform.
+  const { data: overlapping } = await supabase
+    .from("training_phases")
+    .select("id, start_date, end_date")
+    .eq("athlete_id", athleteId)
+    .lte("start_date", range.endDate)
+    .gte("end_date", range.startDate)
+    .maybeSingle<{ id: string; start_date: string; end_date: string }>();
+  if (overlapping) {
+    if (!clearOverlapping) {
+      return {
+        error: "This date range overlaps an existing phase for this athlete. Clear it and reassign, or choose a different anchor.",
+      };
+    }
+    await supabase
+      .from("scheduled_workouts")
+      .delete()
+      .eq("athlete_id", athleteId)
+      .gte("scheduled_date", overlapping.start_date)
+      .lte("scheduled_date", overlapping.end_date);
+    await supabase.from("training_phases").delete().eq("id", overlapping.id);
+  }
+
+  const { error: phaseError } = await supabase.from("training_phases").insert({
+    athlete_id: athleteId,
+    coach_id: session.userId,
+    phase_type: "Base",
+    name: null,
+    start_date: range.startDate,
+    end_date: range.endDate,
+  });
+  if (phaseError) return { error: phaseError.message };
 
   let daysCreated = 0;
-  for (let i = weeks.length - 1; i >= 0; i--) {
+  for (let i = 0; i < weeks.length; i++) {
     const week = weeks[i];
-    const weeksFromLast = weeks.length - 1 - i;
-    const weekMonday = addDaysUtc(lastBaseWeekMonday, -7 * weeksFromLast);
+    const weekMonday = addDaysUtc(firstWeekMonday, 7 * i);
     const daysPerWeek = 1 + week.mlrMiles.length + week.easyMiles.length;
     const offsets = DAY_OFFSETS_BY_COUNT[daysPerWeek] ?? DAY_OFFSETS_BY_COUNT[6];
 

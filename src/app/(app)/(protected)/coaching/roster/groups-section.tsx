@@ -167,6 +167,12 @@ function GroupRow({
           >
             Assign program
           </Link>
+          <Link
+            href={`/coaching/roster/groups/${group.id}/base-phase`}
+            className="font-semibold text-zinc-500 underline underline-offset-2 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+          >
+            Base phase
+          </Link>
           {!isRenaming && (
             <button
               type="button"

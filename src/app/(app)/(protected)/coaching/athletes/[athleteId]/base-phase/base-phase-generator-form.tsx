@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 
 import {
   addBasePhaseToSchedule,
+  checkBasePhaseSchedule,
   loadPlanFirstWeek,
   previewBasePhase,
+  type BasePhaseAnchor,
+  type BasePhaseConflict,
   type BasePhaseDefaults,
 } from "./actions";
 import {
@@ -50,17 +53,6 @@ function mostRecentMonday(date: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function addWeeksIso(isoDate: string, weeks: number): string {
-  const d = new Date(`${isoDate}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + weeks * 7);
-  return d.toISOString().slice(0, 10);
-}
-
-function weeksBetween(fromIso: string, toIso: string): number {
-  const ms = new Date(`${toIso}T00:00:00Z`).getTime() - new Date(`${fromIso}T00:00:00Z`).getTime();
-  return Math.max(1, Math.round(ms / (7 * 24 * 60 * 60 * 1000)));
-}
-
 type EditableWeek = BasePhaseWeek;
 
 // The coach-facing wizard for base-phase-generator.ts. Most inputs are
@@ -85,12 +77,17 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
   const [targetDaysPerWeek, setTargetDaysPerWeek] = useState(String(MAX_DAYS_PER_WEEK));
   const [planWeekError, setPlanWeekError] = useState<string | null>(null);
 
-  const [timingMode, setTimingMode] = useState<"weeksAvailable" | "planStartDate">(
-    defaults.suggestedPlanStartDate ? "planStartDate" : "weeksAvailable",
-  );
+  // Anchor choice, matching the assign-program wizard's own start-date vs
+  // target-event-date pattern: "endingWeek" lays the base out backward from
+  // a chosen plan start date (its last week ends right before);
+  // "startingWeek" lays it out forward from a chosen base start date.
+  // Decoupled from weeksAvailable (below), which only drives the mileage
+  // math -- the anchor only decides where the result lands on the calendar.
+  const [anchorMode, setAnchorMode] = useState<"endingWeek" | "startingWeek">("endingWeek");
   const todayMonday = mostRecentMonday(new Date());
   const [weeksAvailableInput, setWeeksAvailableInput] = useState("6");
   const [planStartDateInput, setPlanStartDateInput] = useState(defaults.suggestedPlanStartDate ?? "");
+  const [baseStartDateInput, setBaseStartDateInput] = useState(todayMonday);
   const [athleteType, setAthleteType] = useState<BasePhaseAthleteType>(defaults.suggestedAthleteType);
   const [restartStepMiles, setRestartStepMiles] = useState(String(DEFAULT_RESTART_STEP_MILES));
   const [currentDaysPerWeek, setCurrentDaysPerWeek] = useState(
@@ -108,7 +105,9 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
   const [injuryHistoryText, setInjuryHistoryText] = useState(defaults.injuryHistoryText);
   const [plan, setPlan] = useState<BasePhasePlan | null>(null);
   const [editableWeeks, setEditableWeeks] = useState<EditableWeek[]>([]);
-  const [resolvedPlanStartDate, setResolvedPlanStartDate] = useState<string>("");
+  const [resolvedRange, setResolvedRange] = useState<{ startDate: string; endDate: string } | null>(null);
+  const [conflict, setConflict] = useState<BasePhaseConflict | null>(null);
+  const [clearOverlapping, setClearOverlapping] = useState(false);
   const [addResult, setAddResult] = useState<{ daysCreated: number } | null>(null);
 
   // Pulls the selected plan's own first workout week (total mileage + day
@@ -143,12 +142,8 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     setPlan(null);
   }
 
-  function resolveWeeksAndStart(): { weeksAvailable: number; planStartDate: string } {
-    if (timingMode === "planStartDate" && planStartDateInput) {
-      return { weeksAvailable: weeksBetween(todayMonday, mostRecentMonday(new Date(`${planStartDateInput}T00:00:00Z`))), planStartDate: planStartDateInput };
-    }
-    const weeks = Math.max(1, Math.round(Number(weeksAvailableInput) || 1));
-    return { weeksAvailable: weeks, planStartDate: addWeeksIso(todayMonday, weeks) };
+  function resolveAnchor(): BasePhaseAnchor {
+    return anchorMode === "endingWeek" ? { kind: "endingWeek", planStartDate: planStartDateInput } : { kind: "startingWeek", baseStartDate: baseStartDateInput };
   }
 
   async function handlePreview() {
@@ -157,8 +152,9 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     const target = Number(targetTotalMiles);
     if (!Number.isFinite(starting) || starting < 0) return setError("Enter a starting weekly mileage.");
     if (!Number.isFinite(target) || target <= 0) return setError("Pick a plan so its first workout week can be read.");
-    const { weeksAvailable, planStartDate } = resolveWeeksAndStart();
-    if (timingMode === "planStartDate" && !planStartDateInput) return setError("Pick the plan's start date.");
+    if (anchorMode === "endingWeek" && !planStartDateInput) return setError("Pick the plan's start date.");
+    if (anchorMode === "startingWeek" && !baseStartDateInput) return setError("Pick the date the base phase starts.");
+    const weeksAvailable = Math.max(1, Math.round(Number(weeksAvailableInput) || 1));
 
     const targetDays = Math.max(MIN_DAYS_PER_WEEK, Math.min(MAX_DAYS_PER_WEEK, Math.round(Number(targetDaysPerWeek) || MAX_DAYS_PER_WEEK)));
     const currentDays = Math.max(MIN_DAYS_PER_WEEK, Math.min(MAX_DAYS_PER_WEEK, Math.round(Number(currentDaysPerWeek) || MIN_DAYS_PER_WEEK)));
@@ -177,18 +173,27 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
       longestRunInLast30DaysMiles: longestRun,
       restartStepMiles: athleteType === "restarting" ? Math.max(1, Number(restartStepMiles) || DEFAULT_RESTART_STEP_MILES) : undefined,
     });
-    setIsPending(false);
 
     if (result.blockedForInjuryHistory) {
+      setIsPending(false);
       setBlockedForInjuryHistory(true);
       setInjuryHistoryText(result.injuryHistoryText ?? null);
       return;
     }
-    if (result.error || !result.plan) return setError(result.error ?? "Couldn't generate a template.");
+    if (result.error || !result.plan) {
+      setIsPending(false);
+      return setError(result.error ?? "Couldn't generate a template.");
+    }
+
+    const schedule = await checkBasePhaseSchedule(athleteId, resolveAnchor(), result.plan.weeks.length);
+    setIsPending(false);
+    if (schedule.error || !schedule.range) return setError(schedule.error ?? "Couldn't resolve the schedule for this anchor.");
 
     setPlan(result.plan);
     setEditableWeeks(result.plan.weeks);
-    setResolvedPlanStartDate(planStartDate);
+    setResolvedRange(schedule.range);
+    setConflict(schedule.conflict ?? null);
+    setClearOverlapping(false);
   }
 
   function updateWeek(weekNumber: number, patch: Partial<EditableWeek>) {
@@ -212,8 +217,9 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     setIsPending(true);
     const result = await addBasePhaseToSchedule(
       athleteId,
-      resolvedPlanStartDate,
+      resolveAnchor(),
       editableWeeks.map((w) => ({ weekNumber: w.weekNumber, longRunMiles: w.longRunMiles, mlrMiles: w.mlrMiles, easyMiles: w.easyMiles })),
+      clearOverlapping,
     );
     setIsPending(false);
     if (result.error) return setError(result.error);
@@ -368,39 +374,54 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
       </div>
 
       <div>
-        <p className={labelClass}>Timing</p>
+        <p className={labelClass}>Weeks available</p>
+        <input
+          type="number"
+          min={1}
+          max={52}
+          value={weeksAvailableInput}
+          onChange={(e) => {
+            setWeeksAvailableInput(e.target.value);
+            setPlan(null);
+          }}
+          className={`${fieldClass} mt-1.5 max-w-[10rem]`}
+        />
+      </div>
+
+      <div>
+        <p className={labelClass}>Anchor</p>
         <div className="mt-1.5 flex gap-2">
           <button
             type="button"
             onClick={() => {
-              setTimingMode("planStartDate");
+              setAnchorMode("endingWeek");
               setPlan(null);
             }}
             className={`rounded-control border px-3 py-1.5 text-sm font-medium ${
-              timingMode === "planStartDate"
+              anchorMode === "endingWeek"
                 ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
                 : "border-black/10 text-zinc-600 hover:border-black/20 dark:border-white/10 dark:text-zinc-300 dark:hover:border-white/20"
             }`}
           >
-            Plan start date
+            Ending week
           </button>
           <button
             type="button"
             onClick={() => {
-              setTimingMode("weeksAvailable");
+              setAnchorMode("startingWeek");
               setPlan(null);
             }}
             className={`rounded-control border px-3 py-1.5 text-sm font-medium ${
-              timingMode === "weeksAvailable"
+              anchorMode === "startingWeek"
                 ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
                 : "border-black/10 text-zinc-600 hover:border-black/20 dark:border-white/10 dark:text-zinc-300 dark:hover:border-white/20"
             }`}
           >
-            Weeks available
+            Starting week
           </button>
         </div>
         <div className="mt-2 grid grid-cols-1 gap-3 xs:grid-cols-2">
-          {timingMode === "planStartDate" ? (
+          {anchorMode === "endingWeek" ? (
             <label className="block">
               <span className={labelClass}>Plan start date{defaults.suggestedPlanStartDate ? " (from their upcoming schedule)" : ""}</span>
               <input
@@ -412,21 +433,25 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
                 }}
                 className={fieldClass}
               />
+              <span className="mt-1.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                The base ends the week before this date, working backward.
+              </span>
             </label>
           ) : (
             <label className="block">
-              <span className={labelClass}>Weeks available</span>
+              <span className={labelClass}>Base start date</span>
               <input
-                type="number"
-                min={1}
-                max={52}
-                value={weeksAvailableInput}
+                type="date"
+                value={baseStartDateInput}
                 onChange={(e) => {
-                  setWeeksAvailableInput(e.target.value);
+                  setBaseStartDateInput(e.target.value);
                   setPlan(null);
                 }}
                 className={fieldClass}
               />
+              <span className="mt-1.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                The base starts this week, working forward.
+              </span>
             </label>
           )}
         </div>
@@ -544,6 +569,19 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
             </div>
           ) : null}
 
+          {conflict ? (
+            <div className="space-y-2 rounded-control border border-amber-200 bg-amber-50/50 p-3 dark:border-amber-900 dark:bg-amber-950/20">
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                Overlaps an existing {conflict.phaseType}
+                {conflict.name ? ` — ${conflict.name}` : ""} phase ({conflict.startDate} – {conflict.endDate}) for this athlete.
+              </p>
+              <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <input type="checkbox" checked={clearOverlapping} onChange={(e) => setClearOverlapping(e.target.checked)} className="h-4 w-4" />
+                Clear the overlapping phase and assign
+              </label>
+            </div>
+          ) : null}
+
           <div className="overflow-x-auto rounded-control border border-black/10 dark:border-white/10">
             <table className="w-full border-collapse text-left text-sm">
               <thead>
@@ -621,13 +659,13 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
 
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Adjust anything above before confirming. The long run and MLRs land on the days that stay structural once
-            the plan starts; Sunday is always off. Every day lands as an unpublished draft on {defaults.athleteName}
-            &rsquo;s schedule, ending the week before {resolvedPlanStartDate} -- nothing is visible to the athlete
-            until you publish it.
+            the plan starts; Sunday is always off. Shows as a labeled &ldquo;Base&rdquo; phase on {defaults.athleteName}&rsquo;s
+            schedule, {resolvedRange ? `${resolvedRange.startDate} through ${resolvedRange.endDate}` : ""} -- every day
+            lands as an unpublished draft, nothing visible to the athlete until you publish it.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button type="button" size="sm" disabled={isPending} onClick={handleConfirm}>
+            <Button type="button" size="sm" disabled={isPending || (!!conflict && !clearOverlapping)} onClick={handleConfirm}>
               {isPending ? "Adding…" : `Add ${editableWeeks.length} week${editableWeeks.length === 1 ? "" : "s"} to schedule`}
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={() => setPlan(null)}>
