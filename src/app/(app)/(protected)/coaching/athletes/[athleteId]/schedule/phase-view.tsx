@@ -402,6 +402,9 @@ export function PhaseView({
           <Button type="button" variant="outline" size="sm" onClick={() => setFormTarget("assign-program")}>
             Assign a program
           </Button>
+          <Button href={`/coaching/athletes/${athleteId}/base-phase`} variant="outline" size="sm">
+            Base phase
+          </Button>
           <ConfirmButton
             action={() => clearAllTraining(athleteId).then(() => router.refresh())}
             confirmMessage="Clear ALL planned training for this athlete -- every workout, week plan, and phase, with no date limit? This can't be undone. Use this for a full restart, not a partial cleanup."
