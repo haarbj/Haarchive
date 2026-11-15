@@ -377,19 +377,37 @@ function resolveBasePhaseDateRange(anchor: BasePhaseAnchor, weekCount: number): 
 
 export type BasePhaseConflict = { phaseType: string; name: string | null; startDate: string; endDate: string };
 
-// Resolves the calendar range for a given anchor/week-count and checks it
-// against this athlete's existing training_phases -- same overlap-pre-check
-// pattern savePhase() already uses (schedule/actions.ts), surfaced here so
-// both the single-athlete form and the group assign flow can show a
-// conflict before anything is written.
+// True once the base phase's own computed range (duration + anchor) runs
+// into the plan's own start week -- checked independently of the anchor
+// mode, since "starting week" mode picks the base's start date freely and
+// a duration typed too long can walk the base phase straight past (or
+// into) the plan's own first day with nothing in the database to catch it
+// (the plan may not even be assigned yet, so there's no training_phases
+// row for it to overlap against). Never silently shifted to fit -- this is
+// a hard block, not a "clear and reassign" conflict, since there's usually
+// nothing to clear: the fix is a shorter duration or a different anchor.
+function overlapsPlanStart(range: BasePhaseDateRange, planStartDate: string): boolean {
+  const planStartMonday = isoDate(mostRecentMondayUtc(new Date(`${planStartDate}T00:00:00Z`)));
+  return range.endDate >= planStartMonday;
+}
+
+// Resolves the calendar range for a given duration (weekCount) + anchor and
+// checks it two ways: against the plan's own start date (overlapsPlanStart,
+// above -- always checked, regardless of anchor mode), and against this
+// athlete's existing training_phases (the same overlap-pre-check pattern
+// savePhase() already uses, schedule/actions.ts) -- surfaced here so both
+// the single-athlete form and the group assign flow can show a conflict
+// before anything is written.
 export async function checkBasePhaseSchedule(
   athleteId: string,
   anchor: BasePhaseAnchor,
   weekCount: number,
-): Promise<{ error?: string; range?: BasePhaseDateRange; conflict?: BasePhaseConflict | null }> {
+  planStartDate: string,
+): Promise<{ error?: string; range?: BasePhaseDateRange; conflict?: BasePhaseConflict | null; overlapsPlanStart?: boolean }> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
-  if (weekCount < 1) return { error: "No weeks to schedule." };
+  if (weekCount < 1) return { error: "Enter how many weeks the base phase lasts." };
+  if (!planStartDate) return { error: "Enter the plan's own start date." };
 
   const supabase = await createClient();
   const { data: relationship } = await supabase
@@ -416,6 +434,7 @@ export async function checkBasePhaseSchedule(
     conflict: overlapping
       ? { phaseType: overlapping.phase_type, name: overlapping.name, startDate: overlapping.start_date, endDate: overlapping.end_date }
       : null,
+    overlapsPlanStart: overlapsPlanStart(range, planStartDate),
   };
 }
 
@@ -453,11 +472,13 @@ export async function addBasePhaseToSchedule(
   athleteId: string,
   anchor: BasePhaseAnchor,
   weeks: AddBasePhaseWeek[],
+  planStartDate: string,
   clearOverlapping = false,
 ): Promise<AddBasePhaseResult> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
   if (weeks.length === 0) return { error: "Nothing to add." };
+  if (!planStartDate) return { error: "Enter the plan's own start date." };
 
   const supabase = await createClient();
   const { data: relationship } = await supabase
@@ -472,6 +493,15 @@ export async function addBasePhaseToSchedule(
 
   const range = resolveBasePhaseDateRange(anchor, weeks.length);
   const firstWeekMonday = new Date(`${range.startDate}T00:00:00Z`);
+
+  // Re-checked here rather than trusting the caller's earlier preview
+  // snapshot -- never silently shifted to fit; the coach has to shorten
+  // the duration or pick a different anchor.
+  if (overlapsPlanStart(range, planStartDate)) {
+    return {
+      error: "This duration and anchor would place the base phase overlapping the plan's own start date. Shorten the duration or choose a different anchor.",
+    };
+  }
 
   // Re-checked here rather than trusting the caller's earlier preview
   // snapshot -- the athlete's calendar can change between that preview and

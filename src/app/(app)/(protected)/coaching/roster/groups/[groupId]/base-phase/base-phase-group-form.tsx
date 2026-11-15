@@ -128,7 +128,7 @@ export function BasePhaseGroupForm({
     const target = Number(targetTotalMiles);
     if (!Number.isFinite(starting) || starting < 0) return { error: "Enter a starting weekly mileage." };
     if (!Number.isFinite(target) || target <= 0) return { error: "Pick a plan so its first workout week can be read." };
-    if (anchorMode === "endingWeek" && !planStartDateInput) return { error: "Pick the plan's start date." };
+    if (!planStartDateInput) return { error: "Enter the plan's own start date." };
     if (anchorMode === "startingWeek" && !baseStartDateInput) return { error: "Pick the date the base phase starts." };
 
     const targetDays = Math.max(MIN_DAYS_PER_WEEK, Math.min(MAX_DAYS_PER_WEEK, Math.round(Number(targetDaysPerWeek) || MAX_DAYS_PER_WEEK)));
@@ -146,6 +146,7 @@ export function BasePhaseGroupForm({
         longestRunInLast30DaysMiles: longestRun,
         restartStepMiles: athleteType === "restarting" ? Math.max(1, Number(restartStepMiles) || DEFAULT_RESTART_STEP_MILES) : undefined,
         anchor: resolveAnchor(),
+        planStartDate: planStartDateInput,
       },
     };
   }
@@ -348,19 +349,33 @@ export function BasePhaseGroupForm({
         />
       </label>
 
-      <div>
-        <p className={labelClass}>Weeks available</p>
-        <input
-          type="number"
-          min={1}
-          max={52}
-          value={weeksAvailableInput}
-          onChange={(e) => {
-            setWeeksAvailableInput(e.target.value);
-            setPlan(null);
-          }}
-          className={`${fieldClass} mt-1.5 max-w-[10rem]`}
-        />
+      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
+        <div>
+          <p className={labelClass}>Duration (weeks)</p>
+          <input
+            type="number"
+            min={1}
+            max={52}
+            value={weeksAvailableInput}
+            onChange={(e) => {
+              setWeeksAvailableInput(e.target.value);
+              setPlan(null);
+            }}
+            className={`${fieldClass} mt-1.5`}
+          />
+        </div>
+        <label className="block">
+          <span className={labelClass}>Plan start date (when the plan&rsquo;s own workouts begin)</span>
+          <input
+            type="date"
+            value={planStartDateInput}
+            onChange={(e) => {
+              setPlanStartDateInput(e.target.value);
+              setPlan(null);
+            }}
+            className={fieldClass}
+          />
+        </label>
       </div>
 
       <div>
@@ -395,35 +410,29 @@ export function BasePhaseGroupForm({
             Starting week
           </button>
         </div>
-        <div className="mt-2 grid grid-cols-1 gap-3 xs:grid-cols-2">
-          {anchorMode === "endingWeek" ? (
-            <label className="block">
-              <span className={labelClass}>Plan start date</span>
-              <input
-                type="date"
-                value={planStartDateInput}
-                onChange={(e) => {
-                  setPlanStartDateInput(e.target.value);
-                  setPlan(null);
-                }}
-                className={fieldClass}
-              />
-            </label>
-          ) : (
-            <label className="block">
-              <span className={labelClass}>Base start date</span>
-              <input
-                type="date"
-                value={baseStartDateInput}
-                onChange={(e) => {
-                  setBaseStartDateInput(e.target.value);
-                  setPlan(null);
-                }}
-                className={fieldClass}
-              />
-            </label>
-          )}
-        </div>
+        {anchorMode === "endingWeek" ? (
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+            The base runs backward from the plan start date above, for exactly {weeksAvailableInput || "0"} week
+            {weeksAvailableInput === "1" ? "" : "s"}, ending the week before it.
+          </p>
+        ) : (
+          <label className="mt-2 block max-w-xs">
+            <span className={labelClass}>Base start date</span>
+            <input
+              type="date"
+              value={baseStartDateInput}
+              onChange={(e) => {
+                setBaseStartDateInput(e.target.value);
+                setPlan(null);
+              }}
+              className={fieldClass}
+            />
+            <span className="mt-1.5 block text-xs text-zinc-500 dark:text-zinc-400">
+              The base runs forward from this date for exactly {weeksAvailableInput || "0"} week
+              {weeksAvailableInput === "1" ? "" : "s"}.
+            </span>
+          </label>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
