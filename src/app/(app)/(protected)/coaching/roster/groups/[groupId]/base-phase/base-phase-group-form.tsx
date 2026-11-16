@@ -52,9 +52,14 @@ function mostRecentMonday(date: Date): string {
 // a separate copy here rather than a shared import since it's a tiny,
 // display-only constant and this whole temporary block is meant to be easy
 // to delete from both forms once the 12-week Breeze plans are seeded.
+// Day count confirmed against the live program_days for Canyon (both
+// volume variants share the same week-1 day structure -- program_days
+// isn't keyed per volume variant): days 4 and 7 are rest, so 5 running
+// days, not 6. The 12-week Breeze 40 is the same plan, so this carries
+// over; Breeze 50's day count was queried the same way, not assumed.
 const MANUAL_PLAN_DEFAULTS = {
-  breeze40: { label: "Breeze 40 (Canyon 40)", totalMiles: 30, daysPerWeek: 6 },
-  breeze50: { label: "Breeze 50 (Canyon 50)", totalMiles: 38, daysPerWeek: 6 },
+  breeze40: { label: "Breeze 40 (Canyon 40)", totalMiles: 30, daysPerWeek: 5 },
+  breeze50: { label: "Breeze 50 (Canyon 50)", totalMiles: 38, daysPerWeek: 5 },
 } as const;
 
 // The group-assign counterpart to the single-athlete BasePhaseGeneratorForm
