@@ -55,6 +55,18 @@ function mostRecentMonday(date: Date): string {
 
 type EditableWeek = BasePhaseWeek;
 
+// Temporary scaffolding for building a base before its own plan is
+// uploaded and seeded -- verified from the Marathon Excellence Breeze
+// 12-week table. Day count isn't stated in that table; 6 is carried over
+// from the 18-week Breeze structure as a default, not an authored fact,
+// which is why it stays just as editable as the mileage figure. Remove
+// this once the 12-week Breeze plans are seeded as real Programs and this
+// manual path is no longer needed.
+const MANUAL_PLAN_DEFAULTS = {
+  breeze40: { label: "Breeze 40 (Canyon 40)", totalMiles: 30, daysPerWeek: 6 },
+  breeze50: { label: "Breeze 50 (Canyon 50)", totalMiles: 38, daysPerWeek: 6 },
+} as const;
+
 // The coach-facing wizard for base-phase-generator.ts. Most inputs are
 // derived automatically (the plan's own first workout week once a program
 // is picked; the athlete's current mileage/frequency from real completed-
@@ -76,6 +88,16 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
   const [targetTotalMiles, setTargetTotalMiles] = useState("");
   const [targetDaysPerWeek, setTargetDaysPerWeek] = useState(String(MAX_DAYS_PER_WEEK));
   const [planWeekError, setPlanWeekError] = useState<string | null>(null);
+  // "manual" bypasses the plan picker entirely for a plan that hasn't been
+  // uploaded yet -- see MANUAL_PLAN_DEFAULTS' own comment.
+  const [planInputMode, setPlanInputMode] = useState<"pick" | "manual">("pick");
+
+  function applyManualDefaults(key: keyof typeof MANUAL_PLAN_DEFAULTS) {
+    const d = MANUAL_PLAN_DEFAULTS[key];
+    setTargetTotalMiles(String(d.totalMiles));
+    setTargetDaysPerWeek(String(d.daysPerWeek));
+    setPlan(null);
+  }
 
   // Anchor choice, matching the assign-program wizard's own start-date vs
   // target-event-date pattern: "endingWeek" lays the base out backward from
@@ -156,7 +178,8 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     const starting = Number(startingWeeklyMiles);
     const target = Number(targetTotalMiles);
     if (!Number.isFinite(starting) || starting < 0) return setError("Enter a starting weekly mileage.");
-    if (!Number.isFinite(target) || target <= 0) return setError("Pick a plan so its first workout week can be read.");
+    if (!Number.isFinite(target) || target <= 0)
+      return setError(planInputMode === "pick" ? "Pick a plan so its first workout week can be read." : "Enter the plan's start weekly mileage.");
     if (!planStartDateInput) return setError("Enter the plan's own start date.");
     if (anchorMode === "startingWeek" && !baseStartDateInput) return setError("Pick the date the base phase starts.");
     const weeksAvailable = Math.max(1, Math.round(Number(weeksAvailableInput) || 1));
@@ -313,93 +336,184 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
       ) : null}
       <div>
         <p className={labelClass}>Plan to build toward</p>
-        <div className="mt-1.5 grid grid-cols-1 gap-3 xs:grid-cols-3">
-          <label className="block">
-            <span className={labelClass}>Program</span>
-            <select value={programId} onChange={(e) => updateProgram(e.target.value)} className={fieldClass}>
-              {defaults.programs.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className={labelClass}>Plan length</span>
-            <select
-              value={variantId}
-              onChange={(e) => {
-                setVariantId(e.target.value);
-                setPlan(null);
-              }}
-              className={fieldClass}
-            >
-              {(program?.variants ?? []).map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {program && program.volumeVariants.length > 0 ? (
-            <label className="block">
-              <span className={labelClass}>Peak weekly volume</span>
-              <select
-                value={volumeVariantId}
-                onChange={(e) => {
-                  setVolumeVariantId(e.target.value);
-                  setPlan(null);
-                }}
-                className={fieldClass}
-              >
-                {program.volumeVariants.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
+        <div className="mt-1.5 flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setPlanInputMode("pick");
+              setPlan(null);
+            }}
+            className={`rounded-control border px-3 py-1.5 text-sm font-medium ${
+              planInputMode === "pick"
+                ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
+                : "border-black/10 text-zinc-600 hover:border-black/20 dark:border-white/10 dark:text-zinc-300 dark:hover:border-white/20"
+            }`}
+          >
+            Pick a plan
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPlanInputMode("manual");
+              if (!targetTotalMiles) applyManualDefaults("breeze40");
+              setPlan(null);
+            }}
+            className={`rounded-control border px-3 py-1.5 text-sm font-medium ${
+              planInputMode === "manual"
+                ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
+                : "border-black/10 text-zinc-600 hover:border-black/20 dark:border-white/10 dark:text-zinc-300 dark:hover:border-white/20"
+            }`}
+          >
+            Plan not uploaded yet: enter start manually
+          </button>
         </div>
 
-        <div className="mt-3 rounded-control border border-black/10 p-3 text-sm dark:border-white/10">
-          {planWeekError ? (
-            <FormError>{planWeekError}</FormError>
-          ) : (
-            <p className="text-zinc-700 dark:text-zinc-300">
-              First workout week: <span className="font-medium text-zinc-900 dark:text-white">{targetTotalMiles || "--"} mi</span> over{" "}
-              <span className="font-medium text-zinc-900 dark:text-white">{targetDaysPerWeek || "--"} days</span>, 2 of them MLRs/workouts.
-              Read automatically from the plan -- adjust below if this isn&rsquo;t quite right.
+        {planInputMode === "pick" ? (
+          defaults.programs.length === 0 ? (
+            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+              No programs uploaded yet -- use &ldquo;Plan not uploaded yet&rdquo; above, or build one in your Programs
+              library first.
             </p>
-          )}
-          <div className="mt-2 grid grid-cols-1 gap-3 xs:grid-cols-2">
-            <label className="block">
-              <span className={labelClass}>Total miles (editable)</span>
-              <input
-                value={targetTotalMiles}
-                onChange={(e) => {
-                  setTargetTotalMiles(e.target.value);
-                  setPlan(null);
-                }}
-                className={fieldClass}
-              />
-            </label>
-            <label className="block">
-              <span className={labelClass}>Day count (editable, {MIN_DAYS_PER_WEEK}-{MAX_DAYS_PER_WEEK})</span>
-              <input
-                type="number"
-                min={MIN_DAYS_PER_WEEK}
-                max={MAX_DAYS_PER_WEEK}
-                value={targetDaysPerWeek}
-                onChange={(e) => {
-                  setTargetDaysPerWeek(e.target.value);
-                  setPlan(null);
-                }}
-                className={fieldClass}
-              />
-            </label>
+          ) : (
+            <>
+              <div className="mt-1.5 grid grid-cols-1 gap-3 xs:grid-cols-3">
+                <label className="block">
+                  <span className={labelClass}>Program</span>
+                  <select value={programId} onChange={(e) => updateProgram(e.target.value)} className={fieldClass}>
+                    {defaults.programs.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className={labelClass}>Plan length</span>
+                  <select
+                    value={variantId}
+                    onChange={(e) => {
+                      setVariantId(e.target.value);
+                      setPlan(null);
+                    }}
+                    className={fieldClass}
+                  >
+                    {(program?.variants ?? []).map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {program && program.volumeVariants.length > 0 ? (
+                  <label className="block">
+                    <span className={labelClass}>Peak weekly volume</span>
+                    <select
+                      value={volumeVariantId}
+                      onChange={(e) => {
+                        setVolumeVariantId(e.target.value);
+                        setPlan(null);
+                      }}
+                      className={fieldClass}
+                    >
+                      {program.volumeVariants.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+              </div>
+
+              <div className="mt-3 rounded-control border border-black/10 p-3 text-sm dark:border-white/10">
+                {planWeekError ? (
+                  <FormError>{planWeekError}</FormError>
+                ) : (
+                  <p className="text-zinc-700 dark:text-zinc-300">
+                    First workout week: <span className="font-medium text-zinc-900 dark:text-white">{targetTotalMiles || "--"} mi</span> over{" "}
+                    <span className="font-medium text-zinc-900 dark:text-white">{targetDaysPerWeek || "--"} days</span>, 2 of them
+                    MLRs/workouts. Read automatically from the plan -- adjust below if this isn&rsquo;t quite right.
+                  </p>
+                )}
+                <div className="mt-2 grid grid-cols-1 gap-3 xs:grid-cols-2">
+                  <label className="block">
+                    <span className={labelClass}>Total miles (editable)</span>
+                    <input
+                      value={targetTotalMiles}
+                      onChange={(e) => {
+                        setTargetTotalMiles(e.target.value);
+                        setPlan(null);
+                      }}
+                      className={fieldClass}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className={labelClass}>
+                      Day count (editable, {MIN_DAYS_PER_WEEK}-{MAX_DAYS_PER_WEEK})
+                    </span>
+                    <input
+                      type="number"
+                      min={MIN_DAYS_PER_WEEK}
+                      max={MAX_DAYS_PER_WEEK}
+                      value={targetDaysPerWeek}
+                      onChange={(e) => {
+                        setTargetDaysPerWeek(e.target.value);
+                        setPlan(null);
+                      }}
+                      className={fieldClass}
+                    />
+                  </label>
+                </div>
+              </div>
+            </>
+          )
+        ) : (
+          <div className="mt-3 rounded-control border border-amber-200 bg-amber-50/50 p-3 dark:border-amber-900 dark:bg-amber-950/20">
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+              Temporary -- the real plan isn&rsquo;t uploaded yet.
+            </p>
+            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+              Enter the plan&rsquo;s own week-1 numbers by hand. Once the real plan is uploaded, switch back to
+              &ldquo;Pick a plan&rdquo; and assign it normally -- this base already ends the week before it starts.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {(Object.keys(MANUAL_PLAN_DEFAULTS) as (keyof typeof MANUAL_PLAN_DEFAULTS)[]).map((key) => (
+                <Button key={key} type="button" variant="outline" size="sm" onClick={() => applyManualDefaults(key)}>
+                  {MANUAL_PLAN_DEFAULTS[key].label}: {MANUAL_PLAN_DEFAULTS[key].totalMiles} mi, {MANUAL_PLAN_DEFAULTS[key].daysPerWeek} days
+                </Button>
+              ))}
+            </div>
+            <div className="mt-3 grid grid-cols-1 gap-3 xs:grid-cols-2">
+              <label className="block">
+                <span className={labelClass}>Plan start weekly mileage (week-1 total)</span>
+                <input
+                  value={targetTotalMiles}
+                  onChange={(e) => {
+                    setTargetTotalMiles(e.target.value);
+                    setPlan(null);
+                  }}
+                  className={fieldClass}
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>
+                  Days per week in the plan ({MIN_DAYS_PER_WEEK}-{MAX_DAYS_PER_WEEK})
+                </span>
+                <input
+                  type="number"
+                  min={MIN_DAYS_PER_WEEK}
+                  max={MAX_DAYS_PER_WEEK}
+                  value={targetDaysPerWeek}
+                  onChange={(e) => {
+                    setTargetDaysPerWeek(e.target.value);
+                    setPlan(null);
+                  }}
+                  className={fieldClass}
+                />
+              </label>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
