@@ -463,20 +463,20 @@ export async function checkBasePhaseSchedule(
 // Sunday is always off (per the generator's own percentage template), so
 // the long run lands on Saturday instead of this platform's usual Sunday
 // convention for authored Programs -- a base phase isn't one of those
-// seeded frameworks. MLRs land on weekdays mirroring the plan's own
-// workout-day placement loosely (spread through the week rather than
-// bunched), easy days fill whatever's left, and the specific days that go
-// unused as frequency drops below 6 are a reasonable default (the task
-// only pins down Sunday-always-off and Thursday-off-at-5-days).
+// seeded frameworks. MLRs land on Monday and Wednesday -- the Marathon
+// Excellence weekly structure's own 2 workout days, carried into base at
+// easy pace, confirmed to match both the 5-day (Breeze/Canyon) and 6-day
+// (Wind/Mesa) week shapes. Easy days fill whatever running days are left;
+// Thursday is the extra rest day at 5 days/week (matching the real seeded
+// Canyon program's own Thursday-off), and the specific day dropped going
+// from 5 to 4 to 3 is a reasonable default beyond what the task specifies.
 const DAY_OFFSETS_BY_COUNT: Record<number, { long: number; mlr: number[]; easy: number[] }> = {
   // Offsets from Monday (0=Mon ... 6=Sun). Saturday (5) is always the long
-  // run; Tue/Fri are always the MLRs, so dropping easy days to go from 6
-  // down to 3 only ever removes Mon/Wed/Thu in that order -- the spec's own
-  // "Thursday also off at 5 days" falls out of this directly.
-  6: { long: 5, mlr: [1, 4], easy: [0, 2, 3] }, // Tue/Fri MLR; Mon/Wed/Thu easy; Sun off
-  5: { long: 5, mlr: [1, 4], easy: [0, 2] }, // drop Thu easy -- Thu+Sun off, matching the spec exactly
-  4: { long: 5, mlr: [1, 4], easy: [2] }, // drop Mon easy too -- Mon/Thu/Sun off
-  3: { long: 5, mlr: [1, 4], easy: [] }, // Tue/Fri MLR, Sat long -- "two MLRs plus one long run, no easy days"
+  // run; Monday/Wednesday are always the MLRs.
+  6: { long: 5, mlr: [0, 2], easy: [1, 3, 4] }, // Mon/Wed MLR; Tue/Thu/Fri easy; Sun off
+  5: { long: 5, mlr: [0, 2], easy: [1, 4] }, // drop Thu easy -- Thu+Sun off, matching the real Canyon week
+  4: { long: 5, mlr: [0, 2], easy: [1] }, // drop Fri easy too -- Thu/Fri/Sun off
+  3: { long: 5, mlr: [0, 2], easy: [] }, // Mon/Wed MLR, Sat long -- "two MLRs plus one long run, no easy days"
 };
 
 export async function addBasePhaseToSchedule(
