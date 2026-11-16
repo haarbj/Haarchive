@@ -7,6 +7,7 @@ import { sortRosterRows, type RosterRow, type RosterSortKey } from "@/lib/privat
 import { formatWeeksAwayLabel, weeksUntilGoalRace } from "@/lib/private-coaching/goal-race";
 import { formatDate, formatMiles, formatRelativeTime } from "@/lib/format";
 import { mostRecentMonday, todayInTimeZone } from "@/lib/week";
+import { fieldClass } from "@/lib/form-styles";
 import { RemoveAthleteButton } from "./remove-athlete-button";
 import { ViewAsButton } from "@/components/private-coaching/view-as-button";
 import { Badge } from "@/components/ui/badge";
@@ -17,38 +18,80 @@ const SORT_OPTIONS: { key: RosterSortKey; label: string }[] = [
   { key: "race", label: "Next race" },
 ];
 
+/** A training group reduced to just what this table's own filter needs -- membership by athleteId, not the full TrainingGroup shape groups-section.tsx manages. */
+export type RosterGroupFilterOption = { id: string; name: string; athleteIds: string[] };
+
+const UNGROUPED_FILTER_VALUE = "__ungrouped__";
+
 // The scanning table itself -- sorts client-side over the roster this
 // page already loaded in one batched pass (roster-data.ts); switching
-// the sort never re-fetches anything. See roster-row.ts's own comment
-// on why this reuses sortRosterRows rather than a page-local sort.
-export function RosterTable({ rows, coachUserId }: { rows: RosterRow[]; coachUserId: string }) {
+// the sort or the group filter never re-fetches anything. See
+// roster-row.ts's own comment on why this reuses sortRosterRows rather
+// than a page-local sort.
+export function RosterTable({
+  rows,
+  coachUserId,
+  groups,
+}: {
+  rows: RosterRow[];
+  coachUserId: string;
+  groups: RosterGroupFilterOption[];
+}) {
   const [sortKey, setSortKey] = useState<RosterSortKey>("attention");
-  const sorted = sortRosterRows(rows, sortKey);
+  const [groupFilter, setGroupFilter] = useState<string>("");
+
+  const filtered =
+    groupFilter === ""
+      ? rows
+      : groupFilter === UNGROUPED_FILTER_VALUE
+        ? rows.filter((row) => !groups.some((group) => group.athleteIds.includes(row.athleteId)))
+        : rows.filter((row) => groups.find((group) => group.id === groupFilter)?.athleteIds.includes(row.athleteId));
+  const sorted = sortRosterRows(filtered, sortKey);
 
   return (
     <div>
-      <div className="flex items-center gap-1 rounded-control border border-black/10 p-0.5 text-xs dark:border-white/10" role="group" aria-label="Sort roster">
-        {SORT_OPTIONS.map((option) => (
-          <button
-            key={option.key}
-            type="button"
-            onClick={() => setSortKey(option.key)}
-            aria-pressed={sortKey === option.key}
-            className={`rounded-control px-2.5 py-1 font-semibold ${
-              sortKey === option.key
-                ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                : "text-zinc-600 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/10"
-            }`}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-1 rounded-control border border-black/10 p-0.5 text-xs dark:border-white/10" role="group" aria-label="Sort roster">
+          {SORT_OPTIONS.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              onClick={() => setSortKey(option.key)}
+              aria-pressed={sortKey === option.key}
+              className={`rounded-control px-2.5 py-1 font-semibold ${
+                sortKey === option.key
+                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                  : "text-zinc-600 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/10"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {groups.length > 0 ? (
+          <select
+            value={groupFilter}
+            onChange={(event) => setGroupFilter(event.target.value)}
+            aria-label="Filter roster by group"
+            className={`${fieldClass} w-auto text-xs`}
           >
-            {option.label}
-          </button>
-        ))}
+            <option value="">All groups</option>
+            {groups.map((group) => (
+              <option key={group.id} value={group.id}>
+                {group.name}
+              </option>
+            ))}
+            <option value={UNGROUPED_FILTER_VALUE}>Ungrouped</option>
+          </select>
+        ) : null}
       </div>
 
       <div className="mt-3 space-y-2">
         {sorted.map((row) => (
           <RosterTableRow key={row.athleteId} row={row} isSelf={row.athleteId === coachUserId} />
         ))}
+        {sorted.length === 0 ? <p className="text-sm text-zinc-600 dark:text-zinc-300">No athletes in this group.</p> : null}
       </div>
     </div>
   );

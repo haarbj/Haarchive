@@ -71,7 +71,7 @@ describe("reuses the shared modules, doesn't duplicate their math", () => {
 describe("the page renders the new table in place, no separate dashboard route", () => {
   it("page.tsx calls loadRosterRows and renders RosterTable", () => {
     expect(ROSTER_PAGE).toContain("loadRosterRows(session.userId)");
-    expect(ROSTER_PAGE).toContain("<RosterTable rows={rosterRows} coachUserId={session.userId} />");
+    expect(ROSTER_PAGE).toMatch(/<RosterTable[\s\S]{0,200}rows={rosterRows}[\s\S]{0,200}coachUserId={session\.userId}/);
   });
 
   it("the empty-roster state still renders a plain invite prompt, not an error", () => {
@@ -88,7 +88,18 @@ describe("view + navigate only -- no messaging/contact action added to the roste
 
   it("sorting is client-side over the already-loaded rows -- no router/fetch call on sort change", () => {
     expect(ROSTER_TABLE).toContain('"use client"');
-    expect(ROSTER_TABLE).toContain("sortRosterRows(rows, sortKey)");
+    expect(ROSTER_TABLE).toContain("sortRosterRows(filtered, sortKey)");
+    expect(ROSTER_TABLE).not.toMatch(/router\.push|router\.refresh|fetch\(/);
+  });
+});
+
+describe("roster filters by the same groups data groups-section.tsx already loads, no second group query", () => {
+  it("page.tsx passes the already-loaded groups' member athleteIds into RosterTable, not a fresh query", () => {
+    expect(ROSTER_PAGE).toMatch(/<RosterTable[\s\S]{0,400}groups={groups\.map/);
+  });
+
+  it("the table filters the already-sorted-over rows by group client-side before sorting, no router/fetch call", () => {
+    expect(ROSTER_TABLE).toContain("groupFilter");
     expect(ROSTER_TABLE).not.toMatch(/router\.push|router\.refresh|fetch\(/);
   });
 });
