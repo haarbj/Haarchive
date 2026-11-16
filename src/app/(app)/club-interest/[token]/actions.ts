@@ -16,7 +16,6 @@ export type ResolvedClubIntakeCycle = {
   raceDate: string;
   deadlineAt: string;
   isClosed: boolean;
-  isExpired: boolean;
 };
 
 // club_intake_cycles has zero RLS policies (deny-all) -- resolving a token
@@ -37,9 +36,12 @@ export async function resolveClubIntakeCycle(token: string): Promise<ResolvedClu
     label: data.label,
     raceName: data.race_name,
     raceDate: data.race_date,
+    // deadlineAt is display copy only (the "Interest is due..." line) --
+    // it is not enforced. Closing a cycle is the coach's manual is_closed
+    // switch, so a late submitter isn't silently blocked by a date that
+    // was meant to create urgency, not a hard cutoff.
     deadlineAt: data.deadline_at,
     isClosed: data.is_closed,
-    isExpired: new Date(data.deadline_at).getTime() < Date.now(),
   };
 }
 
@@ -93,11 +95,13 @@ export async function submitClubIntake(
   const admin = createServiceRoleClient();
   const { data: cycle } = await admin
     .from("club_intake_cycles")
-    .select("id, race_name, race_date, deadline_at, is_closed")
+    .select("id, is_closed")
     .eq("token", token)
-    .maybeSingle<{ id: string; race_name: string; race_date: string; deadline_at: string; is_closed: boolean }>();
+    .maybeSingle<{ id: string; is_closed: boolean }>();
   if (!cycle) return { error: "This form link isn't valid." };
-  if (cycle.is_closed || new Date(cycle.deadline_at).getTime() < Date.now()) {
+  // deadline_at is display copy only -- the coach's manual is_closed
+  // switch is the only real cutoff. See resolveClubIntakeCycle's comment.
+  if (cycle.is_closed) {
     return { error: "This intake cycle is closed." };
   }
 

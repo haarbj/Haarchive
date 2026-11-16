@@ -29,8 +29,9 @@ export default async function ClubInterestPage({ params }: { params: Promise<{ t
   // Deliberately generic -- never reveal whether a token almost matched,
   // was closed, or never existed. The link itself is the only membership
   // proof this form has (see the task's own "link is the membership
-  // proof, not the email domain" rule).
-  if (!cycle || cycle.isClosed || cycle.isExpired) {
+  // proof, not the email domain" rule). deadlineAt is shown as copy below
+  // but never gates the form -- is_closed is the coach's only real cutoff.
+  if (!cycle || cycle.isClosed) {
     return (
       <Container variant="auth">
         <Heading variant="compact">Form not found</Heading>
