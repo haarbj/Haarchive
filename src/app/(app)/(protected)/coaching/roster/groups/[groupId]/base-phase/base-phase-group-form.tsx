@@ -86,6 +86,11 @@ export function BasePhaseGroupForm({
   const [plan, setPlan] = useState<BasePhasePlan | null>(null);
   const [memberPreviews, setMemberPreviews] = useState<GroupBasePhaseMemberPreview[]>([]);
   const [clearDecisions, setClearDecisions] = useState<Record<string, boolean>>({});
+  // athleteId -> coach checked "build anyway" for that member's reported
+  // injury history (same override the single-athlete form exposes). A
+  // blocked member has no plan/conflict yet -- checking this and clicking
+  // "Preview for group" again generates their real plan on the next pass.
+  const [injuryOverrides, setInjuryOverrides] = useState<Record<string, boolean>>({});
   const [outcome, setOutcome] = useState<{
     assigned: { athleteId: string; name: string; daysCreated: number }[];
     skipped: { athleteId: string; name: string; reason: string }[];
@@ -157,7 +162,7 @@ export function BasePhaseGroupForm({
     if ("error" in built) return setError(built.error);
 
     setIsPending(true);
-    const result = await previewBasePhaseForGroup(groupId, built.config);
+    const result = await previewBasePhaseForGroup(groupId, built.config, injuryOverrides);
     setIsPending(false);
     if (result.error && !result.plan) return setError(result.error);
     setPlan(result.plan ?? null);
@@ -171,14 +176,15 @@ export function BasePhaseGroupForm({
     if ("error" in built) return setError(built.error);
 
     setIsPending(true);
-    const result = await assignBasePhaseToGroup(groupId, built.config, clearDecisions);
+    const result = await assignBasePhaseToGroup(groupId, built.config, clearDecisions, injuryOverrides);
     setIsPending(false);
     if (result.error) return setError(result.error);
     setOutcome({ assigned: result.assigned ?? [], skipped: result.skipped ?? [], failed: result.failed ?? [] });
   }
 
-  const readyCount = memberPreviews.filter((m) => !m.error && !m.conflict).length;
-  const willAssignCount = readyCount + memberPreviews.filter((m) => !m.error && m.conflict && clearDecisions[m.athleteId]).length;
+  const readyCount = memberPreviews.filter((m) => !m.error && !m.blockedForInjuryHistory && !m.conflict).length;
+  const willAssignCount =
+    readyCount + memberPreviews.filter((m) => !m.error && !m.blockedForInjuryHistory && m.conflict && clearDecisions[m.athleteId]).length;
 
   if (outcome) {
     return (
@@ -564,6 +570,31 @@ export function BasePhaseGroupForm({
                   <div key={member.athleteId} className="rounded-control border border-black/10 p-2 text-sm dark:border-white/10">
                     <span className="font-medium text-zinc-900 dark:text-white">{member.name}</span>{" "}
                     <span className="text-zinc-500 dark:text-zinc-400">-- {member.error} (skipped)</span>
+                  </div>
+                );
+              }
+              if (member.blockedForInjuryHistory) {
+                return (
+                  <div key={member.athleteId} className="rounded-control border border-amber-200 p-2 dark:border-amber-900">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-zinc-900 dark:text-white">{member.name}</span>
+                      <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">Injury history</span>
+                    </div>
+                    {member.injuryHistoryText ? (
+                      <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">{member.injuryHistoryText}</p>
+                    ) : null}
+                    <label className="mt-2 flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                      <input
+                        type="checkbox"
+                        checked={injuryOverrides[member.athleteId] ?? false}
+                        onChange={(e) => setInjuryOverrides((prev) => ({ ...prev, [member.athleteId]: e.target.checked }))}
+                        className="h-4 w-4"
+                      />
+                      Build a standard progression anyway
+                    </label>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Check this, then click &ldquo;Preview for group&rdquo; again to generate their plan.
+                    </p>
                   </div>
                 );
               }

@@ -305,13 +305,23 @@ async function loadUpcomingPlanStartDate(supabase: Awaited<ReturnType<typeof cre
 
 // Pure preview -- never writes anything. Re-checks injury history
 // server-side rather than trusting the client to have honestly respected
-// the UI's own block, since this is the one input this feature treats as
-// an absolute, never-overridable gate (see base-phase-generator.ts's
-// INJURY_RETURN_CRITERIA and the task's own §5 requirement).
+// the UI's own block. The coach can override the block (acknowledgeInjuryHistory)
+// and build a standard progression anyway -- this is their judgment call to
+// make for this specific athlete, same trust level as "confirmedWarnings" on
+// assignProgramToAthlete elsewhere on this platform (a coach assertion, not
+// a fact the server re-derives). The injury history itself is still always
+// surfaced in the result so the UI can keep showing it as a reminder even
+// after it's been overridden.
 export async function previewBasePhase(
   athleteId: string,
   input: BasePhaseInput,
-): Promise<{ error?: string; blockedForInjuryHistory?: boolean; injuryHistoryText?: string | null; plan?: BasePhasePlan }> {
+  acknowledgeInjuryHistory = false,
+): Promise<{
+  error?: string;
+  blockedForInjuryHistory?: boolean;
+  injuryHistoryText?: string | null;
+  plan?: BasePhasePlan;
+}> {
   const session = await getAppSession();
   if (!session?.isPrivateCoach) return { error: "Not authorized." };
 
@@ -332,15 +342,16 @@ export async function previewBasePhase(
     .eq("user_id", athleteId)
     .maybeSingle<{ training_background_injury_history: string | null }>();
 
-  if (hasReportedInjuryHistory(athleteProfile?.training_background_injury_history)) {
-    return { blockedForInjuryHistory: true, injuryHistoryText: athleteProfile?.training_background_injury_history ?? null };
+  const injuryHistoryText = athleteProfile?.training_background_injury_history ?? null;
+  if (hasReportedInjuryHistory(injuryHistoryText) && !acknowledgeInjuryHistory) {
+    return { blockedForInjuryHistory: true, injuryHistoryText };
   }
 
   if (input.startingWeeklyMiles < 0 || input.targetWeek.totalMiles <= 0 || input.weeksAvailable < 1) {
-    return { error: "Enter a starting mileage, the plan's first workout week mileage, and at least one week." };
+    return { error: "Enter a starting mileage, the plan's first workout week mileage, and at least one week.", injuryHistoryText };
   }
 
-  return { plan: generateBasePhasePlan(input) };
+  return { plan: generateBasePhasePlan(input), injuryHistoryText };
 }
 
 export type AddBasePhaseResult = { error?: string; daysCreated?: number };

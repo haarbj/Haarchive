@@ -103,6 +103,10 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
   const [isPending, setIsPending] = useState(false);
   const [blockedForInjuryHistory, setBlockedForInjuryHistory] = useState(defaults.hasInjuryHistory);
   const [injuryHistoryText, setInjuryHistoryText] = useState(defaults.injuryHistoryText);
+  // The coach's own explicit override -- a judgment call about this
+  // specific athlete, same trust level as "confirmedWarnings" elsewhere on
+  // this platform (never re-derived server-side, just passed through).
+  const [acknowledgedInjuryHistory, setAcknowledgedInjuryHistory] = useState(false);
   const [plan, setPlan] = useState<BasePhasePlan | null>(null);
   const [editableWeeks, setEditableWeeks] = useState<EditableWeek[]>([]);
   const [resolvedRange, setResolvedRange] = useState<{ startDate: string; endDate: string } | null>(null);
@@ -162,18 +166,22 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     const longestRun = longestRunInput.trim() ? Number(longestRunInput) : null;
 
     setIsPending(true);
-    const result = await previewBasePhase(athleteId, {
-      startingWeeklyMiles: starting,
-      // Always exactly 2 -- the general phase always has 2 workout days,
-      // per the task's own "always 2, derived from the plan" rule (not a
-      // per-program step-detection heuristic, which would be fragile).
-      targetWeek: { totalMiles: target, daysPerWeek: targetDays, workoutDaysPerWeek: DEFAULT_WORKOUT_DAYS_PER_WEEK },
-      weeksAvailable,
-      athleteType,
-      currentDaysPerWeek: currentDays,
-      longestRunInLast30DaysMiles: longestRun,
-      restartStepMiles: athleteType === "restarting" ? Math.max(1, Number(restartStepMiles) || DEFAULT_RESTART_STEP_MILES) : undefined,
-    });
+    const result = await previewBasePhase(
+      athleteId,
+      {
+        startingWeeklyMiles: starting,
+        // Always exactly 2 -- the general phase always has 2 workout days,
+        // per the task's own "always 2, derived from the plan" rule (not a
+        // per-program step-detection heuristic, which would be fragile).
+        targetWeek: { totalMiles: target, daysPerWeek: targetDays, workoutDaysPerWeek: DEFAULT_WORKOUT_DAYS_PER_WEEK },
+        weeksAvailable,
+        athleteType,
+        currentDaysPerWeek: currentDays,
+        longestRunInLast30DaysMiles: longestRun,
+        restartStepMiles: athleteType === "restarting" ? Math.max(1, Number(restartStepMiles) || DEFAULT_RESTART_STEP_MILES) : undefined,
+      },
+      acknowledgedInjuryHistory,
+    );
 
     if (result.blockedForInjuryHistory) {
       setIsPending(false);
@@ -229,11 +237,11 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
     setAddResult({ daysCreated: result.daysCreated ?? 0 });
   }
 
-  if (blockedForInjuryHistory) {
+  if (blockedForInjuryHistory && !acknowledgedInjuryHistory) {
     return (
       <div className="space-y-4 rounded-control border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
         <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-          This athlete has reported injury history -- the generator won&rsquo;t auto-build a progression.
+          This athlete has reported injury history -- the generator won&rsquo;t auto-build a progression by default.
         </p>
         {injuryHistoryText ? (
           <p className="text-sm text-zinc-700 dark:text-zinc-300">
@@ -241,13 +249,19 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
           </p>
         ) : null}
         <p className="text-sm text-zinc-600 dark:text-zinc-300">
-          Plan this one by hand, against return-to-running criteria rather than a standard progression:
+          The safer path is planning this one by hand, against return-to-running criteria rather than a standard
+          progression:
         </p>
         <ul className="list-inside list-disc space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
           {INJURY_RETURN_CRITERIA.map((c) => (
             <li key={c}>{c}</li>
           ))}
         </ul>
+        <div className="border-t border-amber-200 pt-3 dark:border-amber-900">
+          <Button type="button" size="sm" variant="outline" onClick={() => setAcknowledgedInjuryHistory(true)}>
+            I&rsquo;ve reviewed this -- build a standard progression anyway
+          </Button>
+        </div>
       </div>
     );
   }
@@ -285,6 +299,18 @@ export function BasePhaseGeneratorForm({ athleteId, defaults }: { athleteId: str
 
   return (
     <div className="space-y-4 rounded-control border border-black/10 p-3 dark:border-white/10">
+      {blockedForInjuryHistory && acknowledgedInjuryHistory ? (
+        <div className="rounded-control border border-amber-200 bg-amber-50/50 p-3 dark:border-amber-900 dark:bg-amber-950/20">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+            Overridden: this athlete has reported injury history.
+          </p>
+          {injuryHistoryText ? (
+            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+              <span className="font-medium">What they&rsquo;ve told their coach:</span> {injuryHistoryText}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       <div>
         <p className={labelClass}>Plan to build toward</p>
         <div className="mt-1.5 grid grid-cols-1 gap-3 xs:grid-cols-3">

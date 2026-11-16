@@ -50,8 +50,11 @@ export type GroupBasePhaseConfig = {
 export type GroupBasePhaseMemberPreview = {
   athleteId: string;
   name: string;
-  /** Set when this member is excluded from the run entirely (injury history, or couldn't generate/schedule-check for them). */
+  /** Set when this member couldn't be generated/schedule-checked for a reason other than injury history (e.g. a real error). */
   error?: string;
+  /** Reported injury history, not yet overridden for this member -- see injuryOverrides. Never auto-applied; the coach checks a box per athlete to proceed anyway, same trust level as the single-athlete form's own override. */
+  blockedForInjuryHistory: boolean;
+  injuryHistoryText: string | null;
   conflict: BasePhaseConflict | null;
   overlapsPlanStart: boolean;
 };
@@ -67,9 +70,17 @@ export type GroupBasePhaseMemberPreview = {
 // anchor/duration/planStartDate, never on per-athlete data) -- checked once
 // up front and short-circuits the whole group rather than repeating a
 // group-level finding once per athlete.
+// injuryOverrides[athleteId] === true means the coach checked "build
+// anyway" for that specific athlete's reported injury history (same
+// override the single-athlete form exposes) -- a member left out of this
+// map (or false) stays blocked, never silently built. A blocked member has
+// no plan/conflict yet (previewBasePhase never ran their math), so the
+// coach checks the box here and clicks "Preview for group" again to get
+// their real plan on the next pass.
 export async function previewBasePhaseForGroup(
   groupId: string,
   config: GroupBasePhaseConfig,
+  injuryOverrides: Record<string, boolean> = {},
 ): Promise<{ error?: string; plan?: BasePhasePlan; members?: GroupBasePhaseMemberPreview[] }> {
   const loaded = await loadGroupMembersForAssign(groupId);
   if (loaded.error) return { error: loaded.error };
@@ -81,29 +92,56 @@ export async function previewBasePhaseForGroup(
   const results: GroupBasePhaseMemberPreview[] = [];
 
   for (const member of members) {
-    const preview = await previewBasePhase(member.athleteId, {
-      startingWeeklyMiles: config.startingWeeklyMiles,
-      targetWeek: { ...config.targetWeek, workoutDaysPerWeek: 2 },
-      weeksAvailable: config.weeksAvailable,
-      athleteType: config.athleteType,
-      currentDaysPerWeek: config.currentDaysPerWeek,
-      longestRunInLast30DaysMiles: config.longestRunInLast30DaysMiles,
-      restartStepMiles: config.restartStepMiles,
-    });
+    const preview = await previewBasePhase(
+      member.athleteId,
+      {
+        startingWeeklyMiles: config.startingWeeklyMiles,
+        targetWeek: { ...config.targetWeek, workoutDaysPerWeek: 2 },
+        weeksAvailable: config.weeksAvailable,
+        athleteType: config.athleteType,
+        currentDaysPerWeek: config.currentDaysPerWeek,
+        longestRunInLast30DaysMiles: config.longestRunInLast30DaysMiles,
+        restartStepMiles: config.restartStepMiles,
+      },
+      injuryOverrides[member.athleteId] === true,
+    );
 
     if (preview.blockedForInjuryHistory) {
-      results.push({ athleteId: member.athleteId, name: member.name, error: "Has reported injury history -- needs manual planning, skipped.", conflict: null, overlapsPlanStart: false });
+      results.push({
+        athleteId: member.athleteId,
+        name: member.name,
+        blockedForInjuryHistory: true,
+        injuryHistoryText: preview.injuryHistoryText ?? null,
+        conflict: null,
+        overlapsPlanStart: false,
+      });
       continue;
     }
     if (preview.error || !preview.plan) {
-      results.push({ athleteId: member.athleteId, name: member.name, error: preview.error ?? "Couldn't generate a template.", conflict: null, overlapsPlanStart: false });
+      results.push({
+        athleteId: member.athleteId,
+        name: member.name,
+        error: preview.error ?? "Couldn't generate a template.",
+        blockedForInjuryHistory: false,
+        injuryHistoryText: null,
+        conflict: null,
+        overlapsPlanStart: false,
+      });
       continue;
     }
     if (!sharedPlan) sharedPlan = preview.plan;
 
     const schedule = await checkBasePhaseSchedule(member.athleteId, config.anchor, preview.plan.weeks.length, config.planStartDate);
     if (schedule.error) {
-      results.push({ athleteId: member.athleteId, name: member.name, error: schedule.error, conflict: null, overlapsPlanStart: false });
+      results.push({
+        athleteId: member.athleteId,
+        name: member.name,
+        error: schedule.error,
+        blockedForInjuryHistory: false,
+        injuryHistoryText: null,
+        conflict: null,
+        overlapsPlanStart: false,
+      });
       continue;
     }
     if (schedule.overlapsPlanStart && !overlapsPlanStartChecked) {
@@ -112,7 +150,14 @@ export async function previewBasePhaseForGroup(
         error: "This duration and anchor would place the base phase overlapping the plan's own start date for the whole group. Shorten the duration or choose a different anchor.",
       };
     }
-    results.push({ athleteId: member.athleteId, name: member.name, conflict: schedule.conflict ?? null, overlapsPlanStart: schedule.overlapsPlanStart ?? false });
+    results.push({
+      athleteId: member.athleteId,
+      name: member.name,
+      blockedForInjuryHistory: false,
+      injuryHistoryText: preview.injuryHistoryText ?? null,
+      conflict: schedule.conflict ?? null,
+      overlapsPlanStart: schedule.overlapsPlanStart ?? false,
+    });
   }
 
   if (!sharedPlan) return { error: "Couldn't generate a base phase for any athlete in the group.", members: results };
@@ -127,13 +172,15 @@ export type GroupBasePhaseOutcome = {
 };
 
 // decisions[athleteId] === true means the coach checked "clear and reassign"
-// for that athlete in the review screen. A conflicting member left out of
-// this map (or false) is skipped, never silently cleared -- same guarantee
-// as the group program-assign flow's own decisions map.
+// for that athlete in the review screen. injuryOverrides[athleteId] === true
+// means the coach checked "build anyway" for that athlete's reported
+// injury history. Either map left unset for an athlete means the
+// cautious default applies -- skipped, never silently cleared or built.
 export async function assignBasePhaseToGroup(
   groupId: string,
   config: GroupBasePhaseConfig,
   decisions: Record<string, boolean>,
+  injuryOverrides: Record<string, boolean> = {},
 ): Promise<GroupBasePhaseOutcome> {
   const loaded = await loadGroupMembersForAssign(groupId);
   if (loaded.error) return { error: loaded.error };
@@ -150,17 +197,21 @@ export async function assignBasePhaseToGroup(
     // injury history, and the athlete's own calendar can all change between
     // that screen loading and this submit (addBasePhaseToSchedule itself
     // also re-checks the overlap a third time, at write time).
-    const preview = await previewBasePhase(member.athleteId, {
-      startingWeeklyMiles: config.startingWeeklyMiles,
-      targetWeek: { ...config.targetWeek, workoutDaysPerWeek: 2 },
-      weeksAvailable: config.weeksAvailable,
-      athleteType: config.athleteType,
-      currentDaysPerWeek: config.currentDaysPerWeek,
-      longestRunInLast30DaysMiles: config.longestRunInLast30DaysMiles,
-      restartStepMiles: config.restartStepMiles,
-    });
+    const preview = await previewBasePhase(
+      member.athleteId,
+      {
+        startingWeeklyMiles: config.startingWeeklyMiles,
+        targetWeek: { ...config.targetWeek, workoutDaysPerWeek: 2 },
+        weeksAvailable: config.weeksAvailable,
+        athleteType: config.athleteType,
+        currentDaysPerWeek: config.currentDaysPerWeek,
+        longestRunInLast30DaysMiles: config.longestRunInLast30DaysMiles,
+        restartStepMiles: config.restartStepMiles,
+      },
+      injuryOverrides[member.athleteId] === true,
+    );
     if (preview.blockedForInjuryHistory) {
-      skipped.push({ athleteId: member.athleteId, name: member.name, reason: "Reported injury history -- needs manual planning." });
+      skipped.push({ athleteId: member.athleteId, name: member.name, reason: "Reported injury history and wasn't checked to build anyway." });
       continue;
     }
     if (preview.error || !preview.plan) {
