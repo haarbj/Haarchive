@@ -7,7 +7,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { hasContentPermission } from "@/lib/auth/permissions";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { articleDraftSchema, citationsSchema, type CitationInput } from "@/lib/validation/articles";
-import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType } from "@/lib/validation/image-upload";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType, withResolvedContentType } from "@/lib/validation/image-upload";
 import { isArticleAuthor } from "@/lib/articles/is-author";
 import { isReservedSlug, slugifyTitle } from "@/lib/articles/slugify";
 
@@ -233,7 +233,7 @@ export async function uploadArticleImage(formData: FormData): Promise<ImageUploa
     const admin = createServiceRoleClient();
     const { error: uploadError } = await admin.storage
       .from("article-images")
-      .upload(path, file, { contentType: resolvedType });
+      .upload(path, withResolvedContentType(file, resolvedType), { contentType: resolvedType });
     if (uploadError) return { error: uploadError.message };
 
     const { data } = admin.storage.from("article-images").getPublicUrl(path);

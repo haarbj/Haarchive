@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ALLOWED_IMAGE_TYPES, resolveImageType } from "@/lib/validation/image-upload";
+import { ALLOWED_IMAGE_TYPES, resolveImageType, withResolvedContentType } from "@/lib/validation/image-upload";
 
 // Real file header bytes, not invented -- the exact signature each format
 // actually starts with.
@@ -45,5 +45,29 @@ describe("resolveImageType", () => {
   it("returns null for a genuinely unsupported file, declared or not", async () => {
     expect(await resolveImageType(blobOf(TEXT_BYTES, ""))).toBeNull();
     expect(await resolveImageType(blobOf(TEXT_BYTES, "text/plain"))).toBe(null);
+  });
+});
+
+describe("withResolvedContentType", () => {
+  // The remaining half of the same real bug: @supabase/storage-js's
+  // upload() ignores its own `contentType` fileOption whenever the body
+  // is already a Blob/File -- it appends the Blob into FormData as-is,
+  // so the Content-Type that reaches Supabase Storage is the Blob's own
+  // intrinsic `.type`, not the resolved type resolveImageType computed
+  // for validation. Confirmed against the real package source (see this
+  // function's own comment). An extensionless file's own `.type` is
+  // still "" even after resolveImageType correctly identifies it as a
+  // real JPEG for validation purposes -- this is what has to carry that
+  // resolved type into the actual upload body.
+  it("rewraps a file whose own declared type doesn't match what was resolved", async () => {
+    const original = blobOf(JPEG_BYTES, "");
+    const wrapped = withResolvedContentType(original, "image/jpeg");
+    expect(wrapped.type).toBe("image/jpeg");
+    expect(await wrapped.arrayBuffer()).toEqual(await original.arrayBuffer());
+  });
+
+  it("returns the original blob untouched when its type already matches", async () => {
+    const original = blobOf(JPEG_BYTES, "image/jpeg");
+    expect(withResolvedContentType(original, "image/jpeg")).toBe(original);
   });
 });

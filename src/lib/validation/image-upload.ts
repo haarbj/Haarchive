@@ -70,3 +70,28 @@ export async function resolveImageType(file: Blob): Promise<string | null> {
   if (isWebp(head)) return "image/webp";
   return null;
 }
+
+/**
+ * Every upload call site must pass the result of this (not the original
+ * `file`) as the body to `admin.storage.from(...).upload(...)`.
+ *
+ * @supabase/storage-js's own upload() takes a `contentType` fileOption,
+ * but silently ignores it whenever the upload body is already a
+ * Blob/File instance (see StorageFileApi.ts's uploadOrUpdate: that branch
+ * just does `body.append('', fileBody)` into a FormData and never reads
+ * options.contentType at all) -- the Content-Type that actually reaches
+ * Supabase Storage is whatever the Blob/File's own intrinsic `.type`
+ * already is. For an extensionless file resolveImageType correctly
+ * resolves to e.g. "image/jpeg" for *validation*, but the original
+ * File object handed to upload() still has `.type === ""`, which
+ * Supabase/fetch defaults to "application/octet-stream" on the wire --
+ * then rejected by the bucket's own allowed_mime_types check. Confirmed
+ * live: the crop path (always re-encodes via canvas.toBlob as a genuine
+ * image/jpeg Blob) worked; the raw/"use original" path (the unmodified
+ * File, type "") still failed with exactly that Supabase-side rejection.
+ * Wrapping the file in a fresh Blob with the resolved type fixes this at
+ * the source, rather than trusting the ignored contentType option.
+ */
+export function withResolvedContentType(file: Blob, resolvedType: string): Blob {
+  return file.type === resolvedType ? file : new Blob([file], { type: resolvedType });
+}

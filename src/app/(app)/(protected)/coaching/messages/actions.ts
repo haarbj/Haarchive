@@ -7,7 +7,7 @@ import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { createNotification } from "@/lib/notifications/create-notification";
 import { isViewingAsAthlete, VIEW_AS_REFUSAL } from "@/lib/private-coaching/view-as";
-import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType } from "@/lib/validation/image-upload";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType, withResolvedContentType } from "@/lib/validation/image-upload";
 
 export type SendMessageState = { error?: string };
 
@@ -70,7 +70,7 @@ export async function sendCoachAthleteMessage(
     const admin = createServiceRoleClient();
     const { error: uploadError } = await admin.storage
       .from("message-images")
-      .upload(imagePath, imageFile, { contentType: resolvedType });
+      .upload(imagePath, withResolvedContentType(imageFile, resolvedType), { contentType: resolvedType });
     if (uploadError) return { error: uploadError.message };
   }
 

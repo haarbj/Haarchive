@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
-import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType } from "@/lib/validation/image-upload";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType, withResolvedContentType } from "@/lib/validation/image-upload";
 
 export type AvatarUploadState = { url?: string; error?: string };
 
@@ -36,7 +36,9 @@ export async function uploadAvatarImage(formData: FormData): Promise<AvatarUploa
   // try/catch shape.
   try {
     const admin = createServiceRoleClient();
-    const { error: uploadError } = await admin.storage.from("avatars").upload(path, file, { contentType: resolvedType });
+    const { error: uploadError } = await admin.storage
+      .from("avatars")
+      .upload(path, withResolvedContentType(file, resolvedType), { contentType: resolvedType });
     if (uploadError) return { error: uploadError.message };
 
     const { data: publicUrlData } = admin.storage.from("avatars").getPublicUrl(path);
