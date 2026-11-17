@@ -7,7 +7,7 @@ import { getAppSession } from "@/lib/auth/session";
 import { hasContentPermission } from "@/lib/auth/permissions";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { articleDraftSchema, citationsSchema, type CitationInput } from "@/lib/validation/articles";
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL } from "@/lib/validation/image-upload";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType } from "@/lib/validation/image-upload";
 import { isArticleAuthor } from "@/lib/articles/is-author";
 import { isReservedSlug, slugifyTitle } from "@/lib/articles/slugify";
 
@@ -212,14 +212,15 @@ export async function uploadArticleImage(formData: FormData): Promise<ImageUploa
 
   const file = formData.get("file");
   if (!(file instanceof File)) return { error: "No file provided." };
-  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-    return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
-  }
   if (file.size > MAX_IMAGE_BYTES) {
     return { error: `Image is too large. Keep it under ${MAX_IMAGE_BYTES_LABEL}.` };
   }
+  const resolvedType = await resolveImageType(file);
+  if (!resolvedType) {
+    return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
+  }
 
-  const extension = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+  const extension = resolvedType === "image/jpeg" ? "jpg" : resolvedType.split("/")[1];
   const path = `${session.userId}/${crypto.randomUUID()}.${extension}`;
 
   // Defense in depth: ImageUrlField's own caller already catches a thrown
@@ -232,7 +233,7 @@ export async function uploadArticleImage(formData: FormData): Promise<ImageUploa
     const admin = createServiceRoleClient();
     const { error: uploadError } = await admin.storage
       .from("article-images")
-      .upload(path, file, { contentType: file.type });
+      .upload(path, file, { contentType: resolvedType });
     if (uploadError) return { error: uploadError.message };
 
     const { data } = admin.storage.from("article-images").getPublicUrl(path);

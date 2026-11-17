@@ -13,3 +13,60 @@
 export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 export const MAX_IMAGE_BYTES_LABEL = "8 MB";
+
+// Real file header signatures for the four allowed formats -- the
+// fallback for resolveImageType below, when the browser couldn't supply a
+// usable `file.type`. WebP needs two separate checks (a RIFF container
+// with a WEBP four-byte tag at offset 8), not one contiguous signature.
+const JPEG_MAGIC = [0xff, 0xd8, 0xff];
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const GIF_MAGIC = [0x47, 0x49, 0x46, 0x38]; // "GIF8" -- covers both GIF87a and GIF89a
+
+function matchesMagic(head: Uint8Array, magic: number[]): boolean {
+  return magic.every((byte, i) => head[i] === byte);
+}
+
+function isWebp(head: Uint8Array): boolean {
+  if (head.length < 12) return false;
+  const riff = String.fromCharCode(head[0], head[1], head[2], head[3]);
+  const webp = String.fromCharCode(head[8], head[9], head[10], head[11]);
+  return riff === "RIFF" && webp === "WEBP";
+}
+
+/**
+ * The one real check every "is this an allowed image" call site should
+ * use instead of a bare `ALLOWED_IMAGE_TYPES.has(file.type)`.
+ *
+ * `file.type` is the browser's own guess, normally derived from the
+ * file's extension -- and it's simply empty ("") whenever the browser or
+ * OS can't make that guess, which is a real, common case: an
+ * extensionless file (saved from a chat app, a screenshot tool, a
+ * clipboard paste, anything that doesn't preserve a ".jpg"/".png" suffix)
+ * reports file.type === "" even though it's a perfectly normal JPEG --
+ * verified directly against a real, extensionless JPEG via Playwright,
+ * not assumed. An exact-match check on that empty string rejected every
+ * such file as "Unsupported image type," which is exactly the false
+ * rejection a real bug report described ("Image uploading not working.
+ * Image is in JPG format.").
+ *
+ * Trusts file.type first when it's already one of the four allowed
+ * values (the fast, common path -- no need to read the file for that),
+ * normalizes the one known non-standard alias some systems report
+ * ("image/jpg" instead of "image/jpeg"), and only falls back to sniffing
+ * the real file header when the declared type is missing or unrecognized.
+ * Returns the resolved, canonical MIME type to actually use (for the
+ * Storage upload's own contentType and the stored file's extension) --
+ * never the raw, possibly-empty file.type -- or null if this genuinely
+ * isn't one of the four allowed formats.
+ */
+export async function resolveImageType(file: Blob): Promise<string | null> {
+  const declared = file.type === "image/jpg" ? "image/jpeg" : file.type;
+  if (ALLOWED_IMAGE_TYPES.has(declared)) return declared;
+
+  const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  if (matchesMagic(head, JPEG_MAGIC)) return "image/jpeg";
+  if (matchesMagic(head, PNG_MAGIC)) return "image/png";
+  if (matchesMagic(head, GIF_MAGIC)) return "image/gif";
+  if (isWebp(head)) return "image/webp";
+  return null;
+}

@@ -7,11 +7,9 @@ import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
 import { createNotification } from "@/lib/notifications/create-notification";
 import { isViewingAsAthlete, VIEW_AS_REFUSAL } from "@/lib/private-coaching/view-as";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType } from "@/lib/validation/image-upload";
 
 export type SendMessageState = { error?: string };
-
-const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 // coach_athlete_messages_insert_participant RLS already requires
 // sender_id = auth.uid() AND the caller be one of the two people on
@@ -60,18 +58,19 @@ export async function sendCoachAthleteMessage(
 
   let imagePath: string | null = null;
   if (imageFile) {
-    if (!ALLOWED_IMAGE_TYPES.has(imageFile.type)) {
+    if (imageFile.size > MAX_IMAGE_BYTES) {
+      return { error: `Image is too large. Keep it under ${MAX_IMAGE_BYTES_LABEL}.` };
+    }
+    const resolvedType = await resolveImageType(imageFile);
+    if (!resolvedType) {
       return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
     }
-    if (imageFile.size > MAX_IMAGE_BYTES) {
-      return { error: "Image is too large. Keep it under 8 MB." };
-    }
-    const extension = imageFile.type === "image/jpeg" ? "jpg" : imageFile.type.split("/")[1];
+    const extension = resolvedType === "image/jpeg" ? "jpg" : resolvedType.split("/")[1];
     imagePath = `${coachAthleteId}/${crypto.randomUUID()}.${extension}`;
     const admin = createServiceRoleClient();
     const { error: uploadError } = await admin.storage
       .from("message-images")
-      .upload(imagePath, imageFile, { contentType: imageFile.type });
+      .upload(imagePath, imageFile, { contentType: resolvedType });
     if (uploadError) return { error: uploadError.message };
   }
 

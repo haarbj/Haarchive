@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/db/server";
 import { createServiceRoleClient } from "@/lib/db/service-role";
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL } from "@/lib/validation/image-upload";
+import { MAX_IMAGE_BYTES, MAX_IMAGE_BYTES_LABEL, resolveImageType } from "@/lib/validation/image-upload";
 
 export type AvatarUploadState = { url?: string; error?: string };
 
@@ -21,21 +21,22 @@ export async function uploadAvatarImage(formData: FormData): Promise<AvatarUploa
 
   const file = formData.get("file");
   if (!(file instanceof File)) return { error: "No file provided." };
-  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-    return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
-  }
   if (file.size > MAX_IMAGE_BYTES) {
     return { error: `Image is too large. Keep it under ${MAX_IMAGE_BYTES_LABEL}.` };
   }
+  const resolvedType = await resolveImageType(file);
+  if (!resolvedType) {
+    return { error: "Unsupported image type. Use PNG, JPEG, WebP, or GIF." };
+  }
 
-  const extension = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+  const extension = resolvedType === "image/jpeg" ? "jpg" : resolvedType.split("/")[1];
   const path = `${userId}/${crypto.randomUUID()}.${extension}`;
 
   // Defense in depth -- see uploadArticleImage's own comment on this same
   // try/catch shape.
   try {
     const admin = createServiceRoleClient();
-    const { error: uploadError } = await admin.storage.from("avatars").upload(path, file, { contentType: file.type });
+    const { error: uploadError } = await admin.storage.from("avatars").upload(path, file, { contentType: resolvedType });
     if (uploadError) return { error: uploadError.message };
 
     const { data: publicUrlData } = admin.storage.from("avatars").getPublicUrl(path);
