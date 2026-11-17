@@ -9,6 +9,7 @@ import {
   checkBasePhaseSchedule,
   loadProgramOptionsForBasePhase,
   previewBasePhase,
+  type AddBasePhaseWeek,
   type BasePhaseAnchor,
   type BasePhaseConflict,
   type BasePhaseProgramOption,
@@ -176,11 +177,25 @@ export type GroupBasePhaseOutcome = {
 // means the coach checked "build anyway" for that athlete's reported
 // injury history. Either map left unset for an athlete means the
 // cautious default applies -- skipped, never silently cleared or built.
+//
+// editedWeeks, when given, is the coach's own edited version of the shared
+// template shown after "Preview for group" -- the same per-week long
+// run/MLR/easy mileage editing the single-athlete form already allows (see
+// base-phase-generator-form.tsx's updateWeek/updateMlr/updateEasy). It's
+// written verbatim for every athlete who gets assigned, keyed by
+// weekNumber, in place of each member's own freshly re-previewed
+// preview.plan.weeks -- the mileage plan is identical for every member of
+// a fixed config in the first place (see previewBasePhaseForGroup's own
+// comment on why only the first success is kept as "the" shared plan), so
+// there's no per-athlete reason to discard an edit the coach already made.
+// Falls back to each member's re-previewed weeks when omitted, so this
+// stays backward compatible with a caller that never edited anything.
 export async function assignBasePhaseToGroup(
   groupId: string,
   config: GroupBasePhaseConfig,
   decisions: Record<string, boolean>,
   injuryOverrides: Record<string, boolean> = {},
+  editedWeeks?: AddBasePhaseWeek[],
 ): Promise<GroupBasePhaseOutcome> {
   const loaded = await loadGroupMembersForAssign(groupId);
   if (loaded.error) return { error: loaded.error };
@@ -242,13 +257,16 @@ export async function assignBasePhaseToGroup(
       continue;
     }
 
-    const result = await addBasePhaseToSchedule(
-      member.athleteId,
-      config.anchor,
-      preview.plan.weeks.map((w) => ({ weekNumber: w.weekNumber, longRunMiles: w.longRunMiles, mlrMiles: w.mlrMiles, easyMiles: w.easyMiles })),
-      config.planStartDate,
-      clear,
-    );
+    // Only trusted when its own week count matches this member's
+    // re-previewed plan -- a mismatch means the shared config changed
+    // since the coach last edited (weeksAvailable, athlete type, etc.),
+    // and re-previewed weeks are the safer fallback in that case.
+    const weeksToWrite =
+      editedWeeks && editedWeeks.length === preview.plan.weeks.length
+        ? editedWeeks
+        : preview.plan.weeks.map((w) => ({ weekNumber: w.weekNumber, longRunMiles: w.longRunMiles, mlrMiles: w.mlrMiles, easyMiles: w.easyMiles }));
+
+    const result = await addBasePhaseToSchedule(member.athleteId, config.anchor, weeksToWrite, config.planStartDate, clear);
     if (result.error) {
       failed.push({ athleteId: member.athleteId, name: member.name, error: result.error });
       continue;

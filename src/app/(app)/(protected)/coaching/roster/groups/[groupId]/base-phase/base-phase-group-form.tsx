@@ -15,6 +15,7 @@ import {
   MIN_DAYS_PER_WEEK,
   type BasePhaseAthleteType,
   type BasePhasePlan,
+  type BasePhaseWeek,
 } from "@/lib/private-coaching/base-phase-generator";
 import type { AcwrZone } from "@/lib/acwr";
 import { fieldClass, labelClass } from "@/lib/form-styles";
@@ -37,6 +38,8 @@ const ZONE_TONE: Record<AcwrZone, BadgeTone> = {
   caution: "warning",
   "high-risk": "error",
 };
+
+type EditableWeek = BasePhaseWeek;
 
 function mostRecentMonday(date: Date): string {
   const d = new Date(date);
@@ -108,6 +111,12 @@ export function BasePhaseGroupForm({
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [plan, setPlan] = useState<BasePhasePlan | null>(null);
+  // The coach's own edits to the shared template shown after "Preview for
+  // group" -- same per-week long run/MLR/easy editing the single-athlete
+  // form already allows (base-phase-generator-form.tsx's editableWeeks).
+  // Written verbatim for every athlete assigned; see
+  // assignBasePhaseToGroup's own comment on why that's safe here.
+  const [editableWeeks, setEditableWeeks] = useState<EditableWeek[]>([]);
   const [memberPreviews, setMemberPreviews] = useState<GroupBasePhaseMemberPreview[]>([]);
   const [clearDecisions, setClearDecisions] = useState<Record<string, boolean>>({});
   // athleteId -> coach checked "build anyway" for that member's reported
@@ -194,8 +203,25 @@ export function BasePhaseGroupForm({
     setIsPending(false);
     if (result.error && !result.plan) return setError(result.error);
     setPlan(result.plan ?? null);
+    setEditableWeeks(result.plan?.weeks ?? []);
     setMemberPreviews(result.members ?? []);
     setClearDecisions({});
+  }
+
+  function updateWeek(weekNumber: number, patch: Partial<EditableWeek>) {
+    setEditableWeeks((prev) => prev.map((w) => (w.weekNumber === weekNumber ? { ...w, ...patch } : w)));
+  }
+
+  function updateMlr(weekNumber: number, index: number, value: number) {
+    setEditableWeeks((prev) =>
+      prev.map((w) => (w.weekNumber === weekNumber ? { ...w, mlrMiles: w.mlrMiles.map((m, i) => (i === index ? value : m)) } : w)),
+    );
+  }
+
+  function updateEasy(weekNumber: number, index: number, value: number) {
+    setEditableWeeks((prev) =>
+      prev.map((w) => (w.weekNumber === weekNumber ? { ...w, easyMiles: w.easyMiles.map((m, i) => (i === index ? value : m)) } : w)),
+    );
   }
 
   async function handleAssign() {
@@ -204,7 +230,13 @@ export function BasePhaseGroupForm({
     if ("error" in built) return setError(built.error);
 
     setIsPending(true);
-    const result = await assignBasePhaseToGroup(groupId, built.config, clearDecisions, injuryOverrides);
+    const result = await assignBasePhaseToGroup(
+      groupId,
+      built.config,
+      clearDecisions,
+      injuryOverrides,
+      editableWeeks.map((w) => ({ weekNumber: w.weekNumber, longRunMiles: w.longRunMiles, mlrMiles: w.mlrMiles, easyMiles: w.easyMiles })),
+    );
     setIsPending(false);
     if (result.error) return setError(result.error);
     setOutcome({ assigned: result.assigned ?? [], skipped: result.skipped ?? [], failed: result.failed ?? [] });
@@ -657,26 +689,79 @@ export function BasePhaseGroupForm({
                 <tr className="border-b border-black/10 bg-zinc-900/[0.03] dark:border-white/10 dark:bg-white/[0.04]">
                   <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Week</th>
                   <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Total mi</th>
+                  <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Days</th>
                   <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Long run</th>
                   <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">MLRs</th>
                   <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Easy days</th>
                   <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Zone</th>
+                  <th className="px-3 py-2 font-semibold text-zinc-900 dark:text-white">Notes</th>
                 </tr>
               </thead>
               <tbody>
-                {plan.weeks.map((week) => (
-                  <tr key={week.weekNumber} className="border-b border-black/5 last:border-0 dark:border-white/5">
+                {editableWeeks.map((week) => (
+                  <tr key={week.weekNumber} className="border-b border-black/5 last:border-0 dark:border-white/5 align-top">
                     <td className="px-3 py-2 font-medium text-zinc-900 dark:text-white">{week.weekNumber}</td>
                     <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300">{week.totalMiles}</td>
-                    <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300">{week.longRunMiles}</td>
-                    <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300">{week.mlrMiles.join(" / ") || "--"}</td>
-                    <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300">{week.easyMiles.join(" / ") || "none"}</td>
-                    <td className="px-3 py-2">{week.acwrZone ? <Badge tone={ZONE_TONE[week.acwrZone]}>{ZONE_LABEL[week.acwrZone]}</Badge> : null}</td>
+                    <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300">{week.daysPerWeek}</td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        step={0.5}
+                        value={week.longRunMiles}
+                        onChange={(e) => updateWeek(week.weekNumber, { longRunMiles: Number(e.target.value) || 0 })}
+                        className={`${fieldClass} w-20`}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <div className="flex flex-wrap gap-1.5">
+                        {week.mlrMiles.map((mi, i) => (
+                          <input
+                            key={i}
+                            type="number"
+                            step={0.5}
+                            value={mi}
+                            onChange={(e) => updateMlr(week.weekNumber, i, Number(e.target.value) || 0)}
+                            className={`${fieldClass} w-16`}
+                          />
+                        ))}
+                        {week.mlrMiles.length === 0 ? <span className="text-xs text-zinc-400">--</span> : null}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2">
+                      <div className="flex flex-wrap gap-1.5">
+                        {week.easyMiles.map((mi, i) => (
+                          <input
+                            key={i}
+                            type="number"
+                            step={0.5}
+                            value={mi}
+                            onChange={(e) => updateEasy(week.weekNumber, i, Number(e.target.value) || 0)}
+                            className={`${fieldClass} w-16`}
+                          />
+                        ))}
+                        {week.easyMiles.length === 0 ? <span className="text-xs text-zinc-400">none</span> : null}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2">
+                      {week.acwrZone ? <Badge tone={ZONE_TONE[week.acwrZone]}>{ZONE_LABEL[week.acwrZone]}</Badge> : null}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-zinc-600 dark:text-zinc-300">
+                      {week.notes.map((n, i) => (
+                        <p key={i} className={i > 0 ? "mt-1" : undefined}>
+                          {n}
+                        </p>
+                      ))}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Adjust anything above before assigning -- the edited values are written for every athlete assigned below,
+            the same shared template, not re-generated per athlete.
+          </p>
 
           <div className="space-y-2 border-t border-black/10 pt-3 dark:border-white/10">
             <p className="text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
